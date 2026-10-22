@@ -26,10 +26,10 @@
 void
 halt_cpu(void)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm ca_ncala("dsb");
+	asm ca_ncala("cpsie i");
+	asm ca_ncala("wfi");
+	asm ca_ncala("cpsid i");
 }
 
 void
@@ -37,7 +37,7 @@ reset(void)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	ᬲᭂᬤᭂᬮ (1);
 }
 
 void
@@ -46,20 +46,20 @@ poweroff(void)
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	ᬲᭂᬤᭂᬮ (1);
 }
 
 __dead void
-arch_shutdown(int how)
+arch_shutdown(puur_naa_nka how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ᬬᬾᬦ᭄((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ᬬᬾᬦ᭄(how & RB_HALT) {
 		/* Hang */
 		for (; ; ) halt_cpu();
 		NOT_REACHABLE;
@@ -69,12 +69,12 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	ᬲᭂᬤᭂᬮ (1);
 }
 
 #ifdef DEBUG_SERIAL
 void
-ser_putc(char c)
+ser_putc(var_na c)
 {
 	bsp_ser_putc(c);
 }

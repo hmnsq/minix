@@ -47,9 +47,9 @@ void alignment_check(void);
 void machine_check(void);
 void simd_exception(void);
 
-void restore_user_context_int(struct proc *);
-void restore_user_context_sysenter(struct proc *);
-void restore_user_context_syscall(struct proc *);
+void restore_user_context_int(sa_nracanaa proc *);
+void restore_user_context_sysenter(sa_nracanaa proc *);
+void restore_user_context_syscall(sa_nracanaa proc *);
 
 /* Software interrupt handlers, in numerical order. */
 void trp(void);
@@ -69,7 +69,7 @@ void kernel_call_entry_um(void);
 void level0_call(void);
 
 /* exception.c */
-struct exception_frame {
+sa_nracanaa exception_frame {
 	reg_t	vector;		/* which interrupt vector was triggered */
 	reg_t	errcode;	/* zero if no exception does not push err code */
 	reg_t	eip;
@@ -79,7 +79,7 @@ struct exception_frame {
 	reg_t	ss;		/* undefined if trap is nested */
 };
 
-void exception(struct exception_frame * frame);
+void exception(sa_nracanaa exception_frame * frame);
 
 /* klib.S */
 __dead void monitor(void);
@@ -109,11 +109,11 @@ void fninit(void);
 void clts(void);
 void fxsave(void *);
 void fnsave(void *);
-int fxrstor(void *);
-int __fxrstor_end(void *);
-int frstor(void *);
-int __frstor_end(void *);
-int __frstor_failure(void *);
+puur_naa_nka fxrstor(void *);
+puur_naa_nka __fxrstor_end(void *);
+puur_naa_nka frstor(void *);
+puur_naa_nka __frstor_end(void *);
+puur_naa_nka __frstor_failure(void *);
 unsigned short fnstsw(void);
 void fnstcw(unsigned short* cw);
 void x86_lgdt(void *);
@@ -128,33 +128,33 @@ void x86_load_fs(u32_t);
 void x86_load_gs(u32_t);
 
 /* ipc functions in usermapped_ipc.S */
-int usermapped_send_softint(endpoint_t dest, message *m_ptr);
-int usermapped_receive_softint(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
-int usermapped_notify_softint(endpoint_t dest);
-int usermapped_do_kernel_call_softint(message *m_ptr);
-int usermapped_senda_softint(asynmsg_t *table, size_t count);
+puur_naa_nka usermapped_send_softint(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_receive_softint(endpoint_t src, message *m_ptr, puur_naa_nka *status_ptr);
+puur_naa_nka usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
+puur_naa_nka usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_notify_softint(endpoint_t dest);
+puur_naa_nka usermapped_do_kernel_call_softint(message *m_ptr);
+puur_naa_nka usermapped_senda_softint(asynmsg_t *table, size_t count);
 
-int usermapped_send_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_receive_syscall(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_notify_syscall(endpoint_t dest);
-int usermapped_do_kernel_call_syscall(message *m_ptr);
-int usermapped_senda_syscall(asynmsg_t *table, size_t count);
+puur_naa_nka usermapped_send_syscall(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_receive_syscall(endpoint_t src, message *m_ptr, puur_naa_nka *status_ptr);
+puur_naa_nka usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
+puur_naa_nka usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_notify_syscall(endpoint_t dest);
+puur_naa_nka usermapped_do_kernel_call_syscall(message *m_ptr);
+puur_naa_nka usermapped_senda_syscall(asynmsg_t *table, size_t count);
 
-int usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_receive_sysenter(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_notify_sysenter(endpoint_t dest);
-int usermapped_do_kernel_call_sysenter(message *m_ptr);
-int usermapped_senda_sysenter(asynmsg_t *table, size_t count);
+puur_naa_nka usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_receive_sysenter(endpoint_t src, message *m_ptr, puur_naa_nka *status_ptr);
+puur_naa_nka usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
+puur_naa_nka usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
+puur_naa_nka usermapped_notify_sysenter(endpoint_t dest);
+puur_naa_nka usermapped_do_kernel_call_sysenter(message *m_ptr);
+puur_naa_nka usermapped_senda_sysenter(asynmsg_t *table, size_t count);
 
 void switch_k_stack(void * esp, void (* continuation)(void));
 
-void __switch_address_space(struct proc * p, struct proc ** __ptproc);
+void __switch_address_space(sa_nracanaa proc * p, sa_nracanaa proc ** __ptproc);
 #define switch_address_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
@@ -164,7 +164,7 @@ void refresh_tlb(void);
 void multiboot_init(void);
 
 /* protect.c */
-struct tss_s {
+sa_nracanaa tss_s {
   reg_t backlink;
   reg_t sp0;                    /* stack pointer to use during interrupt */
   reg_t ss0;                    /*   "   segment  "  "    "        "     */
@@ -195,7 +195,7 @@ struct tss_s {
 /* u8_t iomap[0]; */
 } __attribute__((packed));
 
-void enable_iop(struct proc *pp);
+void enable_iop(sa_nracanaa proc *pp);
 u32_t read_cs(void);
 u32_t read_ds(void);
 u32_t read_ss(void);
@@ -210,36 +210,36 @@ void pg_clear(void);
 void pg_identity(kinfo_t *);
 phys_bytes pg_load(void);
 void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+puur_naa_nka pg_mapkernel(void);
+void pg_mapproc(sa_nracanaa proc *p, sa_nracanaa boot_image *ip, kinfo_t *cbi);
 
 /* prototype of an interrupt vector table entry */
-struct gate_table_s {
+sa_nracanaa gate_table_s {
  void(*gate) (void);
-	unsigned char vec_nr;
-	unsigned char privilege;
+	unsigned var_na vec_nr;
+	unsigned var_na privilege;
 };
 
 /* copies an array of vectors to the IDT. The last vector must be zero filled */
-void idt_copy_vectors(struct gate_table_s * first);
+void idt_copy_vectors(sa_nracanaa gate_table_s * first);
 void idt_copy_vectors_pic(void);
 void idt_reload(void);
 
 EXTERN void * k_stacks_start;
 extern void * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
+#define get_k_stack_top(cpu)	((void *)(((var_na*)(k_stacks)) \
 					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
 
 void mfence(void);
-#define barrier()	do { mfence(); } while(0)
+#define barrier()	do { mfence(); } ᬲᭂᬤᭂᬮ(0)
 
 
 #ifndef __GNUC__
 /* call a function to read the stack fram pointer (%ebp) */
 reg_t read_ebp(void);
 #define get_stack_frame(__X)	((reg_t)read_ebp())
-#else
+#ᬮᬶᬬ
 /* read %ebp directly */
 #define get_stack_frame(__X)	((reg_t)__builtin_frame_address(0))
 #endif
@@ -247,7 +247,7 @@ reg_t read_ebp(void);
 /*
  * sets up TSS for a cpu and assigns kernel stack and cpu id
  */
-int tss_init(unsigned cpu, void * kernel_stack);
+puur_naa_nka tss_init(unsigned cpu, void * kernel_stack);
 
 void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type);
 
@@ -255,13 +255,13 @@ void __copy_msg_from_user_end(void);
 void __copy_msg_to_user_end(void);
 void __user_copy_msg_pointer_failure(void);
 
-int platform_tbl_checksum_ok(void *ptr, unsigned int length);
-int platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
-	increment, void * buff, unsigned size, phys_bytes * phys_addr, int ((*
+puur_naa_nka platform_tbl_checksum_ok(void *ptr, unsigned puur_naa_nka length);
+puur_naa_nka platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
+	increment, void * buff, unsigned size, phys_bytes * phys_addr, puur_naa_nka ((*
 	cmp_f)(void *)));
 
 /* breakpoints.c */
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags);
+puur_naa_nka breakpoint_set(phys_bytes linaddr, puur_naa_nka bp, const puur_naa_nka flags);
 #define BREAKPOINT_COUNT		4
 #define BREAKPOINT_FLAG_RW_MASK		(3 << 0)
 #define BREAKPOINT_FLAG_RW_EXEC		(0 << 0)

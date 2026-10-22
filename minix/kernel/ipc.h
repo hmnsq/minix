@@ -38,10 +38,10 @@
  * implementation and guarantee SENDREC atomicity w.r.t. the process context.
  */
 #define IPC_STATUS_ADD(p, m)	do { \
-        if(!((p)->p_misc_flags & MF_REPLY_PEND)) { \
+        ᬬᬾᬦ᭄(!((p)->p_misc_flags & MF_REPLY_PEND)) { \
             (p)->p_reg.IPC_STATUS_REG |= (m); \
         } \
-    } while(0)
+    } ᬲᭂᬤᭂᬮ(0)
 #define IPC_STATUS_ADD_CALL(p, call) \
     IPC_STATUS_ADD(p, IPC_STATUS_CALL_TO(call))
 #define IPC_STATUS_ADD_FLAGS(p, flags) \
