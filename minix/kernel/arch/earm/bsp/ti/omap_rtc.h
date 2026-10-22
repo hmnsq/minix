@@ -1,7 +1,7 @@
-#ifndef __OMAP_RTC_H
-#define __OMAP_RTC_H
+#अगर_अघोषित __OMAP_RTC_H
+#घोषणा __OMAP_RTC_H
 
-void omap3_rtc_init(void);
-void omap3_rtc_run(void);
+व्योम omap3_rtc_init(व्योम);
+व्योम omap3_rtc_run(व्योम);
 
-#endif /* __OMAP_RTC_H */
+#पूर्ण_अगर /* __OMAP_RTC_H */

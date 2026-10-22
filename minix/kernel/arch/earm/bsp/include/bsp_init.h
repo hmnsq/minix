@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#अगर_अघोषित _BSP_INIT_H_
+#घोषणा _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+व्योम bsp_init(व्योम);
 
-#endif /* __BSP_INIT_H__ */
+#पूर्ण_अगर /* __BSP_INIT_H__ */

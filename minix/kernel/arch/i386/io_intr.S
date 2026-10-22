@@ -5,10 +5,10 @@
 /*	void intr_enable(void); */
 #include <machine/asm.h>
 
-ENTRY(intr_disable)
+प्रथम(intr_disable)
 	cli
 	ret
 
-ENTRY(intr_enable)
+प्रथम(intr_enable)
 	sti
 	ret

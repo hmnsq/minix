@@ -19,7 +19,7 @@
 #define STACKARG 8(%ebp)
 
 #define ARG_EAX_ACTION(FUNCTION, ACTION)        ;\
-ENTRY(FUNCTION)                         ;\
+प्रथम(FUNCTION)                         ;\
         push    %ebp                    ;\
         mov     %esp, %ebp              ;\
         mov     STACKARG, %eax           ;\
@@ -29,7 +29,7 @@ ENTRY(FUNCTION)                         ;\
 
 /* Make a function of the form ret = func() */
 #define ARG_EAX_RETURN(FUNCTION, EXPR)        ;\
-ENTRY(FUNCTION)                         ;\
+प्रथम(FUNCTION)                         ;\
         push    %ebp                    ;\
         mov     %esp, %ebp              ;\
         mov	EXPR, %eax              ;\
@@ -38,7 +38,7 @@ ENTRY(FUNCTION)                         ;\
 
 /* Make a function of the form ret = func() */
 #define ARG_EAX_SET(FUNCTION, DEST)        ;\
-ENTRY(FUNCTION)                         ;\
+प्रथम(FUNCTION)                         ;\
         push    %ebp                    ;\
         mov     %esp, %ebp              ;\
 	mov     STACKARG, %eax		;\
@@ -49,7 +49,7 @@ ENTRY(FUNCTION)                         ;\
 
 /* Make a function of the form ret = func() */
 #define ARG_AX_SET(FUNCTION, DEST)        ;\
-ENTRY(FUNCTION)                         ;\
+प्रथम(FUNCTION)                         ;\
         push    %ebp                    ;\
         mov     %esp, %ebp              ;\
 	mov     STACKARG, %eax		;\
@@ -63,7 +63,7 @@ ENTRY(FUNCTION)                         ;\
  * kernel.
  */
 
-ENTRY(__main)
+प्रथम(__main)
 	ret
 
 
@@ -71,11 +71,11 @@ ENTRY(__main)
 /*				phys_insw				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_insw(Port_t port, phys_bytes buf, size_t count); 
+ * सार्व void phys_insw(Port_t port, phys_bytes buf, size_t count); 
  * Input an array from an I/O port.  Absolute address version of insw(). 
  */
 /* transfer data from (disk controller) port to memory */
-ENTRY(phys_insw)
+प्रथम(phys_insw)
 	push	%ebp
 	mov	%esp, %ebp
 	cld
@@ -95,11 +95,11 @@ ENTRY(phys_insw)
 /*				phys_insb				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_insb(Port_t port, phys_bytes buf, size_t count); 
+ * सार्व void phys_insb(Port_t port, phys_bytes buf, size_t count); 
  * Input an array from an I/O port.  Absolute address version of insb(). 
  */
 /* transfer data from (disk controller) port to memory byte by byte */
-ENTRY(phys_insb)
+प्रथम(phys_insb)
 	push	%ebp
 	mov	%esp, %ebp
 	cld
@@ -118,11 +118,11 @@ ENTRY(phys_insb)
 /*				phys_outsw				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_outsw(Port_t port, phys_bytes buf, size_t count); 
+ * सार्व void phys_outsw(Port_t port, phys_bytes buf, size_t count); 
  * Output an array to an I/O port.  Absolute address version of outsw(). 
  */
 /* transfer data from memory to (disk controller) port */
-ENTRY(phys_outsw)
+प्रथम(phys_outsw)
 	push	%ebp
 	mov	%esp, %ebp
 	cld
@@ -142,11 +142,11 @@ ENTRY(phys_outsw)
 /*				phys_outsb				     */
 /*===========================================================================*/
 /* 
- * PUBLIC void phys_outsb(Port_t port, phys_bytes buf, size_t count);
+ * सार्व void phys_outsb(Port_t port, phys_bytes buf, size_t count);
  * Output an array to an I/O port.  Absolute address version of outsb().
  */
 /* transfer data from memory to (disk controller) port byte by byte */
-ENTRY(phys_outsb)
+प्रथम(phys_outsb)
 	push	%ebp
 	mov	%esp, %ebp
 	cld
@@ -165,12 +165,12 @@ ENTRY(phys_outsb)
 /*				phys_copy				     */
 /*===========================================================================*/
 /*
- * PUBLIC phys_bytes phys_copy(phys_bytes source, phys_bytes destination,
+ * सार्व phys_bytes phys_copy(phys_bytes source, phys_bytes destination,
  *			phys_bytes bytecount); 
  * Copy a block of data from anywhere to anywhere in physical memory.
  */
 /*		es edi esi eip	 src dst len */
-ENTRY(phys_copy)
+प्रथम(phys_copy)
 	push	%ebp
 	mov	%esp, %ebp
 
@@ -201,13 +201,13 @@ pc_small:
 	rep 	movsb (%esi), (%edi)
 
 	mov	$0, %eax		/* 0 means: no fault */
-LABEL(phys_copy_fault)		/* kernel can send us here */
+मोहर(phys_copy_fault)		/* kernel can send us here */
 	pop	%edi
 	pop	%esi
 	pop	%ebp
 	ret
 
-LABEL(phys_copy_fault_in_kernel)	/* kernel can send us here */
+मोहर(phys_copy_fault_in_kernel)	/* kernel can send us here */
 	pop	%edi
 	pop	%esi
 	pop	%ebp
@@ -233,7 +233,7 @@ LABEL(phys_copy_fault_in_kernel)	/* kernel can send us here */
  * wrong pointers from userspace and the caller should return an error to
  * userspace as if wrong values or request were passed to the kernel
  */
-ENTRY(copy_msg_from_user)
+प्रथम(copy_msg_from_user)
 	/* load the source pointer */
 	mov	4(%esp), %ecx
 	/* load the destination pointer */
@@ -273,7 +273,7 @@ ENTRY(copy_msg_from_user)
 	mov	15*4(%ecx), %eax
 	mov	%eax, 15*4(%edx)
 
-LABEL(__copy_msg_from_user_end)
+मोहर(__copy_msg_from_user_end)
 	movl	$0, %eax
 	ret
 
@@ -287,7 +287,7 @@ LABEL(__copy_msg_from_user_end)
  *
  * All the other copy_msg_from_user() comments apply here as well!
  */
-ENTRY(copy_msg_to_user)
+प्रथम(copy_msg_to_user)
 	/* load the source pointer */
 	mov	4(%esp), %ecx
 	/* load the destination pointer */
@@ -328,7 +328,7 @@ ENTRY(copy_msg_to_user)
 	mov	15*4(%ecx), %eax
 	mov	%eax, 15*4(%edx)
 
-LABEL(__copy_msg_to_user_end)
+मोहर(__copy_msg_to_user_end)
 	movl	$0, %eax
 	ret
 
@@ -339,7 +339,7 @@ LABEL(__copy_msg_to_user_end)
  * called from has to handle this situation. The exception handler redirect us
  * here to continue, clean up and report the error
  */
-ENTRY(__user_copy_msg_pointer_failure)
+प्रथम(__user_copy_msg_pointer_failure)
 	movl	$-1, %eax
 	ret
 
@@ -347,11 +347,11 @@ ENTRY(__user_copy_msg_pointer_failure)
 /*				phys_memset				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_memset(phys_bytes dst, unsigned long pattern, 
+ * सार्व void phys_memset(phys_bytes dst, unsigned long pattern, 
  *	phys_bytes bytecount); 
  * Fill a block of physical memory with pattern. 
  */
-ENTRY(phys_memset)
+प्रथम(phys_memset)
 	push	%ebp
 	mov	%esp, %ebp
 	push	%edi
@@ -368,13 +368,13 @@ ENTRY(phys_memset)
 	and	$3, %ecx
 	rep stosb
 
-LABEL(memset_fault)		/* kernel can send us here */
+मोहर(memset_fault)		/* kernel can send us here */
 	mov	$0, %eax		/* 0 means: no fault */
 	pop	%edi
 	pop	%ebp
 	ret
 
-LABEL(memset_fault_in_kernel)		/* kernel can send us here */
+मोहर(memset_fault_in_kernel)		/* kernel can send us here */
 	pop	%edi
 	pop	%ebp
 	mov	%cr2, %eax
@@ -384,10 +384,10 @@ LABEL(memset_fault_in_kernel)		/* kernel can send us here */
 /*				x86_triplefault				     */
 /*===========================================================================*/
 /*
- * PUBLIC void x86_triplefault(); 
+ * सार्व void x86_triplefault(); 
  * Reset the system by loading IDT with offset 0 and interrupting. 
  */
-ENTRY(x86_triplefault)
+प्रथम(x86_triplefault)
 	lidt	idt_zero
 	int	$3	/* anything goes, the 386 will not like it */
 .data
@@ -400,11 +400,11 @@ idt_zero:
 /*			      	halt_cpu				     */
 /*===========================================================================*/
 /*
- * PUBLIC void halt_cpu(void);
+ * सार्व void halt_cpu(void);
  * reanables interrupts and puts the cpu in the halts state. Once an interrupt
  * is handled the execution resumes by disabling interrupts and continues
  */
-ENTRY(halt_cpu)
+प्रथम(halt_cpu)
 	sti
 	hlt /* interrupts enabled only after this instruction is executed! */
 	/*
@@ -417,12 +417,12 @@ ENTRY(halt_cpu)
 /*			poweroff_vmware_clihlt				     */
 /*===========================================================================*/
 /*
- * PUBLIC void poweroff_vmware_clihlt(void);
+ * सार्व void poweroff_vmware_clihlt(void);
  * VMware detects this peculiar sequence and forces the virtual machine off
  * when the parameter gui.exitOnCLIHLT is set to TRUE.
  * Otherwise this sequence just hangs the CPU, requiring a power down action.
  */
-ENTRY(poweroff_vmware_clihlt)
+प्रथम(poweroff_vmware_clihlt)
 #ifndef NO_VMWARE_DETECTION
 	mov	$1, %eax
 	cpuid
@@ -446,26 +446,26 @@ ENTRY(poweroff_vmware_clihlt)
 /*			      read_flags				     */
 /*===========================================================================*/
 /*
- * PUBLIC unsigned long read_cpu_flags(void);
+ * सार्व unsigned long read_cpu_flags(void);
  * Read CPU status flags from C.
  */
-ENTRY(read_cpu_flags)
+प्रथम(read_cpu_flags)
 	pushf
 	mov	(%esp), %eax
 	add	$4, %esp
 	ret
 
-ENTRY(read_ds)
+प्रथम(read_ds)
 	mov	$0, %eax
 	mov	%ds, %ax
 	ret
 
-ENTRY(read_cs)
+प्रथम(read_cs)
 	mov	$0, %eax
 	mov	%cs, %ax
 	ret
 
-ENTRY(read_ss)
+प्रथम(read_ss)
 	mov	$0, %eax
 	mov	%ss, %ax
 	ret
@@ -475,44 +475,44 @@ ENTRY(read_ss)
 /*===========================================================================*/
 
 /* non-waiting FPU initialization */
-ENTRY(fninit)
+प्रथम(fninit)
 	fninit
 	ret
 
-ENTRY(clts)
+प्रथम(clts)
 	clts
 	ret
 
 /* store status word (non-waiting) */
-ENTRY(fnstsw)
+प्रथम(fnstsw)
 	xor     %eax, %eax
 
-	/* DO NOT CHANGE THE OPERAND!!! gas2ack does not handle it yet */
+	/* DO नहीं CHANGE THE OPERAND!!! gas2ack does not handle it yet */
 	fnstsw	%ax
 	ret
 
 /*===========================================================================*/
 /*				fxrstor					     */
 /*===========================================================================*/
-ENTRY(fxrstor)
+प्रथम(fxrstor)
 	mov	4(%esp), %eax
 	fxrstor	(%eax)
-ENTRY(__fxrstor_end)
+प्रथम(__fxrstor_end)
 	xor     %eax, %eax
 	ret
 
 /*===========================================================================*/
 /*				frstor					     */
 /*===========================================================================*/
-ENTRY(frstor)
+प्रथम(frstor)
 	mov	4(%esp), %eax
 	frstor	(%eax)
-ENTRY(__frstor_end)
+प्रथम(__frstor_end)
 	xor     %eax, %eax
 	ret
 
 /* Shared exception handler for both fxrstor and frstor. */
-ENTRY(__frstor_failure)
+प्रथम(__frstor_failure)
 	mov	$1, %eax
 	ret
 
@@ -548,7 +548,7 @@ ARG_EAX_ACTION(fnstcw, fnstcw (%eax));
 /* invlpg */
 ARG_EAX_ACTION(i386_invlpg, invlpg (%eax));
 
-ENTRY(x86_load_kerncs)
+प्रथम(x86_load_kerncs)
 	push	%ebp
 	mov	%esp, %ebp
 	mov	8(%ebp), %eax
@@ -562,7 +562,7 @@ newcs:
  *
  * void ia32_msr_read(u32_t reg, u32_t * hi, u32_t * lo)
  */
-ENTRY(ia32_msr_read)
+प्रथम(ia32_msr_read)
 	push	%ebp
 	mov	%esp, %ebp
 
@@ -581,7 +581,7 @@ ENTRY(ia32_msr_read)
  *
  * void ia32_msr_write(u32_t reg, u32_t hi, u32_t lo)
  */
-ENTRY(ia32_msr_write)
+प्रथम(ia32_msr_write)
 	push	%ebp
 	mov	%esp, %ebp
 
@@ -596,13 +596,13 @@ ENTRY(ia32_msr_write)
 /*===========================================================================*/
 /*			      __switch_address_space			     */
 /*===========================================================================*/
-/* PUBLIC void __switch_address_space(struct proc *p, struct ** ptproc)
+/* सार्व void __switch_address_space(struct proc *p, struct ** ptproc)
  *
  * sets the %cr3 register to the supplied value if it is not already set to the
  * same value in which case it would only result in an extra TLB flush which is
  * not desirable
  */
-ENTRY(__switch_address_space)
+प्रथम(__switch_address_space)
 	/* read the process pointer */
 	mov	4(%esp), %edx
 	/* get the new cr3 value */
@@ -626,20 +626,20 @@ ENTRY(__switch_address_space)
 	ret
 
 /* acknowledge just the master PIC */
-ENTRY(eoi_8259_master)
+प्रथम(eoi_8259_master)
 	movb	$END_OF_INT, %al
 	outb	$INT_CTL
 	ret
 	
 /* we have to acknowledge both PICs */
-ENTRY(eoi_8259_slave)
+प्रथम(eoi_8259_slave)
 	movb	$END_OF_INT, %al
 	outb	$INT_CTL
 	outb	$INT2_CTL
 	ret
 	
 /* in some cases we need to force TLB update, reloading cr3 does the trick */
-ENTRY(refresh_tlb)
+प्रथम(refresh_tlb)
 	mov	%cr3, %eax
 	mov	%eax, %cr3
 	ret
@@ -649,9 +649,9 @@ ENTRY(refresh_tlb)
 /*===========================================================================*/
 /*			      smp_get_htt				     */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_htt(void); */
+/*  सार्व int smp_get_htt(void); */
 /*  return true if the processor is hyper-threaded. */
-ENTRY(smp_get_htt)
+प्रथम(smp_get_htt)
 	push	%ebp
 	mov	%esp, %ebp
 	pushf
@@ -673,9 +673,9 @@ ENTRY(smp_get_htt)
 /*===========================================================================*/
 /*			      smp_get_num_htt				     */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_num_htt(void); */
+/*  सार्व int smp_get_num_htt(void); */
 /*  Get the number of hyper-threaded processor cores */
-ENTRY(smp_get_num_htt)
+प्रथम(smp_get_num_htt)
 	push	%ebp
 	mov	%esp, %ebp
 	pushf
@@ -697,9 +697,9 @@ ENTRY(smp_get_num_htt)
 /*===========================================================================*/
 /*			      smp_get_cores				    */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_cores(void); */
+/*  सार्व int smp_get_cores(void); */
 /*  Get the number of cores. */
-ENTRY(smp_get_cores)
+प्रथम(smp_get_cores)
 	push	%ebp
 	mov	%esp, %ebp
 	pushf
@@ -730,7 +730,7 @@ ENTRY(smp_get_cores)
  * }
  * eax register is clobbered.
  */
-ENTRY(arch_spinlock_lock)
+प्रथम(arch_spinlock_lock)
 	mov	4(%esp), %eax
 	mov	$1, %edx
 2:
@@ -759,7 +759,7 @@ ENTRY(arch_spinlock_lock)
 /*===========================================================================*/
 /* * void arch_spinlock_unlock (unsigned int *lockp) */
 /*  spin lock release routine. */
-ENTRY(arch_spinlock_unlock)
+प्रथम(arch_spinlock_unlock)
 	mov	4(%esp), %eax
 	mov	$0, %ecx
 	xchg	%ecx, (%eax)
@@ -771,34 +771,34 @@ ENTRY(arch_spinlock_unlock)
 /*===========================================================================*/
 /*			      mfence					     */
 /*===========================================================================*/
-/*  PUBLIC void mfence (void); */
+/*  सार्व void mfence (void); */
 /*  architecture specific memory barrier routine. */
-ENTRY(mfence)
+प्रथम(mfence)
 	mfence
 	ret
 
 /*===========================================================================*/
 /*			      arch_pause				     */
 /*===========================================================================*/
-/*  PUBLIC void arch_pause (void); */
+/*  सार्व void arch_pause (void); */
 /*  architecture specific pause routine. */
-ENTRY(arch_pause)
+प्रथम(arch_pause)
 	pause
 	ret
 
 /*===========================================================================*/
 /*			      read_ebp				     	     */
 /*===========================================================================*/
-/*  PUBLIC u16_t cpuid(void) */
-ENTRY(read_ebp)
+/*  सार्व u16_t cpuid(void) */
+प्रथम(read_ebp)
 	mov	%ebp, %eax
 	ret
 
-ENTRY(interrupts_enable)
+प्रथम(interrupts_enable)
 	sti
 	ret
 
-ENTRY(interrupts_disable)
+प्रथम(interrupts_disable)
 	cli
 	ret
 
@@ -809,7 +809,7 @@ ENTRY(interrupts_disable)
  * sets the current stack pointer to the given value and continues execution at
  * the given address
  */
-ENTRY(switch_k_stack)
+प्रथम(switch_k_stack)
 	/* get the arguments from the stack */
 	mov	8(%esp), %eax
 	mov	4(%esp), %ecx

@@ -1,6 +1,6 @@
-#ifndef __CLOCK_ARM_H__
-#define __CLOCK_ARM_H__
+#अगर_अघोषित __CLOCK_ARM_H__
+#घोषणा __CLOCK_ARM_H__
 
-void arch_timer_int_handler(void);
+व्योम arch_timer_int_handler(व्योम);
 
-#endif /* __CLOCK_ARM_H__ */
+#पूर्ण_अगर /* __CLOCK_ARM_H__ */

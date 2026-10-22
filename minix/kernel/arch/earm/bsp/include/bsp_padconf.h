@@ -1,11 +1,11 @@
-#ifndef _BSP_PADCONF_H_
-#define _BSP_PADCONF_H_
+#अगर_अघोषित _BSP_PADCONF_H_
+#घोषणा _BSP_PADCONF_H_
 
-#ifndef __ASSEMBLY__
+#अगर_अघोषित __ASSEMBLY__
 
-void bsp_padconf_init(void);
-int bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value);
+व्योम bsp_padconf_init(व्योम);
+पूर्णांक bsp_padconf_set(u32_t padconf, u32_t mask, u32_t मूल्य);
 
-#endif /* __ASSEMBLY__ */
+#पूर्ण_अगर /* __ASSEMBLY__ */
 
-#endif /* _BSP_PADCONF_H_ */
+#पूर्ण_अगर /* _BSP_PADCONF_H_ */

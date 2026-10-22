@@ -1,53 +1,53 @@
 /* General macros and constants used by the kernel. */
-#ifndef CONST_H
-#define CONST_H
+#अगर_अघोषित CONST_H
+#घोषणा CONST_H
 
-#include <minix/config.h>
-#include <minix/bitmap.h>
+#समावेश <minix/config.h>
+#समावेश <minix/bitmap.h>
 
-#include "debug.h"
+#समावेश "debug.h"
 
 /* Translate an endpoint number to a process number, return success. */
-#ifndef isokendpt
-#define isokendpt(e,p) isokendpt_d((e),(p),0)
-#define okendpt(e,p)   isokendpt_d((e),(p),1)
-#endif
+#अगर_अघोषित isokendpt
+#घोषणा isokendpt(e,p) isokendpt_d((e),(p),0)
+#घोषणा okendpt(e,p)   isokendpt_d((e),(p),1)
+#पूर्ण_अगर
 
 /* Constants used in virtual_copy(). Values must be 0 and 1, respectively. */
-#define _SRC_	0
-#define _DST_	1
+#घोषणा _SRC_	0
+#घोषणा _DST_	1
 
-#define get_sys_bit(map,bit) \
+#घोषणा get_sys_bit(map,bit) \
 	( MAP_CHUNK((map).chunk,bit) & (1 << CHUNK_OFFSET(bit) ))
-#define get_sys_bits(map,bit) \
+#घोषणा get_sys_bits(map,bit) \
 	( MAP_CHUNK((map).chunk,bit) )
-#define set_sys_bit(map,bit) \
+#घोषणा set_sys_bit(map,bit) \
 	( MAP_CHUNK((map).chunk,bit) |= (1 << CHUNK_OFFSET(bit) ))
-#define unset_sys_bit(map,bit) \
+#घोषणा unset_sys_bit(map,bit) \
 	( MAP_CHUNK((map).chunk,bit) &= ~(1 << CHUNK_OFFSET(bit) ))
 
 /* for kputc() */
-#define END_OF_KMESS	0
+#घोषणा END_OF_KMESS	0
 
 /* User limits. */
-#ifndef USR_DATATOP
-#ifndef _MINIX_MAGIC
-#define USR_DATATOP 0xF0000000
-#else
-#define USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
-#endif
-#endif
+#अगर_अघोषित USR_DATATOP
+#अगर_अघोषित _MINIX_MAGIC
+#घोषणा USR_DATATOP 0xF0000000
+#अन्यथा
+#घोषणा USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
+#पूर्ण_अगर
+#पूर्ण_अगर
 
-#ifndef USR_STACKTOP
-#define USR_STACKTOP USR_DATATOP
-#endif
+#अगर_अघोषित USR_STACKTOP
+#घोषणा USR_STACKTOP USR_DATATOP
+#पूर्ण_अगर
 
-#ifndef USR_DATATOP_COMPACT
-#define USR_DATATOP_COMPACT USR_DATATOP
-#endif
+#अगर_अघोषित USR_DATATOP_COMPACT
+#घोषणा USR_DATATOP_COMPACT USR_DATATOP
+#पूर्ण_अगर
 
-#ifndef USR_STACKTOP_COMPACT
-#define USR_STACKTOP_COMPACT 0x50000000
-#endif
+#अगर_अघोषित USR_STACKTOP_COMPACT
+#घोषणा USR_STACKTOP_COMPACT 0x50000000
+#पूर्ण_अगर
 
-#endif /* CONST_H */
+#पूर्ण_अगर /* CONST_H */

@@ -30,7 +30,7 @@
  * wrong pointers from userspace and the caller should return an error to
  * userspace as if wrong values or request were passed to the kernel
  */
-ENTRY(copy_msg_from_user)
+प्रथम(copy_msg_from_user)
 	push	{r4-r10, lr}
 	/* load the source pointer */
 	mov	r9, r0
@@ -46,7 +46,7 @@ ENTRY(copy_msg_from_user)
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
-LABEL(__copy_msg_from_user_end)
+मोहर(__copy_msg_from_user_end)
 	pop	{r4-r10, lr}
 	mov	r0, #0
 	bx	lr
@@ -61,7 +61,7 @@ LABEL(__copy_msg_from_user_end)
  *
  * All the other copy_msg_from_user() comments apply here as well!
  */
-ENTRY(copy_msg_to_user)
+प्रथम(copy_msg_to_user)
 	push	{r4-r10, lr}
 	/* load the source pointer */
 	mov	r9, r0
@@ -77,7 +77,7 @@ ENTRY(copy_msg_to_user)
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
-LABEL(__copy_msg_to_user_end)
+मोहर(__copy_msg_to_user_end)
 	pop	{r4-r10, lr}
 	mov	r0, #0
 	bx	lr
@@ -89,19 +89,19 @@ LABEL(__copy_msg_to_user_end)
  * called from has to handle this situation. The exception handler redirect us
  * here to continue, clean up and report the error
  */
-ENTRY(__user_copy_msg_pointer_failure)
+प्रथम(__user_copy_msg_pointer_failure)
 	pop	{r4-r10, lr}
 	mov	r0, #-1
 	bx	lr
 
-ENTRY(intr_enable)
-ENTRY(interrupts_enable)
+प्रथम(intr_enable)
+प्रथम(interrupts_enable)
 	dsb
 	cpsie if
 	bx lr
 
-ENTRY(intr_disable)
-ENTRY(interrupts_disable)
+प्रथम(intr_disable)
+प्रथम(interrupts_disable)
 	dsb
 	cpsid if
 	bx lr

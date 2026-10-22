@@ -1,47 +1,47 @@
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
+#समावेश "kernel/kernel.h"
+#समावेश "kernel/proc.h"
+#समावेश "kernel/vm.h"
 
-#include <machine/vm.h>
+#समावेश <machine/vm.h>
 
-#include <minix/type.h>
-#include <minix/board.h>
-#include <minix/syslib.h>
-#include <minix/cpufeature.h>
-#include <string.h>
-#include <assert.h>
-#include <signal.h>
-#include <stdlib.h>
+#समावेश <minix/type.h>
+#समावेश <minix/board.h>
+#समावेश <minix/syslib.h>
+#समावेश <minix/cpufeature.h>
+#समावेश <string.h>
+#समावेश <assert.h>
+#समावेश <signal.h>
+#समावेश <stdlib.h>
 
-#include <machine/vm.h>
+#समावेश <machine/vm.h>
 
-#include "arch_proto.h"
-#include "kernel/proto.h"
-#include "kernel/debug.h"
-#include "bsp_timer.h"
+#समावेश "arch_proto.h"
+#समावेश "kernel/proto.h"
+#समावेश "kernel/debug.h"
+#समावेश "bsp_timer.h"
 
 
-#define HASPT(procptr) ((procptr)->p_seg.p_ttbr != 0)
-static int nfreepdes = 0;
-#define MAXFREEPDES	2
-static int freepdes[MAXFREEPDES];
+#घोषणा HASPT(procptr) ((procptr)->p_seg.p_ttbr != 0)
+अटल पूर्णांक nfreepdes = 0;
+#घोषणा MAXFREEPDES	2
+अटल पूर्णांक freepdes[MAXFREEPDES];
 
-static u32_t phys_get32(phys_bytes v);
+अटल u32_t phys_get32(phys_bytes v);
 
 /* list of requested physical mapping */
-static kern_phys_map *kern_phys_map_head;
+अटल kern_phys_map *kern_phys_map_शीर्ष;
 
-void mem_clear_mapcache(void)
+व्योम mem_clear_mapcache(व्योम)
 {
-	int i;
-	for(i = 0; i < nfreepdes; i++) {
-		struct proc *ptproc = get_cpulocal_var(ptproc);
-		int pde = freepdes[i];
+	पूर्णांक i;
+	क्रम(i = 0; i < nfreepdes; i++) {
+		काष्ठा proc *ptproc = get_cpulocal_var(ptproc);
+		पूर्णांक pde = freepdes[i];
 		u32_t *ptv;
-		assert(ptproc);
+		निश्चित(ptproc);
 		ptv = ptproc->p_seg.p_ttbr_v;
-		assert(ptv);
+		निश्चित(ptv);
 		ptv[pde] = 0;
 	}
 }
@@ -66,42 +66,42 @@ void mem_clear_mapcache(void)
  * pde number to be used, and a pointer to it (linear address) is returned
  * for actual use by phys_copy or memset.
  */
-static phys_bytes createpde(
-	const struct proc *pr,	/* Requested process, NULL for physical. */
-	const phys_bytes linaddr,/* Address after segment translation. */
+अटल phys_bytes createpde(
+	स्थिर काष्ठा proc *pr,	/* Requested process, NULL for physical. */
+	स्थिर phys_bytes linaddr,/* Address after segment translation. */
 	phys_bytes *bytes,	/* Size of chunk, function may truncate it. */
-	int free_pde_idx,	/* index of the free slot to use */
-	int *changed		/* If mapping is made, this is set to 1. */
+	पूर्णांक free_pde_idx,	/* index of the free slot to use */
+	पूर्णांक *changed		/* If mapping is made, this is set to 1. */
 	)
 {
 	u32_t pdeval;
 	phys_bytes offset;
-	int pde;
+	पूर्णांक pde;
 
-	assert(free_pde_idx >= 0 && free_pde_idx < nfreepdes);
+	निश्चित(free_pde_idx >= 0 && free_pde_idx < nfreepdes);
 	pde = freepdes[free_pde_idx];
-	assert(pde >= 0 && pde < 4096);
+	निश्चित(pde >= 0 && pde < 4096);
 
-	if(pr && ((pr == get_cpulocal_var(ptproc)) || iskernelp(pr))) {
+	अगर(pr && ((pr == get_cpulocal_var(ptproc)) || iskernelp(pr))) {
 		/* Process memory is requested, and
 		 * it's a process that is already in current page table, or
 		 * the kernel, which is always there.
 		 * Therefore linaddr is valid directly, with the requested
 		 * size.
 		 */
-		return linaddr;
+		वापस linaddr;
 	}
 
-	if(pr) {
+	अगर(pr) {
 		/* Requested address is in a process that is not currently
 		 * accessible directly. Grab the PDE entry of that process'
 		 * page table that corresponds to the requested address.
 		 */
-		assert(pr->p_seg.p_ttbr_v);
+		निश्चित(pr->p_seg.p_ttbr_v);
 		pdeval = pr->p_seg.p_ttbr_v[ARM_VM_PDE(linaddr)];
-	} else {
+	} अन्यथा {
 		/* Requested address is physical. Make up the PDE entry. */
-		assert (linaddr >= PHYS_MEM_BEGIN && linaddr <= PHYS_MEM_END);
+		निश्चित (linaddr >= PHYS_MEM_BEGIN && linaddr <= PHYS_MEM_END);
 
 		/* memory */
 		pdeval = (linaddr & ARM_VM_SECTION_MASK)
@@ -115,8 +115,8 @@ static phys_bytes createpde(
 	 * can access, into the currently loaded page table so it becomes
 	 * visible.
 	 */
-	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
-	if(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v[pde] != pdeval) {
+	निश्चित(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
+	अगर(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v[pde] != pdeval) {
 		get_cpulocal_var(ptproc)->p_seg.p_ttbr_v[pde] = pdeval;
 		*changed = 1;
 	}
@@ -127,83 +127,83 @@ static phys_bytes createpde(
 	 * if that is less than the requested range.
 	 */
 	offset = linaddr & ARM_VM_OFFSET_MASK_1MB; /* Offset in 1MB window. */
-	*bytes = MIN(*bytes, ARM_SECTION_SIZE - offset);
+	*bytes = MIN(*bytes, ARM_SECTION_आकार - offset);
 
 	/* Return the linear address of the start of the new mapping. */
-	return ARM_SECTION_SIZE*pde + offset;
+	वापस ARM_SECTION_आकार*pde + offset;
 }
 
 
 /*===========================================================================*
  *                           check_resumed_caller                            *
  *===========================================================================*/
-static int check_resumed_caller(struct proc *caller)
+अटल पूर्णांक check_resumed_caller(काष्ठा proc *caller)
 {
 	/* Returns the result from VM if caller was resumed, otherwise OK. */
-	if (caller && (caller->p_misc_flags & MF_KCALL_RESUME)) {
-		assert(caller->p_vmrequest.vmresult != VMSUSPEND);
-		return caller->p_vmrequest.vmresult;
+	अगर (caller && (caller->p_misc_flags & MF_KCALL_RESUME)) {
+		निश्चित(caller->p_vmrequest.vmresult != VMSUSPEND);
+		वापस caller->p_vmrequest.vmresult;
 	}
 
-	return OK;
+	वापस OK;
 }
   
 /*===========================================================================*
  *				lin_lin_copy				     *
  *===========================================================================*/
-static int lin_lin_copy(struct proc *srcproc, vir_bytes srclinaddr, 
-	struct proc *dstproc, vir_bytes dstlinaddr, vir_bytes bytes)
+अटल पूर्णांक lin_lin_copy(काष्ठा proc *srcproc, vir_bytes srclinaddr, 
+	काष्ठा proc *dstproc, vir_bytes dstlinaddr, vir_bytes bytes)
 {
 	u32_t addr;
 	proc_nr_t procslot;
 
-	assert(get_cpulocal_var(ptproc));
-	assert(get_cpulocal_var(proc_ptr));
-	assert(read_ttbr0() == get_cpulocal_var(ptproc)->p_seg.p_ttbr);
+	निश्चित(get_cpulocal_var(ptproc));
+	निश्चित(get_cpulocal_var(proc_ptr));
+	निश्चित(read_ttbr0() == get_cpulocal_var(ptproc)->p_seg.p_ttbr);
 
 	procslot = get_cpulocal_var(ptproc)->p_nr;
 
-	assert(procslot >= 0 && procslot < ARM_VM_DIR_ENTRIES);
+	निश्चित(procslot >= 0 && procslot < ARM_VM_DIR_ENTRIES);
 
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
-	assert(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
-	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_VMINHIBIT));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_VMINHIBIT));
+	अगर(srcproc) निश्चित(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
+	अगर(dstproc) निश्चित(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
+	निश्चित(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
+	निश्चित(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
+	अगर(srcproc) निश्चित(!RTS_ISSET(srcproc, RTS_VMINHIBIT));
+	अगर(dstproc) निश्चित(!RTS_ISSET(dstproc, RTS_VMINHIBIT));
 
-	while(bytes > 0) {
+	जबतक(bytes > 0) {
 		phys_bytes srcptr, dstptr;
 		vir_bytes chunk = bytes;
-		int changed = 0;
+		पूर्णांक changed = 0;
 
-#ifdef CONFIG_SMP
-		unsigned cpu = cpuid;
+#अगर_घोषित CONFIG_SMP
+		अचिन्हित cpu = cpuid;
 
-		if (srcproc && GET_BIT(srcproc->p_stale_tlb, cpu)) {
+		अगर (srcproc && GET_BIT(srcproc->p_stale_tlb, cpu)) {
 			changed = 1;
 			UNSET_BIT(srcproc->p_stale_tlb, cpu);
 		}
-		if (dstproc && GET_BIT(dstproc->p_stale_tlb, cpu)) {
+		अगर (dstproc && GET_BIT(dstproc->p_stale_tlb, cpu)) {
 			changed = 1;
 			UNSET_BIT(dstproc->p_stale_tlb, cpu);
 		}
-#endif
+#पूर्ण_अगर
 
 		/* Set up 1MB ranges. */
 		srcptr = createpde(srcproc, srclinaddr, &chunk, 0, &changed);
 		dstptr = createpde(dstproc, dstlinaddr, &chunk, 1, &changed);
-		if(changed)
+		अगर(changed)
 			reload_ttbr0();
 
 		/* Check for overflow. */
-		if (srcptr + chunk < srcptr) return EFAULT_SRC;
-		if (dstptr + chunk < dstptr) return EFAULT_DST;
+		अगर (srcptr + chunk < srcptr) वापस EFAULT_SRC;
+		अगर (dstptr + chunk < dstptr) वापस EFAULT_DST;
 
 		/* Copy pages. */
 		PHYS_COPY_CATCH(srcptr, dstptr, chunk, addr);
 
-		if(addr) {
+		अगर(addr) {
 			/* If addr is nonzero, a page fault was caught.
 			 *
 			 * phys_copy does all memory accesses word-aligned (rounded
@@ -213,17 +213,17 @@ static int lin_lin_copy(struct proc *srcproc, vir_bytes srclinaddr,
 			 */
 			vir_bytes src_aligned = srcptr & ~0x3, dst_aligned = dstptr & ~0x3;
 
-			if(addr >= src_aligned && addr < (srcptr + chunk)) {
-				return EFAULT_SRC;
+			अगर(addr >= src_aligned && addr < (srcptr + chunk)) {
+				वापस EFAULT_SRC;
 			}
-			if(addr >= dst_aligned && addr < (dstptr + chunk)) {
-				return EFAULT_DST;
+			अगर(addr >= dst_aligned && addr < (dstptr + chunk)) {
+				वापस EFAULT_DST;
 			}
 
 			panic("lin_lin_copy fault out of range");
 
 			/* Not reached. */
-			return EFAULT;
+			वापस EFAULT;
 		}
 
 		/* Update counter and addresses for next iteration, if any. */
@@ -232,128 +232,128 @@ static int lin_lin_copy(struct proc *srcproc, vir_bytes srclinaddr,
 		dstlinaddr += chunk;
 	}
 
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
-	assert(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
-	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
+	अगर(srcproc) निश्चित(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
+	अगर(dstproc) निश्चित(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
+	निश्चित(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
+	निश्चित(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
 
-	return OK;
+	वापस OK;
 }
 
-static u32_t phys_get32(phys_bytes addr)
+अटल u32_t phys_get32(phys_bytes addr)
 {
 	u32_t v;
-	int r;
+	पूर्णांक r;
 
-	if((r=lin_lin_copy(NULL, addr, 
-		proc_addr(SYSTEM), (phys_bytes) &v, sizeof(v))) != OK) {
+	अगर((r=lin_lin_copy(शून्य, addr, 
+		proc_addr(SYSTEM), (phys_bytes) &v, माप(v))) != OK) {
 		panic("lin_lin_copy for phys_get32 failed: %d",  r);
 	}
 
-	return v;
+	वापस v;
 }
 
 /*===========================================================================*
  *                              umap_virtual                                 *
  *===========================================================================*/
 phys_bytes umap_virtual(
-  register struct proc *rp,		/* pointer to proc table entry for process */
-  int seg,				/* T, D, or S segment */
+  रेजिस्टर काष्ठा proc *rp,		/* pointer to proc table entry for process */
+  पूर्णांक seg,				/* T, D, or S segment */
   vir_bytes vir_addr,			/* virtual address in bytes within the seg */
   vir_bytes bytes			/* # of bytes to be copied */
 )
 {
 	phys_bytes phys = 0;
 
-	if(vm_lookup(rp, vir_addr, &phys, NULL) != OK) {
-		printf("SYSTEM:umap_virtual: vm_lookup of %s: seg 0x%x: 0x%lx failed\n", rp->p_name, seg, vir_addr);
+	अगर(vm_lookup(rp, vir_addr, &phys, शून्य) != OK) {
+		म_लिखो("SYSTEM:umap_virtual: vm_lookup of %s: seg 0x%x: 0x%lx failed\n", rp->p_name, seg, vir_addr);
 		phys = 0;
-	} else {
-		if(phys == 0)
+	} अन्यथा {
+		अगर(phys == 0)
 			panic("vm_lookup returned phys: 0x%lx",  phys);
 	}
 
-	if(phys == 0) {
-		printf("SYSTEM:umap_virtual: lookup failed\n");
-		return 0;
+	अगर(phys == 0) {
+		म_लिखो("SYSTEM:umap_virtual: lookup failed\n");
+		वापस 0;
 	}
 
 	/* Now make sure addresses are contiguous in physical memory
 	 * so that the umap makes sense.
 	 */
-	if(bytes > 0 && vm_lookup_range(rp, vir_addr, NULL, bytes) != bytes) {
-		printf("umap_virtual: %s: %lu at 0x%lx (vir 0x%lx) not contiguous\n",
+	अगर(bytes > 0 && vm_lookup_range(rp, vir_addr, शून्य, bytes) != bytes) {
+		म_लिखो("umap_virtual: %s: %lu at 0x%lx (vir 0x%lx) not contiguous\n",
 			rp->p_name, bytes, vir_addr, vir_addr);
-		return 0;
+		वापस 0;
 	}
 
 	/* phys must be larger than 0 (or the caller will think the call
 	 * failed), and address must not cross a page boundary.
 	 */
-	assert(phys);
+	निश्चित(phys);
 
-	return phys;
+	वापस phys;
 }
 
 
 /*===========================================================================*
  *                              vm_lookup                                    *
  *===========================================================================*/
-int vm_lookup(const struct proc *proc, const vir_bytes virtual,
+पूर्णांक vm_lookup(स्थिर काष्ठा proc *proc, स्थिर vir_bytes भव,
  phys_bytes *physical, u32_t *ptent)
 {
-	u32_t *root, *pt;
-	int pde, pte;
+	u32_t *मूल, *pt;
+	पूर्णांक pde, pte;
 	u32_t pde_v, pte_v;
 
-	assert(proc);
-	assert(physical);
-	assert(!isemptyp(proc));
-	assert(HASPT(proc));
+	निश्चित(proc);
+	निश्चित(physical);
+	निश्चित(!isemptyp(proc));
+	निश्चित(HASPT(proc));
 
 	/* Retrieve page directory entry. */
-	root = (u32_t *) (proc->p_seg.p_ttbr & ARM_TTBR_ADDR_MASK);
-	assert(!((u32_t) root % ARM_PAGEDIR_SIZE));
-	pde = ARM_VM_PDE(virtual);
-	assert(pde >= 0 && pde < ARM_VM_DIR_ENTRIES);
-	pde_v = phys_get32((u32_t) (root + pde));
+	मूल = (u32_t *) (proc->p_seg.p_ttbr & ARM_TTBR_ADDR_MASK);
+	निश्चित(!((u32_t) मूल % ARM_PAGEDIR_आकार));
+	pde = ARM_VM_PDE(भव);
+	निश्चित(pde >= 0 && pde < ARM_VM_DIR_ENTRIES);
+	pde_v = phys_get32((u32_t) (मूल + pde));
 
-	if(! ((pde_v & ARM_VM_PDE_PRESENT) 
+	अगर(! ((pde_v & ARM_VM_PDE_PRESENT) 
 		|| (pde_v & ARM_VM_SECTION_PRESENT)
 	     )) {
-		return EFAULT;
+		वापस EFAULT;
 	}
 
-	if(pde_v & ARM_VM_SECTION) {
+	अगर(pde_v & ARM_VM_SECTION) {
 		*physical = pde_v & ARM_VM_SECTION_MASK;
-		if(ptent) *ptent = pde_v;
-		*physical += virtual & ARM_VM_OFFSET_MASK_1MB;
-	} else  {
+		अगर(ptent) *ptent = pde_v;
+		*physical += भव & ARM_VM_OFFSET_MASK_1MB;
+	} अन्यथा  {
 		/* Retrieve page table entry. */
 		pt = (u32_t *) (pde_v & ARM_VM_PDE_MASK);
-		assert(!((u32_t) pt % ARM_PAGETABLE_SIZE));
-		pte = ARM_VM_PTE(virtual);
-		assert(pte >= 0 && pte < ARM_VM_PT_ENTRIES);
+		निश्चित(!((u32_t) pt % ARM_PAGETABLE_आकार));
+		pte = ARM_VM_PTE(भव);
+		निश्चित(pte >= 0 && pte < ARM_VM_PT_ENTRIES);
 		pte_v = phys_get32((u32_t) (pt + pte));
-		if(!(pte_v & ARM_VM_PTE_PRESENT)) {
-			return EFAULT;
+		अगर(!(pte_v & ARM_VM_PTE_PRESENT)) {
+			वापस EFAULT;
 		}
 
-		if(ptent) *ptent = pte_v;
+		अगर(ptent) *ptent = pte_v;
 
 		/* Actual address now known; retrieve it and add page offset. */
 		*physical = pte_v & ARM_VM_PTE_MASK;
-		*physical += virtual % ARM_PAGE_SIZE;
+		*physical += भव % ARM_PAGE_आकार;
 	}
 
-	return OK;
+	वापस OK;
 }
 
 /*===========================================================================*
  *				vm_lookup_range				     *
  *===========================================================================*/
-size_t vm_lookup_range(const struct proc *proc, vir_bytes vir_addr,
-	phys_bytes *phys_addr, size_t bytes)
+माप_प्रकार vm_lookup_range(स्थिर काष्ठा proc *proc, vir_bytes vir_addr,
+	phys_bytes *phys_addr, माप_प्रकार bytes)
 {
 	/* Look up the physical address corresponding to linear virtual address
 	 * 'vir_addr' for process 'proc'. Return the size of the range covered
@@ -364,46 +364,46 @@ size_t vm_lookup_range(const struct proc *proc, vir_bytes vir_addr,
 	 * be page-aligned, but the caller must have verified that the given
 	 * linear range is valid for the given process at all.
 	 */
-	phys_bytes phys, next_phys;
-	size_t len;
+	phys_bytes phys, अग्र_phys;
+	माप_प्रकार len;
 
-	assert(proc);
-	assert(bytes > 0);
-	assert(HASPT(proc));
+	निश्चित(proc);
+	निश्चित(bytes > 0);
+	निश्चित(HASPT(proc));
 
 	/* Look up the first page. */
-	if (vm_lookup(proc, vir_addr, &phys, NULL) != OK)
-		return 0;
+	अगर (vm_lookup(proc, vir_addr, &phys, शून्य) != OK)
+		वापस 0;
 
-	if (phys_addr != NULL)
+	अगर (phys_addr != शून्य)
 		*phys_addr = phys;
 
-	len = ARM_PAGE_SIZE - (vir_addr % ARM_PAGE_SIZE);
+	len = ARM_PAGE_आकार - (vir_addr % ARM_PAGE_आकार);
 	vir_addr += len;
-	next_phys = phys + len;
+	अग्र_phys = phys + len;
 
 	/* Look up any next pages and test physical contiguity. */
-	while (len < bytes) {
-		if (vm_lookup(proc, vir_addr, &phys, NULL) != OK)
-			break;
+	जबतक (len < bytes) {
+		अगर (vm_lookup(proc, vir_addr, &phys, शून्य) != OK)
+			अवरोध;
 
-		if (next_phys != phys)
-			break;
+		अगर (अग्र_phys != phys)
+			अवरोध;
 
-		len += ARM_PAGE_SIZE;
-		vir_addr += ARM_PAGE_SIZE;
-		next_phys += ARM_PAGE_SIZE;
+		len += ARM_PAGE_आकार;
+		vir_addr += ARM_PAGE_आकार;
+		अग्र_phys += ARM_PAGE_आकार;
 	}
 
 	/* We might now have overshot the requested length somewhat. */
-	return MIN(bytes, len);
+	वापस MIN(bytes, len);
 }
 
 /*===========================================================================*
  *				vm_check_range				     *
  *===========================================================================*/
-int vm_check_range(struct proc *caller, struct proc *target,
-	vir_bytes vir_addr, size_t bytes, int writeflag)
+पूर्णांक vm_check_range(काष्ठा proc *caller, काष्ठा proc *target,
+	vir_bytes vir_addr, माप_प्रकार bytes, पूर्णांक writeflag)
 {
 	/* Public interface to vm_suspend(), for use by kernel calls. On behalf
 	 * of 'caller', call into VM to check linear virtual address range of
@@ -413,66 +413,66 @@ int vm_check_range(struct proc *caller, struct proc *target,
 	 * then return the error code resulting from the first call. Upon the
 	 * first call, a non-success error code is returned as well.
 	 */
-	int r;
+	पूर्णांक r;
 
-	if ((caller->p_misc_flags & MF_KCALL_RESUME) &&
+	अगर ((caller->p_misc_flags & MF_KCALL_RESUME) &&
 			(r = caller->p_vmrequest.vmresult) != OK)
-		return r;
+		वापस r;
 
 	vm_suspend(caller, target, vir_addr, bytes, VMSTYPE_KERNELCALL,
 		writeflag);
 
-	return VMSUSPEND;
+	वापस VMSUSPEND;
 }
 
 /*===========================================================================*
  *                                 vmmemset                                  *
  *===========================================================================*/
-int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
-	phys_bytes count)
+पूर्णांक vm_memset(काष्ठा proc* caller, endpoint_t who, phys_bytes ph, पूर्णांक c,
+	phys_bytes गिनती)
 {
 	u32_t pattern;
-	struct proc *whoptr = NULL;
+	काष्ठा proc *whoptr = शून्य;
 	phys_bytes cur_ph = ph;
-	phys_bytes left = count;
+	phys_bytes बायाँ = गिनती;
 	phys_bytes ptr, chunk, pfa = 0;
-	int new_ttbr, r = OK;
+	पूर्णांक new_ttbr, r = OK;
 
-	if ((r = check_resumed_caller(caller)) != OK)
-		return r;
+	अगर ((r = check_resumed_caller(caller)) != OK)
+		वापस r;
 
 	/* NONE for physical, otherwise virtual */
-	if (who != NONE && !(whoptr = endpoint_lookup(who)))
-		return ESRCH;
+	अगर (who != NONE && !(whoptr = endpoint_lookup(who)))
+		वापस ESRCH;
 
 	c &= 0xFF;
 	pattern = c | (c << 8) | (c << 16) | (c << 24);
 
-	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
-	assert(!catch_pagefaults);
+	निश्चित(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
+	निश्चित(!catch_pagefaults);
 	catch_pagefaults = 1;
 
 	/* We can memset as many bytes as we have remaining,
 	 * or as many as remain in the 1MB chunk we mapped in.
 	 */
-	while (left > 0) {
+	जबतक (बायाँ > 0) {
 		new_ttbr = 0;
-		chunk = left;
+		chunk = बायाँ;
 		ptr = createpde(whoptr, cur_ph, &chunk, 0, &new_ttbr);
 
-		if (new_ttbr) {
+		अगर (new_ttbr) {
 			reload_ttbr0();
 		}
 		/* If a page fault happens, pfa is non-null */
-		if ((pfa = phys_memset(ptr, pattern, chunk))) {
+		अगर ((pfa = phys_memset(ptr, pattern, chunk))) {
 
 			/* If a process pagefaults, VM may help out */
-			if (whoptr) {
-				vm_suspend(caller, whoptr, ph, count,
+			अगर (whoptr) {
+				vm_suspend(caller, whoptr, ph, गिनती,
 						   VMSTYPE_KERNELCALL, 1);
-				assert(catch_pagefaults);
+				निश्चित(catch_pagefaults);
 				catch_pagefaults = 0;
-				return VMSUSPEND;
+				वापस VMSUSPEND;
 			}
 
 			/* Pagefault when phys copying ?! */
@@ -481,52 +481,52 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 		}
 
 		cur_ph += chunk;
-		left -= chunk;
+		बायाँ -= chunk;
 	}
 
-	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
-	assert(catch_pagefaults);
+	निश्चित(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);
+	निश्चित(catch_pagefaults);
 	catch_pagefaults = 0;
 
-	return OK;
+	वापस OK;
 }
 
 /*===========================================================================*
  *				virtual_copy_f				     *
  *===========================================================================*/
-int virtual_copy_f(
-  struct proc * caller,
-  struct vir_addr *src_addr,		/* source virtual address */
-  struct vir_addr *dst_addr,		/* destination virtual address */
+पूर्णांक virtual_copy_f(
+  काष्ठा proc * caller,
+  काष्ठा vir_addr *src_addr,		/* source virtual address */
+  काष्ठा vir_addr *dst_addr,		/* destination virtual address */
   vir_bytes bytes,			/* # of bytes to copy  */
-  int vmcheck				/* if nonzero, can return VMSUSPEND */
+  पूर्णांक vmcheck				/* if nonzero, can return VMSUSPEND */
 )
 {
 /* Copy bytes from virtual address src_addr to virtual address dst_addr. */
-  struct vir_addr *vir_addr[2];	/* virtual source and destination address */
-  int i, r;
-  struct proc *procs[2];
+  काष्ठा vir_addr *vir_addr[2];	/* virtual source and destination address */
+  पूर्णांक i, r;
+  काष्ठा proc *procs[2];
 
-  assert((vmcheck && caller) || (!vmcheck && !caller));
+  निश्चित((vmcheck && caller) || (!vmcheck && !caller));
 
   /* Check copy count. */
-  if (bytes <= 0) return(EDOM);
+  अगर (bytes <= 0) वापस(गलत_तर्क);
 
   /* Do some more checks and map virtual addresses to physical addresses. */
   vir_addr[_SRC_] = src_addr;
   vir_addr[_DST_] = dst_addr;
 
-  for (i=_SRC_; i<=_DST_; i++) {
+  क्रम (i=_SRC_; i<=_DST_; i++) {
   	endpoint_t proc_e = vir_addr[i]->proc_nr_e;
-	int proc_nr;
-	struct proc *p;
+	पूर्णांक proc_nr;
+	काष्ठा proc *p;
 
-	if(proc_e == NONE) {
-		p = NULL;
-	} else {
-		if(!isokendpt(proc_e, &proc_nr)) {
-			printf("virtual_copy: no reasonable endpoint\n");
-			return ESRCH;
+	अगर(proc_e == NONE) {
+		p = शून्य;
+	} अन्यथा {
+		अगर(!isokendpt(proc_e, &proc_nr)) {
+			म_लिखो("virtual_copy: no reasonable endpoint\n");
+			वापस ESRCH;
 		}
 		p = proc_addr(proc_nr);
 	}
@@ -534,101 +534,101 @@ int virtual_copy_f(
 	procs[i] = p;
   }
 
-  if ((r = check_resumed_caller(caller)) != OK)
-	return r;
+  अगर ((r = check_resumed_caller(caller)) != OK)
+	वापस r;
 
-  if((r=lin_lin_copy(procs[_SRC_], vir_addr[_SRC_]->offset,
+  अगर((r=lin_lin_copy(procs[_SRC_], vir_addr[_SRC_]->offset,
   	procs[_DST_], vir_addr[_DST_]->offset, bytes)) != OK) {
-	int writeflag;
-  	struct proc *target = NULL;
+	पूर्णांक writeflag;
+  	काष्ठा proc *target = शून्य;
   	phys_bytes lin;
-  	if(r != EFAULT_SRC && r != EFAULT_DST)
+  	अगर(r != EFAULT_SRC && r != EFAULT_DST)
   		panic("lin_lin_copy failed: %d",  r);
-  	if(!vmcheck || !caller) {
-    		return r;
+  	अगर(!vmcheck || !caller) {
+    		वापस r;
   	}
 
-  	if(r == EFAULT_SRC) {
+  	अगर(r == EFAULT_SRC) {
   		lin = vir_addr[_SRC_]->offset;
   		target = procs[_SRC_];
 		writeflag = 0;
-  	} else if(r == EFAULT_DST) {
+  	} अन्यथा अगर(r == EFAULT_DST) {
   		lin = vir_addr[_DST_]->offset;
   		target = procs[_DST_];
 		writeflag = 1;
-  	} else {
+  	} अन्यथा {
   		panic("r strange: %d",  r);
   	}
 
-	assert(caller);
-	assert(target);
+	निश्चित(caller);
+	निश्चित(target);
 
 	vm_suspend(caller, target, lin, bytes, VMSTYPE_KERNELCALL, writeflag);
-	return VMSUSPEND;
+	वापस VMSUSPEND;
   }
 
-  return OK;
+  वापस OK;
 }
 
 /*===========================================================================*
  *				data_copy				     *
  *===========================================================================*/
-int data_copy(const endpoint_t from_proc, const vir_bytes from_addr,
-	const endpoint_t to_proc, const vir_bytes to_addr,
-	size_t bytes)
+पूर्णांक तथ्य_copy(स्थिर endpoint_t from_proc, स्थिर vir_bytes from_addr,
+	स्थिर endpoint_t to_proc, स्थिर vir_bytes to_addr,
+	माप_प्रकार bytes)
 {
-  struct vir_addr src, dst;
+  काष्ठा vir_addr src, dst;
 
   src.offset = from_addr;
   dst.offset = to_addr;
   src.proc_nr_e = from_proc;
   dst.proc_nr_e = to_proc;
-  assert(src.proc_nr_e != NONE);
-  assert(dst.proc_nr_e != NONE);
+  निश्चित(src.proc_nr_e != NONE);
+  निश्चित(dst.proc_nr_e != NONE);
 
-  return virtual_copy(&src, &dst, bytes);
+  वापस virtual_copy(&src, &dst, bytes);
 }
 
 /*===========================================================================*
  *				data_copy_vmcheck			     *
  *===========================================================================*/
-int data_copy_vmcheck(struct proc * caller,
-	const endpoint_t from_proc, const vir_bytes from_addr,
-	const endpoint_t to_proc, const vir_bytes to_addr,
-	size_t bytes)
+पूर्णांक तथ्य_copy_vmcheck(काष्ठा proc * caller,
+	स्थिर endpoint_t from_proc, स्थिर vir_bytes from_addr,
+	स्थिर endpoint_t to_proc, स्थिर vir_bytes to_addr,
+	माप_प्रकार bytes)
 {
-  struct vir_addr src, dst;
+  काष्ठा vir_addr src, dst;
 
   src.offset = from_addr;
   dst.offset = to_addr;
   src.proc_nr_e = from_proc;
   dst.proc_nr_e = to_proc;
-  assert(src.proc_nr_e != NONE);
-  assert(dst.proc_nr_e != NONE);
+  निश्चित(src.proc_nr_e != NONE);
+  निश्चित(dst.proc_nr_e != NONE);
 
-  return virtual_copy_vmcheck(caller, &src, &dst, bytes);
+  वापस virtual_copy_vmcheck(caller, &src, &dst, bytes);
 }
 
-void memory_init(void)
+व्योम memory_init(व्योम)
 {
-	assert(nfreepdes == 0);
+	निश्चित(nfreepdes == 0);
 
 	freepdes[nfreepdes++] = kinfo.freepde_start++;
 	freepdes[nfreepdes++] = kinfo.freepde_start++;
 
-	assert(kinfo.freepde_start < ARM_VM_DIR_ENTRIES);
-	assert(nfreepdes == 2);
-	assert(nfreepdes <= MAXFREEPDES);
+	निश्चित(kinfo.freepde_start < ARM_VM_DIR_ENTRIES);
+	निश्चित(nfreepdes == 2);
+	निश्चित(nfreepdes <= MAXFREEPDES);
 }
 
 /*===========================================================================*
  *				arch_proc_init				     *
  *===========================================================================*/
-void arch_proc_init(struct proc *pr, const u32_t ip, const u32_t sp,
-	const u32_t ps_str, char *name)
+व्योम arch_proc_init(काष्ठा proc *pr, स्थिर u32_t ip, स्थिर u32_t sp,
+	स्थिर u32_t ps_str, अक्षर *name)
 {
 	arch_proc_reset(pr);
-	strcpy(pr->p_name, name);
+	म_नकल(pr->p_name, name);
 
 	/* set custom state we know */
 	pr->p_reg.pc = ip;
@@ -636,86 +636,86 @@ void arch_proc_init(struct proc *pr, const u32_t ip, const u32_t sp,
 	pr->p_reg.retreg = ps_str; /* a.k.a r0*/
 }
 
-static int usermapped_glo_index = -1,
-	usermapped_index = -1, first_um_idx = -1;
+अटल पूर्णांक usermapped_glo_सूचकांक = -1,
+	usermapped_सूचकांक = -1, first_um_idx = -1;
 
 
 /* defined in kernel.lds */
-extern char usermapped_start, usermapped_end, usermapped_nonglo_start;
+बाह्य अक्षर usermapped_start, usermapped_end, usermapped_nonglo_start;
 
-int arch_phys_map(const int index,
+पूर्णांक arch_phys_map(स्थिर पूर्णांक सूचकांक,
 			phys_bytes *addr,
 			phys_bytes *len,
-			int *flags)
+			पूर्णांक *flags)
 {
-	static int first = 1;
+	अटल पूर्णांक first = 1;
 	kern_phys_map *phys_maps;
 
-	int freeidx = 0;
+	पूर्णांक freeidx = 0;
 	u32_t glo_len = (u32_t) &usermapped_nonglo_start -
 			(u32_t) &usermapped_start;
 
-	if(first) {
-		memset(&minix_kerninfo, 0, sizeof(minix_kerninfo));
-		if(glo_len > 0) {
-			usermapped_glo_index = freeidx++;
+	अगर(first) {
+		स_रखो(&minix_kerninfo, 0, माप(minix_kerninfo));
+		अगर(glo_len > 0) {
+			usermapped_glo_सूचकांक = freeidx++;
 		}
 
-		usermapped_index = freeidx++;
-		first_um_idx = usermapped_index;
-		if(usermapped_glo_index != -1)
-			first_um_idx = usermapped_glo_index;
+		usermapped_सूचकांक = freeidx++;
+		first_um_idx = usermapped_सूचकांक;
+		अगर(usermapped_glo_सूचकांक != -1)
+			first_um_idx = usermapped_glo_सूचकांक;
 		first = 0;
 
 		/* list over the maps and index them */
-		phys_maps = kern_phys_map_head;
-		while(phys_maps != NULL){
-			phys_maps->index = freeidx++;
-			phys_maps = phys_maps->next;
+		phys_maps = kern_phys_map_शीर्ष;
+		जबतक(phys_maps != शून्य){
+			phys_maps->सूचकांक = freeidx++;
+			phys_maps = phys_maps->अग्र;
 		}
 
 	}
 
-	if(index == usermapped_glo_index) {
+	अगर(सूचकांक == usermapped_glo_सूचकांक) {
 		*addr = vir2phys(&usermapped_start);
 		*len = glo_len;
 		*flags = VMMF_USER | VMMF_GLO;
-		return OK;
+		वापस OK;
 	}
-	else if(index == usermapped_index) {
+	अन्यथा अगर(सूचकांक == usermapped_सूचकांक) {
 		*addr = vir2phys(&usermapped_nonglo_start);
 		*len = (u32_t) &usermapped_end -
 			(u32_t) &usermapped_nonglo_start;
 		*flags = VMMF_USER;
-		return OK;
+		वापस OK;
 	}
 
 	/* if this all fails loop over the maps */
-	phys_maps = kern_phys_map_head;
-	while(phys_maps != NULL){
-		if(phys_maps->index == index){
+	phys_maps = kern_phys_map_शीर्ष;
+	जबतक(phys_maps != शून्य){
+		अगर(phys_maps->सूचकांक == सूचकांक){
 			*addr = phys_maps->addr;
-			*len =  phys_maps->size;
+			*len =  phys_maps->आकार;
 			*flags = phys_maps->vm_flags;
-			return OK;
+			वापस OK;
 		}
-		phys_maps = phys_maps->next;
+		phys_maps = phys_maps->अग्र;
 	}
 
-	return EINVAL;
+	वापस EINVAL;
 }
 
-int arch_phys_map_reply(const int index, const vir_bytes addr)
+पूर्णांक arch_phys_map_reply(स्थिर पूर्णांक सूचकांक, स्थिर vir_bytes addr)
 {
 	kern_phys_map *phys_maps;
 
-	if(index == first_um_idx) {
+	अगर(सूचकांक == first_um_idx) {
 		u32_t usermapped_offset;
-		assert(addr > (u32_t) &usermapped_start);
+		निश्चित(addr > (u32_t) &usermapped_start);
 		usermapped_offset = addr - (u32_t) &usermapped_start;
-#define FIXEDPTR(ptr) (void *) ((u32_t)ptr + usermapped_offset)
-#define FIXPTR(ptr) ptr = FIXEDPTR(ptr)
-#define ASSIGN(minixstruct) minix_kerninfo.minixstruct = FIXEDPTR(&minixstruct)
+#घोषणा FIXEDPTR(ptr) (व्योम *) ((u32_t)ptr + usermapped_offset)
+#घोषणा FIXPTR(ptr) ptr = FIXEDPTR(ptr)
+#घोषणा ASSIGN(minixstruct) minix_kerninfo.minixstruct = FIXEDPTR(&minixstruct)
 		ASSIGN(kinfo);
 		ASSIGN(machine);
 		ASSIGN(kmessages);
@@ -733,36 +733,36 @@ int arch_phys_map_reply(const int index, const vir_bytes addr)
 
 		minix_kerninfo.ki_flags |= MINIX_KIF_USERINFO;
 
-		return OK;
+		वापस OK;
 	}
 
-	if (index == usermapped_index) {
-		return OK;
+	अगर (सूचकांक == usermapped_सूचकांक) {
+		वापस OK;
 	}
 
 	/* if this all fails loop over the maps */
 	/* list over the maps and index them */
-	phys_maps = kern_phys_map_head;
-	while(phys_maps != NULL){
-		if(phys_maps->index == index){
-			assert(phys_maps->cb != NULL);
+	phys_maps = kern_phys_map_शीर्ष;
+	जबतक(phys_maps != शून्य){
+		अगर(phys_maps->सूचकांक == सूचकांक){
+			निश्चित(phys_maps->cb != शून्य);
 			/* only update the vir addr we are
 			   going to call the callback in enable
 			   paging
 			*/
 			phys_maps->vir = addr;
-			return OK;
+			वापस OK;
 		}
-		phys_maps = phys_maps->next;
+		phys_maps = phys_maps->अग्र;
 	}
 
-	return EINVAL;
+	वापस EINVAL;
 }
 
-int arch_enable_paging(struct proc * caller)
+पूर्णांक arch_enable_paging(काष्ठा proc * caller)
 {
 	kern_phys_map *phys_maps;
-	assert(caller->p_seg.p_ttbr);
+	निश्चित(caller->p_seg.p_ttbr);
 
 
 	/* load caller's page table */
@@ -772,19 +772,19 @@ int arch_enable_paging(struct proc * caller)
 	   valid. We can now remap previous mappings. This is not a 
 	   good time to do printf as the initial massing is gone and
 	   the new mapping is not in place */
-	phys_maps = kern_phys_map_head;
-	while(phys_maps != NULL){
-		assert(phys_maps->cb != NULL);
+	phys_maps = kern_phys_map_शीर्ष;
+	जबतक(phys_maps != शून्य){
+		निश्चित(phys_maps->cb != शून्य);
 		phys_maps->cb(phys_maps->id, phys_maps->vir);
-		phys_maps = phys_maps->next;
+		phys_maps = phys_maps->अग्र;
 	}
 
-	return OK;
+	वापस OK;
 }
 
-void release_address_space(struct proc *pr)
+व्योम release_address_space(काष्ठा proc *pr)
 {
-	pr->p_seg.p_ttbr_v = NULL;
+	pr->p_seg.p_ttbr_v = शून्य;
 	barrier();
 }
 
@@ -793,37 +793,37 @@ void release_address_space(struct proc *pr)
 /*
  * Request a physical mapping
  */
-int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size, 
-		       int vm_flags, kern_phys_map * priv, 
+पूर्णांक kern_req_phys_map( phys_bytes base_address, vir_bytes io_आकार, 
+		       पूर्णांक vm_flags, kern_phys_map * priv, 
 		       kern_phys_map_mapped cb, vir_bytes id)
 {
 	/* Assign the values to the given struct and add priv
 	to the list */
-	assert(base_address != 0);
-	assert(io_size % ARM_PAGE_SIZE == 0);
-	assert(cb != NULL);
+	निश्चित(base_address != 0);
+	निश्चित(io_आकार % ARM_PAGE_आकार == 0);
+	निश्चित(cb != शून्य);
 
 	priv->addr  = base_address;
-	priv->size  = io_size;
+	priv->आकार  = io_आकार;
 	priv->vm_flags  = vm_flags;
 	priv->cb  = cb;
 	priv->id  = id;
-	priv->index = -1;
-	priv->next = NULL;
+	priv->सूचकांक = -1;
+	priv->अग्र = शून्य;
 	
 
-	if (kern_phys_map_head == NULL){
+	अगर (kern_phys_map_शीर्ष == शून्य){
 		/* keep a list of items this is the first one */
-		kern_phys_map_head = priv;
-		kern_phys_map_head->next = NULL;
-	} else {
+		kern_phys_map_शीर्ष = priv;
+		kern_phys_map_शीर्ष->अग्र = शून्य;
+	} अन्यथा {
 		/* insert the item head but first keep track
 		   of the current by putting it in next */
-		priv->next = kern_phys_map_head;
+		priv->अग्र = kern_phys_map_शीर्ष;
 		/* replace the head */
-		kern_phys_map_head = priv;
+		kern_phys_map_शीर्ष = priv;
 	}
-	return 0;
+	वापस 0;
 }
 
 /*
@@ -832,22 +832,22 @@ int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
  * this implementation will just change that base address.
  * once that area is remapped.
  */
-int kern_phys_map_mapped_ptr(vir_bytes id, phys_bytes address){
+पूर्णांक kern_phys_map_mapped_ptr(vir_bytes id, phys_bytes address){
 	*((vir_bytes*)id) = address;
-	return 0;
+	वापस 0;
 }
 
 /*
  * Request a physical mapping and put the result in the given prt
  * Note that ptr will only be valid once the callback happened.
  */
-int kern_phys_map_ptr(
+पूर्णांक kern_phys_map_ptr(
 	phys_bytes base_address, 
-	vir_bytes io_size, 
-	int vm_flags, 
+	vir_bytes io_आकार, 
+	पूर्णांक vm_flags, 
 	kern_phys_map * priv,
 	vir_bytes ptr)
 {
-	return kern_req_phys_map(base_address,io_size,vm_flags,priv,kern_phys_map_mapped_ptr,ptr);
+	वापस kern_req_phys_map(base_address,io_आकार,vm_flags,priv,kern_phys_map_mapped_ptr,ptr);
 }
 

@@ -9,64 +9,64 @@
  *   m_krn_lsys_sys_fork.msgaddr	(new memory map for the child)
  */
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
-#include <signal.h>
-#include <string.h>
-#include <assert.h>
+#समावेश "kernel/system.h"
+#समावेश "kernel/vm.h"
+#समावेश <signal.h>
+#समावेश <string.h>
+#समावेश <assert.h>
 
-#include <minix/endpoint.h>
-#include <minix/u64.h>
+#समावेश <minix/endpoint.h>
+#समावेश <minix/u64.h>
 
-#if USE_FORK
+#अगर USE_FORK
 
 /*===========================================================================*
  *				do_fork					     *
  *===========================================================================*/
-int do_fork(struct proc * caller, message * m_ptr)
+पूर्णांक do_fork(काष्ठा proc * caller, message * m_ptr)
 {
 /* Handle sys_fork().
  * m_lsys_krn_sys_fork.endpt has forked.
  * The child is m_lsys_krn_sys_fork.slot.
  */
-#if defined(__i386__)
-  char *old_fpu_save_area_p;
-#endif
-  register struct proc *rpc;		/* child process pointer */
-  struct proc *rpp;			/* parent process pointer */
-  int gen;
-  int p_proc;
-  int namelen;
+#अगर defined(__i386__)
+  अक्षर *old_fpu_save_area_p;
+#पूर्ण_अगर
+  रेजिस्टर काष्ठा proc *rpc;		/* child process pointer */
+  काष्ठा proc *rpp;			/* parent process pointer */
+  पूर्णांक gen;
+  पूर्णांक p_proc;
+  पूर्णांक namelen;
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_fork.endpt, &p_proc))
-	return EINVAL;
+  अगर(!isokendpt(m_ptr->m_lsys_krn_sys_fork.endpt, &p_proc))
+	वापस EINVAL;
 
   rpp = proc_addr(p_proc);
   rpc = proc_addr(m_ptr->m_lsys_krn_sys_fork.slot);
-  if (isemptyp(rpp) || ! isemptyp(rpc)) return(EINVAL);
+  अगर (isemptyp(rpp) || ! isemptyp(rpc)) वापस(EINVAL);
 
-  assert(!(rpp->p_misc_flags & MF_DELIVERMSG));
+  निश्चित(!(rpp->p_misc_flags & MF_DELIVERMSG));
 
   /* needs to be receiving so we know where the message buffer is */
-  if(!RTS_ISSET(rpp, RTS_RECEIVING)) {
-	printf("kernel: fork not done synchronously?\n");
-	return EINVAL;
+  अगर(!RTS_ISSET(rpp, RTS_RECEIVING)) {
+	म_लिखो("kernel: fork not done synchronously?\n");
+	वापस EINVAL;
   }
 
   /* make sure that the FPU context is saved in parent before copy */
   save_fpu(rpp);
   /* Copy parent 'proc' struct to child. And reinitialize some fields. */
   gen = _ENDPOINT_G(rpc->p_endpoint);
-#if defined(__i386__)
+#अगर defined(__i386__)
   old_fpu_save_area_p = rpc->p_seg.fpu_state;
-#endif
+#पूर्ण_अगर
   *rpc = *rpp;				/* copy 'proc' struct */
-#if defined(__i386__)
+#अगर defined(__i386__)
   rpc->p_seg.fpu_state = old_fpu_save_area_p;
-  if(proc_used_fpu(rpp))
-	memcpy(rpc->p_seg.fpu_state, rpp->p_seg.fpu_state, FPU_XFP_SIZE);
-#endif
-  if(++gen >= _ENDPOINT_MAX_GENERATION)	/* increase generation */
+  अगर(proc_used_fpu(rpp))
+	स_नकल(rpc->p_seg.fpu_state, rpp->p_seg.fpu_state, FPU_XFP_आकार);
+#पूर्ण_अगर
+  अगर(++gen >= _ENDPOINT_MAX_GENERATION)	/* increase generation */
 	gen = 1;			/* generation number wraparound */
   rpc->p_nr = m_ptr->m_lsys_krn_sys_fork.slot;	/* this was obliterated by copy */
   rpc->p_endpoint = _ENDPOINT(gen, rpc->p_nr);	/* new endpoint of slot */
@@ -77,20 +77,20 @@ int do_fork(struct proc * caller, message * m_ptr)
 
   rpc->p_misc_flags &=
 	~(MF_VIRT_TIMER | MF_PROF_TIMER | MF_SC_TRACE | MF_SPROF_SEEN | MF_STEP);
-  rpc->p_virt_left = 0;		/* disable, clear the process-virtual timers */
-  rpc->p_prof_left = 0;
+  rpc->p_virt_बायाँ = 0;		/* disable, clear the process-virtual timers */
+  rpc->p_prof_बायाँ = 0;
 
   /* Mark process name as being a forked copy */
-  namelen = strlen(rpc->p_name);
-#define FORKSTR "*F"
-  if(namelen+strlen(FORKSTR) < sizeof(rpc->p_name))
-	strcat(rpc->p_name, FORKSTR);
+  namelen = म_माप(rpc->p_name);
+#घोषणा FORKSTR "*F"
+  अगर(namelen+म_माप(FORKSTR) < माप(rpc->p_name))
+	म_जोड़ो(rpc->p_name, FORKSTR);
 
   /* the child process is not runnable until it's scheduled. */
   RTS_SET(rpc, RTS_NO_QUANTUM);
   reset_proc_accounting(rpc);
 
-  rpc->p_cpu_time_left = 0;
+  rpc->p_cpu_time_बायाँ = 0;
   rpc->p_cycles = 0;
   rpc->p_kcall_cycles = 0;
   rpc->p_kipc_cycles = 0;
@@ -102,7 +102,7 @@ int do_fork(struct proc * caller, message * m_ptr)
    * child process and inhibit it from running by setting the NO_PRIV flag.
    * The caller should explicitly set the new privileges before executing.
    */
-  if (priv(rpp)->s_flags & SYS_PROC) {
+  अगर (priv(rpp)->s_flags & SYS_PROC) {
       rpc->p_priv = priv_addr(USER_PRIV_ID);
       rpc->p_rts_flags |= RTS_NO_PRIV;
   }
@@ -112,7 +112,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   m_ptr->m_krn_lsys_sys_fork.msgaddr = rpp->p_delivermsg_vir;
 
   /* Don't schedule process in VM mode until it has a new pagetable. */
-  if(m_ptr->m_lsys_krn_sys_fork.flags & PFF_VMINHIBIT) {
+  अगर(m_ptr->m_lsys_krn_sys_fork.flags & PFF_VMINHIBIT) {
   	RTS_SET(rpc, RTS_VMINHIBIT);
   }
 
@@ -120,17 +120,17 @@ int do_fork(struct proc * caller, message * m_ptr)
    * Only one in group should have RTS_SIGNALED, child doesn't inherit tracing.
    */
   RTS_UNSET(rpc, (RTS_SIGNALED | RTS_SIG_PENDING | RTS_P_STOP));
-  (void) sigemptyset(&rpc->p_pending);
+  (व्योम) sigemptyset(&rpc->p_pending);
 
-#if defined(__i386__)
+#अगर defined(__i386__)
   rpc->p_seg.p_cr3 = 0;
-  rpc->p_seg.p_cr3_v = NULL;
-#elif defined(__arm__)
+  rpc->p_seg.p_cr3_v = शून्य;
+#या_अगर defined(__arm__)
   rpc->p_seg.p_ttbr = 0;
-  rpc->p_seg.p_ttbr_v = NULL;
-#endif
+  rpc->p_seg.p_ttbr_v = शून्य;
+#पूर्ण_अगर
 
-  return OK;
+  वापस OK;
 }
 
-#endif /* USE_FORK */
+#पूर्ण_अगर /* USE_FORK */

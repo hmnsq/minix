@@ -5,7 +5,7 @@
 .balign 4096
 .text
 .code16
-ENTRY(trampoline)
+प्रथम(trampoline)
 	cli
 
 	/* %cs has some value and we must use the same for data */
@@ -43,16 +43,16 @@ ENTRY(trampoline)
 	ljmpl	$KERN_CS_SELECTOR, $_C_LABEL(startup_ap_32)
 
 .balign 4
-LABEL(__ap_id)
+मोहर(__ap_id)
 .space 4
-LABEL(__ap_pt)
+मोहर(__ap_pt)
 .space 4
-LABEL(__ap_gdt)
+मोहर(__ap_gdt)
 .space 8
-LABEL(__ap_idt)
+मोहर(__ap_idt)
 .space 8
-LABEL(__ap_gdt_tab)
+मोहर(__ap_gdt_tab)
 .space GDT_SIZE*DESC_SIZE
-LABEL(__ap_idt_tab)
+मोहर(__ap_idt_tab)
 .space IDT_SIZE*DESC_SIZE
-LABEL(__trampoline_end)
+मोहर(__trampoline_end)

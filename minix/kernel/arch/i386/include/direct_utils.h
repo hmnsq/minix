@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#अगर_अघोषित MB_UTILS_H
+#घोषणा MB_UTILS_H
 
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+व्योम direct_cls(व्योम);
+व्योम direct_print(स्थिर अक्षर*);
+व्योम direct_print_char(अक्षर);
+पूर्णांक direct_read_char(अचिन्हित अक्षर*);
 
-#endif
+#पूर्ण_अगर

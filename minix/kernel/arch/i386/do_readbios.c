@@ -7,15 +7,15 @@
  *	m_lsys_krn_readbios.buf		buffer address in requesting process
  */
 
-#include "kernel/system.h"
+#समावेश "kernel/system.h"
 
 /*===========================================================================*
  *				do_readbios				     *
  *===========================================================================*/
-int do_readbios(struct proc * caller, message * m_ptr)
+पूर्णांक do_readbios(काष्ठा proc * caller, message * m_ptr)
 {
-  struct vir_addr src, dst;
-  size_t len = m_ptr->m_lsys_krn_readbios.size;
+  काष्ठा vir_addr src, dst;
+  माप_प्रकार len = m_ptr->m_lsys_krn_readbios.आकार;
   vir_bytes limit;
 
   src.offset = m_ptr->m_lsys_krn_readbios.addr;
@@ -25,13 +25,13 @@ int do_readbios(struct proc * caller, message * m_ptr)
 
   limit = src.offset + len - 1;
 
-#define VINRANGE(v, a, b) ((a) <= (v) && (v) <= (b))
-#define SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
-#define USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
+#घोषणा VINRANGE(v, a, b) ((a) <= (v) && (v) <= (b))
+#घोषणा SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
+#घोषणा USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
 
-  if(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
-     !USERRANGE(BASE_MEM_TOP, UPPER_MEM_END))
-  	return EPERM;
+  अगर(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
+     !USERRANGE(BASE_MEM_शीर्ष, UPPER_MEM_END))
+  	वापस EPERM;
 
-  return virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
+  वापस virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.आकार);
 }

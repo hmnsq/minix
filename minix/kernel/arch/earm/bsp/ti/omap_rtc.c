@@ -5,52 +5,52 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#समावेश <assert.h>
+#समावेश <sys/types.h>
+#समावेश <machine/cpu.h>
+#समावेश <minix/type.h>
+#समावेश <minix/board.h>
+#समावेश <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#समावेश "kernel/kernel.h"
+#समावेश "kernel/proc.h"
+#समावेश "kernel/vm.h"
+#समावेश "kernel/proto.h"
+#समावेश "arch_proto.h"
+#समावेश "omap_rtc.h"
 
-#define RTC_SS_BASE 0x44e3e000
-#define RTC_SS_SIZE 0x1000
-#define RTC_CTRL_REG 0x40
-#define RTC_CTRL_RTC_STOP_BIT 0
+#घोषणा RTC_SS_BASE 0x44e3e000
+#घोषणा RTC_SS_आकार 0x1000
+#घोषणा RTC_CTRL_REG 0x40
+#घोषणा RTC_CTRL_RTC_STOP_BIT 0
 
-struct omap_rtc
+काष्ठा omap_rtc
 {
 	vir_bytes base;
-	vir_bytes size;
+	vir_bytes आकार;
 };
 
-static struct omap_rtc omap_rtc = {
+अटल काष्ठा omap_rtc omap_rtc = {
 	.base = RTC_SS_BASE,
-	.size = RTC_SS_SIZE
+	.आकार = RTC_SS_आकार
 };
 
-static kern_phys_map rtc_phys_map;
+अटल kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+व्योम
+omap3_rtc_init(व्योम)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
-		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
+	अगर (BOARD_IS_BB(machine.board_id)) {
+		kern_phys_map_ptr(omap_rtc.base, omap_rtc.आकार,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
 		    (vir_bytes) & omap_rtc.base);
 	}
 }
 
-void
-omap3_rtc_run(void)
+व्योम
+omap3_rtc_run(व्योम)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	अगर (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
 		mmio_set((omap_rtc.base + RTC_CTRL_REG),
 		    (1 << RTC_CTRL_RTC_STOP_BIT));

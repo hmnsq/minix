@@ -1,67 +1,67 @@
 /* i386-specific clock functions. */
 
-#include <machine/ports.h>
+#समावेश <machine/ports.h>
 
-#include "kernel/clock.h"
-#include "kernel/interrupt.h"
-#include <minix/u64.h>
+#समावेश "kernel/clock.h"
+#समावेश "kernel/interrupt.h"
+#समावेश <minix/u64.h>
 
-#include <sys/sched.h> /* for CP_*, CPUSTATES */
-#if CPUSTATES != MINIX_CPUSTATES
+#समावेश <sys/sched.h> /* for CP_*, CPUSTATES */
+#अगर CPUSTATES != MINIX_CPUSTATES
 /* If this breaks, the code in this file may have to be adapted accordingly. */
-#error "MINIX_CPUSTATES value is out of sync with NetBSD's!"
-#endif
+#त्रुटि "MINIX_CPUSTATES value is out of sync with NetBSD's!"
+#पूर्ण_अगर
 
-#ifdef USE_APIC
-#include "apic.h"
-#endif
+#अगर_घोषित USE_APIC
+#समावेश "apic.h"
+#पूर्ण_अगर
 
-#include "kernel/spinlock.h"
+#समावेश "kernel/spinlock.h"
 
-#ifdef CONFIG_SMP
-#include "kernel/smp.h"
-#endif
+#अगर_घोषित CONFIG_SMP
+#समावेश "kernel/smp.h"
+#पूर्ण_अगर
 
-#define CLOCK_ACK_BIT   0x80    /* PS/2 clock interrupt acknowledge bit */
+#घोषणा CLOCK_ACK_BIT   0x80    /* PS/2 clock interrupt acknowledge bit */
 
 /* Clock parameters. */
-#define COUNTER_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
-#define LATCH_COUNT     0x00    /* cc00xxxx, c = channel, x = any */
-#define SQUARE_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
+#घोषणा गणक_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
+#घोषणा LATCH_गिनती     0x00    /* cc00xxxx, c = channel, x = any */
+#घोषणा SQUARE_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
                                 /*   11x11, 11 = LSB then MSB, x11 = sq wave */
-#define TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
-#define TIMER_COUNT(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
+#घोषणा TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
+#घोषणा TIMER_गिनती(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
 
-static irq_hook_t pic_timer_hook;		/* interrupt handler hook */
+अटल irq_hook_t pic_timer_hook;		/* interrupt handler hook */
 
-static unsigned probe_ticks;
-static u64_t tsc0, tsc1;
-#define PROBE_TICKS	(system_hz / 10)
+अटल अचिन्हित probe_ticks;
+अटल u64_t tsc0, tsc1;
+#घोषणा PROBE_TICKS	(system_hz / 10)
 
-static unsigned tsc_per_ms[CONFIG_MAX_CPUS];
-static unsigned tsc_per_tick[CONFIG_MAX_CPUS];
-static uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
+अटल अचिन्हित tsc_per_ms[CONFIG_MAX_CPUS];
+अटल अचिन्हित tsc_per_tick[CONFIG_MAX_CPUS];
+अटल uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
 
 /*===========================================================================*
  *				init_8235A_timer			     *
  *===========================================================================*/
-int init_8253A_timer(const unsigned freq)
+पूर्णांक init_8253A_timer(स्थिर अचिन्हित freq)
 {
 	/* Initialize channel 0 of the 8253A timer to, e.g., 60 Hz,
 	 * and register the CLOCK task's interrupt handler to be run
 	 * on every clock tick.
 	 */
 	outb(TIMER_MODE, SQUARE_WAVE);  /* run continuously */
-	outb(TIMER0, (TIMER_COUNT(freq) & 0xff)); /* timer low byte */
-	outb(TIMER0, TIMER_COUNT(freq) >> 8); /* timer high byte */
+	outb(TIMER0, (TIMER_गिनती(freq) & 0xff)); /* timer low byte */
+	outb(TIMER0, TIMER_गिनती(freq) >> 8); /* timer high byte */
 
-	return OK;
+	वापस OK;
 }
 
 /*===========================================================================*
  *				stop_8235A_timer			     *
  *===========================================================================*/
-void stop_8253A_timer(void)
+व्योम stop_8253A_timer(व्योम)
 {
 	/* Reset the clock to the BIOS rate. (For rebooting.) */
 	outb(TIMER_MODE, 0x36);
@@ -69,11 +69,11 @@ void stop_8253A_timer(void)
 	outb(TIMER0, 0);
 }
 
-void arch_timer_int_handler(void)
+व्योम arch_timer_int_handler(व्योम)
 {
 }
 
-static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
+अटल पूर्णांक calib_cpu_handler(irq_hook_t * UNUSED(hook))
 {
 	u64_t tsc;
 
@@ -81,19 +81,19 @@ static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
 	read_tsc_64(&tsc);
 
 
-	if (probe_ticks == 1) {
+	अगर (probe_ticks == 1) {
 		tsc0 = tsc;
 	}
-	else if (probe_ticks == PROBE_TICKS) {
+	अन्यथा अगर (probe_ticks == PROBE_TICKS) {
 		tsc1 = tsc;
 	}
 
 	/* just in case we are in an SMP single cpu fallback mode */
 	BKL_UNLOCK();
-	return 1;
+	वापस 1;
 }
 
-static void estimate_cpu_freq(void)
+अटल व्योम estimate_cpu_freq(व्योम)
 {
 	u64_t tsc_delta;
 	u64_t cpu_freq;
@@ -109,7 +109,7 @@ static void estimate_cpu_freq(void)
 	intr_enable();
 
 	/* loop for some time to get a sample */
-	while(probe_ticks < PROBE_TICKS) {
+	जबतक(probe_ticks < PROBE_TICKS) {
 		intr_enable();
 	}
 
@@ -124,64 +124,64 @@ static void estimate_cpu_freq(void)
 
 	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * system_hz;
 	cpu_set_freq(cpuid, cpu_freq);
-	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
+	cpu_info[cpuid].freq = (अचिन्हित दीर्घ)(cpu_freq / 1000000);
 	BOOT_VERBOSE(cpu_print_freq(cpuid));
 }
 
-int init_local_timer(unsigned freq)
+पूर्णांक init_local_timer(अचिन्हित freq)
 {
-#ifdef USE_APIC
+#अगर_घोषित USE_APIC
 	/* if we know the address, lapic is enabled and we should use it */
-	if (lapic_addr) {
-		unsigned cpu = cpuid;
-		tsc_per_ms[cpu] = (unsigned)(cpu_get_freq(cpu) / 1000);
-		tsc_per_tick[cpu] = (unsigned)(cpu_get_freq(cpu) / system_hz);
+	अगर (lapic_addr) {
+		अचिन्हित cpu = cpuid;
+		tsc_per_ms[cpu] = (अचिन्हित)(cpu_get_freq(cpu) / 1000);
+		tsc_per_tick[cpu] = (अचिन्हित)(cpu_get_freq(cpu) / system_hz);
 		lapic_set_timer_one_shot(1000000 / system_hz);
-	} else {
+	} अन्यथा {
 		DEBUGBASIC(("Initiating legacy i8253 timer\n"));
-#else
+#अन्यथा
 	{
-#endif
+#पूर्ण_अगर
 		init_8253A_timer(freq);
 		estimate_cpu_freq();
 		/* always only 1 cpu in the system */
-		tsc_per_ms[0] = (unsigned long)(cpu_get_freq(0) / 1000);
-		tsc_per_tick[0] = (unsigned)(cpu_get_freq(0) / system_hz);
+		tsc_per_ms[0] = (अचिन्हित दीर्घ)(cpu_get_freq(0) / 1000);
+		tsc_per_tick[0] = (अचिन्हित)(cpu_get_freq(0) / system_hz);
 	}
 
-	return 0;
+	वापस 0;
 }
 
-void stop_local_timer(void)
+व्योम stop_local_timer(व्योम)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#अगर_घोषित USE_APIC
+	अगर (lapic_addr) {
 		lapic_stop_timer();
 		apic_eoi();
-	} else
-#endif
+	} अन्यथा
+#पूर्ण_अगर
 	{
 		stop_8253A_timer();
 	}
 }
 
-void restart_local_timer(void)
+व्योम restart_local_timer(व्योम)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#अगर_घोषित USE_APIC
+	अगर (lapic_addr) {
 		lapic_restart_timer();
 	}
-#endif
+#पूर्ण_अगर
 }
 
-int register_local_timer_handler(const irq_handler_t handler)
+पूर्णांक register_local_timer_handler(स्थिर irq_handler_t handler)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#अगर_घोषित USE_APIC
+	अगर (lapic_addr) {
 		/* Using APIC, it is configured in apic_idt_init() */
-		BOOT_VERBOSE(printf("Using LAPIC timer as tick source\n"));
-	} else
-#endif
+		BOOT_VERBOSE(म_लिखो("Using LAPIC timer as tick source\n"));
+	} अन्यथा
+#पूर्ण_अगर
 	{
 		/* Using PIC, Initialize the CLOCK's interrupt hook. */
 		pic_timer_hook.proc_nr_e = NONE;
@@ -190,14 +190,14 @@ int register_local_timer_handler(const irq_handler_t handler)
 		put_irq_handler(&pic_timer_hook, CLOCK_IRQ, handler);
 	}
 
-	return 0;
+	वापस 0;
 }
 
-void cycles_accounting_init(void)
+व्योम cycles_accounting_init(व्योम)
 {
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+#अगर_घोषित CONFIG_SMP
+	अचिन्हित cpu = cpuid;
+#पूर्ण_अगर
 
 	read_tsc_64(get_cpu_var_ptr(cpu, tsc_ctr_switch));
 
@@ -205,13 +205,13 @@ void cycles_accounting_init(void)
 	get_cpu_var(cpu, cpu_last_idle) = 0;
 }
 
-void context_stop(struct proc * p)
+व्योम context_stop(काष्ठा proc * p)
 {
 	u64_t tsc, tsc_delta;
 	u64_t * __tsc_ctr_switch = get_cpulocal_var_ptr(tsc_ctr_switch);
-	unsigned int cpu, tpt, counter;
-#ifdef CONFIG_SMP
-	int must_bkl_unlock = 0;
+	अचिन्हित पूर्णांक cpu, tpt, गणक;
+#अगर_घोषित CONFIG_SMP
+	पूर्णांक must_bkl_unlock = 0;
 
 	cpu = cpuid;
 
@@ -223,7 +223,7 @@ void context_stop(struct proc * p)
 	 * If we stop accounting for KERNEL we must unlock the BKL. If account
 	 * for IDLE we must not hold the lock
 	 */
-	if (p == proc_addr(KERNEL)) {
+	अगर (p == proc_addr(KERNEL)) {
 		u64_t tmp;
 
 		read_tsc_64(&tsc);
@@ -231,7 +231,7 @@ void context_stop(struct proc * p)
 		kernel_ticks[cpu] = kernel_ticks[cpu] + tmp;
 		p->p_cycles = p->p_cycles + tmp;
 		must_bkl_unlock = 1;
-	} else {
+	} अन्यथा {
 		u64_t bkl_tsc;
 		atomic_t succ;
 		
@@ -249,7 +249,7 @@ void context_stop(struct proc * p)
 
 		p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
 
-#ifdef CONFIG_SMP
+#अगर_घोषित CONFIG_SMP
 		/*
 		 * Since at the time we got a scheduling IPI we might have been
 		 * waiting for BKL already, we may miss it due to a similar IPI to
@@ -261,24 +261,24 @@ void context_stop(struct proc * p)
 		 * we do not deadlock.
 		 */
 		smp_sched_handler();
-#endif
+#पूर्ण_अगर
 	}
-#else
+#अन्यथा
 	read_tsc_64(&tsc);
 	p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
 	cpu = 0;
-#endif
+#पूर्ण_अगर
 
 	tsc_delta = tsc - *__tsc_ctr_switch;
 
-	if (kbill_ipc) {
+	अगर (kbill_ipc) {
 		kbill_ipc->p_kipc_cycles += tsc_delta;
-		kbill_ipc = NULL;
+		kbill_ipc = शून्य;
 	}
 
-	if (kbill_kcall) {
+	अगर (kbill_kcall) {
 		kbill_kcall->p_kcall_cycles += tsc_delta;
-		kbill_kcall = NULL;
+		kbill_kcall = शून्य;
 	}
 
 	/*
@@ -294,7 +294,7 @@ void context_stop(struct proc * p)
 	tpt = tsc_per_tick[cpu];
 
 	p->p_tick_cycles += tsc_delta;
-	while (tpt > 0 && p->p_tick_cycles >= tpt) {
+	जबतक (tpt > 0 && p->p_tick_cycles >= tpt) {
 		p->p_tick_cycles -= tpt;
 
 		/*
@@ -311,82 +311,82 @@ void context_stop(struct proc * p)
 	 * process during its current quantum. Skip IDLE and other pseudo kernel
 	 * tasks, except for global accounting purposes.
 	 */
-	if (p->p_endpoint >= 0) {
+	अगर (p->p_endpoint >= 0) {
 		/* On MINIX3, the "system" counter covers system processes. */
-		if (p->p_priv != priv_addr(USER_PRIV_ID))
-			counter = CP_SYS;
-		else if (p->p_misc_flags & MF_NICED)
-			counter = CP_NICE;
-		else
-			counter = CP_USER;
+		अगर (p->p_priv != priv_addr(USER_PRIV_ID))
+			गणक = CP_SYS;
+		अन्यथा अगर (p->p_misc_flags & MF_NICED)
+			गणक = CP_NICE;
+		अन्यथा
+			गणक = CP_USER;
 
-#if DEBUG_RACE
-		p->p_cpu_time_left = 0;
-#else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
-		} else {
-			p->p_cpu_time_left = 0;
+#अगर DEBUG_RACE
+		p->p_cpu_time_बायाँ = 0;
+#अन्यथा
+		अगर (tsc_delta < p->p_cpu_time_बायाँ) {
+			p->p_cpu_time_बायाँ -= tsc_delta;
+		} अन्यथा {
+			p->p_cpu_time_बायाँ = 0;
 		}
-#endif
-	} else {
+#पूर्ण_अगर
+	} अन्यथा {
 		/* On MINIX3, the "interrupts" counter covers the kernel. */
-		if (p->p_endpoint == IDLE)
-			counter = CP_IDLE;
-		else
-			counter = CP_INTR;
+		अगर (p->p_endpoint == IDLE)
+			गणक = CP_IDLE;
+		अन्यथा
+			गणक = CP_INTR;
 	}
 
-	tsc_per_state[cpu][counter] += tsc_delta;
+	tsc_per_state[cpu][गणक] += tsc_delta;
 
 	*__tsc_ctr_switch = tsc;
 
-#ifdef CONFIG_SMP
-	if(must_bkl_unlock) {
+#अगर_घोषित CONFIG_SMP
+	अगर(must_bkl_unlock) {
 		BKL_UNLOCK();
 	}
-#endif
+#पूर्ण_अगर
 }
 
-void context_stop_idle(void)
+व्योम context_stop_idle(व्योम)
 {
-	int is_idle;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	पूर्णांक is_idle;
+#अगर_घोषित CONFIG_SMP
+	अचिन्हित cpu = cpuid;
+#पूर्ण_अगर
 
 	is_idle = get_cpu_var(cpu, cpu_is_idle);
 	get_cpu_var(cpu, cpu_is_idle) = 0;
 
 	context_stop(get_cpulocal_var_ptr(idle_proc));
 
-	if (is_idle)
+	अगर (is_idle)
 		restart_local_timer();
-#if SPROFILE
-	if (sprofiling)
+#अगर SPROFILE
+	अगर (sprofiling)
 		get_cpulocal_var(idle_interrupted) = 1;
-#endif
+#पूर्ण_अगर
 }
 
-u64_t ms_2_cpu_time(unsigned ms)
+u64_t ms_2_cpu_time(अचिन्हित ms)
 {
-	return (u64_t)tsc_per_ms[cpuid] * ms;
+	वापस (u64_t)tsc_per_ms[cpuid] * ms;
 }
 
-unsigned cpu_time_2_ms(u64_t cpu_time)
+अचिन्हित cpu_time_2_ms(u64_t cpu_time)
 {
-	return (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
+	वापस (अचिन्हित दीर्घ)(cpu_time / tsc_per_ms[cpuid]);
 }
 
-short cpu_load(void)
+लघु cpu_load(व्योम)
 {
 	u64_t current_tsc, *current_idle;
 	u64_t tsc_delta, idle_delta, busy;
-	struct proc *idle;
-	short load;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	काष्ठा proc *idle;
+	लघु load;
+#अगर_घोषित CONFIG_SMP
+	अचिन्हित cpu = cpuid;
+#पूर्ण_अगर
 
 	u64_t *last_tsc, *last_idle;
 
@@ -398,7 +398,7 @@ short cpu_load(void)
 	current_idle = &idle->p_cycles; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (*last_tsc) {
+	अगर (*last_tsc) {
 		tsc_delta = current_tsc - *last_tsc;
 		idle_delta = *current_idle - *last_idle;
 
@@ -406,35 +406,35 @@ short cpu_load(void)
 		busy = busy * 100;
 		load = ex64lo(busy / tsc_delta);
 
-		if (load > 100)
+		अगर (load > 100)
 			load = 100;
-	} else
+	} अन्यथा
 		load = 0;
 
 	*last_tsc = current_tsc;
 	*last_idle = *current_idle;
-	return load;
+	वापस load;
 }
 
-void busy_delay_ms(int ms)
+व्योम busy_delay_ms(पूर्णांक ms)
 {
 	u64_t cycles = ms_2_cpu_time(ms), tsc0, tsc, tsc1;
 	read_tsc_64(&tsc0);
 	tsc1 = tsc0 + cycles;
-	do { read_tsc_64(&tsc); } while(tsc < tsc1);
-	return;
+	करो { read_tsc_64(&tsc); } जबतक(tsc < tsc1);
+	वापस;
 }
 
 /*
  * Return the number of clock ticks spent in each of a predefined number of
  * CPU states.
  */
-void
-get_cpu_ticks(unsigned int cpu, uint64_t ticks[CPUSTATES])
+व्योम
+get_cpu_ticks(अचिन्हित पूर्णांक cpu, uint64_t ticks[CPUSTATES])
 {
-	int i;
+	पूर्णांक i;
 
 	/* TODO: make this inter-CPU safe! */
-	for (i = 0; i < CPUSTATES; i++)
+	क्रम (i = 0; i < CPUSTATES; i++)
 		ticks[i] = tsc_per_state[cpu][i] / tsc_per_tick[cpu];
 }

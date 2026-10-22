@@ -3,7 +3,7 @@
 /*	unsigned inw(U16_t port); */
 #include <machine/asm.h>
 
-ENTRY(inw)
+प्रथम(inw)
 	push	%ebp
 	movl	%esp, %ebp
 	movl	8(%ebp), %edx	/* port */

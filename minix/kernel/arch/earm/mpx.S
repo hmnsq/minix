@@ -84,7 +84,7 @@ IMPORT(svc_stack)
 .endm
 
 .macro exception_handler exc_name, exc_num, lr_offset
-ENTRY(\exc_name\()_entry)
+प्रथम(\exc_name\()_entry)
 	switch_to_svc \lr_offset
 	test_int_in_kernel \exc_name\()_entry_nested
 
@@ -128,7 +128,7 @@ exception_handler prefetch_abort PREFETCH_ABORT_VECTOR 4
 exception_handler undefined_inst UNDEFINED_INST_VECTOR 4
 
 
-ENTRY(irq_entry)
+प्रथम(irq_entry)
 	switch_to_svc 4
 	test_int_in_kernel irq_entry_from_kernel
 
@@ -170,7 +170,7 @@ irq_entry_from_kernel:
 /*
  * supervisor call (SVC) kernel entry point
  */
-ENTRY(svc_entry)
+प्रथम(svc_entry)
 	/*  Store the LR and the SPSR of the current mode onto the SVC stack */
 	srsdb	sp!, #PSR_SVC32_MODE
 	save_process_ctx
@@ -191,7 +191,7 @@ ENTRY(svc_entry)
 /*
  * kernel call is only from a process to kernel
  */
-ENTRY(kernel_call_entry)
+प्रथम(kernel_call_entry)
 	/*
 	 * pass the syscall arguments from userspace to the handler. 
 	 * save_process_ctx() does not clobber these registers, they are still
@@ -214,7 +214,7 @@ ENTRY(kernel_call_entry)
 /*
  * IPC is only from a process to kernel
  */
-ENTRY(ipc_entry)
+प्रथम(ipc_entry)
 	/*
 	 * pass the syscall arguments from userspace to the handler.
 	 * save_process_ctx() does not clobber these registers, they are still
@@ -237,10 +237,10 @@ ENTRY(ipc_entry)
 
 	b	_C_LABEL(switch_to_user)
 
-ENTRY(invalid_svc)
+प्रथम(invalid_svc)
 	b	.
 
-ENTRY(restore_user_context)
+प्रथम(restore_user_context)
 	/* sp holds the proc ptr */
 	mov sp, r0
 
@@ -269,21 +269,21 @@ ENTRY(restore_user_context)
 .balign 4
 k_initial_stack:
 .space	K_STACK_SIZE
-LABEL(__k_unpaged_k_initial_stktop)
+मोहर(__k_unpaged_k_initial_stktop)
 
 /*
  * the kernel stack
  */
 k_boot_stack:
 .space	K_STACK_SIZE	/* kernel stack */ /* FIXME use macro here */
-LABEL(k_boot_stktop)	/* top of kernel stack */
+मोहर(k_boot_stktop)	/* top of kernel stack */
 
 .balign K_STACK_SIZE
-LABEL(k_stacks_start)
+मोहर(k_stacks_start)
 
 /* two pages for each stack, one for data, other as a sandbox */
 .space	2 * (K_STACK_SIZE * CONFIG_MAX_CPUS)
 
-LABEL(k_stacks_end)
+मोहर(k_stacks_end)
 
 /* top of kernel stack */

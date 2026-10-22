@@ -1,18 +1,18 @@
 
-#ifndef _VM_H
-#define _VM_H 1
+#अगर_अघोषित _VM_H
+#घोषणा _VM_H 1
 
 /* Pseudo error codes */
-#define VMSUSPEND       (-996)
-#define EFAULT_SRC	(-995)
-#define EFAULT_DST	(-994)
+#घोषणा VMSUSPEND       (-996)
+#घोषणा EFAULT_SRC	(-995)
+#घोषणा EFAULT_DST	(-994)
 
-#define PHYS_COPY_CATCH(src, dst, size, a) {	\
+#घोषणा PHYS_COPY_CATCH(src, dst, आकार, a) {	\
 	catch_pagefaults++;			\
-	a = phys_copy(src, dst, size);		\
+	a = phys_copy(src, dst, आकार);		\
 	catch_pagefaults--;			\
 	}
 
-#endif
+#पूर्ण_अगर
 
 

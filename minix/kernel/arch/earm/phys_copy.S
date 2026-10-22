@@ -16,16 +16,16 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * यह SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, लाभ. और CONTRIBUTORS
+ * ``AS IS'' और ANY EXPRESS या IMPLIED WARRANTIES, INCLUDING, BUT नहीं LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY और FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  अंदर NO EVENT SHALL THE FOUNDATION या CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, या
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT नहीं LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS या SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED और ON ANY THEORY OF LIABILITY, WHETHER अंदर
+ * CONTRACT, STRICT LIABILITY, या TORT (INCLUDING NEGLIGENCE या OTHERWISE)
+ * ARISING अंदर ANY WAY बाहर OF THE USE OF यह SOFTWARE, जोड़_मिल अगर ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -73,14 +73,14 @@ STRONG_ALIAS(__aeabi_memcpy, memcpy)
  */
 #if defined(__minix)
 /* LINTSTUB: Func: void *phys_copy(void *src, void *dst, size_t len) */
-ENTRY(phys_copy)
+प्रथम(phys_copy)
 	/* switch the source and destination registers */
 	eor     r0, r1, r0
 	eor     r1, r0, r1
 	eor     r0, r1, r0
 #else
 /* LINTSTUB: Func: void *memcpy(void *dst, const void *src, size_t len) */
-ENTRY(memcpy)
+प्रथम(memcpy)
 #endif
 	/* save leaf functions having to store this away */
 #if defined(__minix)
@@ -384,14 +384,14 @@ ENTRY(memcpy)
 	b	.Lmemcpy_l4
 
 #if defined(__minix)
-LABEL(phys_copy_fault)		/* kernel can send us here */
+मोहर(phys_copy_fault)		/* kernel can send us here */
 	pop	{r0, r4, r5}
 	pop	{pc}
 
-LABEL(phys_copy_fault_in_kernel)	/* kernel can send us here */
+मोहर(phys_copy_fault_in_kernel)	/* kernel can send us here */
 	pop	 {r0, r4, r5}
 	mrc	p15, 0, r0, c6, c0, 0	/* Read DFAR */
 	pop	{pc}
 #else
-END(memcpy)
+पूर्ण(memcpy)
 #endif

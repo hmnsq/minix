@@ -1,12 +1,12 @@
 #include <machine/asm.h>
 
 #define LD_ST_REG(reg)							;\
-ENTRY(ld_##reg)							;\
+प्रथम(ld_##reg)							;\
 	mov	4(%esp), %eax						;\
 	mov	%eax,	%reg						;\
 	ret								;\
 									;\
-ENTRY(st_##reg)							;\
+प्रथम(st_##reg)							;\
 	mov	%reg,	%eax						;\
 	ret
 

@@ -1,18 +1,18 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#समावेश "kernel/system.h"
+#समावेश <minix/endpoint.h>
 
-#if USE_PADCONF
+#अगर USE_PADCONF
 
 /* get arch specific arch_padconf_set() */
-#include "bsp_padconf.h"
+#समावेश "bsp_padconf.h"
 
 /*===========================================================================*
  *                                do_padconf                                 *
  *===========================================================================*/
-int do_padconf(struct proc *caller_ptr, message *m_ptr)
+पूर्णांक do_padconf(काष्ठा proc *caller_ptr, message *m_ptr)
 {
-	return bsp_padconf_set(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_MASK,
-	    m_ptr->PADCONF_VALUE);
+	वापस bsp_padconf_set(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_MASK,
+	    m_ptr->PADCONF_मूल्य);
 }
 
-#endif /* USE_PADCONF */
+#पूर्ण_अगर /* USE_PADCONF */

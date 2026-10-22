@@ -1,130 +1,130 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#समावेश <minix/minlib.h>
+#समावेश <minix/cpufeature.h>
+#समावेश <machine/partition.h>
+#समावेश "string.h"
+#समावेश "direct_utils.h"
+#समावेश "serial.h"
+#समावेश "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+अटल पूर्णांक print_पंक्ति = 1, print_col = 1;
 
-#include <sys/video.h>
+#समावेश <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+बाह्य अक्षर *video_mem;
+#घोषणा VIDOFFSET(पंक्ति_2, col) ((पंक्ति_2) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#घोषणा VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_पंक्तियाँ-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+व्योम direct_put_char(अक्षर c, पूर्णांक पंक्ति_2, पूर्णांक col) 
 {
-	int offset = VIDOFFSET(line, col);
+	पूर्णांक offset = VIDOFFSET(पंक्ति_2, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+अटल अक्षर direct_get_char(पूर्णांक पंक्ति_2, पूर्णांक col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	वापस video_mem[VIDOFFSET(पंक्ति_2, col)];
 }
 
-void direct_cls(void)
+व्योम direct_cls(व्योम)
 {
 	/* Clear screen */
-	int i,j;
+	पूर्णांक i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	क्रम(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		क्रम(j = 0; j < MULTIBOOT_CONSOLE_पंक्तियाँ; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_पंक्ति = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
-	outb(C_6845+INDEX, VID_ORG);
-	outb(C_6845+DATA, 0);
-	outb(C_6845+INDEX, VID_ORG+1);
-	outb(C_6845+DATA, 0);
+	outb(C_6845+सूचकांक_2, VID_ORG);
+	outb(C_6845+तथ्य_2, 0);
+	outb(C_6845+सूचकांक_2, VID_ORG+1);
+	outb(C_6845+तथ्य_2, 0);
 }
 
-static void direct_scroll_up(int lines) 
+अटल व्योम direct_scroll_up(पूर्णांक पंक्तियाँ) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	पूर्णांक i, j;
+	क्रम (i = 0; i < MULTIBOOT_CONSOLE_पंक्तियाँ; i++ ) {
+		क्रम (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			अक्षर c = 0;
+			अगर(i < MULTIBOOT_CONSOLE_पंक्तियाँ-पंक्तियाँ)
+				c = direct_get_char(i + पंक्तियाँ, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_पंक्ति-= पंक्तियाँ;
 }
 
-void direct_print_char(char c)
+व्योम direct_print_char(अक्षर c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	जबतक (print_पंक्ति >= MULTIBOOT_CONSOLE_पंक्तियाँ)
 		direct_scroll_up(1);
 
-#define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+#घोषणा TABWIDTH 8
+	अगर(c == '\t') {
+		अगर(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} अन्यथा {
+			करो {
+				direct_put_char(' ', print_पंक्ति, print_col++);
+			} जबतक(print_col % TABWIDTH);
+			वापस;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	अगर (c == '\n') {
+		जबतक (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_पंक्ति, print_col++);
+		print_पंक्ति++;
 		print_col = 0;
-		return;
+		वापस;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_पंक्ति, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	अगर (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_पंक्ति++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	जबतक (print_पंक्ति >= MULTIBOOT_CONSOLE_पंक्तियाँ)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+व्योम direct_print(स्थिर अक्षर *str)
 {
-	while (*str) {
+	जबतक (*str) {
 		direct_print_char(*str);
 		str++;
 	}
 }
 
 /* Standard and AT keyboard.  (PS/2 MCA implies AT throughout.) */
-#define KEYBD		0x60	/* I/O port for keyboard data */
-#define KB_STATUS	0x64	/* I/O port for status on AT */
-#define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
-#define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
+#घोषणा KEYBD		0x60	/* I/O port for keyboard data */
+#घोषणा KB_STATUS	0x64	/* I/O port for status on AT */
+#घोषणा KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
+#घोषणा KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+पूर्णांक direct_read_char(अचिन्हित अक्षर *ch)
 {
-	unsigned long sb;
+	अचिन्हित दीर्घ sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	अगर (!(sb & KB_OUT_FULL)) {
+		वापस 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	अगर (!(sb & KB_AUX_BYTE))
+		वापस 1;
 
-	return 0;
+	वापस 0;
 }
 

@@ -13,56 +13,56 @@
  *   disable_irq:     disable hook for IRQ.
  */
 
-#include <assert.h>
+#समावेश <assert.h>
 
-#include "kernel/kernel.h"
-#include "hw_intr.h"
+#समावेश "kernel/kernel.h"
+#समावेश "hw_intr.h"
 
 
 /* number of lists of IRQ hooks, one list per supported line. */
-static irq_hook_t* irq_handlers[NR_IRQ_VECTORS] = {0};
+अटल irq_hook_t* irq_handlers[NR_IRQ_VECTORS] = {0};
 
 /*===========================================================================*
  *				put_irq_handler				     *
  *===========================================================================*/
 /* Register an interrupt handler.  */
-void put_irq_handler( irq_hook_t* hook, int irq,
-  const irq_handler_t handler)
+व्योम put_irq_handler( irq_hook_t* hook, पूर्णांक irq,
+  स्थिर irq_handler_t handler)
 {
-  int id;
-  irq_hook_t **line;
-  unsigned long bitmap;
+  पूर्णांक id;
+  irq_hook_t **पंक्ति_2;
+  अचिन्हित दीर्घ bitmap;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS )
+  अगर( irq < 0 || irq >= NR_IRQ_VECTORS )
 	panic("invalid call to put_irq_handler: %d",  irq);
 
-  line = &irq_handlers[irq];
+  पंक्ति_2 = &irq_handlers[irq];
 
   bitmap = 0;
-  while ( *line != NULL ) {
-	if(hook == *line) return; /* extra initialization */
-	bitmap |= (*line)->id;	/* mark ids in use */
-	line = &(*line)->next;
+  जबतक ( *पंक्ति_2 != शून्य ) {
+	अगर(hook == *पंक्ति_2) वापस; /* extra initialization */
+	bitmap |= (*पंक्ति_2)->id;	/* mark ids in use */
+	पंक्ति_2 = &(*पंक्ति_2)->अग्र;
   }
 
   /* find the lowest id not in use */
-  for (id = 1; id != 0; id <<= 1)
-  	if (!(bitmap & id)) break;
+  क्रम (id = 1; id != 0; id <<= 1)
+  	अगर (!(bitmap & id)) अवरोध;
 
-  if(id == 0)
+  अगर(id == 0)
   	panic("Too many handlers for irq: %d",  irq);
   
-  hook->next = NULL;
+  hook->अग्र = शून्य;
   hook->handler = handler;
   hook->irq = irq;
   hook->id = id;
-  *line = hook;
+  *पंक्ति_2 = hook;
 
   /* And as last enable the irq at the hardware.
    *
    * Internal this activates the line or source of the given interrupt.
    */
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  अगर((irq_actids[hook->irq] &= ~hook->id) == 0) {
 	  hw_intr_used(irq);
 	  hw_intr_unmask(hook->irq);
   }
@@ -72,35 +72,35 @@ void put_irq_handler( irq_hook_t* hook, int irq,
  *				rm_irq_handler				     *
  *===========================================================================*/
 /* Unregister an interrupt handler.  */
-void rm_irq_handler( const irq_hook_t* hook ) {
-  const int irq = hook->irq; 
-  const int id = hook->id;
-  irq_hook_t **line;
+व्योम rm_irq_handler( स्थिर irq_hook_t* hook ) {
+  स्थिर पूर्णांक irq = hook->irq; 
+  स्थिर पूर्णांक id = hook->id;
+  irq_hook_t **पंक्ति_2;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS ) 
+  अगर( irq < 0 || irq >= NR_IRQ_VECTORS ) 
 	panic("invalid call to rm_irq_handler: %d",  irq);
 
   /* remove the hook  */
-  line = &irq_handlers[irq];
-  while( (*line) != NULL ) {
-	if((*line)->id == id) {
-		(*line) = (*line)->next;
-		if (irq_actids[irq] & id)
+  पंक्ति_2 = &irq_handlers[irq];
+  जबतक( (*पंक्ति_2) != शून्य ) {
+	अगर((*पंक्ति_2)->id == id) {
+		(*पंक्ति_2) = (*पंक्ति_2)->अग्र;
+		अगर (irq_actids[irq] & id)
 			irq_actids[irq] &= ~id;
     	}
-    	else {
-		line = &(*line)->next;
+    	अन्यथा {
+		पंक्ति_2 = &(*पंक्ति_2)->अग्र;
     	}
   }
 
   /* Disable the irq if there are no other handlers registered.
    * If the irq is shared, reenable it if there is no active handler.
    */
-  if (irq_handlers[irq] == NULL) {
+  अगर (irq_handlers[irq] == शून्य) {
 	hw_intr_mask(irq);
 	hw_intr_not_used(irq);
   }
-  else if (irq_actids[irq] == 0) {
+  अन्यथा अगर (irq_actids[irq] == 0) {
 	hw_intr_unmask(irq);
   }
 }
@@ -113,65 +113,65 @@ void rm_irq_handler( const irq_hook_t* hook ) {
  * the end. Before returning, it unmasks the IRQ if and only if all active ID
  * bits are cleared, and restart a process.
  */
-void irq_handle(int irq)
+व्योम irq_handle(पूर्णांक irq)
 {
   irq_hook_t * hook;
 
   /* here we need not to get this IRQ until all the handlers had a say */
-  assert(irq >= 0 && irq < NR_IRQ_VECTORS);
+  निश्चित(irq >= 0 && irq < NR_IRQ_VECTORS);
   hw_intr_mask(irq);
   hook = irq_handlers[irq];
 
   /* Check for spurious interrupts. */
-  if(hook == NULL) {
-      static int nspurious[NR_IRQ_VECTORS], report_interval = 100;
+  अगर(hook == शून्य) {
+      अटल पूर्णांक nspurious[NR_IRQ_VECTORS], report_interval = 100;
       nspurious[irq]++;
-      if(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
-      	printf("irq_handle: spurious irq %d (count: %d); keeping masked\n",
+      अगर(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
+      	म_लिखो("irq_handle: spurious irq %d (count: %d); keeping masked\n",
 		irq, nspurious[irq]);
-	if(report_interval < INT_MAX/2)
+	अगर(report_interval < पूर्णांक_उच्च/2)
 		report_interval *= 2;
       }
-      return;
+      वापस;
   }
 
   /* Call list of handlers for an IRQ. */
-  while( hook != NULL ) {
+  जबतक( hook != शून्य ) {
     /* For each handler in the list, mark it active by setting its ID bit,
      * call the function, and unmark it if the function returns true.
      */
     irq_actids[irq] |= hook->id;
     
     /* Call the hooked function. */
-    if( (*hook->handler)(hook) )
+    अगर( (*hook->handler)(hook) )
       irq_actids[hook->irq] &= ~hook->id;
     
     /* Next hooked function. */
-    hook = hook->next;
+    hook = hook->अग्र;
   }
 
   /* reenable the IRQ only if there is no active handler */
-  if (irq_actids[irq] == 0)
+  अगर (irq_actids[irq] == 0)
 	  hw_intr_unmask(irq);
 
   hw_intr_ack(irq);
 }
 
 /* Enable/Disable a interrupt line.  */
-void enable_irq(const irq_hook_t *hook)
+व्योम enable_irq(स्थिर irq_hook_t *hook)
 {
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  अगर((irq_actids[hook->irq] &= ~hook->id) == 0) {
     hw_intr_unmask(hook->irq);
   }
 }
 
 /* Return true if the interrupt was enabled before call.  */
-int disable_irq(const irq_hook_t *hook)
+पूर्णांक disable_irq(स्थिर irq_hook_t *hook)
 {
-  if(irq_actids[hook->irq] & hook->id)  /* already disabled */
-    return 0;
+  अगर(irq_actids[hook->irq] & hook->id)  /* already disabled */
+    वापस 0;
   irq_actids[hook->irq] |= hook->id;
   hw_intr_mask(hook->irq);
-  return TRUE;
+  वापस TRUE;
 }
 

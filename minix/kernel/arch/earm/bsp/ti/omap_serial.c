@@ -1,29 +1,29 @@
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#समावेश <assert.h>
+#समावेश <sys/types.h>
+#समावेश <machine/cpu.h>
+#समावेश <minix/type.h>
+#समावेश <minix/board.h>
+#समावेश <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
+#समावेश "kernel/kernel.h"
+#समावेश "kernel/proc.h"
+#समावेश "kernel/vm.h"
+#समावेश "kernel/proto.h"
+#समावेश "arch_proto.h"
 
-#include "omap_serial.h"
+#समावेश "omap_serial.h"
 
-struct omap_serial
+काष्ठा omap_serial
 {
 	vir_bytes base;
-	vir_bytes size;
+	vir_bytes आकार;
 };
 
-static struct omap_serial omap_serial = {
+अटल काष्ठा omap_serial omap_serial = {
 	.base = 0,
 };
 
-static kern_phys_map serial_phys_map;
+अटल kern_phys_map serial_phys_map;
 
 /* 
  * In kernel serial for the omap. The serial driver, like most other
@@ -42,32 +42,32 @@ static kern_phys_map serial_phys_map;
  * The serial driver also gets used in the "pre_init" stage before the kernel is loaded
  * in high memory, so keep in mind there are two copies of this code in the kernel.
  */
-void
-bsp_ser_init(void)
+व्योम
+bsp_ser_init(व्योम)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	अगर (BOARD_IS_BBXM(machine.board_id)) {
 		omap_serial.base = OMAP3_DM37XX_DEBUG_UART_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} अन्यथा अगर (BOARD_IS_BB(machine.board_id)) {
 		omap_serial.base = OMAP3_AM335X_DEBUG_UART_BASE;
 	}
-	omap_serial.size = 0x1000;	/* 4k */
+	omap_serial.आकार = 0x1000;	/* 4k */
 
-	kern_phys_map_ptr(omap_serial.base, omap_serial.size,
+	kern_phys_map_ptr(omap_serial.base, omap_serial.आकार,
 	    VMMF_UNCACHED | VMMF_WRITE, &serial_phys_map,
 	    (vir_bytes) & omap_serial.base);
-	assert(omap_serial.base);
+	निश्चित(omap_serial.base);
 }
 
-void
-bsp_ser_putc(char c)
+व्योम
+bsp_ser_putc(अक्षर c)
 {
-	int i;
-	assert(omap_serial.base);
+	पूर्णांक i;
+	निश्चित(omap_serial.base);
 
 	/* Wait until FIFO's empty */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
-			break;
+	क्रम (i = 0; i < 100000; i++) {
+		अगर (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
+			अवरोध;
 		}
 	}
 
@@ -75,10 +75,10 @@ bsp_ser_putc(char c)
 	mmio_write(omap_serial.base + OMAP3_THR, c);
 
 	/* And wait again until FIFO's empty to prevent TTY from overwriting */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base +
+	क्रम (i = 0; i < 100000; i++) {
+		अगर (mmio_read(omap_serial.base +
 			OMAP3_LSR) & (OMAP3_LSR_THRE | OMAP3_LSR_TEMT)) {
-			break;
+			अवरोध;
 		}
 	}
 }

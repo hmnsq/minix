@@ -1,3 +1,3 @@
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-struct __cpu_local_vars __cpu_local_vars CPULOCAL_ARRAY;
+काष्ठा __cpu_local_vars __cpu_local_vars CPULOCAL_ARRAY;

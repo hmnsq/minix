@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#अगर_अघोषित __SPINLOCK_H__
+#घोषणा __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-typedef struct spinlock {
+प्रकार काष्ठा spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#अगर_अघोषित CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#घोषणा SPINLOCK_DEFINE(name)
+#घोषणा PRIVATE_SPINLOCK_DEFINE(name)
+#घोषणा SPINLOCK_DECLARE(name)
+#घोषणा spinlock_init(sl)
+#घोषणा spinlock_lock(sl)
+#घोषणा spinlock_unlock(sl)
 
-#else
+#अन्यथा
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#घोषणा SPINLOCK_DEFINE(name)	spinlock_t name;
+#घोषणा PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
+#घोषणा SPINLOCK_DECLARE(name)	बाह्य SPINLOCK_DEFINE(name)
+#घोषणा spinlock_init(sl) करो { (sl)->val = 0; } जबतक (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#अगर CONFIG_MAX_CPUS == 1
+#घोषणा spinlock_lock(sl)
+#घोषणा spinlock_unlock(sl)
+#अन्यथा
+व्योम arch_spinlock_lock(atomic_t * sl);
+व्योम arch_spinlock_unlock(atomic_t * sl);
+#घोषणा spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
+#घोषणा spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#पूर्ण_अगर
 
 
-#endif /* CONFIG_SMP */
+#पूर्ण_अगर /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#घोषणा BKL_LOCK()	spinlock_lock(&big_kernel_lock)
+#घोषणा BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
 
-#endif /* __SPINLOCK_H__ */
+#पूर्ण_अगर /* __SPINLOCK_H__ */

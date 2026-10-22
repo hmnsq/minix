@@ -1,31 +1,31 @@
-#ifndef __SMP_X86_H__
-#define __SMP_X86_H__
+#अगर_अघोषित __SMP_X86_H__
+#घोषणा __SMP_X86_H__
 
-#include "arch_proto.h" /* K_STACK_SIZE */
+#समावेश "arch_proto.h" /* K_STACK_SIZE */
 
-#define MAX_NR_INTERRUPT_ENTRIES	128
+#घोषणा MAX_NR_INTERRUPT_ENTRIES	128
 
-#ifndef __ASSEMBLY__
+#अगर_अघोषित __ASSEMBLY__
 
 /* returns the current cpu id */
-#define cpuid	(((u32_t *)(((u32_t)get_stack_frame() + (K_STACK_SIZE - 1)) \
-						& ~(K_STACK_SIZE - 1)))[-1])
+#घोषणा cpuid	(((u32_t *)(((u32_t)get_ढेर_frame() + (K_ढेर_आकार - 1)) \
+						& ~(K_ढेर_आकार - 1)))[-1])
 /* 
  * in case apic or smp is disabled in boot monitor, we need to finish single cpu
  * boot using the legacy PIC
  */
-#define smp_single_cpu_fallback() do {		\
-	  tss_init(0, get_k_stack_top(0));	\
+#घोषणा smp_single_cpu_fallback() करो {		\
+	  tss_init(0, get_k_ढेर_शीर्ष(0));	\
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
 	  bsp_finish_booting();			\
-} while(0)
+} जबतक(0)
 
-extern unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
+बाह्य अचिन्हित अक्षर cpuid2apicid[CONFIG_MAX_CPUS];
 
-#define barrier()	do { mfence(); } while(0)
+#घोषणा barrier()	करो { mfence(); } जबतक(0)
 
-#endif
+#पूर्ण_अगर
 
-#endif /* __SMP_X86_H__ */
+#पूर्ण_अगर /* __SMP_X86_H__ */
 

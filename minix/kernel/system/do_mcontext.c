@@ -11,96 +11,96 @@
  *   m_lsys_krn_sys_getmcontext.ctx_ptr	# pointer to mcontext structure
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <assert.h>
-#include <machine/mcontext.h>
+#समावेश "kernel/system.h"
+#समावेश <string.h>
+#समावेश <assert.h>
+#समावेश <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#अगर USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+पूर्णांक do_getmcontext(काष्ठा proc * caller, message * m_ptr)
 {
 /* Retrieve machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  रेजिस्टर काष्ठा proc *rp;
+  पूर्णांक proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  अगर (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	वापस(EINVAL);
+  अगर (iskerneln(proc_nr)) वापस(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
-#endif
+#अगर defined(__i386__)
+  अगर (!proc_used_fpu(rp))
+	वापस(OK);	/* No state to copy */
+#पूर्ण_अगर
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  अगर ((r = तथ्य_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) माप(mcontext_t))) != OK)
+	वापस(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#अगर defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  अगर (proc_used_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_SIZE);
+	निश्चित(माप(mc.__fpregs.__fp_reg_set) == FPU_XFP_आकार);
+	स_नकल(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_आकार);
   } 
-#endif
+#पूर्ण_अगर
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  अगर ((r = तथ्य_copy(KERNEL, (vir_bytes) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
-	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	(phys_bytes) माप(mcontext_t))) != OK)
+	वापस(r);
 
-  return(OK);
+  वापस(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+पूर्णांक do_setmcontext(काष्ठा proc * caller, message * m_ptr)
 {
 /* Set machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  रेजिस्टर काष्ठा proc *rp;
+  पूर्णांक proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  अगर (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) वापस(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  अगर ((r = तथ्य_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) माप(mcontext_t))) != OK)
+	वापस(r);
 
-#if defined(__i386__)
+#अगर defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  अगर (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+	निश्चित(माप(mc.__fpregs.__fp_reg_set) == FPU_XFP_आकार);
+	स_नकल(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_आकार);
+  } अन्यथा
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
-#endif
+#पूर्ण_अगर
 
-  return(OK);
+  वापस(OK);
 }
 
-#endif
+#पूर्ण_अगर

@@ -1,10 +1,10 @@
-#ifndef __CLOCK_X86_H__
-#define __CLOCK_X86_H__
+#अगर_अघोषित __CLOCK_X86_H__
+#घोषणा __CLOCK_X86_H__
 
-#include "../apic_asm.h"
+#समावेश "../apic_asm.h"
 
-int init_8253A_timer(unsigned freq);
-void stop_8253A_timer(void);
-void arch_timer_int_handler(void);
+पूर्णांक init_8253A_timer(अचिन्हित freq);
+व्योम stop_8253A_timer(व्योम);
+व्योम arch_timer_int_handler(व्योम);
 
-#endif /* __CLOCK_X86_H__ */
+#पूर्ण_अगर /* __CLOCK_X86_H__ */

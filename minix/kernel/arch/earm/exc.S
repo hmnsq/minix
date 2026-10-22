@@ -8,7 +8,7 @@ IMPORT(irq_entry)
 
 .text
 .balign	4096
-LABEL(exc_vector_table)
+मोहर(exc_vector_table)
     ldr pc, =invalid_exc           /* Reset */
     ldr pc, =undefined_inst_entry  /* Undefined Instruction */
     ldr pc, =svc_entry             /* Supervisor Call */
@@ -18,5 +18,5 @@ LABEL(exc_vector_table)
     ldr pc, =irq_entry             /* Interrupt */
     ldr pc, =invalid_exc           /* Fast Interrupt */
 
-ENTRY(invalid_exc)
+प्रथम(invalid_exc)
 	b .

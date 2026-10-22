@@ -1,93 +1,93 @@
-#ifndef __APIC_ASM_H__
-#define __APIC_ASM_H__
+#अगर_अघोषित __APIC_ASM_H__
+#घोषणा __APIC_ASM_H__
 
 
-#ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#अगर_अघोषित __ASSEMBLY__
+#समावेश "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+व्योम apic_hwint0(व्योम);
+व्योम apic_hwint1(व्योम);
+व्योम apic_hwint2(व्योम);
+व्योम apic_hwint3(व्योम);
+व्योम apic_hwint4(व्योम);
+व्योम apic_hwint5(व्योम);
+व्योम apic_hwint6(व्योम);
+व्योम apic_hwint7(व्योम);
+व्योम apic_hwint8(व्योम);
+व्योम apic_hwint9(व्योम);
+व्योम apic_hwint10(व्योम);
+व्योम apic_hwint11(व्योम);
+व्योम apic_hwint12(व्योम);
+व्योम apic_hwint13(व्योम);
+व्योम apic_hwint14(व्योम);
+व्योम apic_hwint15(व्योम);
+व्योम apic_hwint16(व्योम);
+व्योम apic_hwint17(व्योम);
+व्योम apic_hwint18(व्योम);
+व्योम apic_hwint19(व्योम);
+व्योम apic_hwint20(व्योम);
+व्योम apic_hwint21(व्योम);
+व्योम apic_hwint22(व्योम);
+व्योम apic_hwint23(व्योम);
+व्योम apic_hwint24(व्योम);
+व्योम apic_hwint25(व्योम);
+व्योम apic_hwint26(व्योम);
+व्योम apic_hwint27(व्योम);
+व्योम apic_hwint28(व्योम);
+व्योम apic_hwint29(व्योम);
+व्योम apic_hwint30(व्योम);
+व्योम apic_hwint31(व्योम);
+व्योम apic_hwint32(व्योम);
+व्योम apic_hwint33(व्योम);
+व्योम apic_hwint34(व्योम);
+व्योम apic_hwint35(व्योम);
+व्योम apic_hwint36(व्योम);
+व्योम apic_hwint37(व्योम);
+व्योम apic_hwint38(व्योम);
+व्योम apic_hwint39(व्योम);
+व्योम apic_hwint40(व्योम);
+व्योम apic_hwint41(व्योम);
+व्योम apic_hwint42(व्योम);
+व्योम apic_hwint43(व्योम);
+व्योम apic_hwint44(व्योम);
+व्योम apic_hwint45(व्योम);
+व्योम apic_hwint46(व्योम);
+व्योम apic_hwint47(व्योम);
+व्योम apic_hwint48(व्योम);
+व्योम apic_hwint49(व्योम);
+व्योम apic_hwint50(व्योम);
+व्योम apic_hwint51(व्योम);
+व्योम apic_hwint52(व्योम);
+व्योम apic_hwint53(व्योम);
+व्योम apic_hwint54(व्योम);
+व्योम apic_hwint55(व्योम);
+व्योम apic_hwint56(व्योम);
+व्योम apic_hwint57(व्योम);
+व्योम apic_hwint58(व्योम);
+व्योम apic_hwint59(व्योम);
+व्योम apic_hwint60(व्योम);
+व्योम apic_hwint61(व्योम);
+व्योम apic_hwint62(व्योम);
+व्योम apic_hwint63(व्योम);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+व्योम lapic_timer_int_handler(व्योम);
+व्योम apic_spurios_intr(व्योम);
+व्योम apic_error_intr(व्योम);
 
-#endif
+#पूर्ण_अगर
 
-#define APIC_DEBUG
+#घोषणा APIC_DEBUG
 
-#ifdef APIC_DEBUG
+#अगर_घोषित APIC_DEBUG
 
-#define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
+#घोषणा LAPIC_INTR_DUMMY_HANDLER_आकार	32
 
-#ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
-#endif
+#अगर_अघोषित __ASSEMBLY__
+EXTERN अक्षर lapic_intr_dummy_handles_start;
+EXTERN अक्षर lapic_intr_dummy_handles_end;
+#पूर्ण_अगर
 
-#endif /* APIC_DEBUG */
+#पूर्ण_अगर /* APIC_DEBUG */
 
-#endif /* __APIC_ASM_H__ */
+#पूर्ण_अगर /* __APIC_ASM_H__ */

@@ -1,13 +1,13 @@
-#ifndef _BSP_TIMER_H_
-#define _BSP_TIMER_H_
+#अगर_अघोषित _BSP_TIMER_H_
+#घोषणा _BSP_TIMER_H_
 
-#ifndef __ASSEMBLY__
+#अगर_अघोषित __ASSEMBLY__
 
-void bsp_timer_init(unsigned freq);
-void bsp_timer_stop(void);
-int  bsp_register_timer_handler(const irq_handler_t handler);
-void bsp_timer_int_handler(void);
+व्योम bsp_timer_init(अचिन्हित freq);
+व्योम bsp_timer_stop(व्योम);
+पूर्णांक  bsp_register_timer_handler(स्थिर irq_handler_t handler);
+व्योम bsp_timer_int_handler(व्योम);
 
-#endif /* __ASSEMBLY__ */
+#पूर्ण_अगर /* __ASSEMBLY__ */
 
-#endif /* _BSP_TIMER_H_ */
+#पूर्ण_अगर /* _BSP_TIMER_H_ */

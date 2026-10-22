@@ -1,5 +1,5 @@
-#ifndef PRIV_H
-#define PRIV_H
+#अगर_अघोषित PRIV_H
+#घोषणा PRIV_H
 
 /* Declaration of the system privileges structure. It defines flags, system 
  * call masks, an synchronous alarm timer, I/O privileges, pending hardware 
@@ -12,30 +12,30 @@
  *   Nov 22, 2009  rewrite of privilege management (Cristiano Giuffrida)
  *   Jul 01, 2005  Created.  (Jorrit N. Herder)	
  */
-#include <minix/const.h>
-#include <minix/priv.h>
-#include "kernel/const.h"
-#include "kernel/type.h"
-#include "kernel/ipc_filter.h"
+#समावेश <minix/const.h>
+#समावेश <minix/priv.h>
+#समावेश "kernel/const.h"
+#समावेश "kernel/type.h"
+#समावेश "kernel/ipc_filter.h"
 
-struct priv {
+काष्ठा priv {
   proc_nr_t s_proc_nr;		/* number of associated process */
   sys_id_t s_id;		/* index of this system structure */
-  short s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
-  int s_init_flags;             /* initialization flags given to the process. */
+  लघु s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
+  पूर्णांक s_init_flags;             /* initialization flags given to the process. */
 
   /* Asynchronous sends */
   vir_bytes s_asyntab;		/* addr. of table in process' address space */
-  size_t s_asynsize;		/* number of elements in table. 0 when not in
+  माप_प्रकार s_asynsize;		/* number of elements in table. 0 when not in
 				 * use
 				 */
   endpoint_t s_asynendpoint;    /* the endpoint the asyn table belongs to. */
 
-  short s_trap_mask;		/* allowed system call traps */
+  लघु s_trap_mask;		/* allowed system call traps */
   sys_map_t s_ipc_to;		/* allowed destination processes */
 
   /* allowed kernel calls */
-  bitchunk_t s_k_call_mask[SYS_CALL_MASK_SIZE];
+  bitchunk_t s_k_call_mask[SYS_CALL_MASK_आकार];
 
   endpoint_t s_sig_mgr;		/* signal manager for system signals */
   endpoint_t s_bak_sig_mgr;	/* backup signal manager for system signals */
@@ -46,60 +46,60 @@ struct priv {
   ipc_filter_t *s_ipcf;         /* ipc filter (NULL when no filter is set) */
 
   minix_timer_t s_alarm_timer;	/* synchronous alarm timer */
-  reg_t *s_stack_guard;		/* stack guard word for kernel tasks */
+  reg_t *s_ढेर_guard;		/* stack guard word for kernel tasks */
 
-  char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
+  अक्षर s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
-  int s_nr_io_range;		/* allowed I/O ports */
-  struct io_range s_io_tab[NR_IO_RANGE];
+  पूर्णांक s_nr_io_range;		/* allowed I/O ports */
+  काष्ठा io_range s_io_tab[NR_IO_RANGE];
 
-  int s_nr_mem_range;		/* allowed memory ranges */
-  struct minix_mem_range s_mem_tab[NR_MEM_RANGE];
+  पूर्णांक s_nr_mem_range;		/* allowed memory ranges */
+  काष्ठा minix_mem_range s_mem_tab[NR_MEM_RANGE];
 
-  int s_nr_irq;			/* allowed IRQ lines */
-  int s_irq_tab[NR_IRQ];
+  पूर्णांक s_nr_irq;			/* allowed IRQ lines */
+  पूर्णांक s_irq_tab[NR_IRQ];
   vir_bytes s_grant_table;	/* grant table address of process, or 0 */
-  int s_grant_entries;		/* no. of entries, or 0 */
+  पूर्णांक s_grant_entries;		/* no. of entries, or 0 */
   endpoint_t s_grant_endpoint;  /* the endpoint the grant table belongs to */
   vir_bytes s_state_table;	/* state table address of process, or 0 */
-  int s_state_entries;		/* no. of entries, or 0 */
+  पूर्णांक s_state_entries;		/* no. of entries, or 0 */
 };
 
 /* Guard word for task stacks. */
-#define STACK_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
+#घोषणा ढेर_GUARD	((reg_t) (माप(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
 
 /* Magic system structure table addresses. */
-#define BEG_PRIV_ADDR              (&priv[0])
-#define END_PRIV_ADDR              (&priv[NR_SYS_PROCS])
-#define BEG_STATIC_PRIV_ADDR       BEG_PRIV_ADDR
-#define END_STATIC_PRIV_ADDR       (BEG_STATIC_PRIV_ADDR + NR_STATIC_PRIV_IDS)
-#define BEG_DYN_PRIV_ADDR          END_STATIC_PRIV_ADDR
-#define END_DYN_PRIV_ADDR          END_PRIV_ADDR
+#घोषणा BEG_PRIV_ADDR              (&priv[0])
+#घोषणा END_PRIV_ADDR              (&priv[NR_SYS_PROCS])
+#घोषणा BEG_STATIC_PRIV_ADDR       BEG_PRIV_ADDR
+#घोषणा END_STATIC_PRIV_ADDR       (BEG_STATIC_PRIV_ADDR + NR_STATIC_PRIV_IDS)
+#घोषणा BEG_DYN_PRIV_ADDR          END_STATIC_PRIV_ADDR
+#घोषणा END_DYN_PRIV_ADDR          END_PRIV_ADDR
 
-#define priv_addr(i)      (ppriv_addr)[(i)]
-#define priv_id(rp)	  ((rp)->p_priv->s_id)
-#define priv(rp)	  ((rp)->p_priv)
+#घोषणा priv_addr(i)      (ppriv_addr)[(i)]
+#घोषणा priv_id(rp)	  ((rp)->p_priv->s_id)
+#घोषणा priv(rp)	  ((rp)->p_priv)
 
-#define id_to_nr(id)	priv_addr(id)->s_proc_nr
-#define nr_to_id(nr)    priv(proc_addr(nr))->s_id
+#घोषणा id_to_nr(id)	priv_addr(id)->s_proc_nr
+#घोषणा nr_to_id(nr)    priv(proc_addr(nr))->s_id
 
-#define may_send_to(rp, nr) (get_sys_bit(priv(rp)->s_ipc_to, nr_to_id(nr)))
-#define may_asynsend_to(rp, nr) (may_send_to(rp, nr) || (rp)->p_nr == nr)
+#घोषणा may_send_to(rp, nr) (get_sys_bit(priv(rp)->s_ipc_to, nr_to_id(nr)))
+#घोषणा may_asynsend_to(rp, nr) (may_send_to(rp, nr) || (rp)->p_nr == nr)
 
 /* The system structures table and pointers to individual table slots. The 
  * pointers allow faster access because now a process entry can be found by 
  * indexing the psys_addr array, while accessing an element i requires a 
  * multiplication with sizeof(struct sys) to determine the address. 
  */
-EXTERN struct priv priv[NR_SYS_PROCS];		/* system properties table */
-EXTERN struct priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
+EXTERN काष्ठा priv priv[NR_SYS_PROCS];		/* system properties table */
+EXTERN काष्ठा priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
 
 /* Make sure the system can boot. The following sanity check verifies that
  * the system privileges table is large enough for the number of processes
  * in the boot image. 
  */
-#if (NR_BOOT_PROCS > NR_SYS_PROCS)
-#error NR_SYS_PROCS must be larger than NR_BOOT_PROCS
-#endif
+#अगर (NR_BOOT_PROCS > NR_SYS_PROCS)
+#त्रुटि NR_SYS_PROCS must be larger than NR_BOOT_PROCS
+#पूर्ण_अगर
 
-#endif /* PRIV_H */
+#पूर्ण_अगर /* PRIV_H */

@@ -1,7 +1,7 @@
-#ifndef _BSP_SERIAL_H_
-#define _BSP_SERIAL_H_
+#अगर_अघोषित _BSP_SERIAL_H_
+#घोषणा _BSP_SERIAL_H_
 
-void bsp_ser_init(void);
-void bsp_ser_putc(char c);
+व्योम bsp_ser_init(व्योम);
+व्योम bsp_ser_putc(अक्षर c);
 
-#endif /* _BSP_SERIAL_H_ */
+#पूर्ण_अगर /* _BSP_SERIAL_H_ */

@@ -3,7 +3,7 @@
 /*	void outw(U16_t port, U16_t value); */
 #include <machine/asm.h>
 
-ENTRY(outw)
+प्रथम(outw)
 	push	%ebp
 	movl	%esp, %ebp
 	movl	8(%ebp), %edx	/* port */

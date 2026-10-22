@@ -15,7 +15,7 @@
 /* all message passing routines save ebx, but destroy eax and ecx. */
 
 #define IPCFUNC(name,SETARGS,VEC,POSTTRAP)			 \
-ENTRY(usermapped_ ## name ## _softint)					;\
+प्रथम(usermapped_ ## name ## _softint)					;\
 	push	%ebp							;\
 	movl	%esp, %ebp						;\
 	push	%ebx							;\
@@ -26,7 +26,7 @@ ENTRY(usermapped_ ## name ## _softint)					;\
 	pop	%ebx							;\
 	pop	%ebp							;\
 	ret								;\
-ENTRY(usermapped_ ## name ## _sysenter)					;\
+प्रथम(usermapped_ ## name ## _sysenter)					;\
 	push	%ebp							;\
 	movl	%esp, %ebp						;\
 	push	%ebp							;\
@@ -52,7 +52,7 @@ ENTRY(usermapped_ ## name ## _sysenter)					;\
 	POSTTRAP							;\
 	pop	%ebp							;\
 	ret								;\
-ENTRY(usermapped_ ## name ## _syscall)					;\
+प्रथम(usermapped_ ## name ## _syscall)					;\
 	push	%ebp							;\
 	movl	%esp, %ebp						;\
 	push	%ebp							;\
@@ -104,5 +104,5 @@ IPCFUNC(senda,SENDA_ARGS,IPCVEC_UM,)
 IPCFUNC(do_kernel_call,KERNARGS,KERVEC_UM,)
 
 .data
-LABEL(usermapped_offset)
+मोहर(usermapped_offset)
 .space 4

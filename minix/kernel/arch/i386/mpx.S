@@ -95,35 +95,35 @@ IMPORT(multiboot_init)
 	iret								;
 
 /* Each of these entry points is an expansion of the hwint_master macro */
-ENTRY(hwint00)
+प्रथम(hwint00)
 /* Interrupt routine for irq 0 (the clock). */
 	hwint_master(0)
 
-ENTRY(hwint01)
+प्रथम(hwint01)
 /* Interrupt routine for irq 1 (keyboard) */
 	hwint_master(1)
 
-ENTRY(hwint02)
+प्रथम(hwint02)
 /* Interrupt routine for irq 2 (cascade!) */
 	hwint_master(2)
 
-ENTRY(hwint03)
+प्रथम(hwint03)
 /* Interrupt routine for irq 3 (second serial) */
 	hwint_master(3)
 
-ENTRY(hwint04)
+प्रथम(hwint04)
 /* Interrupt routine for irq 4 (first serial) */
 	hwint_master(4)
 
-ENTRY(hwint05)
+प्रथम(hwint05)
 /* Interrupt routine for irq 5 (XT winchester) */
 	hwint_master(5)
 
-ENTRY(hwint06)
+प्रथम(hwint06)
 /* Interrupt routine for irq 6 (floppy) */
 	hwint_master(6)
 
-ENTRY(hwint07)
+प्रथम(hwint07)
 /* Interrupt routine for irq 7 (printer) */
 	hwint_master(7)
 
@@ -157,35 +157,35 @@ ENTRY(hwint07)
 	iret								;
 
 /* Each of these entry points is an expansion of the hwint_slave macro */
-ENTRY(hwint08)
+प्रथम(hwint08)
 /* Interrupt routine for irq 8 (realtime clock) */
 	hwint_slave(8)
 
-ENTRY(hwint09)
+प्रथम(hwint09)
 /* Interrupt routine for irq 9 (irq 2 redirected) */
 	hwint_slave(9)
 
-ENTRY(hwint10)
+प्रथम(hwint10)
 /* Interrupt routine for irq 10 */
 	hwint_slave(10)
 
-ENTRY(hwint11)
+प्रथम(hwint11)
 /* Interrupt routine for irq 11 */
 	hwint_slave(11)
 
-ENTRY(hwint12)
+प्रथम(hwint12)
 /* Interrupt routine for irq 12 */
 	hwint_slave(12)
 
-ENTRY(hwint13)
+प्रथम(hwint13)
 /* Interrupt routine for irq 13 (FPU exception) */
 	hwint_slave(13)
 
-ENTRY(hwint14)
+प्रथम(hwint14)
 /* Interrupt routine for irq 14 (AT winchester) */
 	hwint_slave(14)
 
-ENTRY(hwint15)
+प्रथम(hwint15)
 /* Interrupt routine for irq 15 */
 	hwint_slave(15)
 
@@ -200,7 +200,7 @@ ENTRY(hwint15)
  *   - we can use %esi as a scratch register
  */
 #define ipc_entry_syscall_percpu(cpu)			;\
-ENTRY(ipc_entry_syscall_cpu ## cpu)			;\
+प्रथम(ipc_entry_syscall_cpu ## cpu)			;\
 	xchg	%ecx, %edx				;\
 	mov	k_percpu_stacks+4*cpu, %esi		;\
 	mov	(%esi), %ebp 				;\
@@ -217,8 +217,8 @@ ipc_entry_syscall_percpu(5)
 ipc_entry_syscall_percpu(6)
 ipc_entry_syscall_percpu(7)
 
-ENTRY(ipc_entry_sysenter)
-	/* SYSENTER simply sets kernel segments, EIP to here, and ESP
+प्रथम(ipc_entry_sysenter)
+	/* SYSENTER simply sets kernel segments, बनस to here, and ESP
 	 * to tss->sp0 (through MSR). so no automatic context saving is done.
 	 * interrupts are disabled.
 	 *
@@ -262,15 +262,15 @@ syscall_sysenter_common:
 /*
  * IPC is only from a process to kernel
  */
-ENTRY(ipc_entry_softint_orig)
+प्रथम(ipc_entry_softint_orig)
 	SAVE_PROCESS_CTX(0, KTS_INT_ORIG)
 	jmp ipc_entry_common
 
-ENTRY(ipc_entry_softint_um)
+प्रथम(ipc_entry_softint_um)
 	SAVE_PROCESS_CTX(0, KTS_INT_UM)
 	jmp ipc_entry_common
 
-ENTRY(ipc_entry_common)
+प्रथम(ipc_entry_common)
 	/* save the pointer to the current process */
 	push	%ebp
 
@@ -303,15 +303,15 @@ ENTRY(ipc_entry_common)
 /*
  * kernel call is only from a process to kernel
  */
-ENTRY(kernel_call_entry_orig)
+प्रथम(kernel_call_entry_orig)
 	SAVE_PROCESS_CTX(0, KTS_INT_ORIG)
 	jmp	kernel_call_entry_common
 
-ENTRY(kernel_call_entry_um)
+प्रथम(kernel_call_entry_um)
 	SAVE_PROCESS_CTX(0, KTS_INT_UM)
 	jmp	kernel_call_entry_common
 
-ENTRY(kernel_call_entry_common)
+प्रथम(kernel_call_entry_common)
 	/* save the pointer to the current process */
 	push	%ebp
 
@@ -347,7 +347,7 @@ ENTRY(kernel_call_entry_common)
 exception_entry:
 	/*
 	 * check if it is a nested trap by comparing the saved code segment
-	 * descriptor with the kernel CS first
+	 * descriptor with the kernel कख first
 	 */
 	TEST_INT_IN_KERNEL(12, exception_entry_nested)
 
@@ -388,50 +388,50 @@ exception_entry_nested:
 	/* resume execution at the point of exception */
 	iret
 
-ENTRY(restore_user_context_sysenter)
+प्रथम(restore_user_context_sysenter)
 	/* return to userspace using sysexit.
 	 * most of the context saving the userspace process is
-	 * responsible for, we just have to take care of the right EIP
-	 * and ESP restoring here to resume execution, and set EAX and
-	 * EBX to the saved status values.
+	 * responsible for, we just have to take care of the right बनस
+	 * and ESP restoring here to resume execution, and set बकक्ष and
+	 * बखक्ष to the saved status values.
 	 */
 	mov	4(%esp), %ebp		/* retrieve proc ptr arg */
 	movw	$USER_DS_SELECTOR, %ax
 	movw	%ax, %ds
-	mov	PCREG(%ebp), %edx	/* sysexit restores EIP using EDX */
-	mov	SPREG(%ebp), %ecx	/* sysexit restores ESP using ECX */
+	mov	PCREG(%ebp), %edx	/* sysexit restores बनस using बघक्ष */
+	mov	SPREG(%ebp), %ecx	/* sysexit restores ESP using बगक्ष */
 	mov	AXREG(%ebp), %eax	/* trap return value */
 	mov	BXREG(%ebp), %ebx	/* secondary return value */
 
         /* restore PSW */
-        movl    PSWREG(%ebp), %edi      /* load desired PSW to EDI */
+        movl    PSWREG(%ebp), %edi      /* load desired PSW to बतक */
         push    %edi
         popf
 
 	sti				/* enable interrupts */
-	sysexit				/* jump to EIP in user */
+	sysexit				/* jump to बनस in user */
 
-ENTRY(restore_user_context_syscall)
+प्रथम(restore_user_context_syscall)
 	/* return to userspace using sysret.
 	 * the procedure is very similar to sysexit; it requires
-	 * manual %esp restoring, new EIP in ECX, does not require
+	 * manual %esp restoring, new बनस in बगक्ष, does not require
 	 * enabling interrupts, and of course sysret instead of sysexit.
 	 */
 	mov	4(%esp), %ebp		/* retrieve proc ptr arg */
 
         /* restore PSW (before we switch to user stack!) */
-        movl    PSWREG(%ebp), %edi      /* load desired PSW to EDI */
+        movl    PSWREG(%ebp), %edi      /* load desired PSW to बतक */
         push    %edi
         popf
 
-	mov	PCREG(%ebp), %ecx	/* sysret restores EIP using ECX */
+	mov	PCREG(%ebp), %ecx	/* sysret restores बनस using बगक्ष */
 	mov	SPREG(%ebp), %esp	/* restore ESP directly */
 	mov	AXREG(%ebp), %eax	/* trap return value */
 	mov	BXREG(%ebp), %ebx	/* secondary return value */
 
-	sysret				/* jump to EIP in user */
+	sysret				/* jump to बनस in user */
 
-ENTRY(restore_user_context_int)
+प्रथम(restore_user_context_int)
 	mov	4(%esp), %ebp	/* will assume P_STACKBASE == 0 */
 
 	/* reconstruct the stack for iret */
@@ -470,13 +470,13 @@ ENTRY(restore_user_context_int)
 	pushl	$0		;\
 	EXCEPTION_ERR_CODE(vector)
 
-LABEL(divide_error)
+मोहर(divide_error)
 	EXCEPTION_NO_ERR_CODE(DIVIDE_VECTOR)
 
-LABEL(single_step_exception)
+मोहर(single_step_exception)
 	EXCEPTION_NO_ERR_CODE(DEBUG_VECTOR)
 
-LABEL(nmi)
+मोहर(nmi)
 #ifndef USE_WATCHDOG
 	EXCEPTION_NO_ERR_CODE(NMI_VECTOR)
 #else
@@ -522,19 +522,19 @@ LABEL(nmi)
 	iret
 #endif
 
-LABEL(breakpoint_exception)
+मोहर(breakpoint_exception)
 	EXCEPTION_NO_ERR_CODE(BREAKPOINT_VECTOR)
 
-LABEL(overflow)
+मोहर(overflow)
 	EXCEPTION_NO_ERR_CODE(OVERFLOW_VECTOR)
 
-LABEL(bounds_check)
+मोहर(bounds_check)
 	EXCEPTION_NO_ERR_CODE(BOUNDS_VECTOR)
 
-LABEL(inval_opcode)
+मोहर(inval_opcode)
 	EXCEPTION_NO_ERR_CODE(INVAL_OP_VECTOR)
 
-LABEL(copr_not_available)
+मोहर(copr_not_available)
 	TEST_INT_IN_KERNEL(4, copr_not_available_in_kernel)
 	cld			/* set direction flag to a known value */
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)
@@ -551,44 +551,44 @@ copr_not_available_in_kernel:
 	pushl	$COPROC_NOT_VECTOR
 	jmp	exception_entry_nested
 
-LABEL(double_fault)
+मोहर(double_fault)
 	EXCEPTION_ERR_CODE(DOUBLE_FAULT_VECTOR)
 
-LABEL(copr_seg_overrun)
+मोहर(copr_seg_overrun)
 	EXCEPTION_NO_ERR_CODE(COPROC_SEG_VECTOR)
 
-LABEL(inval_tss)
+मोहर(inval_tss)
 	EXCEPTION_ERR_CODE(INVAL_TSS_VECTOR)
 
-LABEL(segment_not_present)
+मोहर(segment_not_present)
 	EXCEPTION_ERR_CODE(SEG_NOT_VECTOR)
 
-LABEL(stack_exception)
+मोहर(stack_exception)
 	EXCEPTION_ERR_CODE(STACK_FAULT_VECTOR)
 
-LABEL(general_protection)
+मोहर(general_protection)
 	EXCEPTION_ERR_CODE(PROTECTION_VECTOR)
 
-LABEL(page_fault)
+मोहर(page_fault)
 	EXCEPTION_ERR_CODE(PAGE_FAULT_VECTOR)
 
-LABEL(copr_error)
+मोहर(copr_error)
 	EXCEPTION_NO_ERR_CODE(COPROC_ERR_VECTOR)
 
-LABEL(alignment_check)
+मोहर(alignment_check)
 	EXCEPTION_NO_ERR_CODE(ALIGNMENT_CHECK_VECTOR)
 
-LABEL(machine_check)
+मोहर(machine_check)
 	EXCEPTION_NO_ERR_CODE(MACHINE_CHECK_VECTOR)
 
-LABEL(simd_exception)
+मोहर(simd_exception)
 	EXCEPTION_NO_ERR_CODE(SIMD_EXCEPTION_VECTOR)
 
 /*===========================================================================*/
 /*				reload_cr3				     */
 /*===========================================================================*/
-/* PUBLIC void reload_cr3(void); */
-ENTRY(reload_cr3)
+/* सार्व void reload_cr3(void); */
+प्रथम(reload_cr3)
 	push    %ebp
 	mov     %esp, %ebp
 	mov	%cr3, %eax
@@ -597,7 +597,7 @@ ENTRY(reload_cr3)
 	ret
 
 #ifdef CONFIG_SMP
-ENTRY(startup_ap_32)
+प्रथम(startup_ap_32)
 	/*
 	 * we are in protected mode now, %cs is correct and we need to set the
 	 * data descriptors before we can touch anything
@@ -631,21 +631,21 @@ ENTRY(startup_ap_32)
 .bss
 k_initial_stack:
 .space	K_STACK_SIZE
-LABEL(__k_unpaged_k_initial_stktop)
+मोहर(__k_unpaged_k_initial_stktop)
 
 /*
  * the kernel stack
  */
 k_boot_stack:
 .space	K_STACK_SIZE	/* kernel stack */ /* FIXME use macro here */
-LABEL(k_boot_stktop)	/* top of kernel stack */
+मोहर(k_boot_stktop)	/* top of kernel stack */
 
 .balign K_STACK_SIZE
-LABEL(k_stacks_start)
+मोहर(k_stacks_start)
 
 /* two pages for each stack, one for data, other as a sandbox */
 .space	2 * (K_STACK_SIZE * CONFIG_MAX_CPUS)
 
-LABEL(k_stacks_end)
+मोहर(k_stacks_end)
 
 /* top of kernel stack */

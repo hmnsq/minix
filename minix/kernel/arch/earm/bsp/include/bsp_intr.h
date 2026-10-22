@@ -1,12 +1,12 @@
-#ifndef _BSP_INTR_H_
-#define _BSP_INTR_H_
+#अगर_अघोषित _BSP_INTR_H_
+#घोषणा _BSP_INTR_H_
 
-#ifndef __ASSEMBLY__
+#अगर_अघोषित __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
-void bsp_irq_handle(void);
+व्योम bsp_irq_unmask(पूर्णांक irq);
+व्योम bsp_irq_mask(पूर्णांक irq);
+व्योम bsp_irq_handle(व्योम);
 
-#endif /* __ASSEMBLY__ */
+#पूर्ण_अगर /* __ASSEMBLY__ */
 
-#endif /* _BSP_INTR_H_ */
+#पूर्ण_अगर /* _BSP_INTR_H_ */

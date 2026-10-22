@@ -1,6 +1,6 @@
-#ifndef __ARM_WATCHDOG_H__
-#define __ARM_WATCHDOG_H__
+#अगर_अघोषित __ARM_WATCHDOG_H__
+#घोषणा __ARM_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-#endif /* __ARM_WATCHDOG_H__ */
+#पूर्ण_अगर /* __ARM_WATCHDOG_H__ */

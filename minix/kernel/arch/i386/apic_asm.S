@@ -15,7 +15,7 @@
 /*		APIC interrupt handlers for 386 32-bit protected mode	     */
 /*===========================================================================*/
 #define apic_hwint(irq)							\
-ENTRY(apic_hwint##irq)							\
+प्रथम(apic_hwint##irq)							\
 	TEST_INT_IN_KERNEL(4, 0f)					;\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
@@ -64,21 +64,21 @@ ENTRY(apic_hwint##irq)							\
 	iret								;
 
 /* apic timer tick handlers */
-ENTRY(lapic_timer_int_handler)
+प्रथम(lapic_timer_int_handler)
 	lapic_intr(_C_LABEL(timer_int_handler))
 
-ENTRY(apic_spurios_intr)
+प्रथम(apic_spurios_intr)
 	lapic_intr(_C_LABEL(apic_spurios_intr_handler))
 
-ENTRY(apic_error_intr)
+प्रथम(apic_error_intr)
 	lapic_intr(_C_LABEL(apic_error_intr_handler))
 
 #ifdef CONFIG_SMP
 
-ENTRY(apic_ipi_sched_intr)
+प्रथम(apic_ipi_sched_intr)
 	lapic_intr(_C_LABEL(smp_ipi_sched_handler))
 
-ENTRY(apic_ipi_halt_intr)
+प्रथम(apic_ipi_halt_intr)
 	lapic_intr(_C_LABEL(smp_ipi_halt_handler))
 
 #endif /* CONFIG_SMP */
@@ -166,7 +166,7 @@ apic_hwint(61)
 apic_hwint(62)
 apic_hwint(63)
 
-LABEL(lapic_intr_dummy_handles_start)
+मोहर(lapic_intr_dummy_handles_start)
 	LAPIC_INTR_DUMMY_HANDLER(0)
 	LAPIC_INTR_DUMMY_HANDLER(1)
 	LAPIC_INTR_DUMMY_HANDLER(2)
@@ -423,7 +423,7 @@ LABEL(lapic_intr_dummy_handles_start)
 	LAPIC_INTR_DUMMY_HANDLER(253)
 	LAPIC_INTR_DUMMY_HANDLER(254)
 	LAPIC_INTR_DUMMY_HANDLER(255)
-LABEL(lapic_intr_dummy_handles_end)
+मोहर(lapic_intr_dummy_handles_end)
 
 
 #endif /* APIC_DEBUG */

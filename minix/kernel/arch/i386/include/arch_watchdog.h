@@ -1,9 +1,9 @@
-#ifndef __I386_WATCHDOG_H__
-#define __I386_WATCHDOG_H__
+#अगर_अघोषित __I386_WATCHDOG_H__
+#घोषणा __I386_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-struct nmi_frame {
+काष्ठा nmi_frame {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,8 +21,8 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+पूर्णांक i386_watchdog_start(व्योम);
 
-#define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
+#घोषणा nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
-#endif /* __I386_WATCHDOG_H__ */
+#पूर्ण_अगर /* __I386_WATCHDOG_H__ */

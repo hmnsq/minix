@@ -1,30 +1,30 @@
 
-#include "kernel/kernel.h"
-#include "direct_utils.h"
-#include "bsp_serial.h"
-#include "glo.h"
+#समावेश "kernel/kernel.h"
+#समावेश "direct_utils.h"
+#समावेश "bsp_serial.h"
+#समावेश "glo.h"
 
-void direct_cls(void)
+व्योम direct_cls(व्योम)
 {
     /* Do nothing */
 }
 
-void direct_print_char(char c)
+व्योम direct_print_char(अक्षर c)
 {
-	if(c == '\n')
+	अगर(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
-void direct_print(const char *str)
+व्योम direct_print(स्थिर अक्षर *str)
 {
-	while (*str) {
+	जबतक (*str) {
 		direct_print_char(*str);
 		str++;
 	}
 }
 
-int direct_read_char(unsigned char *ch)
+पूर्णांक direct_read_char(अचिन्हित अक्षर *ch)
 {
-	return 0;
+	वापस 0;
 }

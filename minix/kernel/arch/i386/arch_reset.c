@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#समावेश "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#समावेश <ctype.h>
+#समावेश <string.h>
+#समावेश <machine/cmos.h>
+#समावेश <machine/bios.h>
+#समावेश <machine/cpu.h>
+#समावेश <minix/cpufeature.h>
+#समावेश <sys/reboot.h>
+#समावेश <assert.h>
+#समावेश <signal.h>
 
-#include <minix/u64.h>
+#समावेश <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#समावेश "arch_proto.h"
+#समावेश "oxpcie.h"
+#समावेश "direct_utils.h"
 
-#ifdef USE_ACPI
-#include "acpi.h"
-#endif
+#अगर_घोषित USE_ACPI
+#समावेश "acpi.h"
+#पूर्ण_अगर
 
-#define     KBCMDP          4       /* kbd controller port (O) */
-#define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
-#define      IO_KBD          0x060           /* 8042 Keyboard */
+#घोषणा     KBCMDP          4       /* kbd controller port (O) */
+#घोषणा      KBC_PULSE0     0xfe    /* pulse output bit 0 */
+#घोषणा      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+पूर्णांक cpu_has_tsc;
 
-void
-reset(void)
+व्योम
+reset(व्योम)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        अगर (b != 0xff) {
+                अगर ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	जबतक(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+अटल __dead व्योम
+halt(व्योम)
 {
-	for ( ; ; )
+	क्रम ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+अटल __dead व्योम
+poweroff(व्योम)
 {
-	const char *shutdown_str;
+	स्थिर अक्षर *shutdown_str;
 
-#ifdef USE_ACPI
+#अगर_घोषित USE_ACPI
 	acpi_poweroff();
-#endif
+#पूर्ण_अगर
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        जबतक (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead व्योम arch_shutdown(पूर्णांक how)
 {
-	unsigned char unused_ch;
+	अचिन्हित अक्षर unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	जबतक(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	अगर(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		अगर (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		जबतक (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	अगर((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	अगर(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		क्रम (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -150,24 +150,24 @@ __dead void arch_shutdown(int how)
 	NOT_REACHABLE;
 }
 
-#ifdef DEBUG_SERIAL
-void ser_putc(char c)
+#अगर_घोषित DEBUG_SERIAL
+व्योम ser_putc(अक्षर c)
 {
-        int i;
-        int lsr, thr;
+        पूर्णांक i;
+        पूर्णांक lsr, thr;
 
-#if CONFIG_OXPCIE
+#अगर CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#अन्यथा
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        क्रम (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                अगर (inb( lsr) & LSR_THRE)
+                        अवरोध;
         }
         outb( thr, c);
-#endif
+#पूर्ण_अगर
 }
 
-#endif
+#पूर्ण_अगर

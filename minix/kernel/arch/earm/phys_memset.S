@@ -22,16 +22,16 @@
  *    or promote products derived from this software without specific prior
  *    written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL WASABI SYSTEMS, INC
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * यह SOFTWARE IS PROVIDED BY WASABI SYSTEMS, लाभ. ``AS IS'' और
+ * ANY EXPRESS या IMPLIED WARRANTIES, INCLUDING, BUT नहीं LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY और FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  अंदर NO EVENT SHALL WASABI SYSTEMS, लाभ
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, या
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT नहीं LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS या SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED और ON ANY THEORY OF LIABILITY, WHETHER अंदर
+ * CONTRACT, STRICT LIABILITY, या TORT (INCLUDING NEGLIGENCE या OTHERWISE)
+ * ARISING अंदर ANY WAY बाहर OF THE USE OF यह SOFTWARE, जोड़_मिल अगर ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /*
@@ -53,16 +53,16 @@
  *    endorse or promote products derived from this software without specific
  *    prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * यह SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' और ANY EXPRESS या IMPLIED
+ * WARRANTIES, INCLUDING, BUT नहीं LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY और FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * अंदर NO EVENT SHALL THE AUTHOR या CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, या CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT नहीं LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS या
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * HOWEVER CAUSED और ON ANY THEORY OF LIABILITY, WHETHER अंदर CONTRACT, STRICT
+ * LIABILITY, या TORT (INCLUDING NEGLIGENCE या OTHERWISE) ARISING अंदर ANY WAY
+ * बाहर OF THE USE OF यह SOFTWARE, जोड़_मिल अगर ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
 
@@ -70,20 +70,20 @@
 
 #if 0  && defined(__minix)
 #if defined(__ARM_EABI__) && !defined(_BZERO)
-ENTRY(__aeabi_memset)
+प्रथम(__aeabi_memset)
 	mov	r3, r1
 	mov	r1, r2
 	mov	r2, r3
 	b	memset
-END(__aeabi_memset)
+पूर्ण(__aeabi_memset)
 STRONG_ALIAS(__aeabi_memset4, __aeabi_memset)
 STRONG_ALIAS(__aeabi_memset8, __aeabi_memset)
 
-ENTRY(__aeabi_memclr)
+प्रथम(__aeabi_memclr)
 	mov	r2, r1
 	mov	r1, #0
 	b	memset
-END(__aeabi_memclr)
+पूर्ण(__aeabi_memclr)
 STRONG_ALIAS(__aeabi_memclr4, __aeabi_memclr)
 STRONG_ALIAS(__aeabi_memclr8, __aeabi_memclr)
 #endif
@@ -102,15 +102,15 @@ STRONG_ALIAS(__aeabi_memclr8, __aeabi_memclr)
  */
 #ifdef _BZERO
 /* LINTSTUB: Func: void bzero(void *, size_t) */
-ENTRY(bzero)
+प्रथम(bzero)
 	mov	r3, #0x00
 #else
 #if defined(__minix)
 /* LINTSTUB: Func: void *phys_memset(void *, int, size_t) */
-ENTRY(phys_memset)
+प्रथम(phys_memset)
 #else
 /* LINTSTUB: Func: void *memset(void *, int, size_t) */
-ENTRY(memset)
+प्रथम(memset)
 #endif
 	and	r3, r1, #0xff		/* We deal with bytes */
 	mov	r1, r2
@@ -257,7 +257,7 @@ ENTRY(memset)
 #if defined(__minix)
 	mov	r0, #0
 #endif
-	RET				/* Exit */
+	वापस				/* Exit */
 
 .Lmemset_wordunaligned:
 	rsb	r2, r2, #0x004
@@ -282,23 +282,23 @@ ENTRY(memset)
 #if defined(__minix)
 	mov     r0, #0
 #endif
-	RET				/* Exit */
+	वापस				/* Exit */
 #ifdef _BZERO
-END(bzero)
+पूर्ण(bzero)
 #else
 #if !defined(__minix)
-END(memset)
+पूर्ण(memset)
 #else
-END(phys_memset)
+पूर्ण(phys_memset)
 #endif
 #endif
 
 #if defined(__minix)
-LABEL(memset_fault)		/* kernel can send us here */
+मोहर(memset_fault)		/* kernel can send us here */
 	mov	r0, #0
-	RET
+	वापस
 
-LABEL(memset_fault_in_kernel)	/* kernel can send us here */
+मोहर(memset_fault_in_kernel)	/* kernel can send us here */
 	mrc	p15, 0, r0, c6, c0, 0	/* Read DFAR */
-	RET
+	वापस
 #endif
