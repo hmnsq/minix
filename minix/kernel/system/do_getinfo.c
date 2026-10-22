@@ -16,213 +16,213 @@
  *
  */
 
-#include <string.h>
+#ضمن <string.h>
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
 
-#if USE_GETINFO
+#إذا USE_GETINFO
 
-#include <minix/u64.h>
-#include <sys/resource.h>
+#ضمن <minix/u64.h>
+#ضمن <sys/resource.h>
 
 /*===========================================================================*
  *			        update_idle_time			     *
  *===========================================================================*/
-static void update_idle_time(void)
+ساكن فراغ update_idle_وقت(فراغ)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	صحيح i;
+	بنية proc * idl = proc_addr(IDLE);
 
-	idl->p_cycles = make64(0, 0);
+	idl->p_چڪرن = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
-		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
+	لكل (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+		idl->p_چڪرن += get_cpu_var(i, idle_proc).p_چڪرن;
 	}
 }
 
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+صحيح do_getinfo(بنية proc * caller, پيغام * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
-  size_t length;
-  vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  size_t ڊيگهائي;
+  vir_بائيٽون src_vir; 
+  صحيح nr_e, nr, r;
+  صحيح wipe_rnd_bin = -1;
+  بنية proc *p;
+  بنية rusage r_usage;
 
   /* Set source address and length based on request type. */
-  switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
-        src_vir = (vir_bytes) &machine;
-        break;
+  بدل (m_ptr->m_lsys_krn_sys_getinfo.request) {
+    حالة GET_MACHINE: {
+        ڊيگهائي = حجم(بنية machine);
+        src_vir = (vir_بائيٽون) &machine;
+        اكسر;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
-        src_vir = (vir_bytes) &kinfo;
-        break;
+    حالة GET_KINFO: {
+        ڊيگهائي = حجم(بنية kinfo);
+        src_vir = (vir_بائيٽون) &kinfo;
+        اكسر;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
-        src_vir = (vir_bytes) &kloadinfo;
-        break;
+    حالة GET_LOADINFO: {
+        ڊيگهائي = حجم(بنية loadinfo);
+        src_vir = (vir_بائيٽون) &kloadinfo;
+        اكسر;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
-        src_vir = (vir_bytes) &cpu_info;
-        break;
+    حالة GET_CPUINFO: {
+        ڊيگهائي = حجم(cpu_info);
+        src_vir = (vir_بائيٽون) &cpu_info;
+        اكسر;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
-        src_vir = (vir_bytes) &system_hz;
-        break;
+    حالة GET_HZ: {
+        ڊيگهائي = حجم(system_hz);
+        src_vir = (vir_بائيٽون) &system_hz;
+        اكسر;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
-        src_vir = (vir_bytes) image;
-        break;
+    حالة GET_IMAGE: {
+        ڊيگهائي = حجم(بنية boot_image) * NR_BOOT_PROCS;
+        src_vir = (vir_بائيٽون) image;
+        اكسر;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
-        src_vir = (vir_bytes) irq_hooks;
-        break;
+    حالة GET_IRQHOOKS: {
+        ڊيگهائي = حجم(بنية irq_hook) * NR_IRQ_HOOKS;
+        src_vir = (vir_بائيٽون) irq_hooks;
+        اكسر;
     }
-    case GET_PROCTAB: {
-	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
-        src_vir = (vir_bytes) proc;
-        break;
+    حالة GET_PROCTAB: {
+	update_idle_وقت();
+        ڊيگهائي = حجم(بنية proc) * (NR_PROCS + NR_TASKS);
+        src_vir = (vir_بائيٽون) proc;
+        اكسر;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
-        src_vir = (vir_bytes) priv;
-        break;
+    حالة GET_PRIVTAB: {
+        ڊيگهائي = حجم(بنية priv) * (NR_SYS_PROCS);
+        src_vir = (vir_بائيٽون) priv;
+        اكسر;
     }
-    case GET_PROC: {
+    حالة GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
-        src_vir = (vir_bytes) proc_addr(nr);
-        break;
+	إذا(!isokendpt(nr_e, &nr)) أرجع EINVAL; /* validate request */
+        ڊيگهائي = حجم(بنية proc);
+        src_vir = (vir_بائيٽون) proc_addr(nr);
+        اكسر;
     }
-    case GET_PRIV: {
+    حالة GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
-        src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        إذا(!isokendpt(nr_e, &nr)) أرجع EINVAL; /* validate request */
+        ڊيگهائي = حجم(بنية priv);
+        src_vir = (vir_بائيٽون) priv_addr(nr_منزل_id(nr));
+        اكسر;
     }
-    case GET_REGS: {
+    حالة GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        إذا(!isokendpt(nr_e, &nr)) أرجع EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
-        src_vir = (vir_bytes) &p->p_reg;
-        break;
+        ڊيگهائي = حجم(p->p_reg);
+        src_vir = (vir_بائيٽون) &p->p_reg;
+        اكسر;
     }
-    case GET_WHOAMI: {
-	int len;
+    حالة GET_WHOAMI: {
+	صحيح len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(حجم(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		حجم(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	أرجع OK;
     }
-    case GET_MONPARAMS: {
-        src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+    حالة GET_MONPARAMS: {
+        src_vir = (vir_بائيٽون) kinfo.param_buf;
+	ڊيگهائي = حجم(kinfo.param_buf);
+        اكسر;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    حالة GET_RANDOMNESS: {		
+        ساكن بنية k_randomness copy;	/* copy to keep counters */
+	صحيح i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
-  		krandom.bin[i].r_size = 0;	/* invalidate random data */
-  		krandom.bin[i].r_next = 0;
+        لكل (i= 0; i<RANDOM_SOURCES; i++) {
+  		krandom.bin[i].r_سائيز = 0;	/* invalidate random data */
+  		krandom.bin[i].r_ايندڙ = 0;
 	}
-    	length = sizeof(copy);
-    	src_vir = (vir_bytes) &copy;
-    	break;
+    	ڊيگهائي = حجم(copy);
+    	src_vir = (vir_بائيٽون) &copy;
+    	اكسر;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    حالة GET_RANDOMNESS_BIN: {		
+	صحيح bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
-		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+	إذا(bin < 0 || bin >= RANDOM_SOURCES) {
+		لکو("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
+		أرجع EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	إذا(krandom.bin[bin].r_سائيز < RANDOM_ELEMENTS)
+		أرجع ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
-    	src_vir = (vir_bytes) &krandom.bin[bin];
+    	ڊيگهائي = حجم(krandom.bin[bin]);
+    	src_vir = (vir_بائيٽون) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	اكسر;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
-        src_vir = (vir_bytes) irq_actids;
-        break;
+    حالة GET_IRQACTIDS: {
+        ڊيگهائي = حجم(irq_actids);
+        src_vir = (vir_بائيٽون) irq_actids;
+        اكسر;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
-	update_idle_time();
+    حالة GET_IDLETSC: {
+	بنية proc * idl;
+	update_idle_وقت();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
-        src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        ڊيگهائي = حجم(idl->p_چڪرن);
+        src_vir = (vir_بائيٽون) &idl->p_چڪرن;
+        اكسر;
     }
-    case GET_CPUTICKS: {
+    حالة GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	بنانشان صحيح cpu;
+	cpu = (بنانشان صحيح)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	إذا (cpu >= CONFIG_MAX_CPUS)
+		أرجع EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
-	src_vir = (vir_bytes)ticks;
-	break;
+	ڊيگهائي = حجم(ticks);
+	src_vir = (vir_بائيٽون)ticks;
+	اكسر;
     }
-    default:
-	printf("do_getinfo: invalid request %d\n",
+    افتراضي:
+	لکو("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        أرجع(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
-	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+  إذا (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+	ڊيگهائي > m_ptr->m_lsys_krn_sys_getinfo.val_len)
+	أرجع (E2BIG);
 
-  r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
-	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
+  r = معلومات_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
+	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, ڊيگهائي);
 
-  if(r != OK) return r;
+  إذا(r != OK) أرجع r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
-		krandom.bin[wipe_rnd_bin].r_size = 0;
-		krandom.bin[wipe_rnd_bin].r_next = 0;
+	إذا(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+		krandom.bin[wipe_rnd_bin].r_سائيز = 0;
+		krandom.bin[wipe_rnd_bin].r_ايندڙ = 0;
 	}
 
-  return(OK);
+  أرجع(OK);
 }
 
-#endif /* USE_GETINFO */
+#جيڪڏهن_پورو /* USE_GETINFO */
 

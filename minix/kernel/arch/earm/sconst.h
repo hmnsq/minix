@@ -1,7 +1,7 @@
-#ifndef __SCONST_H__
-#define __SCONST_H__
+#جيڪڏهن_وصف_نه_ٿيل __SCONST_H__
+#وصف_ڪريو __SCONST_H__
 
-#include "kernel/const.h"
-#include "kernel/procoffsets.h"
+#ضمن "kernel/const.h"
+#ضمن "kernel/procoffsets.h"
 
-#endif /* __SCONST_H__ */
+#جيڪڏهن_پورو /* __SCONST_H__ */

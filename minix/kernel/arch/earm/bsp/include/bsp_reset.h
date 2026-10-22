@@ -1,9 +1,9 @@
-#ifndef _BSP_RESET_H_
-#define _BSP_RESET_H_
+#جيڪڏهن_وصف_نه_ٿيل _BSP_RESET_H_
+#وصف_ڪريو _BSP_RESET_H_
 
-void bsp_reset_init(void);
-void bsp_reset(void);
-void bsp_poweroff(void);
-void bsp_disable_watchdog(void);
+فراغ bsp_reset_init(فراغ);
+فراغ bsp_reset(فراغ);
+فراغ bsp_poweroff(فراغ);
+فراغ bsp_disable_watchdog(فراغ);
 
-#endif /* _BSP_RESET_H_ */
+#جيڪڏهن_پورو /* _BSP_RESET_H_ */

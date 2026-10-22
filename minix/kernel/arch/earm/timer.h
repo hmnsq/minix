@@ -1,7 +1,7 @@
 
-#ifndef _KERN_TIMER_H
-#define _KERN_TIMER_H
+#جيڪڏهن_وصف_نه_ٿيل _KERN_TIMER_H
+#وصف_ڪريو _KERN_TIMER_H
 
-#include "omap_timer.h"
+#ضمن "omap_timer.h"
 
-#endif
+#جيڪڏهن_پورو

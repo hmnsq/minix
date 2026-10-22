@@ -1,27 +1,27 @@
-#ifndef _OMAP_SERIAL_H
-#define _OMAP_SERIAL_H
+#جيڪڏهن_وصف_نه_ٿيل _OMAP_SERIAL_H
+#وصف_ڪريو _OMAP_SERIAL_H
 
 /* UART register map */
-#define OMAP3_DM37XX_DEBUG_UART_BASE 0x49020000 /* UART3 physical address */
-#define OMAP3_AM335X_DEBUG_UART_BASE 0x44E09000 /* UART0? physical address */
+#وصف_ڪريو OMAP3_DM37_XX_DEBUG_UART_بنياد 0x49020000 /* UART3 physical address */
+#وصف_ڪريو OMAP3_AM335_X_DEBUG_UART_بنياد 0x44E09000 /* UART0? physical address */
 
 /* UART registers */
-#define OMAP3_THR 0x000 /* Transmit holding register */
-#define OMAP3_LSR 0x014 /* Line status register */
-#define OMAP3_SSR 0x044 /* Supplementary status register */
+#وصف_ڪريو OMAP3_THR 0x000 /* Transmit holding register */
+#وصف_ڪريو OMAP3_LSR 0x014 /* Line status register */
+#وصف_ڪريو OMAP3_SSR 0x044 /* Supplementary status register */
 
 /* Line status register fields */
-#define OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
-#define OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
+#وصف_ڪريو OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
+#وصف_ڪريو OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
 
 /* Supplementary status register fields */
-#define OMAP3_SSR_TX_FIFO_FULL (1 << 0) /* Transmit FIFO full */
+#وصف_ڪريو OMAP3_SSR_TX_FIFO_ڀريل (1 << 0) /* Transmit FIFO full */
 
-#ifndef __ASSEMBLY__
+#جيڪڏهن_وصف_نه_ٿيل __ASSEMBLY__
 
-void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+فراغ omap3_ser_init(فراغ);
+فراغ omap3_ser_putc(حرف c);
 
-#endif /* __ASSEMBLY__ */
+#جيڪڏهن_پورو /* __ASSEMBLY__ */
 
-#endif /* _OMAP_SERIAL_H */
+#جيڪڏهن_پورو /* _OMAP_SERIAL_H */

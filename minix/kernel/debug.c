@@ -3,145 +3,145 @@
  * functions and sanity checking of the scheduling queues.
  */
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-#include <minix/callnr.h>
-#include <minix/u64.h>
-#include <limits.h>
-#include <string.h>
-#include <assert.h>
+#ضمن <minix/callnr.h>
+#ضمن <minix/u64.h>
+#ضمن <limits.h>
+#ضمن <string.h>
+#ضمن <assert.h>
 
-#define MAX_LOOP (NR_PROCS + NR_TASKS)
+#وصف_ڪريو MAX_LOOP (NR_PROCS + NR_TASKS)
 
-int runqueues_ok_cpu(unsigned cpu)
+صحيح runqueues_ok_cpu(بنانشان cpu)
 {
-  int q, l = 0;
-  register struct proc *xp;
-  struct proc **rdy_head, **rdy_tail;
+  صحيح q, l = 0;
+  سجل بنية proc *xp;
+  بنية proc **rdy_سر, **rdy_پڇ;
 
-  rdy_head = get_cpu_var(cpu, run_q_head);
-  rdy_tail = get_cpu_var(cpu, run_q_tail);
+  rdy_سر = get_cpu_var(cpu, لاڳيتو_q_سر);
+  rdy_پڇ = get_cpu_var(cpu, لاڳيتو_q_پڇ);
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	xp->p_found = 0;
-	if (l++ > MAX_LOOP) panic("check error");
+  لكل (xp = BEG_PROC_ADDR; xp < پڇاڙي_PROC_ADDR; ++xp) {
+	xp->p_مليو = 0;
+	إذا (l++ > MAX_LOOP) panic("check error");
   }
 
-  for (q=l=0; q < NR_SCHED_QUEUES; q++) {
-    if (rdy_head[q] && !rdy_tail[q]) {
-	printf("head but no tail in %d\n", q);
-	return 0;
+  لكل (q=l=0; q < NR_SCHED_QUEUES; q++) {
+    إذا (rdy_سر[q] && !rdy_پڇ[q]) {
+	لکو("head but no tail in %d\n", q);
+	أرجع 0;
     }
-    if (!rdy_head[q] && rdy_tail[q]) {
-	printf("tail but no head in %d\n", q);
-	return 0;
+    إذا (!rdy_سر[q] && rdy_پڇ[q]) {
+	لکو("tail but no head in %d\n", q);
+	أرجع 0;
     }
-    if (rdy_tail[q] && rdy_tail[q]->p_nextready) {
-	printf("tail and tail->next not null in %d\n", q);
-	return 0;
+    إذا (rdy_پڇ[q] && rdy_پڇ[q]->p_nextready) {
+	لکو("tail and tail->next not null in %d\n", q);
+	أرجع 0;
     }
-    for(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
-	const vir_bytes vxp = (vir_bytes) xp;
-	vir_bytes dxp;
-	if(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
-  		printf("xp out of range\n");
-		return 0;
+    لكل(xp = rdy_سر[q]; xp; xp = xp->p_nextready) {
+	ثابت vir_بائيٽون vxp = (vir_بائيٽون) xp;
+	vir_بائيٽون dxp;
+	إذا(vxp < (vir_بائيٽون) BEG_PROC_ADDR || vxp >= (vir_بائيٽون) پڇاڙي_PROC_ADDR) {
+  		لکو("xp out of range\n");
+		أرجع 0;
 	}
-	dxp = vxp - (vir_bytes) BEG_PROC_ADDR;
-	if(dxp % sizeof(struct proc)) {
-  		printf("xp not a real pointer");
-		return 0;
+	dxp = vxp - (vir_بائيٽون) BEG_PROC_ADDR;
+	إذا(dxp % حجم(بنية proc)) {
+  		لکو("xp not a real pointer");
+		أرجع 0;
 	}
-	if(!proc_ptr_ok(xp)) {
-  		printf("xp bogus pointer");
-		return 0;
+	إذا(!proc_ptr_ok(xp)) {
+  		لکو("xp bogus pointer");
+		أرجع 0;
 	}
-	if (RTS_ISSET(xp, RTS_SLOT_FREE)) {
-		printf("scheduling error: dead proc q %d %d\n",
+	إذا (RTS_ISSET(xp, RTS_جڳهه_FREE)) {
+		لکو("scheduling error: dead proc q %d %d\n",
 			q, xp->p_endpoint);
-		return 0;
+		أرجع 0;
 	}
-        if (!proc_is_runnable(xp)) {
-		printf("scheduling error: unready on runq %d proc %d\n",
+        إذا (!proc_is_runnable(xp)) {
+		لکو("scheduling error: unready on runq %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		أرجع 0;
         }
-        if (xp->p_priority != q) {
-		printf("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
+        إذا (xp->p_ترجيح != q) {
+		لکو("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
 			q, xp->p_nr, xp->p_endpoint, xp->p_name);
-		return 0;
+		أرجع 0;
 	}
-	if (xp->p_found) {
-		printf("scheduling error: double sched q %d proc %d\n",
+	إذا (xp->p_مليو) {
+		لکو("scheduling error: double sched q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		أرجع 0;
 	}
-	xp->p_found = 1;
-	if (!xp->p_nextready && rdy_tail[q] != xp) {
-		printf("sched err: last element not tail q %d proc %d\n",
+	xp->p_مليو = 1;
+	إذا (!xp->p_nextready && rdy_پڇ[q] != xp) {
+		لکو("sched err: last element not tail q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		أرجع 0;
 	}
-	if (l++ > MAX_LOOP) {
-		printf("loop in schedule queue?");
-		return 0;
+	إذا (l++ > MAX_LOOP) {
+		لکو("loop in schedule queue?");
+		أرجع 0;
 	}
     }
   }	
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	if(!proc_ptr_ok(xp)) {
-		printf("xp bogus pointer in proc table\n");
-		return 0;
+  لكل (xp = BEG_PROC_ADDR; xp < پڇاڙي_PROC_ADDR; ++xp) {
+	إذا(!proc_ptr_ok(xp)) {
+		لکو("xp bogus pointer in proc table\n");
+		أرجع 0;
 	}
-	if (isemptyp(xp))
-		continue;
-	if(proc_is_runnable(xp) && !xp->p_found) {
-		printf("sched error: ready proc %d not on queue\n", xp->p_nr);
-		return 0;
+	إذا (isemptyp(xp))
+		استمر;
+	إذا(proc_is_runnable(xp) && !xp->p_مليو) {
+		لکو("sched error: ready proc %d not on queue\n", xp->p_nr);
+		أرجع 0;
 	}
   }
 
   /* All is ok. */
-  return 1;
+  أرجع 1;
 }
 
-#ifdef CONFIG_SMP
-static int runqueues_ok_all(void)
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+ساكن صحيح runqueues_ok_all(فراغ)
 {
-	unsigned c;
+	بنانشان c;
 
-	for (c = 0 ; c < ncpus; c++) {
-		if (!runqueues_ok_cpu(c))
-			return 0;
+	لكل (c = 0 ; c < ncpus; c++) {
+		إذا (!runqueues_ok_cpu(c))
+			أرجع 0;
 	}
-	return 1;	
+	أرجع 1;	
 }
 
-int runqueues_ok(void)
+صحيح runqueues_ok(فراغ)
 {
-	return runqueues_ok_all();
+	أرجع runqueues_ok_all();
 }
 
-#else
+#وإلا
 
-int runqueues_ok(void)
+صحيح runqueues_ok(فراغ)
 {
-	return runqueues_ok_cpu(0);
+	أرجع runqueues_ok_cpu(0);
 }
 
 
-#endif
+#جيڪڏهن_پورو
 
-char *
-rtsflagstr(const u32_t flags)
+حرف *
+rtsflagstr(ثابت u32_t flags)
 {
-	static char str[100];
+	ساكن حرف str[100];
 	str[0] = '\0';
 
-#define FLAG(n) if(flags & n) { strlcat(str, #n " ", sizeof(str)); }
+#وصف_ڪريو FLAG(n) إذا(flags & n) { strlcat(str, #n " ", حجم(str)); }
 
-	FLAG(RTS_SLOT_FREE);
+	FLAG(RTS_جڳهه_FREE);
 	FLAG(RTS_PROC_STOP);
 	FLAG(RTS_SENDING);
 	FLAG(RTS_RECEIVING);
@@ -155,166 +155,166 @@ rtsflagstr(const u32_t flags)
 	FLAG(RTS_VMREQUEST);
 	FLAG(RTS_VMREQTARGET);
 	FLAG(RTS_PREEMPTED);
-	FLAG(RTS_NO_QUANTUM);
+	FLAG(RTS_NO_وقتي_حصو);
 
-	return str;
+	أرجع str;
 }
 
-char *
-miscflagstr(const u32_t flags)
+حرف *
+miscflagstr(ثابت u32_t flags)
 {
-	static char str[100];
+	ساكن حرف str[100];
 	str[0] = '\0';
 
-	FLAG(MF_REPLY_PEND);
+	FLAG(MF_جواب_PEND);
 	FLAG(MF_DELIVERMSG);
 	FLAG(MF_KCALL_RESUME);
 
-	return str;
+	أرجع str;
 }
 
-char *
-schedulerstr(struct proc *scheduler)
+حرف *
+schedulerstr(بنية proc *scheduler)
 {
-	if (scheduler != NULL)
+	إذا (scheduler != عدم)
 	{
-		return scheduler->p_name;
+		أرجع scheduler->p_name;
 	}
 
-	return "KERNEL";
+	أرجع "KERNEL";
 }
 
-static void
-print_proc_name(struct proc *pp)
+ساكن فراغ
+print_proc_name(بنية proc *pp)
 {
-	char *name = pp->p_name;
+	حرف *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
 
-	if(name) {
-		printf("%s(%d)", name, ep);
+	إذا(name) {
+		لکو("%s(%d)", name, ep);
 	}
-	else {
-		printf("%d", ep);
+	وإلا {
+		لکو("%d", ep);
 	}
 }
 
-static void
+ساكن فراغ
 print_endpoint(endpoint_t ep)
 {
-	int proc_nr;
-	struct proc *pp = NULL;
+	صحيح proc_nr;
+	بنية proc *pp = عدم;
 
-	switch(ep) {
-	case ANY:
-		printf("ANY");
-	break;
-	case SELF:
-		printf("SELF");
-	break;
-	case NONE:
-		printf("NONE");
-	break;
-	default:
-		if(!isokendpt(ep, &proc_nr)) {
-			printf("??? %d\n", ep);
+	بدل(ep) {
+	حالة ANY:
+		لکو("ANY");
+	اكسر;
+	حالة SELF:
+		لکو("SELF");
+	اكسر;
+	حالة NONE:
+		لکو("NONE");
+	اكسر;
+	افتراضي:
+		إذا(!isokendpt(ep, &proc_nr)) {
+			لکو("??? %d\n", ep);
 		}
-		else {
+		وإلا {
 			pp = proc_addr(proc_nr);
-			if(isemptyp(pp)) {
-				printf("??? empty slot %d\n", proc_nr);
+			إذا(isemptyp(pp)) {
+				لکو("??? empty slot %d\n", proc_nr);
 			}
-			else {
+			وإلا {
 				print_proc_name(pp);
 			}
 		}
-	break;
+	اكسر;
 	}
 }
 
-static void
-print_sigmgr(struct proc *pp)
+ساكن فراغ
+print_sigmgr(بنية proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
-	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
-	printf("sigmgr ");
+	إذا(sig_mgr == NONE) { لکو("no sigmgr"); أرجع; }
+	لکو("sigmgr ");
 	print_endpoint(sig_mgr);
-	if(bak_sig_mgr != NONE) {
-		printf(" / ");
+	إذا(bak_sig_mgr != NONE) {
+		لکو(" / ");
 		print_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+فراغ print_proc(بنية proc *pp)
 {
 	endpoint_t dep;
 
-	printf("%d: %s %d prio %d time %d/%d cycles 0x%x%08x cpu %2d "
+	لکو("%d: %s %d prio %d time %d/%d cycles 0x%x%08x cpu %2d "
 			"pdbr 0x%lx rts %s misc %s sched %s ",
 		proc_nr(pp), pp->p_name, pp->p_endpoint, 
-		pp->p_priority, pp->p_user_time,
-		pp->p_sys_time, ex64hi(pp->p_cycles),
-		ex64lo(pp->p_cycles), pp->p_cpu,
-#if defined(__i386__)
+		pp->p_ترجيح, pp->p_user_وقت,
+		pp->p_sys_وقت, ex64hi(pp->p_چڪرن),
+		ex64lo(pp->p_چڪرن), pp->p_cpu,
+#إذا defined(__i386__)
 		pp->p_seg.p_cr3,
-#elif defined(__arm__)
+#وإلاإذا defined(__arm__)
 		pp->p_seg.p_ttbr,
-#endif
+#جيڪڏهن_پورو
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
 		schedulerstr(pp->p_scheduler));
 
 	print_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE) {
-		printf(" blocked on: ");
+	إذا(dep != NONE) {
+		لکو(" blocked on: ");
 		print_endpoint(dep);
 	}
-	printf("\n");
+	لکو("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+ساكن فراغ print_proc_depends(بنية proc *pp, ثابت صحيح level)
 {
-	struct proc *depproc = NULL;
+	بنية proc *depproc = عدم;
 	endpoint_t dep;
-#define COL { int i; for(i = 0; i < level; i++) printf("> "); }
+#وصف_ڪريو کانو_2 { صحيح i; لكل(i = 0; i < level; i++) لکو("> "); }
 
-	if(level >= NR_PROCS) {
-		printf("loop??\n");
-		return;
+	إذا(level >= NR_PROCS) {
+		لکو("loop??\n");
+		أرجع;
 	}
 
-	COL
+	کانو_2
 
 	print_proc(pp);
 
-	COL
+	کانو_2
 	proc_stacktrace(pp);
 
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE && dep != ANY) {
-		int procno;
-		if(isokendpt(dep, &procno)) {
+	إذا(dep != NONE && dep != ANY) {
+		صحيح procno;
+		إذا(isokendpt(dep, &procno)) {
 			depproc = proc_addr(procno);
-			if(isemptyp(depproc))
-				depproc = NULL;
+			إذا(isemptyp(depproc))
+				depproc = عدم;
 		}
-		if (depproc)
+		إذا (depproc)
 			print_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+فراغ print_proc_recursive(بنية proc *pp)
 {
 	print_proc_depends(pp, 0);
 }
 
-#if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
-static const char *mtypename(int mtype, int *possible_callname)
+#إذا DEBUG_DUMPIPC || DEBUG_DUMPIPCF
+ساكن ثابت حرف *mtypename(صحيح mtype, صحيح *possible_callname)
 {
-	char *callname = NULL, *errname = NULL;
+	حرف *callname = عدم, *errname = عدم;
 	/* use generated file to recognize message types
 	 *
 	 * we try to match both error numbers and call numbers, as the
@@ -323,180 +323,180 @@ static const char *mtypename(int mtype, int *possible_callname)
 	 * whenever it might be a call number we tell the caller so the
 	 * call message fields can be decoded if known.
 	 */
-	switch(mtype) {
-#define IDENT(x) case x: callname = #x; *possible_callname = 1; break;
-#include "kernel/extracted-mtype.h"
-#undef IDENT
+	بدل(mtype) {
+#وصف_ڪريو IDENT(x) حالة x: callname = #x; *possible_callname = 1; اكسر;
+#ضمن "kernel/extracted-mtype.h"
+#وصف_رد IDENT
 	}
-	switch(mtype) {
-#define IDENT(x) case x: errname = #x; break;
-#include "kernel/extracted-errno.h"
-#undef IDENT
+	بدل(mtype) {
+#وصف_ڪريو IDENT(x) حالة x: errname = #x; اكسر;
+#ضمن "kernel/extracted-errno.h"
+#وصف_رد IDENT
 	}
 
 	/* no match */
-	if(!errname && !callname)
-		return NULL;
+	إذا(!errname && !callname)
+		أرجع عدم;
 
 	/* 2 matches */
-	if(errname && callname) {
-		static char typename[100];
+	إذا(errname && callname) {
+		ساكن حرف typename[100];
 		strcpy(typename, errname);
 		strcat(typename, " / ");
 		strcat(typename, callname);
-		return typename;
+		أرجع typename;
 	}
 
-	if(errname) return errname;
+	إذا(errname) أرجع errname;
 
-	assert(callname);
-	return callname;
+	أكد(callname);
+	أرجع callname;
 }
 
-static void printproc(struct proc *rp)
+ساكن فراغ printproc(بنية proc *rp)
 {
-	if (rp)
-		printf(" %s(%d)", rp->p_name, rp - proc);
-	else
-		printf(" kernel");
+	إذا (rp)
+		لکو(" %s(%d)", rp->p_name, rp - proc);
+	وإلا
+		لکو(" kernel");
 }
 
-static void printparam(const char *name, const void *data, size_t size)
+ساكن فراغ printparam(ثابت حرف *name, ثابت فراغ *معلومات, size_t سائيز)
 {
-	printf(" %s=", name);
-	switch (size) {
-		case sizeof(char):	printf("%d", *(char *) data);	break;
-		case sizeof(short):	printf("%d", *(short *) data);	break;
-		case sizeof(int):	printf("%d", *(int *) data);	break;
-		default:		printf("(%u bytes)", size);	break;
+	لکو(" %s=", name);
+	بدل (سائيز) {
+		حالة حجم(حرف):	لکو("%d", *(حرف *) معلومات);	اكسر;
+		حالة حجم(ننڍو):	لکو("%d", *(ننڍو *) معلومات);	اكسر;
+		حالة حجم(صحيح):	لکو("%d", *(صحيح *) معلومات);	اكسر;
+		افتراضي:		لکو("(%u bytes)", سائيز);	اكسر;
 	}
 }
 
-#ifdef DEBUG_DUMPIPC_NAMES
-static int namematch(char **names, int nnames, char *name)
+#جيڪڏهن_وصف_ٿيل DEBUG_DUMPIPC_نالا
+ساكن صحيح namematch(حرف **نالا, صحيح nnames, حرف *name)
 {
-	int i;
-	for(i = 0; i < nnames; i++)
-		if(!strcmp(names[i], name))
-			return 1;
-	return 0;
+	صحيح i;
+	لكل(i = 0; i < nnames; i++)
+		إذا(!strcmp(نالا[i], name))
+			أرجع 1;
+	أرجع 0;
 }
-#endif
+#جيڪڏهن_پورو
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-	char operation, int printparams)
+فراغ printmsg(پيغام *نياپو, بنية proc *src, بنية proc *dst,
+	حرف operation, صحيح printparams)
 {
-	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	ثابت حرف *name;
+	صحيح mtype = نياپو->m_type, mightbecall = 0;
 
-#ifdef DEBUG_DUMPIPC_NAMES
+#جيڪڏهن_وصف_ٿيل DEBUG_DUMPIPC_نالا
   {
-	char *names[] = DEBUG_DUMPIPC_NAMES;
-	int nnames = sizeof(names)/sizeof(names[0]);
+	حرف *نالا[] = DEBUG_DUMPIPC_نالا;
+	صحيح nnames = حجم(نالا)/حجم(نالا[0]);
 
 	/* skip printing messages for messages neither to
 	 * or from DEBUG_DUMPIPC_EP if it is defined; either
 	 * can be NULL to indicate kernel
 	 */
-	if(!(src && namematch(names, nnames, src->p_name)) &&
-	   !(dst && namematch(names, nnames, dst->p_name))) {
-		return;
+	إذا(!(src && namematch(نالا, nnames, src->p_name)) &&
+	   !(dst && namematch(نالا, nnames, dst->p_name))) {
+		أرجع;
 	}
   }
-#endif
+#جيڪڏهن_پورو
 
 	/* source, destination and message type */
-	printf("%c", operation);
+	لکو("%c", operation);
 	printproc(src);
 	printproc(dst);
 	name = mtypename(mtype, &mightbecall);
-	if (name) {
-		printf(" %s(%d/0x%x)", name, mtype, mtype);
-	} else {
-		printf(" %d/0x%x", mtype, mtype);
+	إذا (name) {
+		لکو(" %s(%d/0x%x)", name, mtype, mtype);
+	} وإلا {
+		لکو(" %d/0x%x", mtype, mtype);
 	}
 
-	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
-#include "kernel/extracted-mfield.h"
-#undef IDENT
+	إذا (mightbecall && printparams) {
+#وصف_ڪريو IDENT(x, y) إذا (mtype == x) printparam(#y, &نياپو->y, حجم(نياپو->y));
+#ضمن "kernel/extracted-mfield.h"
+#وصف_رد IDENT
 	}
-	printf("\n");
+	لکو("\n");
 }
-#endif
+#جيڪڏهن_پورو
 
-#if DEBUG_IPCSTATS
-#define IPCPROCS (NR_PROCS+1)	/* number of slots we need */
-#define KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
-static int messages[IPCPROCS][IPCPROCS];
+#إذا DEBUG_IPCSTATS
+#وصف_ڪريو IPCPROCS (NR_PROCS+1)	/* number of slots we need */
+#وصف_ڪريو KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
+ساكن صحيح messages[IPCPROCS][IPCPROCS];
 
-#define PRINTSLOTS 20
-static struct {
-	int src, dst, messages;
+#وصف_ڪريو PRINTSLOTS 20
+ساكن بنية {
+	صحيح src, dst, messages;
 } winners[PRINTSLOTS];
-static int total, goodslots;
+ساكن صحيح ڪل, goodslots;
 
-static void printstats(int ticks)
+ساكن فراغ printstats(صحيح ticks)
 {
-	int i;
-	for(i = 0; i < goodslots; i++) {
-#define name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
-#define persec(n) (system_hz*(n)/ticks)
-		char	*n1 = name(winners[i].src),
+	صحيح i;
+	لكل(i = 0; i < goodslots; i++) {
+#وصف_ڪريو name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
+#وصف_ڪريو persec(n) (system_hz*(n)/ticks)
+		حرف	*n1 = name(winners[i].src),
 			*n2 = name(winners[i].dst);
-		printf("%2d.  %8s -> %8s  %9d/s\n",
+		لکو("%2d.  %8s -> %8s  %9d/s\n",
 			i, n1, n2, persec(winners[i].messages));
 	}
-	printf("total %d/s\n", persec(total));
+	لکو("total %d/s\n", persec(ڪل));
 }
 
-static void sortstats(void)
+ساكن فراغ sortstats(فراغ)
 {
 	/* Print top message senders/receivers. */
-	int src_slot, dst_slot;
-	total = goodslots = 0;
-	for(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
-		for(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
-			int w = PRINTSLOTS, rem,
-				n = messages[src_slot][dst_slot];
-			total += n;
-			while(w > 0 && n > winners[w-1].messages)
+	صحيح src_جڳهه, dst_جڳهه;
+	ڪل = goodslots = 0;
+	لكل(src_جڳهه = 0; src_جڳهه < IPCPROCS; src_جڳهه++) {
+		لكل(dst_جڳهه = 0; dst_جڳهه < IPCPROCS; dst_جڳهه++) {
+			صحيح w = PRINTSLOTS, rem,
+				n = messages[src_جڳهه][dst_جڳهه];
+			ڪل += n;
+			طالما(w > 0 && n > winners[w-1].messages)
 				w--;
-			if(w >= PRINTSLOTS) continue;
+			إذا(w >= PRINTSLOTS) استمر;
 
 			/* This combination has beaten the current winners
 			 * and should be inserted at position 'w.'
 			 */
 			rem = PRINTSLOTS-w-1;
-			assert(rem >= 0);
-			assert(rem < PRINTSLOTS);
-			if(rem > 0) {
-				assert(w+1 <= PRINTSLOTS-1);
-				assert(w >= 0);
+			أكد(rem >= 0);
+			أكد(rem < PRINTSLOTS);
+			إذا(rem > 0) {
+				أكد(w+1 <= PRINTSLOTS-1);
+				أكد(w >= 0);
 				memmove(&winners[w+1], &winners[w],
-					rem*sizeof(winners[0]));
+					rem*حجم(winners[0]));
 			}
-			winners[w].src = src_slot;
-			winners[w].dst = dst_slot;
+			winners[w].src = src_جڳهه;
+			winners[w].dst = dst_جڳهه;
 			winners[w].messages = n;
-			if(goodslots < PRINTSLOTS) goodslots++;
+			إذا(goodslots < PRINTSLOTS) goodslots++;
 		}
 	}
 }
 
-#define proc2slot(p, s) { \
-	if(p) { s = p->p_nr; } \
-	else { s = KERNELIPC; } \
-	assert(s >= 0 && s < IPCPROCS); \
+#وصف_ڪريو proc2slot(p, s) { \
+	إذا(p) { s = p->p_nr; } \
+	وإلا { s = KERNELIPC; } \
+	أكد(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+ساكن فراغ statmsg(پيغام *نياپو, بنية proc *srcp, بنية proc *dstp)
 {
-	int src, dst, now, secs, dt;
-	static int lastprint;
+	صحيح src, dst, now, secs, dt;
+	ساكن صحيح lastprint;
 
 	/* Stat message. */
-	assert(src);
+	أكد(src);
 	proc2slot(srcp, src);
 	proc2slot(dstp, dst);
 	messages[src][dst]++;
@@ -505,59 +505,59 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 	now = get_monotonic();
 	dt = now - lastprint;
 	secs = dt/system_hz;
-	if(secs >= 30) {
-		memset(winners, 0, sizeof(winners));
+	إذا(secs >= 30) {
+		memset(winners, 0, حجم(winners));
 		sortstats();
 		printstats(dt);
-		memset(messages, 0, sizeof(messages));
+		memset(messages, 0, حجم(messages));
 		lastprint = now;
 	}
 }
-#endif
+#جيڪڏهن_پورو
 
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+#إذا DEBUG_IPC_HOOK
+فراغ hook_ipc_msgkcall(پيغام *نياپو, بنية proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
-#endif
+#إذا DEBUG_DUMPIPC
+	printmsg(نياپو, proc, عدم, 'k', 1);
+#جيڪڏهن_پورو
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+فراغ hook_ipc_msgkresult(پيغام *نياپو, بنية proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
-#endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
-#endif
+#إذا DEBUG_DUMPIPC
+	printmsg(نياپو, عدم, proc, 'k', 0);
+#جيڪڏهن_پورو
+#إذا DEBUG_IPCSTATS
+	statmsg(نياپو, proc, عدم);
+#جيڪڏهن_پورو
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+فراغ hook_ipc_msgrecv(پيغام *نياپو, بنية proc *src, بنية proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
-#endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
-#endif
+#إذا DEBUG_DUMPIPC
+	printmsg(نياپو, src, dst, 'r', 0);
+#جيڪڏهن_پورو
+#إذا DEBUG_IPCSTATS
+	statmsg(نياپو, src, dst);
+#جيڪڏهن_پورو
 }
 
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
+فراغ hook_ipc_msgsend(پيغام *نياپو, بنية proc *src, بنية proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
-#endif
+#إذا DEBUG_DUMPIPC
+	printmsg(نياپو, src, dst, 's', 1);
+#جيڪڏهن_پورو
 }
 
-void hook_ipc_clear(struct proc *p)
+فراغ hook_ipc_clear(بنية proc *p)
 {
-#if DEBUG_IPCSTATS
-	int slot, i;
-	assert(p);
-	proc2slot(p, slot);
-	for(i = 0; i < IPCPROCS; i++)
-		messages[slot][i] = messages[i][slot] = 0;
-#endif
+#إذا DEBUG_IPCSTATS
+	صحيح جڳهه, i;
+	أكد(p);
+	proc2slot(p, جڳهه);
+	لكل(i = 0; i < IPCPROCS; i++)
+		messages[جڳهه][i] = messages[i][جڳهه] = 0;
+#جيڪڏهن_پورو
 }
-#endif
+#جيڪڏهن_پورو

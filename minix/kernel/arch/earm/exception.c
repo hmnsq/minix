@@ -3,21 +3,21 @@
  * a panic.
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <signal.h>
-#include <string.h>
-#include <assert.h>
-#include "kernel/proc.h"
-#include "kernel/proto.h"
-#include <machine/vm.h>
+#ضمن "kernel/kernel.h"
+#ضمن "arch_proto.h"
+#ضمن <signal.h>
+#ضمن <string.h>
+#ضمن <assert.h>
+#ضمن "kernel/proc.h"
+#ضمن "kernel/proto.h"
+#ضمن <machine/vm.h>
 
-struct ex_s {
-	char *msg;
-	int signum;
+بنية ex_s {
+	حرف *نياپو;
+	صحيح signum;
 };
 
-static struct ex_s ex_data[] = {
+ساكن بنية ex_s ex_معلومات[] = {
 	{ "Reset", 0},
 	{ "Undefined instruction", SIGILL},
 	{ "Supervisor call", 0},
@@ -28,130 +28,130 @@ static struct ex_s ex_data[] = {
 	{ "Fast Interrupt", 0},
 };
 
-static void inkernel_disaster(struct proc *saved_proc,
-	reg_t *saved_lr, struct ex_s *ep, int is_nested);
+ساكن فراغ inkernel_disaster(بنية proc *saved_proc,
+	reg_t *saved_lr, بنية ex_s *ep, صحيح is_nested);
 
-extern int catch_pagefaults;
+خارجي صحيح catch_pagefaults;
 
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc);
+ساكن فراغ proc_stacktrace_execute(بنية proc *whichproc, reg_t v_bp, reg_t pc);
 
-static void pagefault( struct proc *pr,
+ساكن فراغ pagefault( بنية proc *pr,
 			reg_t *saved_lr,
-			int is_nested,
+			صحيح is_nested,
 			u32_t pagefault_addr,
-			u32_t pagefault_status)
+			u32_t pagefault_حالت)
 {
-	int in_physcopy = 0, in_memset = 0;
+	صحيح اندريون_physcopy = 0, اندريون_memset = 0;
 
-	message m_pagefault;
-	int err;
+	پيغام m_pagefault;
+	صحيح err;
 
-	in_physcopy = (*saved_lr > (vir_bytes) phys_copy) &&
-	   (*saved_lr < (vir_bytes) phys_copy_fault);
+	اندريون_physcopy = (*saved_lr > (vir_بائيٽون) phys_copy) &&
+	   (*saved_lr < (vir_بائيٽون) phys_copy_fault);
 
-	in_memset = (*saved_lr > (vir_bytes) phys_memset) &&
-	   (*saved_lr < (vir_bytes) memset_fault);
+	اندريون_memset = (*saved_lr > (vir_بائيٽون) phys_memset) &&
+	   (*saved_lr < (vir_بائيٽون) memset_fault);
 
-	if((is_nested || iskernelp(pr)) &&
-		catch_pagefaults && (in_physcopy || in_memset)) {
-		if (is_nested) {
-			if(in_physcopy) {
-				assert(!in_memset);
-				*saved_lr = (reg_t) phys_copy_fault_in_kernel;
-			} else {
-				*saved_lr = (reg_t) memset_fault_in_kernel;
+	إذا((is_nested || iskernelp(pr)) &&
+		catch_pagefaults && (اندريون_physcopy || اندريون_memset)) {
+		إذا (is_nested) {
+			إذا(اندريون_physcopy) {
+				أكد(!اندريون_memset);
+				*saved_lr = (reg_t) phys_copy_fault_اندريون_kernel;
+			} وإلا {
+				*saved_lr = (reg_t) memset_fault_اندريون_kernel;
 			}
 		}
-		else {
+		وإلا {
 			pr->p_reg.pc = (reg_t) phys_copy_fault;
 			pr->p_reg.retreg = pagefault_addr;
 		}
 
-		return;
+		أرجع;
 	}
 
-	if(is_nested) {
-		printf("pagefault in kernel at pc 0x%lx address 0x%lx\n",
+	إذا(is_nested) {
+		لکو("pagefault in kernel at pc 0x%lx address 0x%lx\n",
 			*saved_lr, pagefault_addr);
-		inkernel_disaster(pr, saved_lr, NULL, is_nested);
+		inkernel_disaster(pr, saved_lr, عدم, is_nested);
 	}
 
 	/* VM can't handle page faults. */
-	if(pr->p_endpoint == VM_PROC_NR) {
+	إذا(pr->p_endpoint == VM_PROC_NR) {
 		/* Page fault we can't / don't want to
 		 * handle.
 		 */
-		printf("pagefault for VM on CPU %d, "
+		لکو("pagefault for VM on CPU %d, "
 			"pc = 0x%x, addr = 0x%x, flags = 0x%x, is_nested %d\n",
-			cpuid, pr->p_reg.pc, pagefault_addr, pagefault_status,
+			cpuid, pr->p_reg.pc, pagefault_addr, pagefault_حالت,
 			is_nested);
 		proc_stacktrace(pr);
-		printf("pc of pagefault: 0x%lx\n", pr->p_reg.pc);
+		لکو("pc of pagefault: 0x%lx\n", pr->p_reg.pc);
 		panic("pagefault in VM");
 
-		return;
+		أرجع;
 	}
 
 	/* Don't schedule this process until pagefault is handled. */
-	RTS_SET(pr, RTS_PAGEFAULT);
+	RTS_سيٽ(pr, RTS_PAGEFAULT);
 
 	/* tell Vm about the pagefault */
-	m_pagefault.m_source = pr->p_endpoint;
+	m_pagefault.m_ذريعو = pr->p_endpoint;
 	m_pagefault.m_type   = VM_PAGEFAULT;
 	m_pagefault.VPF_ADDR = pagefault_addr;
-	m_pagefault.VPF_FLAGS = pagefault_status;
+	m_pagefault.VPF_FLAGS = pagefault_حالت;
 
-	if ((err = mini_send(pr, VM_PROC_NR,
+	إذا ((err = mini_send(pr, VM_PROC_NR,
 					&m_pagefault, FROM_KERNEL))) {
 		panic("WARNING: pagefault: mini_send returned %d\n", err);
 	}
 
-	return;
+	أرجع;
 }
 
-static void
-data_abort(int is_nested, struct proc *pr, reg_t *saved_lr,
-		       struct ex_s *ep, u32_t dfar, u32_t dfsr)
+ساكن فراغ
+معلومات_abort(صحيح is_nested, بنية proc *pr, reg_t *saved_lr,
+		       بنية ex_s *ep, u32_t dfar, u32_t dfsr)
 {
 	/* Extract fault status bit [0:3, 10] from DFSR */
 	u32_t fs = dfsr & 0x0F;
 	fs |= ((dfsr >> 6) & 0x10);
 
 	 /* Translation and permission faults are handled as pagefaults. */
-	if (is_trans_fault(fs) || is_perm_fault(fs)) {
+	إذا (is_trans_fault(fs) || is_perm_fault(fs)) {
 		pagefault(pr, saved_lr, is_nested, dfar, dfsr);
-	} else if (!is_nested) {
+	} وإلا إذا (!is_nested) {
 		/* A user process caused some other kind of data abort. */
-		int signum = SIGSEGV;
+		صحيح signum = SIGSEGV;
 
-		if (is_align_fault(fs)) {
+		إذا (is_align_fault(fs)) {
 			signum = SIGBUS;
-		} else {
-			printf("KERNEL: unknown data abort by proc %d sending "
+		} وإلا {
+			لکو("KERNEL: unknown data abort by proc %d sending "
 			       "SIGSEGV (dfar=0x%lx dfsr=0x%lx fs=0x%lx)\n",
 			       proc_nr(pr), dfar, dfsr, fs);
 		}
 		cause_sig(proc_nr(pr), signum);
-	} else { /* is_nested */
-		printf("KERNEL: inkernel data abort - disaster (dfar=0x%lx "
+	} وإلا { /* is_nested */
+		لکو("KERNEL: inkernel data abort - disaster (dfar=0x%lx "
 		       "dfsr=0x%lx fs=0x%lx)\n", dfar, dfsr, fs);
 		inkernel_disaster(pr, saved_lr, ep, is_nested);
 	}
 }
 
-static void inkernel_disaster(struct proc *saved_proc,
-	reg_t *saved_lr, struct ex_s *ep,
-	int is_nested)
+ساكن فراغ inkernel_disaster(بنية proc *saved_proc,
+	reg_t *saved_lr, بنية ex_s *ep,
+	صحيح is_nested)
 {
-#if USE_SYSDEBUG
-  if(ep)
-	printf("\n%s\n", ep->msg);
+#إذا USE_SYSDEBUG
+  إذا(ep)
+	لکو("\n%s\n", ep->نياپو);
 
-  printf("cpu %d is_nested = %d ", cpuid, is_nested);
+  لکو("cpu %d is_nested = %d ", cpuid, is_nested);
 
-  if (saved_proc) {
-	  printf("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
-	  printf("pc = 0x%x\n", (unsigned) saved_proc->p_reg.pc);
+  إذا (saved_proc) {
+	  لکو("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
+	  لکو("pc = 0x%x\n", (بنانشان) saved_proc->p_reg.pc);
 	  proc_stacktrace(saved_proc);
 
 	  panic("Unhandled kernel exception");
@@ -160,53 +160,53 @@ static void inkernel_disaster(struct proc *saved_proc,
   /* in an early stage of boot process we don't have processes yet */
   panic("exception in kernel while booting, no saved_proc yet");
 
-#endif /* USE_SYSDEBUG */
+#جيڪڏهن_پورو /* USE_SYSDEBUG */
 }
 
-void exception_handler(int is_nested, reg_t *saved_lr, int vector)
+فراغ exception_handler(صحيح is_nested, reg_t *saved_lr, صحيح ويڪٽر)
 {
 /* An exception or unexpected interrupt has occurred. */
-  struct ex_s *ep;
-  struct proc *saved_proc;
+  بنية ex_s *ep;
+  بنية proc *saved_proc;
 
   saved_proc = get_cpulocal_var(proc_ptr);
 
-  ep = &ex_data[vector];
+  ep = &ex_معلومات[ويڪٽر];
 
-  assert((vir_bytes) saved_lr >= kinfo.vir_kern_start);
+  أكد((vir_بائيٽون) saved_lr >= kinfo.vir_kern_شروعات);
 
   /*
    * handle special cases for nested problems as they might be tricky or filter
    * them out quickly if the traps are not nested
    */
-  if (is_nested) {
+  إذا (is_nested) {
 	/*
 	 * if a problem occurred while copying a message from userspace because
 	 * of a wrong pointer supplied by userland, handle it the only way we
 	 * can handle it ...
 	 */
-	if (((void*)*saved_lr >= (void*)copy_msg_to_user &&
-			(void*)*saved_lr <= (void*)__copy_msg_to_user_end) ||
-			((void*)*saved_lr >= (void*)copy_msg_from_user &&
-			(void*)*saved_lr <= (void*)__copy_msg_from_user_end)) {
-		switch(vector) {
+	إذا (((فراغ*)*saved_lr >= (فراغ*)copy_نياپو_منزل_user &&
+			(فراغ*)*saved_lr <= (فراغ*)__copy_msg_to_user_end) ||
+			((فراغ*)*saved_lr >= (فراغ*)copy_نياپو_from_user &&
+			(فراغ*)*saved_lr <= (فراغ*)__copy_msg_from_user_end)) {
+		بدل(ويڪٽر) {
 		/* these error are expected */
-		case DATA_ABORT_VECTOR:
+		حالة معلومات_ABORT_ويڪٽر:
 			*saved_lr = (reg_t) __user_copy_msg_pointer_failure;
-			return;
-		default:
+			أرجع;
+		افتراضي:
 			panic("Copy involving a user pointer failed unexpectedly!");
 		}
 	}
   }
 
-  if (vector == DATA_ABORT_VECTOR) {
-	data_abort(is_nested, saved_proc, saved_lr, ep, read_dfar(), read_dfsr());
-	return;
+  إذا (ويڪٽر == معلومات_ABORT_ويڪٽر) {
+	معلومات_abort(is_nested, saved_proc, saved_lr, ep, read_dfar(), read_dfsr());
+	أرجع;
   }
 
-  if (!is_nested && vector == PREFETCH_ABORT_VECTOR) {
-	static int warned = FALSE;
+  إذا (!is_nested && ويڪٽر == PREFETCH_ABORT_ويڪٽر) {
+	ساكن صحيح warned = FALSE;
 	reg_t ifar = read_ifar(), ifsr = read_ifsr();
 
 	/* The saved_lr is the instruction we're going to execute after
@@ -222,24 +222,24 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
 	 * of this behavior is unknown.  We have not yet seen the same on
 	 * actual hardware, which is why we warn about this problem once.
 	 */
-	if (*saved_lr != ifar && !warned) {
-		printf("KERNEL: prefetch abort with differing IFAR and LR\n");
-		printf("KERNEL: IFSR %"PRIx32" IFAR %"PRIx32" LR %"PRIx32" in "
+	إذا (*saved_lr != ifar && !warned) {
+		لکو("KERNEL: prefetch abort with differing IFAR and LR\n");
+		لکو("KERNEL: IFSR %"PRIx32" IFAR %"PRIx32" LR %"PRIx32" in "
 		    "%s/%d\n", ifsr, ifar, *saved_lr, saved_proc->p_name,
 		    saved_proc->p_endpoint);
 		warned = TRUE;
 	}
 	pagefault(saved_proc, saved_lr, is_nested, ifar, ifsr);
-	return;
+	أرجع;
   }
 
   /* If an exception occurs while running a process, the is_nested variable
    * will be zero. Exceptions in interrupt handlers or system traps will make
    * is_nested non-zero.
    */
-  if (is_nested == 0 && ! iskernelp(saved_proc)) {
+  إذا (is_nested == 0 && ! iskernelp(saved_proc)) {
 	cause_sig(proc_nr(saved_proc), ep->signum);
-	return;
+	أرجع;
   }
 
   /* Exception in system code. This is not supposed to happen. */
@@ -248,28 +248,28 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
   panic("return from inkernel_disaster");
 }
 
-#if USE_SYSDEBUG
+#إذا USE_SYSDEBUG
 /*===========================================================================*
  *				proc_stacktrace_execute			     *
  *===========================================================================*/
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc)
+ساكن فراغ proc_stacktrace_execute(بنية proc *whichproc, reg_t v_bp, reg_t pc)
 {
-	printf("%-8.8s %6d 0x%lx \n",
+	لکو("%-8.8s %6d 0x%lx \n",
 		whichproc->p_name, whichproc->p_endpoint, pc);
 }
-#endif
+#جيڪڏهن_پورو
 
-void proc_stacktrace(struct proc *whichproc)
+فراغ proc_stacktrace(بنية proc *whichproc)
 {
-#if USE_SYSDEBUG
+#إذا USE_SYSDEBUG
 	proc_stacktrace_execute(whichproc, whichproc->p_reg.fp, whichproc->p_reg.pc);
-#endif /* USE_SYSDEBUG */
+#جيڪڏهن_پورو /* USE_SYSDEBUG */
 }
 
-void enable_fpu_exception(void)
+فراغ enable_fpu_exception(فراغ)
 {
 }
 
-void disable_fpu_exception(void)
+فراغ disable_fpu_exception(فراغ)
 {
 }

@@ -1,5 +1,5 @@
-#ifndef PRIV_H
-#define PRIV_H
+#جيڪڏهن_وصف_نه_ٿيل PRIV_H
+#وصف_ڪريو PRIV_H
 
 /* Declaration of the system privileges structure. It defines flags, system 
  * call masks, an synchronous alarm timer, I/O privileges, pending hardware 
@@ -12,30 +12,30 @@
  *   Nov 22, 2009  rewrite of privilege management (Cristiano Giuffrida)
  *   Jul 01, 2005  Created.  (Jorrit N. Herder)	
  */
-#include <minix/const.h>
-#include <minix/priv.h>
-#include "kernel/const.h"
-#include "kernel/type.h"
-#include "kernel/ipc_filter.h"
+#ضمن <minix/const.h>
+#ضمن <minix/priv.h>
+#ضمن "kernel/const.h"
+#ضمن "kernel/type.h"
+#ضمن "kernel/ipc_filter.h"
 
-struct priv {
+بنية priv {
   proc_nr_t s_proc_nr;		/* number of associated process */
   sys_id_t s_id;		/* index of this system structure */
-  short s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
-  int s_init_flags;             /* initialization flags given to the process. */
+  ننڍو s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
+  صحيح s_init_flags;             /* initialization flags given to the process. */
 
   /* Asynchronous sends */
-  vir_bytes s_asyntab;		/* addr. of table in process' address space */
+  vir_بائيٽون s_asyntab;		/* addr. of table in process' address space */
   size_t s_asynsize;		/* number of elements in table. 0 when not in
 				 * use
 				 */
   endpoint_t s_asynendpoint;    /* the endpoint the asyn table belongs to. */
 
-  short s_trap_mask;		/* allowed system call traps */
-  sys_map_t s_ipc_to;		/* allowed destination processes */
+  ننڍو s_trap_نقاب;		/* allowed system call traps */
+  sys_map_t s_ipc_منزل;		/* allowed destination processes */
 
   /* allowed kernel calls */
-  bitchunk_t s_k_call_mask[SYS_CALL_MASK_SIZE];
+  bitchunk_t s_k_call_نقاب[SYS_CALL_نقاب_سائيز];
 
   endpoint_t s_sig_mgr;		/* signal manager for system signals */
   endpoint_t s_bak_sig_mgr;	/* backup signal manager for system signals */
@@ -46,60 +46,60 @@ struct priv {
   ipc_filter_t *s_ipcf;         /* ipc filter (NULL when no filter is set) */
 
   minix_timer_t s_alarm_timer;	/* synchronous alarm timer */
-  reg_t *s_stack_guard;		/* stack guard word for kernel tasks */
+  reg_t *s_ڍير_guard;		/* stack guard word for kernel tasks */
 
-  char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
+  حرف s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
-  int s_nr_io_range;		/* allowed I/O ports */
-  struct io_range s_io_tab[NR_IO_RANGE];
+  صحيح s_nr_io_range;		/* allowed I/O ports */
+  بنية io_range s_io_tab[NR_IO_RANGE];
 
-  int s_nr_mem_range;		/* allowed memory ranges */
-  struct minix_mem_range s_mem_tab[NR_MEM_RANGE];
+  صحيح s_nr_mem_range;		/* allowed memory ranges */
+  بنية minix_mem_range s_mem_tab[NR_MEM_RANGE];
 
-  int s_nr_irq;			/* allowed IRQ lines */
-  int s_irq_tab[NR_IRQ];
-  vir_bytes s_grant_table;	/* grant table address of process, or 0 */
-  int s_grant_entries;		/* no. of entries, or 0 */
+  صحيح s_nr_irq;			/* allowed IRQ lines */
+  صحيح s_irq_tab[NR_IRQ];
+  vir_بائيٽون s_grant_جدول;	/* grant table address of process, or 0 */
+  صحيح s_grant_entries;		/* no. of entries, or 0 */
   endpoint_t s_grant_endpoint;  /* the endpoint the grant table belongs to */
-  vir_bytes s_state_table;	/* state table address of process, or 0 */
-  int s_state_entries;		/* no. of entries, or 0 */
+  vir_بائيٽون s_state_جدول;	/* state table address of process, or 0 */
+  صحيح s_state_entries;		/* no. of entries, or 0 */
 };
 
 /* Guard word for task stacks. */
-#define STACK_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
+#وصف_ڪريو ڍير_GUARD	((reg_t) (حجم(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
 
 /* Magic system structure table addresses. */
-#define BEG_PRIV_ADDR              (&priv[0])
-#define END_PRIV_ADDR              (&priv[NR_SYS_PROCS])
-#define BEG_STATIC_PRIV_ADDR       BEG_PRIV_ADDR
-#define END_STATIC_PRIV_ADDR       (BEG_STATIC_PRIV_ADDR + NR_STATIC_PRIV_IDS)
-#define BEG_DYN_PRIV_ADDR          END_STATIC_PRIV_ADDR
-#define END_DYN_PRIV_ADDR          END_PRIV_ADDR
+#وصف_ڪريو BEG_PRIV_ADDR              (&priv[0])
+#وصف_ڪريو پڇاڙي_PRIV_ADDR              (&priv[NR_SYS_PROCS])
+#وصف_ڪريو BEG_STATIC_PRIV_ADDR       BEG_PRIV_ADDR
+#وصف_ڪريو پڇاڙي_STATIC_PRIV_ADDR       (BEG_STATIC_PRIV_ADDR + NR_STATIC_PRIV_IDS)
+#وصف_ڪريو BEG_DYN_PRIV_ADDR          پڇاڙي_STATIC_PRIV_ADDR
+#وصف_ڪريو پڇاڙي_DYN_PRIV_ADDR          پڇاڙي_PRIV_ADDR
 
-#define priv_addr(i)      (ppriv_addr)[(i)]
-#define priv_id(rp)	  ((rp)->p_priv->s_id)
-#define priv(rp)	  ((rp)->p_priv)
+#وصف_ڪريو priv_addr(i)      (ppriv_addr)[(i)]
+#وصف_ڪريو priv_id(rp)	  ((rp)->p_priv->s_id)
+#وصف_ڪريو priv(rp)	  ((rp)->p_priv)
 
-#define id_to_nr(id)	priv_addr(id)->s_proc_nr
-#define nr_to_id(nr)    priv(proc_addr(nr))->s_id
+#وصف_ڪريو id_منزل_nr(id)	priv_addr(id)->s_proc_nr
+#وصف_ڪريو nr_منزل_id(nr)    priv(proc_addr(nr))->s_id
 
-#define may_send_to(rp, nr) (get_sys_bit(priv(rp)->s_ipc_to, nr_to_id(nr)))
-#define may_asynsend_to(rp, nr) (may_send_to(rp, nr) || (rp)->p_nr == nr)
+#وصف_ڪريو may_send_منزل(rp, nr) (get_sys_ٻٽو_انگ(priv(rp)->s_ipc_منزل, nr_منزل_id(nr)))
+#وصف_ڪريو may_asynsend_منزل(rp, nr) (may_send_منزل(rp, nr) || (rp)->p_nr == nr)
 
 /* The system structures table and pointers to individual table slots. The 
  * pointers allow faster access because now a process entry can be found by 
  * indexing the psys_addr array, while accessing an element i requires a 
  * multiplication with sizeof(struct sys) to determine the address. 
  */
-EXTERN struct priv priv[NR_SYS_PROCS];		/* system properties table */
-EXTERN struct priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
+EXTERN بنية priv priv[NR_SYS_PROCS];		/* system properties table */
+EXTERN بنية priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
 
 /* Make sure the system can boot. The following sanity check verifies that
  * the system privileges table is large enough for the number of processes
  * in the boot image. 
  */
-#if (NR_BOOT_PROCS > NR_SYS_PROCS)
-#error NR_SYS_PROCS must be larger than NR_BOOT_PROCS
-#endif
+#إذا (NR_BOOT_PROCS > NR_SYS_PROCS)
+#غلطي NR_SYS_PROCS must be larger than NR_BOOT_PROCS
+#جيڪڏهن_پورو
 
-#endif /* PRIV_H */
+#جيڪڏهن_پورو /* PRIV_H */

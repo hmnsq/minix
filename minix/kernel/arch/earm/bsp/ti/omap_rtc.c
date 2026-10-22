@@ -5,54 +5,54 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#ضمن <assert.h>
+#ضمن <sys/types.h>
+#ضمن <machine/cpu.h>
+#ضمن <minix/type.h>
+#ضمن <minix/board.h>
+#ضمن <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#ضمن "kernel/kernel.h"
+#ضمن "kernel/proc.h"
+#ضمن "kernel/vm.h"
+#ضمن "kernel/proto.h"
+#ضمن "arch_proto.h"
+#ضمن "omap_rtc.h"
 
-#define RTC_SS_BASE 0x44e3e000
-#define RTC_SS_SIZE 0x1000
-#define RTC_CTRL_REG 0x40
-#define RTC_CTRL_RTC_STOP_BIT 0
+#وصف_ڪريو RTC_SS_بنياد 0x44e3e000
+#وصف_ڪريو RTC_SS_سائيز 0x1000
+#وصف_ڪريو RTC_CTRL_REG 0x40
+#وصف_ڪريو RTC_CTRL_RTC_STOP_ٻٽو_انگ 0
 
-struct omap_rtc
+بنية omap_rtc
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_بائيٽون بنياد;
+	vir_بائيٽون سائيز;
 };
 
-static struct omap_rtc omap_rtc = {
-	.base = RTC_SS_BASE,
-	.size = RTC_SS_SIZE
+ساكن بنية omap_rtc omap_rtc = {
+	.بنياد = RTC_SS_بنياد,
+	.سائيز = RTC_SS_سائيز
 };
 
-static kern_phys_map rtc_phys_map;
+ساكن kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+فراغ
+omap3_rtc_init(فراغ)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
-		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
+	إذا (BOARD_IS_BB(machine.board_id)) {
+		kern_phys_map_ptr(omap_rtc.بنياد, omap_rtc.سائيز,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
-		    (vir_bytes) & omap_rtc.base);
+		    (vir_بائيٽون) & omap_rtc.بنياد);
 	}
 }
 
-void
-omap3_rtc_run(void)
+فراغ
+omap3_rtc_لاڳيتو(فراغ)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	إذا (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
-		mmio_set((omap_rtc.base + RTC_CTRL_REG),
-		    (1 << RTC_CTRL_RTC_STOP_BIT));
+		mmio_سيٽ((omap_rtc.بنياد + RTC_CTRL_REG),
+		    (1 << RTC_CTRL_RTC_STOP_ٻٽو_انگ));
 	}
 }

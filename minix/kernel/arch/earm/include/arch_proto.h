@@ -1,62 +1,62 @@
 
-#ifndef _ARM_PROTO_H
-#define _ARM_PROTO_H
+#جيڪڏهن_وصف_نه_ٿيل _ARM_PROTO_H
+#وصف_ڪريو _ARM_PROTO_H
 
-#include <machine/vm.h>
+#ضمن <machine/vm.h>
 
-#define K_STACK_SIZE	ARM_PAGE_SIZE
+#وصف_ڪريو K_ڍير_سائيز	ARM_صفحو_سائيز
 
 
-#ifndef __ASSEMBLY__
+#جيڪڏهن_وصف_نه_ٿيل __ASSEMBLY__
 
-#include "cpufunc.h"
+#ضمن "cpufunc.h"
 
 /* klib */
-__dead void reset(void);
-phys_bytes vir2phys(void *);
-vir_bytes phys_memset(phys_bytes ph, u32_t c, phys_bytes bytes);
+__dead فراغ reset(فراغ);
+phys_بائيٽون vir2phys(فراغ *);
+vir_بائيٽون phys_memset(phys_بائيٽون ph, u32_t c, phys_بائيٽون بائيٽون);
 
-void __switch_address_space(struct proc *p, struct proc **__ptproc);
-#define switch_address_space(proc)	\
+فراغ __switch_address_space(بنية proc *p, بنية proc **__ptproc);
+#وصف_ڪريو switch_پتو_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
-void __copy_msg_from_user_end(void);
-void __copy_msg_to_user_end(void);
-void __user_copy_msg_pointer_failure(void);
+فراغ __copy_msg_from_user_end(فراغ);
+فراغ __copy_msg_to_user_end(فراغ);
+فراغ __user_copy_msg_pointer_failure(فراغ);
 
 /* multiboot.c */
-void multiboot_init(void);
+فراغ multiboot_init(فراغ);
 
 /* protect.c */
-struct tss_s {
+بنية tss_s {
   reg_t sp0;                    /* stack pointer to use during interrupt */
 } __attribute__((packed));
-int tss_init(unsigned cpu, void * kernel_stack);
+صحيح tss_init(بنانشان cpu, فراغ * kernel_ڍير);
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
-void vm_enable_paging(void);
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
-phys_bytes pg_roundup(phys_bytes b);
-void pg_info(reg_t *, u32_t **);
-void pg_clear(void);
-void pg_identity(kinfo_t *);
-phys_bytes pg_load(void);
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+فراغ جوڙيو_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
+phys_بائيٽون alloc_سڀ_کان_هيٺ(kinfo_t *cbi, phys_بائيٽون len);
+فراغ vm_enable_paging(فراغ);
+فراغ cut_memmap(kinfo_t *cbi, phys_بائيٽون شروعات, phys_بائيٽون پڇاڙي);
+phys_بائيٽون pg_roundup(phys_بائيٽون b);
+فراغ pg_info(reg_t *, u32_t **);
+فراغ pg_clear(فراغ);
+فراغ pg_سڃاڻپ_عنصر(kinfo_t *);
+phys_بائيٽون pg_ڀريو(فراغ);
+فراغ pg_map(phys_بائيٽون phys, vir_بائيٽون vaddr, vir_بائيٽون vaddr_پڇاڙي, kinfo_t *cbi);
+صحيح pg_mapkernel(فراغ);
+فراغ pg_mapproc(بنية proc *p, بنية boot_image *ip, kinfo_t *cbi);
 
-EXTERN void * k_stacks_start;
-extern void * k_stacks;
+EXTERN فراغ * k_stacks_شروعات;
+خارجي فراغ * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#وصف_ڪريو get_k_ڍير_چوٽي(cpu)	((فراغ *)(((حرف*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_ڍير_سائيز))
 
 
 /*
  * Definition of a callback used when a memory map changed it's base address
  */
-typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
+تعريفنوع صحيح (*kern_phys_map_mapped)(vir_بائيٽون id, vir_بائيٽون new_addr );
 
 /*
  * struct used internally by memory.c to keep a list of
@@ -65,15 +65,15 @@ typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
  * The data doesn't need to be initialized. See omap_serial for
  * and example usage.
  */
-typedef struct kern_phys_map{
-	phys_bytes addr; /* The physical address to map */
-	vir_bytes size;  /* The size of the mapping */
-	vir_bytes id;	 /* an id passed to the callback */
-	int vm_flags;	 /* flags to be passed to vm map */
+تعريفنوع بنية kern_phys_map{
+	phys_بائيٽون addr; /* The physical address to map */
+	vir_بائيٽون سائيز;  /* The size of the mapping */
+	vir_بائيٽون id;	 /* an id passed to the callback */
+	صحيح vm_flags;	 /* flags to be passed to vm map */
 	kern_phys_map_mapped cb; /* the callback itself */
-	phys_bytes vir; /* The virtual address once remapped */
-	int index; 	/* index */
-	struct kern_phys_map *next; /* pointer to the next */
+	phys_بائيٽون vir; /* The virtual address once remapped */
+	صحيح اشاريو; 	/*اشاريو*/
+	بنية kern_phys_map *ايندڙ; /* pointer to the next */
 } kern_phys_map ; 
 
 
@@ -103,23 +103,23 @@ typedef struct kern_phys_map{
  * mapping in the callback. It also is not possible to use printf for
  * the same reason.
  */
-int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
-		   int vm_flags, kern_phys_map * priv,
-		   kern_phys_map_mapped cb, vir_bytes id);
+صحيح kern_req_phys_map( phys_بائيٽون بنياد_پتو, vir_بائيٽون io_سائيز,
+		   صحيح vm_flags, kern_phys_map * priv,
+		   kern_phys_map_mapped cb, vir_بائيٽون id);
 
 /*
  * Request a physical mapping and put the result in the given prt
  * Note that ptr will only be valid once the callback happened.
  */
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
-		       int vm_flags, kern_phys_map * priv, 
-		       vir_bytes ptr);
+صحيح kern_phys_map_ptr( phys_بائيٽون بنياد_پتو, vir_بائيٽون io_سائيز, 
+		       صحيح vm_flags, kern_phys_map * priv, 
+		       vir_بائيٽون ptr);
 
-void arch_ser_init(void);
+فراغ arch_ser_init(فراغ);
 
 /* functions defined in architecture-independent kernel source. */
-#include "kernel/proto.h"
+#ضمن "kernel/proto.h"
 
-#endif /* __ASSEMBLY__ */
+#جيڪڏهن_پورو /* __ASSEMBLY__ */
 
-#endif
+#جيڪڏهن_پورو

@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#جيڪڏهن_وصف_نه_ٿيل __SPINLOCK_H__
+#وصف_ڪريو __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-typedef struct spinlock {
+تعريفنوع بنية spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#جيڪڏهن_وصف_نه_ٿيل CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#وصف_ڪريو SPINLOCK_DEFINE(name)
+#وصف_ڪريو ذاتي_SPINLOCK_DEFINE(name)
+#وصف_ڪريو SPINLOCK_DECLARE(name)
+#وصف_ڪريو spinlock_init(sl)
+#وصف_ڪريو spinlock_تالو(sl)
+#وصف_ڪريو spinlock_unlock(sl)
 
-#else
+#وإلا
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#وصف_ڪريو SPINLOCK_DEFINE(name)	spinlock_t name;
+#وصف_ڪريو ذاتي_SPINLOCK_DEFINE(name)	ذاتي SPINLOCK_DEFINE(name)
+#وصف_ڪريو SPINLOCK_DECLARE(name)	خارجي SPINLOCK_DEFINE(name)
+#وصف_ڪريو spinlock_init(sl) افعل { (sl)->val = 0; } طالما (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#إذا CONFIG_MAX_CPUS == 1
+#وصف_ڪريو spinlock_تالو(sl)
+#وصف_ڪريو spinlock_unlock(sl)
+#وإلا
+فراغ arch_spinlock_تالو(atomic_t * sl);
+فراغ arch_spinlock_unlock(atomic_t * sl);
+#وصف_ڪريو spinlock_تالو(sl)	arch_spinlock_تالو((atomic_t*) sl)
+#وصف_ڪريو spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#جيڪڏهن_پورو
 
 
-#endif /* CONFIG_SMP */
+#جيڪڏهن_پورو /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#وصف_ڪريو BKL_تالو()	spinlock_تالو(&big_kernel_تالو)
+#وصف_ڪريو BKL_UNLOCK()	spinlock_unlock(&big_kernel_تالو)
 
-#endif /* __SPINLOCK_H__ */
+#جيڪڏهن_پورو /* __SPINLOCK_H__ */

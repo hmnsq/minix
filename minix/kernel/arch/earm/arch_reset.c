@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#ضمن <unistd.h>
+#ضمن <ctype.h>
+#ضمن <string.h>
+#ضمن <machine/cpu.h>
+#ضمن <assert.h>
+#ضمن <signal.h>
+#ضمن <machine/vm.h>
+#ضمن <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#ضمن <minix/board.h>
+#ضمن <sys/reboot.h>
 
-#include <minix/u64.h>
+#ضمن <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#ضمن "archconst.h"
+#ضمن "arch_proto.h"
+#ضمن "bsp_reset.h"
+#ضمن "bsp_serial.h"
+#ضمن "kernel/proc.h"
+#ضمن "kernel/debug.h"
+#ضمن "direct_utils.h"
+#ضمن <machine/multiboot.h>
 
-void
-halt_cpu(void)
+فراغ
+halt_cpu(فراغ)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm متطاير("dsb");
+	asm متطاير("cpsie i");
+	asm متطاير("wfi");
+	asm متطاير("cpsid i");
 }
 
-void
-reset(void)
+فراغ
+reset(فراغ)
 {
 	bsp_reset(); /* should not exit */
-	direct_print("Reset not supported.");
-	while (1);
+	سڌو_print("Reset not supported.");
+	طالما (1);
 }
 
-void
-poweroff(void)
+فراغ
+poweroff(فراغ)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
-	direct_print("Unable to power-off this device.");
-	while (1);
+	سڌو_print("Unable to power-off this device.");
+	طالما (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead فراغ
+arch_shutdown(صحيح how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	إذا((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	إذا(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		لكل (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,14 +69,14 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	طالما (1);
 }
 
-#ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+#جيڪڏهن_وصف_ٿيل DEBUG_SERIAL
+فراغ
+ser_putc(حرف c)
 {
 	bsp_ser_putc(c);
 }
 
-#endif
+#جيڪڏهن_پورو

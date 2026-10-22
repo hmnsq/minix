@@ -1,79 +1,79 @@
 /* i386-specific clock functions. */
 
-#include <machine/ports.h>
+#ضمن <machine/ports.h>
 
-#include "kernel/clock.h"
-#include "kernel/interrupt.h"
-#include <minix/u64.h>
+#ضمن "kernel/clock.h"
+#ضمن "kernel/interrupt.h"
+#ضمن <minix/u64.h>
 
-#include <sys/sched.h> /* for CP_*, CPUSTATES */
-#if CPUSTATES != MINIX_CPUSTATES
+#ضمن <sys/sched.h> /* for CP_*, CPUSTATES */
+#إذا CPUSTATES != MINIX_CPUSTATES
 /* If this breaks, the code in this file may have to be adapted accordingly. */
-#error "MINIX_CPUSTATES value is out of sync with NetBSD's!"
-#endif
+#غلطي "MINIX_CPUSTATES value is out of sync with NetBSD's!"
+#جيڪڏهن_پورو
 
-#ifdef USE_APIC
-#include "apic.h"
-#endif
+#جيڪڏهن_وصف_ٿيل USE_APIC
+#ضمن "apic.h"
+#جيڪڏهن_پورو
 
-#include "kernel/spinlock.h"
+#ضمن "kernel/spinlock.h"
 
-#ifdef CONFIG_SMP
-#include "kernel/smp.h"
-#endif
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+#ضمن "kernel/smp.h"
+#جيڪڏهن_پورو
 
-#define CLOCK_ACK_BIT   0x80    /* PS/2 clock interrupt acknowledge bit */
+#وصف_ڪريو CLOCK_ACK_ٻٽو_انگ   0x80    /* PS/2 clock interrupt acknowledge bit */
 
 /* Clock parameters. */
-#define COUNTER_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
-#define LATCH_COUNT     0x00    /* cc00xxxx, c = channel, x = any */
-#define SQUARE_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
+#وصف_ڪريو COUNTER_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
+#وصف_ڪريو LATCH_ڳڻپ     0x00    /* cc00xxxx, c = channel, x = any */
+#وصف_ڪريو چورس_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
                                 /*   11x11, 11 = LSB then MSB, x11 = sq wave */
-#define TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
-#define TIMER_COUNT(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
+#وصف_ڪريو TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
+#وصف_ڪريو TIMER_ڳڻپ(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
 
-static irq_hook_t pic_timer_hook;		/* interrupt handler hook */
+ساكن irq_hook_t pic_timer_hook;		/* interrupt handler hook */
 
-static unsigned probe_ticks;
-static u64_t tsc0, tsc1;
-#define PROBE_TICKS	(system_hz / 10)
+ساكن بنانشان probe_ticks;
+ساكن u64_t tsc0, tsc1;
+#وصف_ڪريو PROBE_TICKS	(system_hz / 10)
 
-static unsigned tsc_per_ms[CONFIG_MAX_CPUS];
-static unsigned tsc_per_tick[CONFIG_MAX_CPUS];
-static uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
+ساكن بنانشان tsc_في_ms[CONFIG_MAX_CPUS];
+ساكن بنانشان tsc_في_tick[CONFIG_MAX_CPUS];
+ساكن uint64_t tsc_في_state[CONFIG_MAX_CPUS][CPUSTATES];
 
 /*===========================================================================*
  *				init_8235A_timer			     *
  *===========================================================================*/
-int init_8253A_timer(const unsigned freq)
+صحيح init_8253A_timer(ثابت بنانشان freq)
 {
 	/* Initialize channel 0 of the 8253A timer to, e.g., 60 Hz,
 	 * and register the CLOCK task's interrupt handler to be run
 	 * on every clock tick.
 	 */
-	outb(TIMER_MODE, SQUARE_WAVE);  /* run continuously */
-	outb(TIMER0, (TIMER_COUNT(freq) & 0xff)); /* timer low byte */
-	outb(TIMER0, TIMER_COUNT(freq) >> 8); /* timer high byte */
+	outb(TIMER_گهڻائي, چورس_WAVE);  /* run continuously */
+	outb(TIMER0, (TIMER_ڳڻپ(freq) & 0xff)); /* timer low byte */
+	outb(TIMER0, TIMER_ڳڻپ(freq) >> 8); /* timer high byte */
 
-	return OK;
+	أرجع OK;
 }
 
 /*===========================================================================*
  *				stop_8235A_timer			     *
  *===========================================================================*/
-void stop_8253A_timer(void)
+فراغ stop_8253A_timer(فراغ)
 {
 	/* Reset the clock to the BIOS rate. (For rebooting.) */
-	outb(TIMER_MODE, 0x36);
+	outb(TIMER_گهڻائي, 0x36);
 	outb(TIMER0, 0);
 	outb(TIMER0, 0);
 }
 
-void arch_timer_int_handler(void)
+فراغ arch_timer_int_handler(فراغ)
 {
 }
 
-static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
+ساكن صحيح calib_cpu_handler(irq_hook_t * اڻ_استعمال_ٿيل(hook))
 {
 	u64_t tsc;
 
@@ -81,19 +81,19 @@ static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
 	read_tsc_64(&tsc);
 
 
-	if (probe_ticks == 1) {
+	إذا (probe_ticks == 1) {
 		tsc0 = tsc;
 	}
-	else if (probe_ticks == PROBE_TICKS) {
+	وإلا إذا (probe_ticks == PROBE_TICKS) {
 		tsc1 = tsc;
 	}
 
 	/* just in case we are in an SMP single cpu fallback mode */
 	BKL_UNLOCK();
-	return 1;
+	أرجع 1;
 }
 
-static void estimate_cpu_freq(void)
+ساكن فراغ estimate_cpu_freq(فراغ)
 {
 	u64_t tsc_delta;
 	u64_t cpu_freq;
@@ -109,13 +109,13 @@ static void estimate_cpu_freq(void)
 	intr_enable();
 
 	/* loop for some time to get a sample */
-	while(probe_ticks < PROBE_TICKS) {
+	طالما(probe_ticks < PROBE_TICKS) {
 		intr_enable();
 	}
 
 	intr_disable();
 	/* just in case we are in an SMP single cpu fallback mode */
-	BKL_LOCK();
+	BKL_تالو();
 
 	/* remove the probe */
 	rm_irq_handler(&calib_cpu);
@@ -123,65 +123,65 @@ static void estimate_cpu_freq(void)
 	tsc_delta = tsc1 - tsc0;
 
 	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * system_hz;
-	cpu_set_freq(cpuid, cpu_freq);
-	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
+	cpu_سيٽ_freq(cpuid, cpu_freq);
+	cpu_info[cpuid].freq = (بنانشان ڊگهو)(cpu_freq / 1000000);
 	BOOT_VERBOSE(cpu_print_freq(cpuid));
 }
 
-int init_local_timer(unsigned freq)
+صحيح init_local_timer(بنانشان freq)
 {
-#ifdef USE_APIC
+#جيڪڏهن_وصف_ٿيل USE_APIC
 	/* if we know the address, lapic is enabled and we should use it */
-	if (lapic_addr) {
-		unsigned cpu = cpuid;
-		tsc_per_ms[cpu] = (unsigned)(cpu_get_freq(cpu) / 1000);
-		tsc_per_tick[cpu] = (unsigned)(cpu_get_freq(cpu) / system_hz);
-		lapic_set_timer_one_shot(1000000 / system_hz);
-	} else {
+	إذا (lapic_addr) {
+		بنانشان cpu = cpuid;
+		tsc_في_ms[cpu] = (بنانشان)(cpu_get_freq(cpu) / 1000);
+		tsc_في_tick[cpu] = (بنانشان)(cpu_get_freq(cpu) / system_hz);
+		lapic_سيٽ_timer_one_shot(1000000 / system_hz);
+	} وإلا {
 		DEBUGBASIC(("Initiating legacy i8253 timer\n"));
-#else
+#وإلا
 	{
-#endif
+#جيڪڏهن_پورو
 		init_8253A_timer(freq);
 		estimate_cpu_freq();
 		/* always only 1 cpu in the system */
-		tsc_per_ms[0] = (unsigned long)(cpu_get_freq(0) / 1000);
-		tsc_per_tick[0] = (unsigned)(cpu_get_freq(0) / system_hz);
+		tsc_في_ms[0] = (بنانشان ڊگهو)(cpu_get_freq(0) / 1000);
+		tsc_في_tick[0] = (بنانشان)(cpu_get_freq(0) / system_hz);
 	}
 
-	return 0;
+	أرجع 0;
 }
 
-void stop_local_timer(void)
+فراغ stop_local_timer(فراغ)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#جيڪڏهن_وصف_ٿيل USE_APIC
+	إذا (lapic_addr) {
 		lapic_stop_timer();
 		apic_eoi();
-	} else
-#endif
+	} وإلا
+#جيڪڏهن_پورو
 	{
 		stop_8253A_timer();
 	}
 }
 
-void restart_local_timer(void)
+فراغ restart_local_timer(فراغ)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#جيڪڏهن_وصف_ٿيل USE_APIC
+	إذا (lapic_addr) {
 		lapic_restart_timer();
 	}
-#endif
+#جيڪڏهن_پورو
 }
 
-int register_local_timer_handler(const irq_handler_t handler)
+صحيح رجسٽر_local_timer_handler(ثابت irq_handler_t handler)
 {
-#ifdef USE_APIC
-	if (lapic_addr) {
+#جيڪڏهن_وصف_ٿيل USE_APIC
+	إذا (lapic_addr) {
 		/* Using APIC, it is configured in apic_idt_init() */
-		BOOT_VERBOSE(printf("Using LAPIC timer as tick source\n"));
-	} else
-#endif
+		BOOT_VERBOSE(لکو("Using LAPIC timer as tick source\n"));
+	} وإلا
+#جيڪڏهن_پورو
 	{
 		/* Using PIC, Initialize the CLOCK's interrupt hook. */
 		pic_timer_hook.proc_nr_e = NONE;
@@ -190,28 +190,28 @@ int register_local_timer_handler(const irq_handler_t handler)
 		put_irq_handler(&pic_timer_hook, CLOCK_IRQ, handler);
 	}
 
-	return 0;
+	أرجع 0;
 }
 
-void cycles_accounting_init(void)
+فراغ چڪرن_accounting_init(فراغ)
 {
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+	بنانشان cpu = cpuid;
+#جيڪڏهن_پورو
 
 	read_tsc_64(get_cpu_var_ptr(cpu, tsc_ctr_switch));
 
-	get_cpu_var(cpu, cpu_last_tsc) = 0;
-	get_cpu_var(cpu, cpu_last_idle) = 0;
+	get_cpu_var(cpu, cpu_آخري_tsc) = 0;
+	get_cpu_var(cpu, cpu_آخري_idle) = 0;
 }
 
-void context_stop(struct proc * p)
+فراغ context_stop(بنية proc * p)
 {
 	u64_t tsc, tsc_delta;
 	u64_t * __tsc_ctr_switch = get_cpulocal_var_ptr(tsc_ctr_switch);
-	unsigned int cpu, tpt, counter;
-#ifdef CONFIG_SMP
-	int must_bkl_unlock = 0;
+	بنانشان صحيح cpu, tpt, counter;
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+	صحيح must_bkl_unlock = 0;
 
 	cpu = cpuid;
 
@@ -223,23 +223,23 @@ void context_stop(struct proc * p)
 	 * If we stop accounting for KERNEL we must unlock the BKL. If account
 	 * for IDLE we must not hold the lock
 	 */
-	if (p == proc_addr(KERNEL)) {
+	إذا (p == proc_addr(KERNEL)) {
 		u64_t tmp;
 
 		read_tsc_64(&tsc);
 		tmp = tsc - *__tsc_ctr_switch;
 		kernel_ticks[cpu] = kernel_ticks[cpu] + tmp;
-		p->p_cycles = p->p_cycles + tmp;
+		p->p_چڪرن = p->p_چڪرن + tmp;
 		must_bkl_unlock = 1;
-	} else {
+	} وإلا {
 		u64_t bkl_tsc;
 		atomic_t succ;
 		
 		read_tsc_64(&bkl_tsc);
 		/* this only gives a good estimate */
-		succ = big_kernel_lock.val;
+		succ = big_kernel_تالو.val;
 		
-		BKL_LOCK();
+		BKL_تالو();
 		
 		read_tsc_64(&tsc);
 
@@ -247,9 +247,9 @@ void context_stop(struct proc * p)
 		bkl_tries[cpu]++;
 		bkl_succ[cpu] += !(!(succ == 0));
 
-		p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
+		p->p_چڪرن = p->p_چڪرن + tsc - *__tsc_ctr_switch;
 
-#ifdef CONFIG_SMP
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
 		/*
 		 * Since at the time we got a scheduling IPI we might have been
 		 * waiting for BKL already, we may miss it due to a similar IPI to
@@ -261,24 +261,24 @@ void context_stop(struct proc * p)
 		 * we do not deadlock.
 		 */
 		smp_sched_handler();
-#endif
+#جيڪڏهن_پورو
 	}
-#else
+#وإلا
 	read_tsc_64(&tsc);
-	p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
+	p->p_چڪرن = p->p_چڪرن + tsc - *__tsc_ctr_switch;
 	cpu = 0;
-#endif
+#جيڪڏهن_پورو
 
 	tsc_delta = tsc - *__tsc_ctr_switch;
 
-	if (kbill_ipc) {
-		kbill_ipc->p_kipc_cycles += tsc_delta;
-		kbill_ipc = NULL;
+	إذا (kbill_ipc) {
+		kbill_ipc->p_kipc_چڪرن += tsc_delta;
+		kbill_ipc = عدم;
 	}
 
-	if (kbill_kcall) {
-		kbill_kcall->p_kcall_cycles += tsc_delta;
-		kbill_kcall = NULL;
+	إذا (kbill_kcall) {
+		kbill_kcall->p_kcall_چڪرن += tsc_delta;
+		kbill_kcall = عدم;
 	}
 
 	/*
@@ -291,11 +291,11 @@ void context_stop(struct proc * p)
 	 * the code below is a loop, but the loop will in by far most cases not
 	 * be executed more than once, and often be skipped at all.
 	 */
-	tpt = tsc_per_tick[cpu];
+	tpt = tsc_في_tick[cpu];
 
-	p->p_tick_cycles += tsc_delta;
-	while (tpt > 0 && p->p_tick_cycles >= tpt) {
-		p->p_tick_cycles -= tpt;
+	p->p_tick_چڪرن += tsc_delta;
+	طالما (tpt > 0 && p->p_tick_چڪرن >= tpt) {
+		p->p_tick_چڪرن -= tpt;
 
 		/*
 		 * The process has spent roughly a whole clock tick worth of
@@ -311,130 +311,130 @@ void context_stop(struct proc * p)
 	 * process during its current quantum. Skip IDLE and other pseudo kernel
 	 * tasks, except for global accounting purposes.
 	 */
-	if (p->p_endpoint >= 0) {
+	إذا (p->p_endpoint >= 0) {
 		/* On MINIX3, the "system" counter covers system processes. */
-		if (p->p_priv != priv_addr(USER_PRIV_ID))
+		إذا (p->p_priv != priv_addr(USER_PRIV_ID))
 			counter = CP_SYS;
-		else if (p->p_misc_flags & MF_NICED)
+		وإلا إذا (p->p_misc_flags & MF_NICED)
 			counter = CP_NICE;
-		else
+		وإلا
 			counter = CP_USER;
 
-#if DEBUG_RACE
-		p->p_cpu_time_left = 0;
-#else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
-		} else {
-			p->p_cpu_time_left = 0;
+#إذا DEBUG_RACE
+		p->p_cpu_وقت_کاٻو = 0;
+#وإلا
+		إذا (tsc_delta < p->p_cpu_وقت_کاٻو) {
+			p->p_cpu_وقت_کاٻو -= tsc_delta;
+		} وإلا {
+			p->p_cpu_وقت_کاٻو = 0;
 		}
-#endif
-	} else {
+#جيڪڏهن_پورو
+	} وإلا {
 		/* On MINIX3, the "interrupts" counter covers the kernel. */
-		if (p->p_endpoint == IDLE)
+		إذا (p->p_endpoint == IDLE)
 			counter = CP_IDLE;
-		else
+		وإلا
 			counter = CP_INTR;
 	}
 
-	tsc_per_state[cpu][counter] += tsc_delta;
+	tsc_في_state[cpu][counter] += tsc_delta;
 
 	*__tsc_ctr_switch = tsc;
 
-#ifdef CONFIG_SMP
-	if(must_bkl_unlock) {
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+	إذا(must_bkl_unlock) {
 		BKL_UNLOCK();
 	}
-#endif
+#جيڪڏهن_پورو
 }
 
-void context_stop_idle(void)
+فراغ context_stop_idle(فراغ)
 {
-	int is_idle;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	صحيح is_idle;
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+	بنانشان cpu = cpuid;
+#جيڪڏهن_پورو
 
 	is_idle = get_cpu_var(cpu, cpu_is_idle);
 	get_cpu_var(cpu, cpu_is_idle) = 0;
 
 	context_stop(get_cpulocal_var_ptr(idle_proc));
 
-	if (is_idle)
+	إذا (is_idle)
 		restart_local_timer();
-#if SPROFILE
-	if (sprofiling)
+#إذا SPROFILE
+	إذا (sprofiling)
 		get_cpulocal_var(idle_interrupted) = 1;
-#endif
+#جيڪڏهن_پورو
 }
 
-u64_t ms_2_cpu_time(unsigned ms)
+u64_t ms_2_cpu_وقت(بنانشان ms)
 {
-	return (u64_t)tsc_per_ms[cpuid] * ms;
+	أرجع (u64_t)tsc_في_ms[cpuid] * ms;
 }
 
-unsigned cpu_time_2_ms(u64_t cpu_time)
+بنانشان cpu_وقت_2_ms(u64_t cpu_وقت)
 {
-	return (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
+	أرجع (بنانشان ڊگهو)(cpu_وقت / tsc_في_ms[cpuid]);
 }
 
-short cpu_load(void)
+ننڍو cpu_ڀريو(فراغ)
 {
 	u64_t current_tsc, *current_idle;
 	u64_t tsc_delta, idle_delta, busy;
-	struct proc *idle;
-	short load;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	بنية proc *idle;
+	ننڍو ڀريو;
+#جيڪڏهن_وصف_ٿيل CONFIG_SMP
+	بنانشان cpu = cpuid;
+#جيڪڏهن_پورو
 
-	u64_t *last_tsc, *last_idle;
+	u64_t *آخري_tsc, *آخري_idle;
 
-	last_tsc = get_cpu_var_ptr(cpu, cpu_last_tsc);
-	last_idle = get_cpu_var_ptr(cpu, cpu_last_idle);
+	آخري_tsc = get_cpu_var_ptr(cpu, cpu_آخري_tsc);
+	آخري_idle = get_cpu_var_ptr(cpu, cpu_آخري_idle);
 
 	idle = get_cpu_var_ptr(cpu, idle_proc);;
 	read_tsc_64(&current_tsc);
-	current_idle = &idle->p_cycles; /* ptr to idle proc */
+	current_idle = &idle->p_چڪرن; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (*last_tsc) {
-		tsc_delta = current_tsc - *last_tsc;
-		idle_delta = *current_idle - *last_idle;
+	إذا (*آخري_tsc) {
+		tsc_delta = current_tsc - *آخري_tsc;
+		idle_delta = *current_idle - *آخري_idle;
 
 		busy = tsc_delta - idle_delta;
 		busy = busy * 100;
-		load = ex64lo(busy / tsc_delta);
+		ڀريو = ex64lo(busy / tsc_delta);
 
-		if (load > 100)
-			load = 100;
-	} else
-		load = 0;
+		إذا (ڀريو > 100)
+			ڀريو = 100;
+	} وإلا
+		ڀريو = 0;
 
-	*last_tsc = current_tsc;
-	*last_idle = *current_idle;
-	return load;
+	*آخري_tsc = current_tsc;
+	*آخري_idle = *current_idle;
+	أرجع ڀريو;
 }
 
-void busy_delay_ms(int ms)
+فراغ busy_delay_ms(صحيح ms)
 {
-	u64_t cycles = ms_2_cpu_time(ms), tsc0, tsc, tsc1;
+	u64_t چڪرن = ms_2_cpu_وقت(ms), tsc0, tsc, tsc1;
 	read_tsc_64(&tsc0);
-	tsc1 = tsc0 + cycles;
-	do { read_tsc_64(&tsc); } while(tsc < tsc1);
-	return;
+	tsc1 = tsc0 + چڪرن;
+	افعل { read_tsc_64(&tsc); } طالما(tsc < tsc1);
+	أرجع;
 }
 
 /*
  * Return the number of clock ticks spent in each of a predefined number of
  * CPU states.
  */
-void
-get_cpu_ticks(unsigned int cpu, uint64_t ticks[CPUSTATES])
+فراغ
+get_cpu_ticks(بنانشان صحيح cpu, uint64_t ticks[CPUSTATES])
 {
-	int i;
+	صحيح i;
 
 	/* TODO: make this inter-CPU safe! */
-	for (i = 0; i < CPUSTATES; i++)
-		ticks[i] = tsc_per_state[cpu][i] / tsc_per_tick[cpu];
+	لكل (i = 0; i < CPUSTATES; i++)
+		ticks[i] = tsc_في_state[cpu][i] / tsc_في_tick[cpu];
 }

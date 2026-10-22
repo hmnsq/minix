@@ -1,11 +1,11 @@
-#ifndef _BSP_PADCONF_H_
-#define _BSP_PADCONF_H_
+#جيڪڏهن_وصف_نه_ٿيل _BSP_PADCONF_H_
+#وصف_ڪريو _BSP_PADCONF_H_
 
-#ifndef __ASSEMBLY__
+#جيڪڏهن_وصف_نه_ٿيل __ASSEMBLY__
 
-void bsp_padconf_init(void);
-int bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value);
+فراغ bsp_padconf_init(فراغ);
+صحيح bsp_padconf_سيٽ(u32_t padconf, u32_t نقاب, u32_t قدر);
 
-#endif /* __ASSEMBLY__ */
+#جيڪڏهن_پورو /* __ASSEMBLY__ */
 
-#endif /* _BSP_PADCONF_H_ */
+#جيڪڏهن_پورو /* _BSP_PADCONF_H_ */

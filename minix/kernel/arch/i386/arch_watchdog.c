@@ -1,20 +1,20 @@
-#include "kernel/watchdog.h"
-#include "glo.h"
-#include <minix/minlib.h>
-#include <minix/u64.h>
+#ضمن "kernel/watchdog.h"
+#ضمن "glo.h"
+#ضمن <minix/minlib.h>
+#ضمن <minix/u64.h>
 
-#include "apic.h"
+#ضمن "apic.h"
 
-#define CPUID_UNHALTED_CORE_CYCLES_AVAILABLE	0
+#وصف_ڪريو CPUID_UNHALTED_CORE_چڪرن_موجود	0
 
 /*
  * Intel architecture performance counters watchdog
  */
 
-static struct arch_watchdog intel_arch_watchdog;
-static struct arch_watchdog amd_watchdog;
+ساكن بنية arch_watchdog intel_arch_watchdog;
+ساكن بنية arch_watchdog amd_watchdog;
 
-static void intel_arch_watchdog_init(const unsigned cpu)
+ساكن فراغ intel_arch_watchdog_init(ثابت بنانشان cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -30,7 +30,7 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	 * lowest 31 bits writable :(
 	 */
 	cpuf = cpu_get_freq(cpu);
-	while (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
+	طالما (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
 		cpuf /= 2;
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
@@ -44,23 +44,23 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void intel_arch_watchdog_reinit(const unsigned cpu)
+ساكن فراغ intel_arch_watchdog_reinit(ثابت بنانشان cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(watchdog->resetval));
 }
 
-int arch_watchdog_init(void)
+صحيح arch_watchdog_init(فراغ)
 {
 	u32_t eax, ebx, ecx, edx;
-	unsigned cpu = cpuid;
+	بنانشان cpu = cpuid;
 
-	if (!lapic_addr) {
-		printf("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
-		return -1;
+	إذا (!lapic_addr) {
+		لکو("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
+		أرجع -1;
 	}
 
-	if (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
+	إذا (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
 		eax = 0xA;
 
 		_cpuid(&eax, &ebx, &ecx, &edx);
@@ -69,42 +69,42 @@ int arch_watchdog_init(void)
 		 * architectural performance counters. Some Intel CPUs don't have this
 		 * feature
 		 */
-		if (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
-			return -1;
-		if (!((((eax >> 8)) & 0xff) > 0))
-			return -1;
+		إذا (ebx & (1 << CPUID_UNHALTED_CORE_چڪرن_موجود))
+			أرجع -1;
+		إذا (!((((eax >> 8)) & 0xff) > 0))
+			أرجع -1;
 
 		watchdog = &intel_arch_watchdog;
-	} else if (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
-		if (cpu_info[cpu].family != 6 &&
+	} وإلا إذا (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
+		إذا (cpu_info[cpu].family != 6 &&
 				cpu_info[cpu].family != 15 &&
 				cpu_info[cpu].family != 16 &&
 				cpu_info[cpu].family != 17)
-			return -1;
-		else
+			أرجع -1;
+		وإلا
 			watchdog = &amd_watchdog;
-	} else
-		return -1;
+	} وإلا
+		أرجع -1;
 
 	/* Setup PC overflow as NMI for watchdog, it is masked for now */
-	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_MASK | APIC_ICR_DM_NMI);
-	(void) lapic_read(LAPIC_LVTPCR);
+	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_نقاب | APIC_ICR_DM_NMI);
+	(فراغ) lapic_read(LAPIC_LVTPCR);
 
 	/* double check if LAPIC is enabled */
-	if (lapic_addr && watchdog->init) {
+	إذا (lapic_addr && watchdog->init) {
 		watchdog->init(cpuid);
 	}
 
-	return 0;
+	أرجع 0;
 }
 
-void arch_watchdog_stop(void)
+فراغ arch_watchdog_stop(فراغ)
 {
 }
 
-void arch_watchdog_lockup(const struct nmi_frame * frame)
+فراغ arch_watchdog_lockup(ثابت بنية nmi_چوکٺو * چوکٺو)
 {
-	printf("KERNEL LOCK UP\n"
+	لکو("KERNEL LOCK UP\n"
 			"eax    0x%08x\n"
 			"ecx    0x%08x\n"
 			"edx    0x%08x\n"
@@ -119,39 +119,39 @@ void arch_watchdog_lockup(const struct nmi_frame * frame)
 			"pc     0x%08x\n"
 			"cs     0x%08x\n"
 			"eflags 0x%08x\n",
-			frame->eax,
-			frame->ecx,
-			frame->edx,
-			frame->ebx,
-			frame->ebp,
-			frame->esi,
-			frame->edi,
-			frame->gs,
-			frame->fs,
-			frame->es,
-			frame->ds,
-			frame->pc,
-			frame->cs,
-			frame->eflags
+			چوکٺو->eax,
+			چوکٺو->ecx,
+			چوکٺو->edx,
+			چوکٺو->ebx,
+			چوکٺو->ebp,
+			چوکٺو->esi,
+			چوکٺو->edi,
+			چوکٺو->gs,
+			چوکٺو->fs,
+			چوکٺو->es,
+			چوکٺو->ds,
+			چوکٺو->pc,
+			چوکٺو->cs,
+			چوکٺو->eflags
 			);
 	panic("Kernel lockup");
 }
 
-int i386_watchdog_start(void)
+صحيح i386_watchdog_شروعات(فراغ)
 {
-	if (arch_watchdog_init()) {
-		printf("WARNING watchdog initialization "
+	إذا (arch_watchdog_init()) {
+		لکو("WARNING watchdog initialization "
 				"failed! Disabled\n");
 		watchdog_enabled = 0;
-		return -1;
+		أرجع -1;
 	}
-	else
-		BOOT_VERBOSE(printf("Watchdog enabled\n"););
+	وإلا
+		BOOT_VERBOSE(لکو("Watchdog enabled\n"););
 
-	return 0;
+	أرجع 0;
 }
 
-static int intel_arch_watchdog_profile_init(const unsigned freq)
+ساكن صحيح intel_arch_watchdog_profile_init(ثابت بنانشان freq)
 {
 	u64_t cpuf;
 
@@ -163,28 +163,28 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 	 * if freq is too low and the cpu freq too high we may get in a range of
 	 * insane value which cannot be handled by the 31bit CPU perf counter
 	 */
-	if (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
-		printf("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
-		return EINVAL;
+	إذا (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
+		لکو("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
+		أرجع EINVAL;
 	}
 
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	أرجع OK;
 }
 
-static struct arch_watchdog intel_arch_watchdog = {
+ساكن بنية arch_watchdog intel_arch_watchdog = {
 	/*.init = */		intel_arch_watchdog_init,
 	/*.reinit = */		intel_arch_watchdog_reinit,
 	/*.profile_init = */	intel_arch_watchdog_profile_init
 };
 
-#define AMD_MSR_EVENT_SEL0		0xc0010000
-#define AMD_MSR_EVENT_CTR0		0xc0010004
-#define AMD_MSR_EVENT_SEL0_ENABLE	(1 << 22)
+#وصف_ڪريو AMD_MSR_EVENT_SEL0		0xc0010000
+#وصف_ڪريو AMD_MSR_EVENT_CTR0		0xc0010004
+#وصف_ڪريو AMD_MSR_EVENT_SEL0_ENABLE	(1 << 22)
 
-static void amd_watchdog_init(const unsigned cpu)
+ساكن فراغ amd_watchdog_init(ثابت بنانشان cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -208,14 +208,14 @@ static void amd_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void amd_watchdog_reinit(const unsigned cpu)
+ساكن فراغ amd_watchdog_reinit(ثابت بنانشان cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
 		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
 }
 
-static int amd_watchdog_profile_init(const unsigned freq)
+ساكن صحيح amd_watchdog_profile_init(ثابت بنانشان freq)
 {
 	u64_t cpuf;
 
@@ -225,10 +225,10 @@ static int amd_watchdog_profile_init(const unsigned freq)
 
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	أرجع OK;
 }
 
-static struct arch_watchdog amd_watchdog = {
+ساكن بنية arch_watchdog amd_watchdog = {
 	/*.init = */		amd_watchdog_init,
 	/*.reinit = */		amd_watchdog_reinit,
 	/*.profile_init = */	amd_watchdog_profile_init
