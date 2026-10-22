@@ -53,7 +53,7 @@
 /* this is always true on an uniprocessor */
 #define cpu_is_bsp(x) 1
 
-#else
+#ပေႃးဢမ်ႇ
 
 #include "kernel/smp.h"
 

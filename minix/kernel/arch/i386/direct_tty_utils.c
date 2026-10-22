@@ -8,30 +8,30 @@
 #include "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+static puur_naa_nka print_line = 1, print_col = 1;
 
 #include <sys/video.h>
 
-extern char *video_mem;
+extern var_na *video_mem;
 #define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
 #define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+void direct_put_char(var_na c, puur_naa_nka line, puur_naa_nka col) 
 {
-	int offset = VIDOFFSET(line, col);
+	puur_naa_nka offset = VIDOFFSET(line, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+static var_na direct_get_char(puur_naa_nka line, puur_naa_nka col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	ပွၵ်ႈ video_mem[VIDOFFSET(line, col)];
 }
 
 void direct_cls(void)
 {
 	/* Clear screen */
-	int i,j;
+	puur_naa_nka i,j;
 
 	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
 		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
@@ -46,13 +46,13 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+static void direct_scroll_up(puur_naa_nka lines) 
 {
-	int i, j;
+	puur_naa_nka i, j;
 	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
 		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
+			var_na c = 0;
+			ပေႃး(i < MULTIBOOT_CONSOLE_LINES-lines)
 				c = direct_get_char(i + lines, j);
 			direct_put_char(c, i, j);
 		}
@@ -60,45 +60,45 @@ static void direct_scroll_up(int lines)
 	print_line-= lines;
 }
 
-void direct_print_char(char c)
+void direct_print_char(var_na c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ၶၢဝ်း (print_line >= MULTIBOOT_CONSOLE_LINES)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	ပေႃး(c == '\t') {
+		ပေႃး(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
+		} ပေႃးဢမ်ႇ {
 			do {
 				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+			} ၶၢဝ်း(print_col % TABWIDTH);
+			ပွၵ်ႈ;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
+	ပေႃး (c == '\n') {
+		ၶၢဝ်း (print_col < MULTIBOOT_CONSOLE_COLS)
 			direct_put_char(' ', print_line, print_col++);
 		print_line++;
 		print_col = 0;
-		return;
+		ပွၵ်ႈ;
 	}
 
 	direct_put_char(c, print_line, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
+	ပေႃး (print_col >= MULTIBOOT_CONSOLE_COLS) {
 		print_line++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ၶၢဝ်း (print_line >= MULTIBOOT_CONSOLE_LINES)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+void direct_print(const var_na *str)
 {
-	while (*str) {
+	ၶၢဝ်း (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+puur_naa_nka direct_read_char(unsigned var_na *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	ပေႃး (!(sb & KB_OUT_FULL)) {
+		ပွၵ်ႈ 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	ပေႃး (!(sb & KB_AUX_BYTE))
+		ပွၵ်ႈ 1;
 
-	return 0;
+	ပွၵ်ႈ 0;
 }
 

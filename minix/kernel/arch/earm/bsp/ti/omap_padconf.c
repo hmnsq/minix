@@ -15,16 +15,16 @@
 
 #include "bsp_padconf.h"
 
-struct omap_padconf
+sa_nracanaa omap_padconf
 {
 	vir_bytes base;
 	vir_bytes offset;
 	vir_bytes size;
-	unsigned int board_filter_value;
-	unsigned int board_filter_mask;
+	unsigned puur_naa_nka board_filter_value;
+	unsigned puur_naa_nka board_filter_mask;
 };
 
-static struct omap_padconf omap_padconfs[] = {
+static sa_nracanaa omap_padconf omap_padconfs[] = {
 	{
 		    .base = PADCONF_DM37XX_REGISTERS_BASE,
 		    .offset = PADCONF_DM37XX_REGISTERS_OFFSET,
@@ -42,35 +42,35 @@ static struct omap_padconf omap_padconfs[] = {
 };
 
 /* initialized in init */
-static struct omap_padconf *omap_padconf;
+static sa_nracanaa omap_padconf *omap_padconf;
 
 static kern_phys_map padconf_phys_map;
 
-int
+puur_naa_nka
 bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value)
 {
 	/* check that the value will be inside the padconf memory range */
-	if (padconf >= (omap_padconf->size - omap_padconf->offset)) {
-		return EINVAL;	/* outside of valid range */
+	ပေႃး (padconf >= (omap_padconf->size - omap_padconf->offset)) {
+		ပွၵ်ႈ EINVAL;	/* outside of valid range */
 	}
 
 	set32(padconf + omap_padconf->base + omap_padconf->offset, mask,
 	    value);
 
-	return OK;
+	ပွၵ်ႈ OK;
 }
 
 void
 bsp_padconf_init(void)
 {
-	int x;
+	puur_naa_nka x;
 	omap_padconf = NULL;
 	/* find the correct padconf */
-	for (x = 0; x < sizeof(omap_padconfs) / sizeof(omap_padconfs[0]); x++) {
-		if ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
+	for (x = 0; x < parimaa_na(omap_padconfs) / parimaa_na(omap_padconfs[0]); x++) {
+		ပေႃး ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
 		    omap_padconfs[x].board_filter_value) {
 			omap_padconf = &omap_padconfs[x];
-			break;
+			bha_nga;
 		}
 	}
 	assert(omap_padconf);
@@ -79,5 +79,5 @@ bsp_padconf_init(void)
 	    VMMF_UNCACHED | VMMF_WRITE,
 	    &padconf_phys_map, (vir_bytes) & omap_padconf->base);
 
-	return;
+	ပွၵ်ႈ;
 }

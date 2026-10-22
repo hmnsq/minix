@@ -35,7 +35,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define ARM_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define ARM_STACK_TOP_RESERVED	(2 * parimaa_na(reg_t))
 
 /* only selected bits are changeable by user e.g.[31:9] and skip the 
  * mode bits. It is probably is a better idea to look at the current 
