@@ -5,52 +5,52 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#شامل <assert.h>
+#شامل <sys/types.h>
+#شامل <machine/cpu.h>
+#شامل <minix/type.h>
+#شامل <minix/board.h>
+#شامل <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#شامل "kernel/kernel.h"
+#شامل "kernel/proc.h"
+#شامل "kernel/vm.h"
+#شامل "kernel/proto.h"
+#شامل "arch_proto.h"
+#شامل "omap_rtc.h"
 
 #define RTC_SS_BASE 0x44e3e000
 #define RTC_SS_SIZE 0x1000
 #define RTC_CTRL_REG 0x40
 #define RTC_CTRL_RTC_STOP_BIT 0
 
-struct omap_rtc
+ساختار omap_rtc
 {
 	vir_bytes base;
 	vir_bytes size;
 };
 
-static struct omap_rtc omap_rtc = {
+ایستا ساختار omap_rtc omap_rtc = {
 	.base = RTC_SS_BASE,
 	.size = RTC_SS_SIZE
 };
 
-static kern_phys_map rtc_phys_map;
+ایستا kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+تهی
+omap3_rtc_init(تهی)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	اگر (BOARD_IS_BB(machine.board_id)) {
 		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
 		    (vir_bytes) & omap_rtc.base);
 	}
 }
 
-void
-omap3_rtc_run(void)
+تهی
+omap3_rtc_run(تهی)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	اگر (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
 		mmio_set((omap_rtc.base + RTC_CTRL_REG),
 		    (1 << RTC_CTRL_RTC_STOP_BIT));

@@ -95,19 +95,19 @@
 
 #ifndef __ASSEMBLY__
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
 EXTERN vir_bytes lapic_addr;
 EXTERN vir_bytes lapic_eoi_addr;
-EXTERN int ioapic_enabled;
-EXTERN int bsp_lapic_id;
+EXTERN صحیح ioapic_enabled;
+EXTERN صحیح bsp_lapic_id;
 
 #define MAX_NR_IOAPICS		32
 #define MAX_IOAPIC_IRQS		64
 
-EXTERN int ioapic_enabled;
+EXTERN صحیح ioapic_enabled;
 
-struct io_apic {
+ساختار io_apic {
 	unsigned	id;
 	vir_bytes	addr; /* presently used address */
 	phys_bytes	paddr; /* where is it in phys space */
@@ -116,61 +116,61 @@ struct io_apic {
 	unsigned	gsi_base;
 };
 
-EXTERN struct io_apic io_apic[MAX_NR_IOAPICS];
+EXTERN ساختار io_apic io_apic[MAX_NR_IOAPICS];
 EXTERN unsigned nioapics;
 
 EXTERN u32_t lapic_addr_vaddr; /* we remember the virtual address here until we
 				  switch to paging */
 
-int lapic_enable(unsigned cpu);
-void ioapic_unmask_irq(unsigned irq);
-void ioapic_mask_irq(unsigned irq);
-void ioapic_reset_pic(void);
+صحیح lapic_enable(unsigned cpu);
+تهی ioapic_unmask_irq(unsigned irq);
+تهی ioapic_mask_irq(unsigned irq);
+تهی ioapic_reset_pic(تهی);
 
-EXTERN int ioapic_enabled;
+EXTERN صحیح ioapic_enabled;
 EXTERN unsigned nioapics;
 
-void lapic_microsec_sleep(unsigned count);
-void ioapic_disable_irqs(u32_t irqs);
-void ioapic_enable_irqs(u32_t irqs);
+تهی lapic_microsec_sleep(unsigned شمار);
+تهی ioapic_disable_irqs(u32_t irqs);
+تهی ioapic_enable_irqs(u32_t irqs);
 
-int lapic_enable(unsigned cpu);
-void lapic_disable(void);
+صحیح lapic_enable(unsigned cpu);
+تهی lapic_disable(تهی);
 
-void ioapic_disable_all(void);
-int ioapic_enable_all(void);
+تهی ioapic_disable_all(تهی);
+صحیح ioapic_enable_all(تهی);
 
-int detect_ioapics(void);
-void apic_idt_init(int reset);
+صحیح detect_ioapics(تهی);
+تهی apic_idt_init(صحیح reset);
 
 #ifdef CONFIG_SMP
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
-unsigned int apicid(void);
-void ioapic_set_id(u32_t addr, unsigned int id);
-#else
-int apic_single_cpu_init(void);
+صحیح apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
+صحیح apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
+unsigned صحیح apicid(تهی);
+تهی ioapic_set_id(u32_t addr, unsigned صحیح id);
+#وگرنه
+صحیح apic_single_cpu_init(تهی);
 #endif
 
-void lapic_set_timer_periodic(const unsigned freq);
-void lapic_set_timer_one_shot(const u32_t value);
-void lapic_stop_timer(void);
-void lapic_restart_timer(void);
+تهی lapic_set_timer_periodic(ثابت unsigned freq);
+تهی lapic_set_timer_one_shot(ثابت u32_t مقدار);
+تهی lapic_stop_timer(تهی);
+تهی lapic_restart_timer(تهی);
 
-void ioapic_set_irq(unsigned irq);
-void ioapic_unset_irq(unsigned irq);
+تهی ioapic_set_irq(unsigned irq);
+تهی ioapic_unset_irq(unsigned irq);
 
 /* signal the end of interrupt handler to apic */
-#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } while(0)
+#define apic_eoi() انجامبده { *((فرار u32_t *) lapic_eoi_addr) = 0; } وقتی(0)
 
-void ioapic_eoi(int irq);
+تهی ioapic_eoi(صحیح irq);
 
-void dump_apic_irq_state(void);
+تهی dump_apic_irq_state(تهی);
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type);
+تهی apic_send_ipi(unsigned vector, unsigned cpu, صحیح type);
 
-void apic_ipi_sched_intr(void);
-void apic_ipi_halt_intr(void);
+تهی apic_ipi_sched_intr(تهی);
+تهی apic_ipi_halt_intr(تهی);
 
 #define APIC_IPI_DEST			0
 #define APIC_IPI_SELF			1
@@ -187,14 +187,14 @@ void apic_ipi_halt_intr(void);
 	apic_send_ipi (vector, 0, APIC_IPI_TO_ALL_BUT_SELF);
 
 
-#include <minix/cpufeature.h>
+#شامل <minix/cpufeature.h>
 
 #define cpu_feature_apic_on_chip() _cpufeature(_CPUF_I386_APIC_ON_CHIP)
 
-#define lapic_read(what)	(*((volatile u32_t *)((what))))
-#define lapic_write(what, data)	do {			\
-	(*((volatile u32_t *)((what)))) = data;		\
-} while(0)
+#define lapic_read(what)	(*((فرار u32_t *)((what))))
+#define lapic_write(what, data)	انجامبده {			\
+	(*((فرار u32_t *)((what)))) = data;		\
+} وقتی(0)
 
 #endif /* __ASSEMBLY__ */
 

@@ -7,22 +7,22 @@
  *    m_lsys_krn_sys_vdevio.vec_size	(number of ports to read or write)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#شامل "kernel/system.h"
+#شامل <minix/devio.h>
+#شامل <minix/endpoint.h>
 
-#if USE_VDEVIO
+#اگر USE_VDEVIO
 
 /* Buffer for SYS_VDEVIO to copy (port,value)-pairs from/ to user. */
-static char vdevio_buf[VDEVIO_BUF_SIZE];      
-static pvb_pair_t * const pvb = (pvb_pair_t *) vdevio_buf;           
-static pvw_pair_t * const pvw = (pvw_pair_t *) vdevio_buf;      
-static pvl_pair_t * const pvl = (pvl_pair_t *) vdevio_buf;     
+ایستا نویسه vdevio_buf[VDEVIO_BUF_SIZE];      
+ایستا pvb_pair_t * ثابت pvb = (pvb_pair_t *) vdevio_buf;           
+ایستا pvw_pair_t * ثابت pvw = (pvw_pair_t *) vdevio_buf;      
+ایستا pvl_pair_t * ثابت pvl = (pvl_pair_t *) vdevio_buf;     
 
 /*===========================================================================*
  *			        do_vdevio                                    *
  *===========================================================================*/
-int do_vdevio(struct proc * caller, message * m_ptr)
+صحیح do_vdevio(ساختار proc * caller, message * m_ptr)
 {
 /* Perform a series of device I/O on behalf of a non-kernel process. The 
  * I/O addresses and I/O values are fetched from and returned to some buffer
@@ -30,135 +30,135 @@ int do_vdevio(struct proc * caller, message * m_ptr)
  * that I/O batch from being interrupted.
  * This is the counterpart of do_devio, which performs a single device I/O. 
  */ 
-  int vec_size;               /* size of vector */
-  int io_in;                  /* true if input */
+  صحیح vec_size;               /* size of vector */
+  صحیح io_in;                  /* true if input */
   size_t bytes;               /* # bytes to be copied */
   port_t port;
-  int i, j, io_size, nr_io_range;
-  int io_dir, io_type;
-  struct priv *privp;
-  struct io_range *iorp;
-  int r;
+  صحیح i, j, io_size, nr_io_range;
+  صحیح io_dir, io_type;
+  ساختار priv *privp;
+  ساختار io_range *iorp;
+  صحیح r;
     
   /* Get the request, size of the request vector, and check the values. */
   io_dir = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_DIRMASK;
   io_type = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_TYPEMASK;
-  if (io_dir == _DIO_INPUT) io_in = TRUE;
-  else if (io_dir == _DIO_OUTPUT) io_in = FALSE;
-  else return(EINVAL);
-  if ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) return(EINVAL);
-  switch (io_type) {
-      case _DIO_BYTE:
-	bytes = vec_size * sizeof(pvb_pair_t);
-	io_size= sizeof(u8_t);
-	break;
-      case _DIO_WORD:
-	bytes = vec_size * sizeof(pvw_pair_t);
-	io_size= sizeof(u16_t);
-	break;
-      case _DIO_LONG:
-	bytes = vec_size * sizeof(pvl_pair_t);
-	io_size= sizeof(u32_t);
-	break;
-      default:  return(EINVAL);   /* check type once and for all */
+  اگر (io_dir == DIO_درون_داد) io_in = TRUE;
+  وگرنه اگر (io_dir == _DIO_OUTPUT) io_in = FALSE;
+  وگرنه بازگشت(EINVAL);
+  اگر ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) بازگشت(EINVAL);
+  انتخاب (io_type) {
+      حالت _DIO_BYTE:
+	bytes = vec_size * اندازه(pvb_pair_t);
+	io_size= اندازه(u8_t);
+	بشکن;
+      حالت _DIO_WORD:
+	bytes = vec_size * اندازه(pvw_pair_t);
+	io_size= اندازه(u16_t);
+	بشکن;
+      حالت _DIO_LONG:
+	bytes = vec_size * اندازه(pvl_pair_t);
+	io_size= اندازه(u32_t);
+	بشکن;
+      پیشفرض:  بازگشت(EINVAL);   /* check type once and for all */
   }
-  if (bytes > sizeof(vdevio_buf))  return(E2BIG);
+  اگر (bytes > اندازه(vdevio_buf))  بازگشت(E2BIG);
 
   /* Copy (port,value)-pairs from user. */
-  if((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
+  اگر((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
     KERNEL, (vir_bytes) vdevio_buf, bytes)) != OK)
-	return r;
+	بازگشت r;
 
   privp= priv(caller);
-  if (privp && (privp->s_flags & CHECK_IO_PORT))
+  اگر (privp && (privp->s_flags & CHECK_IO_PORT))
   {
 	/* Check whether the I/O is allowed */
 	nr_io_range= privp->s_nr_io_range;
-	for (i=0; i<vec_size; i++)
+	برای (i=0; i<vec_size; i++)
 	{
-		switch (io_type) {
-		case _DIO_BYTE: port= pvb[i].port; break;
-		case _DIO_WORD: port= pvw[i].port; break;
-		default:	port= pvl[i].port; break;
+		انتخاب (io_type) {
+		حالت _DIO_BYTE: port= pvb[i].port; بشکن;
+		حالت _DIO_WORD: port= pvw[i].port; بشکن;
+		پیشفرض:	port= pvl[i].port; بشکن;
 		}
-		for (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
+		برای (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
 		{
-			if (port >= iorp->ior_base &&
+			اگر (port >= iorp->ior_base &&
 				port+io_size-1 <= iorp->ior_limit)
 			{
-				break;
+				بشکن;
 			}
 		}
-		if (j >= nr_io_range)
+		اگر (j >= nr_io_range)
 		{
 			printf(
 		"do_vdevio: I/O port check failed for proc %d, port 0x%x\n",
 				caller->p_endpoint, port);
-			return EPERM;
+			بازگشت EPERM;
 		}
 	}
   }
 
   /* Perform actual device I/O for byte, word, and long values */
-  switch (io_type) {
-  case _DIO_BYTE: 					 /* byte values */
-      if (io_in) for (i=0; i<vec_size; i++) 
-		pvb[i].value = inb( pvb[i].port); 
-      else      for (i=0; i<vec_size; i++)
-		outb( pvb[i].port, pvb[i].value); 
-      break; 
-  case _DIO_WORD:					  /* word values */
-      if (io_in)
+  انتخاب (io_type) {
+  حالت _DIO_BYTE: 					 /* byte values */
+      اگر (io_in) برای (i=0; i<vec_size; i++) 
+		pvb[i].مقدار = inb( pvb[i].port); 
+      وگرنه      برای (i=0; i<vec_size; i++)
+		outb( pvb[i].port, pvb[i].مقدار); 
+      بشکن; 
+  حالت _DIO_WORD:					  /* word values */
+      اگر (io_in)
       {
-	for (i=0; i<vec_size; i++)  
+	برای (i=0; i<vec_size; i++)  
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
-		pvw[i].value = inw( pvw[i].port);  
+		اگر (port & 1) برو bad;
+		pvw[i].مقدار = inw( pvw[i].port);  
 	}
       }
-      else
+      وگرنه
       {
-	for (i=0; i<vec_size; i++) 
+	برای (i=0; i<vec_size; i++) 
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
-		outw( pvw[i].port, pvw[i].value); 
+		اگر (port & 1) برو bad;
+		outw( pvw[i].port, pvw[i].مقدار); 
 	}
       }
-      break; 
-  default:            					  /* long values */
-      if (io_in)
+      بشکن; 
+  پیشفرض:            					  /* long values */
+      اگر (io_in)
       {
-	for (i=0; i<vec_size; i++)
+	برای (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
-		pvl[i].value = inl(pvl[i].port);  
+		اگر (port & 3) برو bad;
+		pvl[i].مقدار = inl(pvl[i].port);  
 	}
       }
-      else
+      وگرنه
       {
-	for (i=0; i<vec_size; i++)
+	برای (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
-		outl( pvb[i].port, pvl[i].value); 
+		اگر (port & 3) برو bad;
+		outl( pvb[i].port, pvl[i].مقدار); 
 	}
       }
   }
     
   /* Almost done, copy back results for input requests. */
-  if (io_in) 
-	if((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
+  اگر (io_in) 
+	اگر((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
 	  caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
 	  (phys_bytes) bytes)) != OK)
-		return r;
-  return(OK);
+		بازگشت r;
+  بازگشت(OK);
 
 bad:
 	panic("do_vdevio: unaligned port: %d", port);
-	return EPERM;
+	بازگشت EPERM;
 }
 
 #endif /* USE_VDEVIO */

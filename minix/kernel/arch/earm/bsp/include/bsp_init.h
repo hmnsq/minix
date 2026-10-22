@@ -2,6 +2,6 @@
 #define _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+تهی bsp_init(تهی);
 
 #endif /* __BSP_INIT_H__ */

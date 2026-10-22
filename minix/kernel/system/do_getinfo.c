@@ -16,27 +16,27 @@
  *
  */
 
-#include <string.h>
+#شامل <string.h>
 
-#include "kernel/system.h"
+#شامل "kernel/system.h"
 
 
-#if USE_GETINFO
+#اگر USE_GETINFO
 
-#include <minix/u64.h>
-#include <sys/resource.h>
+#شامل <minix/u64.h>
+#شامل <sys/resource.h>
 
 /*===========================================================================*
  *			        update_idle_time			     *
  *===========================================================================*/
-static void update_idle_time(void)
+ایستا تهی update_idle_time(تهی)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	صحیح i;
+	ساختار proc * idl = proc_addr(IDLE);
 
 	idl->p_cycles = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+	برای (i = 0; i < CONFIG_MAX_CPUS ; i++) {
 		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
 	}
 }
@@ -44,184 +44,184 @@ static void update_idle_time(void)
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+صحیح do_getinfo(ساختار proc * caller, message * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
   size_t length;
   vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  صحیح nr_e, nr, r;
+  صحیح wipe_rnd_bin = -1;
+  ساختار proc *p;
+  ساختار rusage r_usage;
 
   /* Set source address and length based on request type. */
-  switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
+  انتخاب (m_ptr->m_lsys_krn_sys_getinfo.request) {
+    حالت GET_MACHINE: {
+        length = اندازه(ساختار machine);
         src_vir = (vir_bytes) &machine;
-        break;
+        بشکن;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
+    حالت GET_KINFO: {
+        length = اندازه(ساختار kinfo);
         src_vir = (vir_bytes) &kinfo;
-        break;
+        بشکن;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
+    حالت GET_LOADINFO: {
+        length = اندازه(ساختار loadinfo);
         src_vir = (vir_bytes) &kloadinfo;
-        break;
+        بشکن;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
+    حالت GET_CPUINFO: {
+        length = اندازه(cpu_info);
         src_vir = (vir_bytes) &cpu_info;
-        break;
+        بشکن;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
+    حالت GET_HZ: {
+        length = اندازه(system_hz);
         src_vir = (vir_bytes) &system_hz;
-        break;
+        بشکن;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
+    حالت GET_IMAGE: {
+        length = اندازه(ساختار boot_image) * NR_BOOT_PROCS;
         src_vir = (vir_bytes) image;
-        break;
+        بشکن;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
+    حالت GET_IRQHOOKS: {
+        length = اندازه(ساختار irq_hook) * NR_IRQ_HOOKS;
         src_vir = (vir_bytes) irq_hooks;
-        break;
+        بشکن;
     }
-    case GET_PROCTAB: {
+    حالت GET_PROCTAB: {
 	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
+        length = اندازه(ساختار proc) * (NR_PROCS + NR_TASKS);
         src_vir = (vir_bytes) proc;
-        break;
+        بشکن;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
+    حالت GET_PRIVTAB: {
+        length = اندازه(ساختار priv) * (NR_SYS_PROCS);
         src_vir = (vir_bytes) priv;
-        break;
+        بشکن;
     }
-    case GET_PROC: {
+    حالت GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
+	اگر(!isokendpt(nr_e, &nr)) بازگشت EINVAL; /* validate request */
+        length = اندازه(ساختار proc);
         src_vir = (vir_bytes) proc_addr(nr);
-        break;
+        بشکن;
     }
-    case GET_PRIV: {
+    حالت GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
+        اگر(!isokendpt(nr_e, &nr)) بازگشت EINVAL; /* validate request */
+        length = اندازه(ساختار priv);
         src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        بشکن;
     }
-    case GET_REGS: {
+    حالت GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        اگر(!isokendpt(nr_e, &nr)) بازگشت EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
+        length = اندازه(p->p_reg);
         src_vir = (vir_bytes) &p->p_reg;
-        break;
+        بشکن;
     }
-    case GET_WHOAMI: {
-	int len;
+    حالت GET_WHOAMI: {
+	صحیح len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(اندازه(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		اندازه(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	بازگشت OK;
     }
-    case GET_MONPARAMS: {
+    حالت GET_MONPARAMS: {
         src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+	length = اندازه(kinfo.param_buf);
+        بشکن;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    حالت GET_RANDOMNESS: {		
+        ایستا ساختار k_randomness copy;	/* copy to keep counters */
+	صحیح i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
+        برای (i= 0; i<RANDOM_SOURCES; i++) {
   		krandom.bin[i].r_size = 0;	/* invalidate random data */
   		krandom.bin[i].r_next = 0;
 	}
-    	length = sizeof(copy);
+    	length = اندازه(copy);
     	src_vir = (vir_bytes) &copy;
-    	break;
+    	بشکن;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    حالت GET_RANDOMNESS_BIN: {		
+	صحیح bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
+	اگر(bin < 0 || bin >= RANDOM_SOURCES) {
 		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+		بازگشت EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	اگر(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
+		بازگشت ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
+    	length = اندازه(krandom.bin[bin]);
     	src_vir = (vir_bytes) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	بشکن;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
+    حالت GET_IRQACTIDS: {
+        length = اندازه(irq_actids);
         src_vir = (vir_bytes) irq_actids;
-        break;
+        بشکن;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
+    حالت GET_IDLETSC: {
+	ساختار proc * idl;
 	update_idle_time();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
+        length = اندازه(idl->p_cycles);
         src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        بشکن;
     }
-    case GET_CPUTICKS: {
+    حالت GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	unsigned صحیح cpu;
+	cpu = (unsigned صحیح)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	اگر (cpu >= CONFIG_MAX_CPUS)
+		بازگشت EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
+	length = اندازه(ticks);
 	src_vir = (vir_bytes)ticks;
-	break;
+	بشکن;
     }
-    default:
+    پیشفرض:
 	printf("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        بازگشت(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+  اگر (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
 	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+	بازگشت (E2BIG);
 
   r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
 	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
 
-  if(r != OK) return r;
+  اگر(r != OK) بازگشت r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+	اگر(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
 		krandom.bin[wipe_rnd_bin].r_size = 0;
 		krandom.bin[wipe_rnd_bin].r_next = 0;
 	}
 
-  return(OK);
+  بازگشت(OK);
 }
 
 #endif /* USE_GETINFO */

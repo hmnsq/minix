@@ -3,77 +3,77 @@
 
 
 #ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+تهی apic_hwint0(تهی);
+تهی apic_hwint1(تهی);
+تهی apic_hwint2(تهی);
+تهی apic_hwint3(تهی);
+تهی apic_hwint4(تهی);
+تهی apic_hwint5(تهی);
+تهی apic_hwint6(تهی);
+تهی apic_hwint7(تهی);
+تهی apic_hwint8(تهی);
+تهی apic_hwint9(تهی);
+تهی apic_hwint10(تهی);
+تهی apic_hwint11(تهی);
+تهی apic_hwint12(تهی);
+تهی apic_hwint13(تهی);
+تهی apic_hwint14(تهی);
+تهی apic_hwint15(تهی);
+تهی apic_hwint16(تهی);
+تهی apic_hwint17(تهی);
+تهی apic_hwint18(تهی);
+تهی apic_hwint19(تهی);
+تهی apic_hwint20(تهی);
+تهی apic_hwint21(تهی);
+تهی apic_hwint22(تهی);
+تهی apic_hwint23(تهی);
+تهی apic_hwint24(تهی);
+تهی apic_hwint25(تهی);
+تهی apic_hwint26(تهی);
+تهی apic_hwint27(تهی);
+تهی apic_hwint28(تهی);
+تهی apic_hwint29(تهی);
+تهی apic_hwint30(تهی);
+تهی apic_hwint31(تهی);
+تهی apic_hwint32(تهی);
+تهی apic_hwint33(تهی);
+تهی apic_hwint34(تهی);
+تهی apic_hwint35(تهی);
+تهی apic_hwint36(تهی);
+تهی apic_hwint37(تهی);
+تهی apic_hwint38(تهی);
+تهی apic_hwint39(تهی);
+تهی apic_hwint40(تهی);
+تهی apic_hwint41(تهی);
+تهی apic_hwint42(تهی);
+تهی apic_hwint43(تهی);
+تهی apic_hwint44(تهی);
+تهی apic_hwint45(تهی);
+تهی apic_hwint46(تهی);
+تهی apic_hwint47(تهی);
+تهی apic_hwint48(تهی);
+تهی apic_hwint49(تهی);
+تهی apic_hwint50(تهی);
+تهی apic_hwint51(تهی);
+تهی apic_hwint52(تهی);
+تهی apic_hwint53(تهی);
+تهی apic_hwint54(تهی);
+تهی apic_hwint55(تهی);
+تهی apic_hwint56(تهی);
+تهی apic_hwint57(تهی);
+تهی apic_hwint58(تهی);
+تهی apic_hwint59(تهی);
+تهی apic_hwint60(تهی);
+تهی apic_hwint61(تهی);
+تهی apic_hwint62(تهی);
+تهی apic_hwint63(تهی);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+تهی lapic_timer_int_handler(تهی);
+تهی apic_spurios_intr(تهی);
+تهی apic_error_intr(تهی);
 
 #endif
 
@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN نویسه lapic_intr_dummy_handles_start;
+EXTERN نویسه lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */

@@ -7,11 +7,11 @@
  *    m2_i3:	SYS_UPD_FLAGS		(update flags)
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <assert.h>
+#شامل "kernel/system.h"
+#شامل <string.h>
+#شامل <assert.h>
 
-#if USE_UPDATE
+#اگر USE_UPDATE
 
 #define DEBUG 0
 
@@ -19,66 +19,66 @@
     (RTS_ISSET(p, RTS_NO_PRIV) || RTS_ISSET(p, RTS_SIG_PENDING) \
     || (RTS_ISSET(p, RTS_RECEIVING) && !RTS_ISSET(p, RTS_SENDING)))
 
-static int inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp);
-static int inherit_priv_io(struct proc *src_rp, struct proc *dst_rp);
-static int inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp);
-static void abort_proc_ipc_send(struct proc *rp);
-static void adjust_proc_slot(struct proc *rp, struct proc *from_rp);
-static void adjust_priv_slot(struct priv *privp, struct priv
+ایستا صحیح inherit_priv_irq(ساختار proc *src_rp, ساختار proc *dst_rp);
+ایستا صحیح inherit_priv_io(ساختار proc *src_rp, ساختار proc *dst_rp);
+ایستا صحیح inherit_priv_mem(ساختار proc *src_rp, ساختار proc *dst_rp);
+ایستا تهی abort_proc_ipc_send(ساختار proc *rp);
+ایستا تهی adjust_proc_slot(ساختار proc *rp, ساختار proc *from_rp);
+ایستا تهی adjust_priv_slot(ساختار priv *privp, ساختار priv
 	*from_privp);
-static void adjust_asyn_table(struct priv *src_privp, struct priv *dst_privp);
-static void swap_proc_slot_pointer(struct proc **rpp, struct proc
-	*src_rp, struct proc *dst_rp);
-static void swap_memreq(struct proc *src_rp, struct proc *dst_rp);
+ایستا تهی adjust_asyn_table(ساختار priv *src_privp, ساختار priv *dst_privp);
+ایستا تهی swap_proc_slot_pointer(ساختار proc **rpp, ساختار proc
+	*src_rp, ساختار proc *dst_rp);
+ایستا تهی swap_memreq(ساختار proc *src_rp, ساختار proc *dst_rp);
 
 /*===========================================================================*
  *				do_update				     *
  *===========================================================================*/
-int do_update(struct proc * caller, message * m_ptr)
+صحیح do_update(ساختار proc * caller, message * m_ptr)
 {
 /* Handle sys_update(). Update a process into another by swapping their process
  * slots.
  */
   endpoint_t src_e, dst_e;
-  int src_p, dst_p, flags;
-  struct proc *src_rp, *dst_rp;
-  struct priv *src_privp, *dst_privp;
-  struct proc orig_src_proc;
-  struct proc orig_dst_proc;
-  struct priv orig_src_priv;
-  struct priv orig_dst_priv;
-  int i, r;
+  صحیح src_p, dst_p, flags;
+  ساختار proc *src_rp, *dst_rp;
+  ساختار priv *src_privp, *dst_privp;
+  ساختار proc orig_src_proc;
+  ساختار proc orig_dst_proc;
+  ساختار priv orig_src_priv;
+  ساختار priv orig_dst_priv;
+  صحیح i, r;
 
   /* Lookup slots for source and destination process. */
   flags = m_ptr->SYS_UPD_FLAGS;
   src_e = m_ptr->SYS_UPD_SRC_ENDPT;
-  if(!isokendpt(src_e, &src_p)) {
-      return EINVAL;
+  اگر(!isokendpt(src_e, &src_p)) {
+      بازگشت EINVAL;
   }
   src_rp = proc_addr(src_p);
   src_privp = priv(src_rp);
-  if(!(src_privp->s_flags & SYS_PROC)) {
-      return EPERM;
+  اگر(!(src_privp->s_flags & SYS_PROC)) {
+      بازگشت EPERM;
   }
 
   dst_e = m_ptr->SYS_UPD_DST_ENDPT;
-  if(!isokendpt(dst_e, &dst_p)) {
-      return EINVAL;
+  اگر(!isokendpt(dst_e, &dst_p)) {
+      بازگشت EINVAL;
   }
   dst_rp = proc_addr(dst_p);
   dst_privp = priv(dst_rp);
-  if(!(dst_privp->s_flags & SYS_PROC)) {
-      return EPERM;
+  اگر(!(dst_privp->s_flags & SYS_PROC)) {
+      بازگشت EPERM;
   }
 
-  assert(!proc_is_runnable(src_rp) && !proc_is_runnable(dst_rp));
+  أكد(!proc_is_runnable(src_rp) && !proc_is_runnable(dst_rp));
 
   /* Check if processes are updatable. */
-  if(!proc_is_updatable(src_rp) || !proc_is_updatable(dst_rp)) {
-      return EBUSY;
+  اگر(!proc_is_updatable(src_rp) || !proc_is_updatable(dst_rp)) {
+      بازگشت EBUSY;
   }
 
-#if DEBUG
+#اگر DEBUG
   printf("do_update: updating %d (%s, %d, %d) into %d (%s, %d, %d)\n",
       src_rp->p_endpoint, src_rp->p_name, src_rp->p_nr, priv(src_rp)->s_proc_nr,
       dst_rp->p_endpoint, dst_rp->p_name, dst_rp->p_nr, priv(dst_rp)->s_proc_nr);
@@ -92,21 +92,21 @@ int do_update(struct proc * caller, message * m_ptr)
 
   /* Let destination inherit allowed IRQ, I/O ranges, and memory ranges. */
   r = inherit_priv_irq(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  اگر(r != OK) {
+      بازگشت r;
   }
   r = inherit_priv_io(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  اگر(r != OK) {
+      بازگشت r;
   }
   r = inherit_priv_mem(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  اگر(r != OK) {
+      بازگشت r;
   }
 
   /* Let destination inherit the target mask from source. */
-  for (i=0; i < NR_SYS_PROCS; i++) {
-      if (get_sys_bit(priv(src_rp)->s_ipc_to, i)) {
+  برای (i=0; i < NR_SYS_PROCS; i++) {
+      اگر (get_sys_bit(priv(src_rp)->s_ipc_to, i)) {
           set_sendto_bit(dst_rp, i);
       }
   }
@@ -122,7 +122,7 @@ int do_update(struct proc * caller, message * m_ptr)
   adjust_asyn_table(priv(dst_rp), priv(src_rp));
 
   /* Abort any pending send() on rollback. */
-  if(flags & SYS_UPD_ROLLBACK) {
+  اگر(flags & SYS_UPD_ROLLBACK) {
       abort_proc_ipc_send(src_rp);
   }
 
@@ -146,7 +146,7 @@ int do_update(struct proc * caller, message * m_ptr)
   /* Swap VM request entries. */
   swap_memreq(src_rp, dst_rp);
 
-#if DEBUG
+#اگر DEBUG
   printf("do_update: updated %d (%s, %d, %d) into %d (%s, %d, %d)\n",
       src_rp->p_endpoint, src_rp->p_name, src_rp->p_nr, priv(src_rp)->s_proc_nr,
       dst_rp->p_endpoint, dst_rp->p_name, dst_rp->p_nr, priv(dst_rp)->s_proc_nr);
@@ -163,72 +163,72 @@ int do_update(struct proc * caller, message * m_ptr)
   bits_fill(dst_rp->p_stale_tlb, CONFIG_MAX_CPUS);
 #endif
 
-  return OK;
+  بازگشت OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_irq 				     *
  *===========================================================================*/
-int inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp)
+صحیح inherit_priv_irq(ساختار proc *src_rp, ساختار proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_irq; i++) {
+  صحیح i, r;
+  برای (i= 0; i<priv(src_rp)->s_nr_irq; i++) {
       r = priv_add_irq(dst_rp, priv(src_rp)->s_irq_tab[i]); 
-      if(r != OK) {
-          return r;
+      اگر(r != OK) {
+          بازگشت r;
       }
   }
 
-  return OK;
+  بازگشت OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_io 				     *
  *===========================================================================*/
- int inherit_priv_io(struct proc *src_rp, struct proc *dst_rp)
+ صحیح inherit_priv_io(ساختار proc *src_rp, ساختار proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_io_range; i++) {
+  صحیح i, r;
+  برای (i= 0; i<priv(src_rp)->s_nr_io_range; i++) {
       r = priv_add_io(dst_rp, &(priv(src_rp)->s_io_tab[i])); 
-      if(r != OK) {
-          return r;
+      اگر(r != OK) {
+          بازگشت r;
       }
   }
 
-  return OK;
+  بازگشت OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_mem 				     *
  *===========================================================================*/
-int inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp)
+صحیح inherit_priv_mem(ساختار proc *src_rp, ساختار proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_mem_range; i++) {
+  صحیح i, r;
+  برای (i= 0; i<priv(src_rp)->s_nr_mem_range; i++) {
       r = priv_add_mem(dst_rp, &(priv(src_rp)->s_mem_tab[i])); 
-      if(r != OK) {
-          return r;
+      اگر(r != OK) {
+          بازگشت r;
       }
   }
 
-  return OK;
+  بازگشت OK;
 }
 
 /*===========================================================================*
  *			    abort_proc_ipc_send				     *
  *===========================================================================*/
-void abort_proc_ipc_send(struct proc *rp)
+تهی abort_proc_ipc_send(ساختار proc *rp)
 {
-  if(RTS_ISSET(rp, RTS_SENDING)) {
-      struct proc **xpp;
+  اگر(RTS_ISSET(rp, RTS_SENDING)) {
+      ساختار proc **xpp;
       RTS_UNSET(rp, RTS_SENDING);
       rp->p_misc_flags &= ~MF_SENDING_FROM_KERNEL;
       xpp = &(proc_addr(_ENDPOINT_P(rp->p_sendto_e))->p_caller_q);
-      while (*xpp) {
-          if(*xpp == rp) {
+      وقتی (*xpp) {
+          اگر(*xpp == rp) {
               *xpp = rp->p_q_link;
-              rp->p_q_link = NULL;
-              break;
+              rp->p_q_link = پوچ;
+              بشکن;
           }
           xpp = &(*xpp)->p_q_link;
       }
@@ -238,7 +238,7 @@ void abort_proc_ipc_send(struct proc *rp)
 /*===========================================================================*
  *			     adjust_proc_slot				     *
  *===========================================================================*/
-static void adjust_proc_slot(struct proc *rp, struct proc *from_rp)
+ایستا تهی adjust_proc_slot(ساختار proc *rp, ساختار proc *from_rp)
 {
   /* Preserve endpoints, slot numbers, priv structure, and IPC. */
   rp->p_endpoint = from_rp->p_endpoint;
@@ -253,26 +253,26 @@ static void adjust_proc_slot(struct proc *rp, struct proc *from_rp)
 #ifdef CONFIG_SMP
   rp->p_cpu = from_rp->p_cpu;
   memcpy(rp->p_cpu_mask, from_rp->p_cpu_mask,
-		  sizeof(bitchunk_t) * BITMAP_CHUNKS(CONFIG_MAX_CPUS));
+		  اندازه(bitchunk_t) * BITMAP_CHUNKS(CONFIG_MAX_CPUS));
 #endif
 }
 
 /*===========================================================================*
  *			     adjust_asyn_table				     *
  *===========================================================================*/
-static void adjust_asyn_table(struct priv *src_privp, struct priv *dst_privp)
+ایستا تهی adjust_asyn_table(ساختار priv *src_privp, ساختار priv *dst_privp)
 {
   /* Transfer the asyn table if source's table belongs to the destination. */
   endpoint_t src_e = proc_addr(src_privp->s_proc_nr)->p_endpoint;
   endpoint_t dst_e = proc_addr(dst_privp->s_proc_nr)->p_endpoint;
 
-  if(src_privp->s_asynsize > 0 && dst_privp->s_asynsize > 0 && src_privp->s_asynendpoint == dst_e) {
-      if(data_copy(src_e, src_privp->s_asyntab, dst_e, dst_privp->s_asyntab,
-	  src_privp->s_asynsize*sizeof(asynmsg_t)) != OK) {
+  اگر(src_privp->s_asynsize > 0 && dst_privp->s_asynsize > 0 && src_privp->s_asynendpoint == dst_e) {
+      اگر(data_copy(src_e, src_privp->s_asyntab, dst_e, dst_privp->s_asyntab,
+	  src_privp->s_asynsize*اندازه(asynmsg_t)) != OK) {
 	  printf("Warning: unable to transfer asyn table from ep %d to ep %d\n",
 	      src_e, dst_e);
       }
-      else {
+      وگرنه {
           dst_privp->s_asynsize = src_privp->s_asynsize;
       }
   }
@@ -281,7 +281,7 @@ static void adjust_asyn_table(struct priv *src_privp, struct priv *dst_privp)
 /*===========================================================================*
  *			     adjust_priv_slot				     *
  *===========================================================================*/
-static void adjust_priv_slot(struct priv *privp, struct priv *from_privp)
+ایستا تهی adjust_priv_slot(ساختار priv *privp, ساختار priv *from_privp)
 {
   /* Preserve privilege ids and non-privilege stuff in the priv structure. */
   privp->s_id = from_privp->s_id;
@@ -296,13 +296,13 @@ static void adjust_priv_slot(struct priv *privp, struct priv *from_privp)
 /*===========================================================================*
  *			   swap_proc_slot_pointer			     *
  *===========================================================================*/
-static void swap_proc_slot_pointer(struct proc **rpp, struct proc *src_rp,
-    struct proc *dst_rp)
+ایستا تهی swap_proc_slot_pointer(ساختار proc **rpp, ساختار proc *src_rp,
+    ساختار proc *dst_rp)
 {
-  if(*rpp == src_rp) {
+  اگر(*rpp == src_rp) {
       *rpp = dst_rp;
   }
-  else if(*rpp == dst_rp) {
+  وگرنه اگر(*rpp == dst_rp) {
       *rpp = src_rp;
   }
 }
@@ -310,28 +310,28 @@ static void swap_proc_slot_pointer(struct proc **rpp, struct proc *src_rp,
 /*===========================================================================*
  *				swap_memreq				     *
  *===========================================================================*/
-static void swap_memreq(struct proc *src_rp, struct proc *dst_rp)
+ایستا تهی swap_memreq(ساختار proc *src_rp, ساختار proc *dst_rp)
 {
 /* If either the source or the destination process is part of the VM request
  * chain, but not both, then swap the process pointers in the chain.
  */
-  struct proc **rpp;
+  ساختار proc **rpp;
 
-  if (RTS_ISSET(src_rp, RTS_VMREQUEST) == RTS_ISSET(dst_rp, RTS_VMREQUEST))
-	return; /* nothing to do */
+  اگر (RTS_ISSET(src_rp, RTS_VMREQUEST) == RTS_ISSET(dst_rp, RTS_VMREQUEST))
+	بازگشت; /* nothing to do */
 
-  for (rpp = &vmrequest; *rpp != NULL;
+  برای (rpp = &vmrequest; *rpp != پوچ;
      rpp = &(*rpp)->p_vmrequest.nextrequestor) {
-	if (*rpp == src_rp) {
+	اگر (*rpp == src_rp) {
 		dst_rp->p_vmrequest.nextrequestor =
 		    src_rp->p_vmrequest.nextrequestor;
 		*rpp = dst_rp;
-		break;
-	} else if (*rpp == dst_rp) {
+		بشکن;
+	} وگرنه اگر (*rpp == dst_rp) {
 		src_rp->p_vmrequest.nextrequestor =
 		    dst_rp->p_vmrequest.nextrequestor;
 		*rpp = src_rp;
-		break;
+		بشکن;
 	}
   }
 }

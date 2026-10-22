@@ -1,3 +1,3 @@
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-struct __cpu_local_vars __cpu_local_vars CPULOCAL_ARRAY;
+ساختار __cpu_local_vars __cpu_local_vars CPULOCAL_ARRAY;

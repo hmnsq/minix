@@ -27,18 +27,18 @@
 #define	DR7_LN_4(bp)	(3 << (18+4*(bp)))	/* 4 bytes */
 
 /* debugreg.S */
-void ld_dr0(phys_bytes value);
-void ld_dr1(phys_bytes value);
-void ld_dr2(phys_bytes value);
-void ld_dr3(phys_bytes value);
-void ld_dr6(unsigned long value);
-void ld_dr7(unsigned long value);
-phys_bytes st_dr0(void); 
-phys_bytes st_dr1(void); 
-phys_bytes st_dr2(void); 
-phys_bytes st_dr3(void); 
-unsigned long st_dr6(void); 
-unsigned long st_dr7(void); 
+تهی ld_dr0(phys_bytes مقدار);
+تهی ld_dr1(phys_bytes مقدار);
+تهی ld_dr2(phys_bytes مقدار);
+تهی ld_dr3(phys_bytes مقدار);
+تهی ld_dr6(unsigned long مقدار);
+تهی ld_dr7(unsigned long مقدار);
+phys_bytes st_dr0(تهی); 
+phys_bytes st_dr1(تهی); 
+phys_bytes st_dr2(تهی); 
+phys_bytes st_dr3(تهی); 
+unsigned long st_dr6(تهی); 
+unsigned long st_dr7(تهی); 
 
 #endif /* __DEBUGREG_H__ */
 

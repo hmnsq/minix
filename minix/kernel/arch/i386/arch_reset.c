@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#شامل <ctype.h>
+#شامل <string.h>
+#شامل <machine/cmos.h>
+#شامل <machine/bios.h>
+#شامل <machine/cpu.h>
+#شامل <minix/cpufeature.h>
+#شامل <sys/reboot.h>
+#شامل <assert.h>
+#شامل <signal.h>
 
-#include <minix/u64.h>
+#شامل <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#شامل "arch_proto.h"
+#شامل "oxpcie.h"
+#شامل "direct_utils.h"
 
 #ifdef USE_ACPI
-#include "acpi.h"
+#شامل "acpi.h"
 #endif
 
 #define     KBCMDP          4       /* kbd controller port (O) */
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+صحیح cpu_has_tsc;
 
-void
-reset(void)
+تهی
+reset(تهی)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        اگر (b != 0xff) {
+                اگر ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	وقتی(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+ایستا __dead تهی
+halt(تهی)
 {
-	for ( ; ; )
+	برای ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+ایستا __dead تهی
+poweroff(تهی)
 {
-	const char *shutdown_str;
+	ثابت نویسه *shutdown_str;
 
 #ifdef USE_ACPI
 	acpi_poweroff();
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        وقتی (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead تهی arch_shutdown(صحیح how)
 {
-	unsigned char unused_ch;
+	unsigned نویسه unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	وقتی(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	اگر(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		اگر (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		وقتی (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	اگر((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	اگر(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		برای (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -151,20 +151,20 @@ __dead void arch_shutdown(int how)
 }
 
 #ifdef DEBUG_SERIAL
-void ser_putc(char c)
+تهی ser_putc(نویسه c)
 {
-        int i;
-        int lsr, thr;
+        صحیح i;
+        صحیح lsr, thr;
 
-#if CONFIG_OXPCIE
+#اگر CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#وگرنه
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        برای (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                اگر (inb( lsr) & LSR_THRE)
+                        بشکن;
         }
         outb( thr, c);
 #endif

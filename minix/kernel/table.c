@@ -29,7 +29,7 @@
  */
 #define _TABLE
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
 /* The system image table lists all programs that are part of the boot image. 
  * The order of the entries here MUST agree with the order of the programs
@@ -41,7 +41,7 @@
  * to prioritize ping messages periodically delivered to system processes.
  */
 
-struct boot_image image[NR_BOOT_PROCS] = {
+ساختار boot_image image[NR_BOOT_PROCS] = {
 /* process nr, name */
 {ASYNCM,        "asyncm"},
 {IDLE,          "idle"  },
