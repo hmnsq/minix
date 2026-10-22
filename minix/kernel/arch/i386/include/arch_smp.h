@@ -19,11 +19,11 @@
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
 	  bsp_finish_booting();			\
-} while(0)
+} 동안(0)
 
 extern unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
 
-#define barrier()	do { mfence(); } while(0)
+#define barrier()	do { mfence(); } 동안(0)
 
 #endif
 

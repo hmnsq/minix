@@ -12,29 +12,29 @@
 #include <string.h>
 #include <minix/endpoint.h>
 
-#if USE_EXEC
+#만약 USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+정수 do_exec(struct proc * caller, message * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
   register struct proc *rp;
-  int proc_nr;
+  정수 proc_nr;
   char name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  만약(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	반환 EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  만약(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+  만약(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
 	KERNEL, (vir_bytes) name,
 	(phys_bytes) sizeof(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  반환(OK);
 }
 #endif /* USE_EXEC */

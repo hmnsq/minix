@@ -4,28 +4,28 @@
 /*===========================================================================*
  *			          do_schedctl			     *
  *===========================================================================*/
-int do_schedctl(struct proc * caller, message * m_ptr)
+정수 do_schedctl(struct proc * caller, message * m_ptr)
 {
 	struct proc *p;
 	uint32_t flags;
-	int priority, quantum, cpu;
-	int proc_nr;
-	int r;
+	정수 priority, quantum, cpu;
+	정수 proc_nr;
+	정수 r;
 
 	/* check parameter validity */
 	flags = m_ptr->m_lsys_krn_schedctl.flags;
-	if (flags & ~SCHEDCTL_FLAG_KERNEL) {
+	만약 (flags & ~SCHEDCTL_FLAG_KERNEL) {
 		printf("do_schedctl: flags 0x%x invalid, caller=%d\n", 
 			flags, caller - proc);
-		return EINVAL;
+		반환 EINVAL;
 	}
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
-		return EINVAL;
+	만약 (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
+		반환 EINVAL;
 
 	p = proc_addr(proc_nr);
 
-	if ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
+	만약 ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
 		/* the kernel becomes the scheduler and starts 
 		 * scheduling the process.
 		 */
@@ -34,13 +34,13 @@ int do_schedctl(struct proc * caller, message * m_ptr)
 		cpu = m_ptr->m_lsys_krn_schedctl.cpu;
 
 		/* Try to schedule the process. */
-		if((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
-			return r;
+		만약((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
+			반환 r;
 		p->p_scheduler = NULL;
-	} else {
+	} 아니면 {
 		/* the caller becomes the scheduler */
 		p->p_scheduler = caller;
 	}
 
-	return(OK);
+	반환(OK);
 }

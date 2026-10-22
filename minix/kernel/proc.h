@@ -100,14 +100,14 @@ struct proc {
 #define VMSTYPE_DELIVERMSG	2
 #define VMSTYPE_MAP		3
 
-	int		type;		/* suspended operation */
+	정수		type;		/* suspended operation */
 	union ixfer_saved{
 		/* VMSTYPE_SYS_MESSAGE */
 		message		reqmsg;	/* suspended request message */
 	} saved;
 
 	/* Parameters of request to VM */
-	int		req_type;
+	정수		req_type;
 	endpoint_t	target;
 	union ixfer_params{
 		struct {
@@ -116,23 +116,23 @@ struct proc {
 		} check;
 	} params;
 	/* VM result when available */
-	int		vmresult;
+	정수		vmresult;
 
 	/* If the suspended operation is a sys_call, its details are
 	 * stored here.
 	 */
   } p_vmrequest;
 
-  int p_found;	/* consistency checking variables */
-  int p_magic;		/* check validity of proc pointers */
+  정수 p_found;	/* consistency checking variables */
+  정수 p_magic;		/* check validity of proc pointers */
 
   /* if MF_SC_DEFER is set, this struct is valid and contains the
    * do_ipc() arguments that are still to be executed
    */
   struct { reg_t r1, r2, r3; } p_defer;
 
-#if DEBUG_TRACE
-  int p_schedules;
+#만약 DEBUG_TRACE
+  정수 p_schedules;
 #endif
 };
 
@@ -205,30 +205,30 @@ struct proc {
 /* Set flag and dequeue if the process was runnable. */
 #define RTS_SET(rp, f)							\
 	do {								\
-		const int rts = (rp)->p_rts_flags;			\
+		const 정수 rts = (rp)->p_rts_flags;			\
 		(rp)->p_rts_flags |= (f);				\
-		if(rts_f_is_runnable(rts) && !proc_is_runnable(rp)) {	\
+		만약(rts_f_is_runnable(rts) && !proc_is_runnable(rp)) {	\
 			dequeue(rp);					\
 		}							\
-	} while(0)
+	} 동안(0)
 
 /* Clear flag and enqueue if the process was not runnable but is now. */
 #define RTS_UNSET(rp, f) 						\
 	do {								\
-		int rts;						\
+		정수 rts;						\
 		rts = (rp)->p_rts_flags;				\
 		(rp)->p_rts_flags &= ~(f);				\
-		if(!rts_f_is_runnable(rts) && proc_is_runnable(rp)) {	\
+		만약(!rts_f_is_runnable(rts) && proc_is_runnable(rp)) {	\
 			enqueue(rp);					\
 		}							\
-	} while(0)
+	} 동안(0)
 
 /* Set flags to this value. */
 #define RTS_SETFLAGS(rp, f)					\
 	do {								\
-		if(proc_is_runnable(rp) && (f)) { dequeue(rp); }		\
+		만약(proc_is_runnable(rp) && (f)) { dequeue(rp); }		\
 		(rp)->p_rts_flags = (f);				\
-	} while(0)
+	} 동안(0)
 
 /* Misc flags */
 #define MF_REPLY_PEND	0x001	/* reply to IPC_REQUEST is pending */
@@ -282,8 +282,8 @@ struct proc {
 
 EXTERN struct proc proc[NR_TASKS + NR_PROCS];	/* process table */
 
-int mini_send(struct proc *caller_ptr, endpoint_t dst_e, message *m_ptr,
-	int flags);
+정수 mini_send(struct proc *caller_ptr, endpoint_t dst_e, message *m_ptr,
+	정수 flags);
 
 #endif /* __ASSEMBLY__ */
 

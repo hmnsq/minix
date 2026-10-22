@@ -25,7 +25,7 @@
 /*===========================================================================*
  *				intr_init				     *
  *===========================================================================*/
-int intr_init(const int auto_eoi)
+정수 intr_init(const 정수 auto_eoi)
 {
 /* Initialize the 8259s, finishing with all interrupts disabled.  */
       outb( INT_CTL, ICW1_AT);
@@ -33,31 +33,31 @@ int intr_init(const int auto_eoi)
 					/* ICW2 for master */
       outb( INT_CTLMASK, (1 << CASCADE_IRQ));
 					/* ICW3 tells slaves */
-      if (auto_eoi)
+      만약 (auto_eoi)
           outb( INT_CTLMASK, ICW4_AT_AEOI_MASTER);
-      else
+      아니면
           outb( INT_CTLMASK, ICW4_AT_MASTER);
       outb( INT_CTLMASK, ~(1 << CASCADE_IRQ)); /* IRQ 0-7 mask */
       outb( INT2_CTL, ICW1_AT);
       outb( INT2_CTLMASK, IRQ8_VECTOR);
 						/* ICW2 for slave */
       outb( INT2_CTLMASK, CASCADE_IRQ);	/* ICW3 is slave nr */
-      if (auto_eoi)
+      만약 (auto_eoi)
          outb( INT2_CTLMASK, ICW4_AT_AEOI_SLAVE);
-      else
+      아니면
          outb( INT2_CTLMASK, ICW4_AT_SLAVE);
       outb( INT2_CTLMASK, ~0);		/* IRQ 8-15 mask */
 
-  return OK;
+  반환 OK;
 }
 
-void irq_8259_unmask(const int irq)
+void irq_8259_unmask(const 정수 irq)
 {
 	const unsigned ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
 	outb(ctl_mask, inb(ctl_mask) & ~(1 << (irq & 0x7)));
 }
 
-void irq_8259_mask(const int irq)
+void irq_8259_mask(const 정수 irq)
 {
 	const unsigned ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
 	outb(ctl_mask, inb(ctl_mask) | (1 << (irq & 0x7)));
@@ -71,10 +71,10 @@ void i8259_disable(void)
 	inb(INT_CTLMASK);
 }
 
-void irq_8259_eoi(int irq)
+void irq_8259_eoi(정수 irq)
 {
-	if (irq < 8)
+	만약 (irq < 8)
 		eoi_8259_master();
-	else
+	아니면
 		eoi_8259_slave();
 }

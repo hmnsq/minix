@@ -14,7 +14,7 @@
 
 struct ex_s {
 	char *msg;
-	int signum;
+	정수 signum;
 };
 
 static struct ex_s ex_data[] = {
@@ -29,22 +29,22 @@ static struct ex_s ex_data[] = {
 };
 
 static void inkernel_disaster(struct proc *saved_proc,
-	reg_t *saved_lr, struct ex_s *ep, int is_nested);
+	reg_t *saved_lr, struct ex_s *ep, 정수 is_nested);
 
-extern int catch_pagefaults;
+extern 정수 catch_pagefaults;
 
 static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc);
 
 static void pagefault( struct proc *pr,
 			reg_t *saved_lr,
-			int is_nested,
+			정수 is_nested,
 			u32_t pagefault_addr,
 			u32_t pagefault_status)
 {
-	int in_physcopy = 0, in_memset = 0;
+	정수 in_physcopy = 0, in_memset = 0;
 
 	message m_pagefault;
-	int err;
+	정수 err;
 
 	in_physcopy = (*saved_lr > (vir_bytes) phys_copy) &&
 	   (*saved_lr < (vir_bytes) phys_copy_fault);
@@ -52,32 +52,32 @@ static void pagefault( struct proc *pr,
 	in_memset = (*saved_lr > (vir_bytes) phys_memset) &&
 	   (*saved_lr < (vir_bytes) memset_fault);
 
-	if((is_nested || iskernelp(pr)) &&
+	만약((is_nested || iskernelp(pr)) &&
 		catch_pagefaults && (in_physcopy || in_memset)) {
-		if (is_nested) {
-			if(in_physcopy) {
+		만약 (is_nested) {
+			만약(in_physcopy) {
 				assert(!in_memset);
 				*saved_lr = (reg_t) phys_copy_fault_in_kernel;
-			} else {
+			} 아니면 {
 				*saved_lr = (reg_t) memset_fault_in_kernel;
 			}
 		}
-		else {
+		아니면 {
 			pr->p_reg.pc = (reg_t) phys_copy_fault;
 			pr->p_reg.retreg = pagefault_addr;
 		}
 
-		return;
+		반환;
 	}
 
-	if(is_nested) {
+	만약(is_nested) {
 		printf("pagefault in kernel at pc 0x%lx address 0x%lx\n",
 			*saved_lr, pagefault_addr);
 		inkernel_disaster(pr, saved_lr, NULL, is_nested);
 	}
 
 	/* VM can't handle page faults. */
-	if(pr->p_endpoint == VM_PROC_NR) {
+	만약(pr->p_endpoint == VM_PROC_NR) {
 		/* Page fault we can't / don't want to
 		 * handle.
 		 */
@@ -89,7 +89,7 @@ static void pagefault( struct proc *pr,
 		printf("pc of pagefault: 0x%lx\n", pr->p_reg.pc);
 		panic("pagefault in VM");
 
-		return;
+		반환;
 	}
 
 	/* Don't schedule this process until pagefault is handled. */
@@ -101,16 +101,16 @@ static void pagefault( struct proc *pr,
 	m_pagefault.VPF_ADDR = pagefault_addr;
 	m_pagefault.VPF_FLAGS = pagefault_status;
 
-	if ((err = mini_send(pr, VM_PROC_NR,
+	만약 ((err = mini_send(pr, VM_PROC_NR,
 					&m_pagefault, FROM_KERNEL))) {
 		panic("WARNING: pagefault: mini_send returned %d\n", err);
 	}
 
-	return;
+	반환;
 }
 
 static void
-data_abort(int is_nested, struct proc *pr, reg_t *saved_lr,
+data_abort(정수 is_nested, struct proc *pr, reg_t *saved_lr,
 		       struct ex_s *ep, u32_t dfar, u32_t dfsr)
 {
 	/* Extract fault status bit [0:3, 10] from DFSR */
@@ -118,21 +118,21 @@ data_abort(int is_nested, struct proc *pr, reg_t *saved_lr,
 	fs |= ((dfsr >> 6) & 0x10);
 
 	 /* Translation and permission faults are handled as pagefaults. */
-	if (is_trans_fault(fs) || is_perm_fault(fs)) {
+	만약 (is_trans_fault(fs) || is_perm_fault(fs)) {
 		pagefault(pr, saved_lr, is_nested, dfar, dfsr);
-	} else if (!is_nested) {
+	} 아니면 만약 (!is_nested) {
 		/* A user process caused some other kind of data abort. */
-		int signum = SIGSEGV;
+		정수 signum = SIGSEGV;
 
-		if (is_align_fault(fs)) {
+		만약 (is_align_fault(fs)) {
 			signum = SIGBUS;
-		} else {
+		} 아니면 {
 			printf("KERNEL: unknown data abort by proc %d sending "
 			       "SIGSEGV (dfar=0x%lx dfsr=0x%lx fs=0x%lx)\n",
 			       proc_nr(pr), dfar, dfsr, fs);
 		}
 		cause_sig(proc_nr(pr), signum);
-	} else { /* is_nested */
+	} 아니면 { /* is_nested */
 		printf("KERNEL: inkernel data abort - disaster (dfar=0x%lx "
 		       "dfsr=0x%lx fs=0x%lx)\n", dfar, dfsr, fs);
 		inkernel_disaster(pr, saved_lr, ep, is_nested);
@@ -141,15 +141,15 @@ data_abort(int is_nested, struct proc *pr, reg_t *saved_lr,
 
 static void inkernel_disaster(struct proc *saved_proc,
 	reg_t *saved_lr, struct ex_s *ep,
-	int is_nested)
+	정수 is_nested)
 {
-#if USE_SYSDEBUG
-  if(ep)
+#만약 USE_SYSDEBUG
+  만약(ep)
 	printf("\n%s\n", ep->msg);
 
   printf("cpu %d is_nested = %d ", cpuid, is_nested);
 
-  if (saved_proc) {
+  만약 (saved_proc) {
 	  printf("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
 	  printf("pc = 0x%x\n", (unsigned) saved_proc->p_reg.pc);
 	  proc_stacktrace(saved_proc);
@@ -163,7 +163,7 @@ static void inkernel_disaster(struct proc *saved_proc,
 #endif /* USE_SYSDEBUG */
 }
 
-void exception_handler(int is_nested, reg_t *saved_lr, int vector)
+void exception_handler(정수 is_nested, reg_t *saved_lr, 정수 vector)
 {
 /* An exception or unexpected interrupt has occurred. */
   struct ex_s *ep;
@@ -179,13 +179,13 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
    * handle special cases for nested problems as they might be tricky or filter
    * them out quickly if the traps are not nested
    */
-  if (is_nested) {
+  만약 (is_nested) {
 	/*
 	 * if a problem occurred while copying a message from userspace because
 	 * of a wrong pointer supplied by userland, handle it the only way we
 	 * can handle it ...
 	 */
-	if (((void*)*saved_lr >= (void*)copy_msg_to_user &&
+	만약 (((void*)*saved_lr >= (void*)copy_msg_to_user &&
 			(void*)*saved_lr <= (void*)__copy_msg_to_user_end) ||
 			((void*)*saved_lr >= (void*)copy_msg_from_user &&
 			(void*)*saved_lr <= (void*)__copy_msg_from_user_end)) {
@@ -193,20 +193,20 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
 		/* these error are expected */
 		case DATA_ABORT_VECTOR:
 			*saved_lr = (reg_t) __user_copy_msg_pointer_failure;
-			return;
+			반환;
 		default:
 			panic("Copy involving a user pointer failed unexpectedly!");
 		}
 	}
   }
 
-  if (vector == DATA_ABORT_VECTOR) {
+  만약 (vector == DATA_ABORT_VECTOR) {
 	data_abort(is_nested, saved_proc, saved_lr, ep, read_dfar(), read_dfsr());
-	return;
+	반환;
   }
 
-  if (!is_nested && vector == PREFETCH_ABORT_VECTOR) {
-	static int warned = FALSE;
+  만약 (!is_nested && vector == PREFETCH_ABORT_VECTOR) {
+	static 정수 warned = FALSE;
 	reg_t ifar = read_ifar(), ifsr = read_ifsr();
 
 	/* The saved_lr is the instruction we're going to execute after
@@ -222,7 +222,7 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
 	 * of this behavior is unknown.  We have not yet seen the same on
 	 * actual hardware, which is why we warn about this problem once.
 	 */
-	if (*saved_lr != ifar && !warned) {
+	만약 (*saved_lr != ifar && !warned) {
 		printf("KERNEL: prefetch abort with differing IFAR and LR\n");
 		printf("KERNEL: IFSR %"PRIx32" IFAR %"PRIx32" LR %"PRIx32" in "
 		    "%s/%d\n", ifsr, ifar, *saved_lr, saved_proc->p_name,
@@ -230,16 +230,16 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
 		warned = TRUE;
 	}
 	pagefault(saved_proc, saved_lr, is_nested, ifar, ifsr);
-	return;
+	반환;
   }
 
   /* If an exception occurs while running a process, the is_nested variable
    * will be zero. Exceptions in interrupt handlers or system traps will make
    * is_nested non-zero.
    */
-  if (is_nested == 0 && ! iskernelp(saved_proc)) {
+  만약 (is_nested == 0 && ! iskernelp(saved_proc)) {
 	cause_sig(proc_nr(saved_proc), ep->signum);
-	return;
+	반환;
   }
 
   /* Exception in system code. This is not supposed to happen. */
@@ -248,7 +248,7 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
   panic("return from inkernel_disaster");
 }
 
-#if USE_SYSDEBUG
+#만약 USE_SYSDEBUG
 /*===========================================================================*
  *				proc_stacktrace_execute			     *
  *===========================================================================*/
@@ -261,7 +261,7 @@ static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc
 
 void proc_stacktrace(struct proc *whichproc)
 {
-#if USE_SYSDEBUG
+#만약 USE_SYSDEBUG
 	proc_stacktrace_execute(whichproc, whichproc->p_reg.fp, whichproc->p_reg.pc);
 #endif /* USE_SYSDEBUG */
 }

@@ -9,7 +9,7 @@
 
 unsigned watchdog_local_timer_ticks = 0U;
 struct arch_watchdog *watchdog;
-int watchdog_enabled;
+정수 watchdog_enabled;
 
 static void lockup_check(struct nmi_frame * frame)
 {
@@ -22,27 +22,27 @@ static void lockup_check(struct nmi_frame * frame)
 	 * times while the kernel is certainly not locked up. We don't want to
 	 * report a lockup in such situation
 	 */
-	if (serial_debug_active)
-		return;
+	만약 (serial_debug_active)
+		반환;
 
-	if (last_tick_count != watchdog_local_timer_ticks) {
-		if (no_ticks == 1) {
+	만약 (last_tick_count != watchdog_local_timer_ticks) {
+		만약 (no_ticks == 1) {
 			printf("watchdog : kernel unlocked\n");
 			no_ticks = 0;
 		}
 		/* we are still ticking, everything seems good */
 		last_tick_count = watchdog_local_timer_ticks;
-		return;
+		반환;
 	}
 
 	/*
 	 * if watchdog_local_timer_ticks didn't changed since last time, give it
 	 * some more time and only if it still dead, trigger the watchdog alarm
 	 */
-	if (++no_ticks < 10) {
-		if (no_ticks == 1)
+	만약 (++no_ticks < 10) {
+		만약 (no_ticks == 1)
 			printf("WARNING watchdog : possible kernel lockup\n");
-		return;
+		반환;
 	}
 
 	/* if we get this far, the kernel is locked up */
@@ -51,50 +51,50 @@ static void lockup_check(struct nmi_frame * frame)
 
 void nmi_watchdog_handler(struct nmi_frame * frame)
 {
-#if SPROFILE
+#만약 SPROFILE
 	/*
 	 * Do not check for lockups while profiling, it is extremely likely that
 	 * a false positive is detected if the frequency is high
 	 */
-	if (watchdog_enabled && !sprofiling)
+	만약 (watchdog_enabled && !sprofiling)
 		lockup_check(frame);
-	if (sprofiling)
+	만약 (sprofiling)
 		nmi_sprofile_handler(frame);
 	
-	if ((watchdog_enabled || sprofiling) && watchdog->reinit)
+	만약 ((watchdog_enabled || sprofiling) && watchdog->reinit)
 		watchdog->reinit(cpuid);
-#else
-	if (watchdog_enabled) {
+#아니면
+	만약 (watchdog_enabled) {
 		lockup_check(frame);
-		if (watchdog->reinit)
+		만약 (watchdog->reinit)
 			watchdog->reinit(cpuid);
 	}
 #endif
 }
 
-int nmi_watchdog_start_profiling(const unsigned freq)
+정수 nmi_watchdog_start_profiling(const unsigned freq)
 {
-	int err;
+	정수 err;
 	
 	/* if watchdog hasn't been enabled, we must enable it now */
-	if (!watchdog_enabled) {
-		if (arch_watchdog_init())
-			return ENODEV;
+	만약 (!watchdog_enabled) {
+		만약 (arch_watchdog_init())
+			반환 ENODEV;
 	}
 
-	if (!watchdog->profile_init) {
+	만약 (!watchdog->profile_init) {
 		printf("WARNING NMI watchdog profiling not supported\n");
 		nmi_watchdog_stop_profiling();
-		return ENODEV;
+		반환 ENODEV;
 	}
 
 	err = watchdog->profile_init(freq);
-	if (err != OK)
-		return err;
+	만약 (err != OK)
+		반환 err;
 
 	watchdog->resetval = watchdog->profile_resetval;
 
-	return OK;
+	반환 OK;
 }
 
 void nmi_watchdog_stop_profiling(void)
@@ -104,9 +104,9 @@ void nmi_watchdog_stop_profiling(void)
 	 * the watchdog running, we reset is to its normal value
 	 */
 
-	if (watchdog)
+	만약 (watchdog)
 		watchdog->resetval = watchdog->watchdog_resetval;
 
-	if (!watchdog_enabled)
+	만약 (!watchdog_enabled)
 		arch_watchdog_stop();
 }

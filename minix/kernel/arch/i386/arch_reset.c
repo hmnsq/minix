@@ -25,7 +25,7 @@
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+정수 cpu_has_tsc;
 
 void
 reset(void)
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        만약 (b != 0xff) {
+                만약 ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,7 +74,7 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	동안(1) {
 		;
 	}
 }
@@ -82,7 +82,7 @@ reset(void)
 static __dead void
 halt(void)
 {
-	for ( ; ; )
+	위해 ( ; ; )
 		halt_cpu();
 }
 
@@ -96,7 +96,7 @@ poweroff(void)
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        동안 (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead void arch_shutdown(정수 how)
 {
 	unsigned char unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	동안(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	만약(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		만약 (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		동안 (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	만약((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	만약(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		위해 (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -153,17 +153,17 @@ __dead void arch_shutdown(int how)
 #ifdef DEBUG_SERIAL
 void ser_putc(char c)
 {
-        int i;
-        int lsr, thr;
+        정수 i;
+        정수 lsr, thr;
 
-#if CONFIG_OXPCIE
+#만약 CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#아니면
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        위해 (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
+                만약 (inb( lsr) & LSR_THRE)
                         break;
         }
         outb( thr, c);

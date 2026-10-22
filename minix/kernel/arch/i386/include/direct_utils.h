@@ -6,6 +6,6 @@
 void direct_cls(void);
 void direct_print(const char*);
 void direct_print_char(char);
-int direct_read_char(unsigned char*);
+정수 direct_read_char(unsigned char*);
 
 #endif

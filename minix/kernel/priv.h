@@ -22,7 +22,7 @@ struct priv {
   proc_nr_t s_proc_nr;		/* number of associated process */
   sys_id_t s_id;		/* index of this system structure */
   short s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
-  int s_init_flags;             /* initialization flags given to the process. */
+  정수 s_init_flags;             /* initialization flags given to the process. */
 
   /* Asynchronous sends */
   vir_bytes s_asyntab;		/* addr. of table in process' address space */
@@ -50,19 +50,19 @@ struct priv {
 
   char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
-  int s_nr_io_range;		/* allowed I/O ports */
+  정수 s_nr_io_range;		/* allowed I/O ports */
   struct io_range s_io_tab[NR_IO_RANGE];
 
-  int s_nr_mem_range;		/* allowed memory ranges */
+  정수 s_nr_mem_range;		/* allowed memory ranges */
   struct minix_mem_range s_mem_tab[NR_MEM_RANGE];
 
-  int s_nr_irq;			/* allowed IRQ lines */
-  int s_irq_tab[NR_IRQ];
+  정수 s_nr_irq;			/* allowed IRQ lines */
+  정수 s_irq_tab[NR_IRQ];
   vir_bytes s_grant_table;	/* grant table address of process, or 0 */
-  int s_grant_entries;		/* no. of entries, or 0 */
+  정수 s_grant_entries;		/* no. of entries, or 0 */
   endpoint_t s_grant_endpoint;  /* the endpoint the grant table belongs to */
   vir_bytes s_state_table;	/* state table address of process, or 0 */
-  int s_state_entries;		/* no. of entries, or 0 */
+  정수 s_state_entries;		/* no. of entries, or 0 */
 };
 
 /* Guard word for task stacks. */
@@ -98,7 +98,7 @@ EXTERN struct priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
  * the system privileges table is large enough for the number of processes
  * in the boot image. 
  */
-#if (NR_BOOT_PROCS > NR_SYS_PROCS)
+#만약 (NR_BOOT_PROCS > NR_SYS_PROCS)
 #error NR_SYS_PROCS must be larger than NR_BOOT_PROCS
 #endif
 

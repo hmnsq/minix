@@ -28,14 +28,14 @@ struct tss_s tss[CONFIG_MAX_CPUS];
 
 u32_t k_percpu_stacks[CONFIG_MAX_CPUS];
 
-int prot_init_done = 0;
+정수 prot_init_done = 0;
 
 phys_bytes vir2phys(void *vir)
 {
 	extern char _kern_vir_base, _kern_phys_base;	/* in kernel.lds */
 	u32_t offset = (vir_bytes) &_kern_vir_base -
 		(vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	반환 (phys_bytes)vir - offset;
 }
 
 /*===========================================================================*
@@ -63,11 +63,11 @@ void enable_iop(struct proc *pp)
   segdp->base_high = base >> BASE_HIGH_SHIFT;
 
   --size;			/* convert to a limit, 0 size means 4G */
-  if (size > BYTE_GRAN_MAX) {
+  만약 (size > BYTE_GRAN_MAX) {
 	segdp->limit_low = size >> PAGE_GRAN_SHIFT;
 	segdp->granularity = GRANULAR | (size >>
 			     (PAGE_GRAN_SHIFT + GRANULARITY_SHIFT));
-  } else {
+  } 아니면 {
 	segdp->limit_low = size;
 	segdp->granularity = size >> GRANULARITY_SHIFT;
   }
@@ -78,7 +78,7 @@ void enable_iop(struct proc *pp)
  *				init_dataseg				     *
  *===========================================================================*/
 void init_param_dataseg(register struct segdesc_s *segdp,
-	phys_bytes base, vir_bytes size, const int privilege)
+	phys_bytes base, vir_bytes size, const 정수 privilege)
 {
 	/* Build descriptor for a data segment. */
 	sdesc(segdp, base, size);
@@ -87,7 +87,7 @@ void init_param_dataseg(register struct segdesc_s *segdp,
 		/* EXECUTABLE = 0, EXPAND_DOWN = 0, ACCESSED = 0 */
 }
 
-void init_dataseg(int index, const int privilege)
+void init_dataseg(정수 index, const 정수 privilege)
 {
 	init_param_dataseg(&gdt[index], 0, 0xFFFFFFFF, privilege);
 }
@@ -95,7 +95,7 @@ void init_dataseg(int index, const int privilege)
 /*===========================================================================*
  *				init_codeseg				     *
  *===========================================================================*/
-static void init_codeseg(int index, int privilege)
+static void init_codeseg(정수 index, 정수 privilege)
 {
 	/* Build descriptor for a code segment. */
 	sdesc(&gdt[index], 0, 0xFFFFFFFF);
@@ -151,10 +151,10 @@ static struct gate_table_s gate_table_exceptions[] = {
 	{ NULL, 0, 0}
 };
 
-int tss_init(unsigned cpu, void * kernel_stack)
+정수 tss_init(unsigned cpu, void * kernel_stack)
 {
 	struct tss_s * t = &tss[cpu];
-	int index = TSS_INDEX(cpu);
+	정수 index = TSS_INDEX(cpu);
 	struct segdesc_s *tssgdt;
 
 	tssgdt = &gdt[index];
@@ -181,14 +181,14 @@ int tss_init(unsigned cpu, void * kernel_stack)
 	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
 
 	/* Set up Intel SYSENTER support if available. */
-	if(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
+	만약(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
 	  ia32_msr_write(INTEL_MSR_SYSENTER_CS, 0, KERN_CS_SELECTOR);
   	  ia32_msr_write(INTEL_MSR_SYSENTER_ESP, 0, t->sp0);
   	  ia32_msr_write(INTEL_MSR_SYSENTER_EIP, 0, (u32_t) ipc_entry_sysenter);
   	}
 
 	/* Set up AMD SYSCALL support if available. */
-	if(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
+	만약(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
 		u32_t msr_lo, msr_hi;
 
 		/* set SYSCALL ENABLE bit in EFER MSR */
@@ -197,7 +197,7 @@ int tss_init(unsigned cpu, void * kernel_stack)
 		ia32_msr_write(AMD_MSR_EFER, msr_hi, msr_lo);
 
 		/* set STAR register value */
-#define set_star_cpu(forcpu) if(cpu == forcpu) {				\
+#define set_star_cpu(forcpu) 만약(cpu == forcpu) {				\
 		ia32_msr_write(AMD_MSR_STAR,					\
 		  ((u32_t)USER_CS_SELECTOR << 16) | (u32_t)KERN_CS_SELECTOR,	\
 		  (u32_t) ipc_entry_syscall_cpu ## forcpu); }
@@ -212,16 +212,16 @@ int tss_init(unsigned cpu, void * kernel_stack)
 		assert(CONFIG_MAX_CPUS <= 8);
   	}
 
-	return SEG_SELECTOR(index);
+	반환 SEG_SELECTOR(index);
 }
 
-phys_bytes init_segdesc(int gdt_index, void *base, int size)
+phys_bytes init_segdesc(정수 gdt_index, void *base, 정수 size)
 {
 	struct desctableptr_s *dtp = (struct desctableptr_s *) &gdt[gdt_index];
 	dtp->limit = size - 1;
 	dtp->base = (phys_bytes) base;
 
-	return (phys_bytes) dtp;
+	반환 (phys_bytes) dtp;
 }
 
 void int_gate(struct gatedesc_s *tab,
@@ -245,7 +245,7 @@ void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type)
 void idt_copy_vectors(struct gate_table_s * first)
 {
 	struct gate_table_s *gtp;
-	for (gtp = first; gtp->gate; gtp++) {
+	위해 (gtp = first; gtp->gate; gtp++) {
 		int_gate(idt, gtp->vec_nr, (vir_bytes) gtp->gate,
 				PRESENT | INT_GATE_TYPE |
 				(gtp->privilege << DPL_SHIFT));
@@ -270,9 +270,9 @@ void idt_reload(void)
 	x86_lidt(&idt_desc);
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(정수 pnr)
 {
-	int i;
+	정수 i;
 
 	assert(pnr >= 0);
 
@@ -280,20 +280,20 @@ multiboot_module_t *bootmod(int pnr)
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	위해(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		정수 p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
+		만약(image[i].proc_nr == pnr) {
 			assert(p < MULTIBOOT_MAX_MODS);
 			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+			반환 &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+정수 booting_cpu = 0;
 
 void prot_load_selectors(void)
 {
@@ -322,9 +322,9 @@ void prot_init(void)
 {
   extern char k_boot_stktop;
 
-  if(_cpufeature(_CPUF_I386_SYSENTER))
+  만약(_cpufeature(_CPUF_I386_SYSENTER))
 	minix_feature_flags |= MKF_I386_INTEL_SYSENTER;
-  if(_cpufeature(_CPUF_I386_SYSCALL))
+  만약(_cpufeature(_CPUF_I386_SYSCALL))
 	minix_feature_flags |= MKF_I386_AMD_SYSCALL;
 
   memset(gdt, 0, sizeof(gdt));
@@ -365,7 +365,7 @@ void prot_init(void)
   prot_init_done = 1;
 }
 
-static int alloc_for_vm = 0;
+static 정수 alloc_for_vm = 0;
 
 void arch_post_init(void)
 {
@@ -376,13 +376,13 @@ void arch_post_init(void)
   pg_info(&vm->p_seg.p_cr3, &vm->p_seg.p_cr3_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+static 정수 libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
 {
         pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
   	pg_load();
         memset((char *) vaddr, 0, len);
 	alloc_for_vm += len;
-        return OK;
+        반환 OK;
 }
 
 void arch_boot_proc(struct boot_image *ip, struct proc *rp)
@@ -391,7 +391,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	struct ps_strings *psp;
 	char *sp;
 
-	if(rp->p_nr < 0) return;
+	만약(rp->p_nr < 0) 반환;
 
 	mod = bootmod(rp->p_nr);
 
@@ -399,7 +399,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
+	만약(rp->p_nr == VM_PROC_NR) {
 		struct exec_info execi;
 
 		memset(&execi, 0, sizeof(execi));
@@ -422,7 +422,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.clearproc = NULL;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		만약(libexec_load_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
@@ -434,10 +434,10 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (sizeof(void *) + sizeof(void *) + sizeof(정수));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (char **)(sp + sizeof(정수));
 		psp->ps_nargvstr = 0;
 		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
 		psp->ps_nenvstr = 0;
