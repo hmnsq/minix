@@ -5,49 +5,49 @@
  *   m_lsys_krn_sys_statectl.request	(state control request)
  */
 
-#include "kernel/system.h"
+#अन्तर्भाव "kernel/system.h"
 
-#if USE_STATECTL
+#यदि USE_STATECTL
 
 /*===========================================================================*
  *			          do_statectl				     *
  *===========================================================================*/
-int do_statectl(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_statectl(संरचना proc * caller, सन्देशः * m_ptr)
 {
 /* Handle sys_statectl(). A process has issued a state control request. */
 
-  switch(m_ptr->m_lsys_krn_sys_statectl.request)
+  विकल्प(m_ptr->m_lsys_krn_sys_statectl.request)
   {
-  case SYS_STATE_CLEAR_IPC_REFS:
+  पक्ष SYS_STATE_CLEAR_IPC_REFS:
 	/* Clear IPC references for all the processes communicating
 	 * with the caller.
 	 */
 	clear_ipc_refs(caller, EDEADSRCDST);
-	return(OK);
-  case SYS_STATE_SET_STATE_TABLE:
+	प्रत्यागम(OK);
+  पक्ष SYS_STATE_समुच्चयः_STATE_सारणी:
 	/* Set state table for the caller. */
-	priv(caller)->s_state_table = (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address;
-	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.length;
-	return(OK);
-  case SYS_STATE_ADD_IPC_BL_FILTER:
+	priv(caller)->s_state_सारणी = (vir_अष्टकानि) m_ptr->m_lsys_krn_sys_statectl.स्थानाङ्कः;
+	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.दीर्घता;
+	प्रत्यागम(OK);
+  पक्ष SYS_STATE_सङ्कलय_IPC_BL_FILTER:
 	/* Add an IPC blacklist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_BLACKLIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_ADD_IPC_WL_FILTER:
+	प्रत्यागम सङ्कलय_ipc_filter(caller, IPCF_BLACKLIST,
+	    (vir_अष्टकानि) m_ptr->m_lsys_krn_sys_statectl.स्थानाङ्कः,
+	    m_ptr->m_lsys_krn_sys_statectl.दीर्घता);
+  पक्ष SYS_STATE_सङ्कलय_IPC_WL_FILTER:
 	/* Add an IPC whitelist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_WHITELIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_CLEAR_IPC_FILTERS:
+	प्रत्यागम सङ्कलय_ipc_filter(caller, IPCF_WHITELIST,
+	    (vir_अष्टकानि) m_ptr->m_lsys_krn_sys_statectl.स्थानाङ्कः,
+	    m_ptr->m_lsys_krn_sys_statectl.दीर्घता);
+  पक्ष SYS_STATE_CLEAR_IPC_FILTERS:
 	/* Clear any IPC filter for the caller. */
 	clear_ipc_filters(caller);
-	return OK;
-  default:
-	printf("do_statectl: bad request %d\n",
+	प्रत्यागम OK;
+  स्वभाव:
+	प्रारूप_लिख("do_statectl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_statectl.request);
-	return EINVAL;
+	प्रत्यागम EINVAL;
   }
 }
 
-#endif /* USE_STATECTL */
+#यदि_अन्तः /* USE_STATECTL */

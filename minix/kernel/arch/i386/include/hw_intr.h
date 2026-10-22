@@ -1,14 +1,14 @@
-#ifndef __HW_INTR_X86_H__
-#define __HW_INTR_X86_H__
+#यदि_अपरिभाषितम् __HW_INTR_X86_H__
+#परिभाषय __HW_INTR_X86_H__
 
-#include "kernel/kernel.h"
-void irq_8259_unmask(int irq);
-void irq_8259_mask(int irq);
-void irq_8259_eoi(int irq);
-void irq_handle(int irq);
-void i8259_disable(void);
-void eoi_8259_master(void);
-void eoi_8259_slave(void);
+#अन्तर्भाव "kernel/kernel.h"
+शून्य irq_8259_unmask(पूर्णाङ्क irq);
+शून्य irq_8259_आवरणम्(पूर्णाङ्क irq);
+शून्य irq_8259_eoi(पूर्णाङ्क irq);
+शून्य irq_handle(पूर्णाङ्क irq);
+शून्य i8259_disable(शून्य);
+शून्य eoi_8259_master(शून्य);
+शून्य eoi_8259_slave(शून्य);
 
 /* 
  * we don't use IO APIC if not configured for SMP as we cannot read any info
@@ -16,39 +16,39 @@ void eoi_8259_slave(void);
  * configurations. ACPI would be another option, however we don't support it
  * either
  */
-#if defined(USE_APIC)
-#include "kernel/arch/i386/apic.h"
+#यदि defined(USE_APIC)
+#अन्तर्भाव "kernel/arch/i386/apic.h"
 
-#define hw_intr_mask(irq)	ioapic_mask_irq(irq)
-#define hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
-#define hw_intr_ack(irq)	ioapic_eoi(irq)
-#define hw_intr_used(irq)	do {					\
-					if (ioapic_enabled)		\
-						ioapic_set_irq(irq);	\
-				} while (0)
-#define hw_intr_not_used(irq)	do {					\
-					if (ioapic_enabled)		\
+#परिभाषय hw_intr_आवरणम्(irq)	ioapic_आवरणम्_irq(irq)
+#परिभाषय hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
+#परिभाषय hw_intr_ack(irq)	ioapic_eoi(irq)
+#परिभाषय hw_intr_प्रयुक्तम्(irq)	कुरु {					\
+					यदि (ioapic_enabled)		\
+						ioapic_समुच्चयः_irq(irq);	\
+				} यावत् (0)
+#परिभाषय hw_intr_not_प्रयुक्तम्(irq)	कुरु {					\
+					यदि (ioapic_enabled)		\
 						ioapic_unset_irq(irq);	\
-				} while (0)
-#define hw_intr_disable_all() do {					\
+				} यावत् (0)
+#परिभाषय hw_intr_disable_all() कुरु {					\
 					ioapic_disable_all();		\
 					ioapic_reset_pic();		\
 					lapic_disable();		\
-				} while (0)
-#ifdef CONFIG_SMP
-#define ipi_ack			apic_eoi
-#endif
+				} यावत् (0)
+#यदि_परिभाषितम् CONFIG_SMP
+#परिभाषय ipi_ack			apic_eoi
+#यदि_अन्तः
 
-#else
+#अन्यथा
 /* legacy PIC */
 
-#define hw_intr_mask(irq)	irq_8259_mask(irq)
-#define hw_intr_unmask(irq)	irq_8259_unmask(irq)
-#define hw_intr_ack(irq)	irq_8259_eoi(irq)
-#define hw_intr_used(irq)
-#define hw_intr_not_used(irq)
-#define hw_intr_disable_all()
+#परिभाषय hw_intr_आवरणम्(irq)	irq_8259_आवरणम्(irq)
+#परिभाषय hw_intr_unmask(irq)	irq_8259_unmask(irq)
+#परिभाषय hw_intr_ack(irq)	irq_8259_eoi(irq)
+#परिभाषय hw_intr_प्रयुक्तम्(irq)
+#परिभाषय hw_intr_not_प्रयुक्तम्(irq)
+#परिभाषय hw_intr_disable_all()
 
-#endif
+#यदि_अन्तः
 
-#endif /* __HW_INTR_X86_H__ */
+#यदि_अन्तः /* __HW_INTR_X86_H__ */

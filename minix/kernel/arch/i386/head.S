@@ -33,10 +33,10 @@ IMPORT(multiboot_init)
 /*===========================================================================*/
 /*				MINIX				     */
 /*===========================================================================*/
-.global MINIX
+.वैश्विक MINIX
 MINIX:
 /* this is the entry point for the MINIX kernel */
-	jmp multiboot_init
+	कूर्द multiboot_init
 
 /* Multiboot header here*/
 
@@ -66,29 +66,29 @@ multiboot_depth:
 	.long 0
 
 multiboot_init:
-	mov	$load_stack_start, %esp	/* make usable stack */
-	mov	$0, %ebp
-	push	$0	/* set flags to known good state */
+	चालय	$load_stack_start, %esp	/* make usable stack */
+	चालय	$0, %ebp
+	निक्षिप	$0	/* set flags to known good state */
 	popf	/* esp, clear nested task and int enable */
-	push	$0
+	निक्षिप	$0
 
-        push    %ebx	/* multiboot information struct */
-	push	%eax	/* multiboot magic number */
-        call    _C_LABEL(pre_init)
+        निक्षिप    %ebx	/* multiboot information struct */
+	निक्षिप	%eax	/* multiboot magic number */
+        आह्वान    _C_LABEL(pre_init)
 
 	/* Kernel is mapped high now and ready to go, with
 	 * the boot info pointer returnd in %eax. Set the
-	 * highly mapped stack, initialize it, push the boot
+	 * highly mapped stack, initialize it, निक्षिप the boot
 	 * info pointer and jump to the highly mapped kernel.
 	 */
-	mov	$k_initial_stktop, %esp
-	push	$0	/* Terminate stack */
-	push	%eax
-        call    _C_LABEL(kmain)
+	चालय	$k_initial_stktop, %esp
+	निक्षिप	$0	/* Terminate stack */
+	निक्षिप	%eax
+        आह्वान    _C_LABEL(kmain)
 
 	/* not reached */
 hang:
-	jmp hang
+	कूर्द hang
 
 .data
 load_stack:

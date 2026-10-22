@@ -1,7 +1,7 @@
 
-#ifndef _KERN_TIMER_H
-#define _KERN_TIMER_H
+#यदि_अपरिभाषितम् _KERN_TIMER_H
+#परिभाषय _KERN_TIMER_H
 
-#include "omap_timer.h"
+#अन्तर्भाव "omap_timer.h"
 
-#endif
+#यदि_अन्तः

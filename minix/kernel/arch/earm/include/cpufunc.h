@@ -1,42 +1,42 @@
-#ifndef _ARM_CPUFUNC_H
-#define _ARM_CPUFUNC_H
+#यदि_अपरिभाषितम् _ARM_CPUFUNC_H
+#परिभाषय _ARM_CPUFUNC_H
 
-#if 0
+#यदि 0
 /* check interrupt state */
-static inline void check_int(unsigned int state, int line)
+स्थिर अन्तःस्थ शून्य check_int(अचिह्नित पूर्णाङ्क state, पूर्णाङ्क पङ्क्तिः)
 {
-	unsigned int cpsr = 0;
+	अचिह्नित पूर्णाङ्क cpsr = 0;
 
-	asm volatile("mrs %0, cpsr" : "=r" (cpsr));
+	asm चञ्चल("mrs %0, cpsr" : "=r" (cpsr));
 
-	if ((cpsr & PSR_F) != (state & PSR_F))
-	    printf("%d: FIQs are unexpectedly %s\n", line, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
+	यदि ((cpsr & PSR_F) != (state & PSR_F))
+	    प्रारूप_लिख("%d: FIQs are unexpectedly %s\n", पङ्क्तिः, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
 
-	if ((cpsr & PSR_I) != (state & PSR_I))
-	    printf("%d: IRQs are unexpectedly %s\n", line, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
+	यदि ((cpsr & PSR_I) != (state & PSR_I))
+	    प्रारूप_लिख("%d: IRQs are unexpectedly %s\n", पङ्क्तिः, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
 
 }
-#endif
+#यदि_अन्तः
 
 /* Data memory barrier */
-static inline void dmb(void)
+स्थिर अन्तःस्थ शून्य dmb(शून्य)
 {
-	asm volatile("dmb" : : : "memory");
+	asm चञ्चल("dmb" : : : "memory");
 }
 
 /* Data synchronization barrier */
-static inline void dsb(void)
+स्थिर अन्तःस्थ शून्य dsb(शून्य)
 {
-	asm volatile("dsb" : : : "memory");
+	asm चञ्चल("dsb" : : : "memory");
 }
 
 /* Instruction synchronization barrier */
-static inline void isb(void)
+स्थिर अन्तःस्थ शून्य isb(शून्य)
 {
-	asm volatile("isb" : : : "memory");
+	asm चञ्चल("isb" : : : "memory");
 }
 
-static inline void barrier(void)
+स्थिर अन्तःस्थ शून्य barrier(शून्य)
 {
 	dsb();
 	isb();
@@ -44,106 +44,106 @@ static inline void barrier(void)
 
 
 /* Read CLIDR, Cache Level ID Register */
-static inline u32_t read_clidr(void){
+स्थिर अन्तःस्थ u32_t read_clidr(शून्य){
 	u32_t clidr;
-	asm volatile("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
+	asm चञ्चल("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
 				: [clidr] "=r" (clidr));
-	return clidr;
+	प्रत्यागम clidr;
 }
 
 
 /* Read CSSELR, Cache Size Selection Register */
-static inline u32_t read_csselr(void){
+स्थिर अन्तःस्थ u32_t read_csselr(शून्य){
 	u32_t csselr;
-	asm volatile("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
+	asm चञ्चल("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
 				: [csselr] "=r" (csselr));
-	return csselr;
+	प्रत्यागम csselr;
 }
 
 /* Write CSSELR, Cache Size Selection Register */
-static inline void write_csselr(u32_t csselr){
-	asm volatile("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
+स्थिर अन्तःस्थ शून्य write_csselr(u32_t csselr){
+	asm चञ्चल("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
 				: : [csselr] "r" (csselr));
 }
 
 /* Read Cache Size ID Register */
-static inline u32_t read_ccsidr(void)
+स्थिर अन्तःस्थ u32_t read_ccsidr(शून्य)
 {
 	u32_t ccsidr;
-	asm volatile("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
+	asm चञ्चल("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
 			: [ccsidr] "=r" (ccsidr));
-	return ccsidr;
+	प्रत्यागम ccsidr;
 }
 
 /* Read TLBTR, TLB Type Register */
-static inline u32_t read_tlbtr(void)
+स्थिर अन्तःस्थ u32_t read_tlbtr(शून्य)
 {
 	u32_t tlbtr;
-	asm volatile("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
+	asm चञ्चल("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
 			: [tlbtr] "=r" (tlbtr));
-	return tlbtr;
+	प्रत्यागम tlbtr;
 }
 
 /* keesj:move these out */
-static inline u32_t ilog2(u32_t t)
+स्थिर अन्तःस्थ u32_t ilog2(u32_t t)
 {
-	u32_t counter =0;
-	while( (t = t >> 1) ) counter ++;
-	return counter;
+	u32_t गणक =0;
+	यावत्( (t = t >> 1) ) गणक ++;
+	प्रत्यागम गणक;
 }
 
 /* keesj:move these out */
-static inline u32_t ipow2(u32_t t)
+स्थिर अन्तःस्थ u32_t ipow2(u32_t t)
 {
-	return 1 << t;
+	प्रत्यागम 1 << t;
 }
 
 /*
  * type = 1 == CLEAN
  * type = 2 == INVALIDATE
  */
-static inline void dcache_maint(int type){
+स्थिर अन्तःस्थ शून्य dcache_maint(पूर्णाङ्क type){
 	u32_t cache_level ;
 	u32_t clidr;
 	u32_t ctype;
 	u32_t  ccsidr;
-	u32_t  line_size,line_length;
-	u32_t  number_of_sets,number_of_ways;
-	u32_t  set,way;
+	u32_t  पङ्क्तिः_आकार,पङ्क्तिः_दीर्घता;
+	u32_t  सङ्ख्या_सम्बन्धि_sets,सङ्ख्या_सम्बन्धि_ways;
+	u32_t  समुच्चयः,way;
 
 	clidr = read_clidr();
 	u32_t loc =  ( clidr >> 24) & 0x7;
 	u32_t louu =  ( clidr >> 27) & 0x7;
 	u32_t louis =  ( clidr >> 21) & 0x7;
-	for (cache_level =0 ; cache_level < loc; cache_level++){
+	प्रति (cache_level =0 ; cache_level < loc; cache_level++){
 		/* get current cache type */
 		ctype = ( clidr >> cache_level*3) & 0x7;
 		/* select data or unified or cache level */
 		write_csselr(cache_level << 1);
 		isb();
 		ccsidr = read_ccsidr();
-		line_size = ccsidr & 0x7;
-		line_length = 2 << (line_size + 1) ; /* 2**(line_size + 2) */
-		number_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
-		number_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
+		पङ्क्तिः_आकार = ccsidr & 0x7;
+		पङ्क्तिः_दीर्घता = 2 << (पङ्क्तिः_आकार + 1) ; /* 2**(line_size + 2) */
+		सङ्ख्या_सम्बन्धि_sets = ((ccsidr >> 13) & 0x7fff) + 1;
+		सङ्ख्या_सम्बन्धि_ways = ((ccsidr >> 3) & 0x3ff) + 1;
 
-		u32_t way_bits = ilog2(number_of_ways);
-		if(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
-			way_bits++;
+		u32_t way_द्वयङ्काः = ilog2(सङ्ख्या_सम्बन्धि_ways);
+		यदि(ipow2(ilog2(सङ्ख्या_सम्बन्धि_ways) < सङ्ख्या_सम्बन्धि_ways) ) {
+			way_द्वयङ्काः++;
 		}
 
-		u32_t l = ilog2(line_length);
-		for (way =0 ; way < number_of_ways; way++) {
-			for (set =0 ; set < number_of_sets; set++) {
-				u32_t val = ( way << (32 - way_bits) ) |  (set << l) | (cache_level << 1 );
-				if (type == 1) {
+		u32_t l = ilog2(पङ्क्तिः_दीर्घता);
+		प्रति (way =0 ; way < सङ्ख्या_सम्बन्धि_ways; way++) {
+			प्रति (समुच्चयः =0 ; समुच्चयः < सङ्ख्या_सम्बन्धि_sets; समुच्चयः++) {
+				u32_t val = ( way << (32 - way_द्वयङ्काः) ) |  (समुच्चयः << l) | (cache_level << 1 );
+				यदि (type == 1) {
 					/* DCCISW, Data Cache Clean and Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
-							: : [set] "r" (val));
-				} else if (type ==2 ){
+					asm चञ्चल("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
+							: : [समुच्चयः] "r" (val));
+				} अन्यथा यदि (type ==2 ){
 					/* DCISW, Data Cache Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c6, 2" 
-							: : [set] "r" (val)); 
+					asm चञ्चल("mcr p15, 0, %[set], c7, c6, 2" 
+							: : [समुच्चयः] "r" (val)); 
 				}
 			}
 		}
@@ -152,36 +152,36 @@ static inline void dcache_maint(int type){
 	isb();
 
 }
-static inline void dcache_clean(void){
+स्थिर अन्तःस्थ शून्य dcache_clean(शून्य){
 	dcache_maint(1);
 }
-static inline void dcache_invalidate(void){
+स्थिर अन्तःस्थ शून्य dcache_invalidate(शून्य){
 	dcache_maint(2);
 }
 
-static inline void refresh_tlb(void)
+स्थिर अन्तःस्थ शून्य refresh_tlb(शून्य)
 {
 	dsb();
 
 	/* Invalidate entire unified TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
+	asm चञ्चल("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
 
-#if 0
+#यदि 0
 	/* Invalidate entire data TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
+	asm चञ्चल("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire instruction TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
-#endif
+	asm चञ्चल("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
+#यदि_अन्तः
 
 	/*
 	 * Invalidate all instruction caches to PoU.
 	 * Also flushes branch target cache.
 	 */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
+	asm चञ्चल("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire branch predictor array */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
+	asm चञ्चल("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
 
 	dsb();
 	isb();
@@ -189,81 +189,81 @@ static inline void refresh_tlb(void)
 
 
 /* Read System Control Register */
-static inline u32_t read_sctlr(void)
+स्थिर अन्तःस्थ u32_t read_sctlr(शून्य)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
+	asm चञ्चल("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	प्रत्यागम ctl;
 }
 
 /* Write System Control Register */
-static inline void write_sctlr(u32_t ctl)
+स्थिर अन्तःस्थ शून्य write_sctlr(u32_t ctl)
 {
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
+	asm चञ्चल("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
 			: : [ctl] "r" (ctl));
 	isb();
 }
 
 /* Read Translation Table Base Register 0 */
-static inline u32_t read_ttbr0(void)
+स्थिर अन्तःस्थ u32_t read_ttbr0(शून्य)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
+	asm चञ्चल("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
 			: [bar] "=r" (bar));
 
-	return bar & ARM_TTBR_ADDR_MASK;
+	प्रत्यागम bar & ARM_TTBR_ADDR_आवरणम्;
 }
 
 /* Write Translation Table Base Register 0 */
-static inline void write_ttbr0(u32_t bar)
+स्थिर अन्तःस्थ शून्य write_ttbr0(u32_t bar)
 {
 	barrier();
 	/* In our setup TTBR contains the base address *and* the flags
 	   but other pieces of the kernel code expect ttbr to be the 
 	   base address of the l1 page table. We therefore add the
 	   flags here and remove them in the read_ttbr0 */
-	u32_t v  =  (bar  & ARM_TTBR_ADDR_MASK ) | ARM_TTBR_FLAGS_CACHED;
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
+	u32_t v  =  (bar  & ARM_TTBR_ADDR_आवरणम् ) | ARM_TTBR_FLAGS_CACHED;
+	asm चञ्चल("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
 			: : [bar] "r" (v));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 0 */
-static inline void reload_ttbr0(void)
+स्थिर अन्तःस्थ शून्य reload_ttbr0(शून्य)
 {
 	reg_t ttbr = read_ttbr0();
 	write_ttbr0(ttbr);
 }
 
 /* Read Translation Table Base Register 1 */
-static inline u32_t read_ttbr1(void)
+स्थिर अन्तःस्थ u32_t read_ttbr1(शून्य)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
+	asm चञ्चल("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
 			: [bar] "=r" (bar));
 
-	return bar;
+	प्रत्यागम bar;
 }
 
 /* Write Translation Table Base Register 1 */
-static inline void write_ttbr1(u32_t bar)
+स्थिर अन्तःस्थ शून्य write_ttbr1(u32_t bar)
 {
 	barrier();
 
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
+	asm चञ्चल("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
 			: : [bar] "r" (bar));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 1 */
-static inline void reload_ttbr1(void)
+स्थिर अन्तःस्थ शून्य reload_ttbr1(शून्य)
 {
 	reg_t ttbr = read_ttbr1();
 
@@ -271,193 +271,193 @@ static inline void reload_ttbr1(void)
 }
 
 /* Read Translation Table Base Control Register */
-static inline u32_t read_ttbcr(void)
+स्थिर अन्तःस्थ u32_t read_ttbcr(शून्य)
 {
 	u32_t bcr;
 
-	asm volatile("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
+	asm चञ्चल("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
 			: [bcr] "=r" (bcr));
 
-	return bcr;
+	प्रत्यागम bcr;
 }
 
 /* Write Translation Table Base Control Register */
-static inline void write_ttbcr(u32_t bcr)
+स्थिर अन्तःस्थ शून्य write_ttbcr(u32_t bcr)
 {
-	asm volatile("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
+	asm चञ्चल("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
 			: : [bcr] "r" (bcr));
 
 	isb();
 }
 
 /* Read Domain Access Control Register */
-static inline u32_t read_dacr(void)
+स्थिर अन्तःस्थ u32_t read_dacr(शून्य)
 {
 	u32_t dacr;
 
-	asm volatile("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
+	asm चञ्चल("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
 			: [dacr] "=r" (dacr));
 
-	return dacr;
+	प्रत्यागम dacr;
 }
 
 /* Write Domain Access Control Register */
-static inline void write_dacr(u32_t dacr)
+स्थिर अन्तःस्थ शून्य write_dacr(u32_t dacr)
 {
-	asm volatile("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
+	asm चञ्चल("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
 			: : [dacr] "r" (dacr));
 
 	isb();
 }
 
 /* Read Data Fault Status Register */
-static inline u32_t read_dfsr(void)
+स्थिर अन्तःस्थ u32_t read_dfsr(शून्य)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
+	asm चञ्चल("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	प्रत्यागम fsr;
 }
 
 /* Write Data Fault Status Register */
-static inline void write_dfsr(u32_t fsr)
+स्थिर अन्तःस्थ शून्य write_dfsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
+	asm चञ्चल("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Instruction Fault Status Register */
-static inline u32_t read_ifsr(void)
+स्थिर अन्तःस्थ u32_t read_ifsr(शून्य)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
+	asm चञ्चल("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	प्रत्यागम fsr;
 }
 
 /* Write Instruction Fault Status Register */
-static inline void write_ifsr(u32_t fsr)
+स्थिर अन्तःस्थ शून्य write_ifsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
+	asm चञ्चल("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Data Fault Address Register */
-static inline u32_t read_dfar(void)
+स्थिर अन्तःस्थ u32_t read_dfar(शून्य)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
+	asm चञ्चल("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	प्रत्यागम far;
 }
 
 /* Write Data Fault Address Register */
-static inline void write_dfar(u32_t far)
+स्थिर अन्तःस्थ शून्य write_dfar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
+	asm चञ्चल("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Instruction Fault Address Register */
-static inline u32_t read_ifar(void)
+स्थिर अन्तःस्थ u32_t read_ifar(शून्य)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
+	asm चञ्चल("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	प्रत्यागम far;
 }
 
 /* Write Instruction Fault Address Register */
-static inline void write_ifar(u32_t far)
+स्थिर अन्तःस्थ शून्य write_ifar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
+	asm चञ्चल("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Vector Base Address Register */
-static inline u32_t read_vbar(void)
+स्थिर अन्तःस्थ u32_t read_vbar(शून्य)
 {
 	u32_t vbar;
 
-	asm volatile("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
+	asm चञ्चल("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
 			: [vbar] "=r" (vbar));
 
-	return vbar;
+	प्रत्यागम vbar;
 }
 
 /* Write Vector Base Address Register */
-static inline void write_vbar(u32_t vbar)
+स्थिर अन्तःस्थ शून्य write_vbar(u32_t vbar)
 {
-	asm volatile("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
+	asm चञ्चल("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
 			: : [vbar] "r" (vbar));
 
 	isb();
 }
 
 /* Read the Main ID Register  */
-static inline u32_t read_midr(void)
+स्थिर अन्तःस्थ u32_t read_midr(शून्य)
 {
 	u32_t id;
 
-	asm volatile("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
+	asm चञ्चल("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
 			: [id] "=r" (id));
 
-	return id;
+	प्रत्यागम id;
 }
 
 /* Read Auxiliary Control Register */
-static inline u32_t read_actlr(void)
+स्थिर अन्तःस्थ u32_t read_actlr(शून्य)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
+	asm चञ्चल("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	प्रत्यागम ctl;
 }
 
 /* Write Auxiliary Control Register */
-static inline void write_actlr(u32_t ctl)
+स्थिर अन्तःस्थ शून्य write_actlr(u32_t ctl)
 {
 //http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0344k/Babjbjbb.html
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
+	asm चञ्चल("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
 			: : [ctl] "r" (ctl));
 
 	isb();
 }
 
 /* Read Current Program Status Register */
-static inline u32_t read_cpsr(void)
+स्थिर अन्तःस्थ u32_t read_cpsr(शून्य)
 {
-	u32_t status;
+	u32_t स्थितिः;
 
-	asm volatile("mrs %[status], cpsr @ read CPSR"
-			: [status] "=r" (status));
+	asm चञ्चल("mrs %[status], cpsr @ read CPSR"
+			: [स्थितिः] "=r" (स्थितिः));
 
-	return status;
+	प्रत्यागम स्थितिः;
 }
 
 /* Write Current Program Status Register */
-static inline void write_cpsr(u32_t status)
+स्थिर अन्तःस्थ शून्य write_cpsr(u32_t स्थितिः)
 {
-	asm volatile("msr cpsr_c, %[status] @ write CPSR"
-			: : [status] "r" (status));
+	asm चञ्चल("msr cpsr_c, %[status] @ write CPSR"
+			: : [स्थितिः] "r" (स्थितिः));
 }
 
-#endif /* _ARM_CPUFUNC_H */
+#यदि_अन्तः /* _ARM_CPUFUNC_H */

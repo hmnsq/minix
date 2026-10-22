@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#यदि_अपरिभाषितम् MB_UTILS_H
+#परिभाषय MB_UTILS_H
 
-#include "kernel/kernel.h"
+#अन्तर्भाव "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+शून्य प्रत्यक्षम्_cls(शून्य);
+शून्य प्रत्यक्षम्_print(ध्रुव वर्ण*);
+शून्य प्रत्यक्षम्_print_char(वर्ण);
+पूर्णाङ्क प्रत्यक्षम्_read_char(अचिह्नित वर्ण*);
 
-#endif
+#यदि_अन्तः

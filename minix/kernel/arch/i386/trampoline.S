@@ -9,17 +9,17 @@ ENTRY(trampoline)
 	cli
 
 	/* %cs has some value and we must use the same for data */
-	mov	%cs, %ax
-	mov	%ax, %ds
+	चालय	%cs, %ax
+	चालय	%ax, %ds
 
 	/* load gdt and idt prepared by bsp */
 	lgdtl	_C_LABEL(__ap_gdt) - _C_LABEL(trampoline)
 	lidtl	_C_LABEL(__ap_idt) - _C_LABEL(trampoline)
 
 	/* switch to protected mode */
-	mov	%cr0, %eax
+	चालय	%cr0, %eax
 	orb	$1, %al
-	mov	%eax, %cr0
+	चालय	%eax, %cr0
 
 	/* set page table feature flags: cr4.PSE on, cr4.PGE off */
 	movl	%cr4, %eax

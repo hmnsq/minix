@@ -4,9 +4,9 @@
 #include <machine/asm.h>
 
 ENTRY(inl)
-	push	%ebp
+	निक्षिप	%ebp
 	movl	%esp, %ebp
 	movl	8(%ebp), %edx	/* port */
 	inl	%dx	/* read 1 dword */
-	pop	%ebp
-	ret
+	उद्धर	%ebp
+	प्रत्यागच्छ

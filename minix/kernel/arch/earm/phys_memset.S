@@ -22,16 +22,16 @@
  *    or promote products derived from this software without specific prior
  *    written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL WASABI SYSTEMS, INC
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * एतत् SOFTWARE IS PROVIDED BY WASABI SYSTEMS, INC. ``AS IS'' च
+ * ANY EXPRESS वा IMPLIED WARRANTIES, INCLUDING, BUT न LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY च FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  अन्तः NO EVENT SHALL WASABI SYSTEMS, INC
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, वा
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT न LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS वा SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED च ON ANY THEORY OF LIABILITY, WHETHER अन्तः
+ * CONTRACT, STRICT LIABILITY, वा TORT (INCLUDING NEGLIGENCE वा OTHERWISE)
+ * ARISING अन्तः ANY WAY OUT OF THE USE OF एतत् SOFTWARE, EVEN यदि ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 /*
@@ -53,16 +53,16 @@
  *    endorse or promote products derived from this software without specific
  *    prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * एतत् SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' च ANY EXPRESS वा IMPLIED
+ * WARRANTIES, INCLUDING, BUT न LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY च FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * अन्तः NO EVENT SHALL THE AUTHOR वा CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, वा CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT न LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS वा
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * HOWEVER CAUSED च ON ANY THEORY OF LIABILITY, WHETHER अन्तः CONTRACT, STRICT
+ * LIABILITY, वा TORT (INCLUDING NEGLIGENCE वा OTHERWISE) ARISING अन्तः ANY WAY
+ * OUT OF THE USE OF एतत् SOFTWARE, EVEN यदि ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
 
@@ -71,19 +71,19 @@
 #if 0  && defined(__minix)
 #if defined(__ARM_EABI__) && !defined(_BZERO)
 ENTRY(__aeabi_memset)
-	mov	r3, r1
-	mov	r1, r2
-	mov	r2, r3
+	चालय	r3, r1
+	चालय	r1, r2
+	चालय	r2, r3
 	b	memset
-END(__aeabi_memset)
+अन्त(__aeabi_memset)
 STRONG_ALIAS(__aeabi_memset4, __aeabi_memset)
 STRONG_ALIAS(__aeabi_memset8, __aeabi_memset)
 
 ENTRY(__aeabi_memclr)
-	mov	r2, r1
-	mov	r1, #0
+	चालय	r2, r1
+	चालय	r1, #0
 	b	memset
-END(__aeabi_memclr)
+अन्त(__aeabi_memclr)
 STRONG_ALIAS(__aeabi_memclr4, __aeabi_memclr)
 STRONG_ALIAS(__aeabi_memclr8, __aeabi_memclr)
 #endif
@@ -103,7 +103,7 @@ STRONG_ALIAS(__aeabi_memclr8, __aeabi_memclr)
 #ifdef _BZERO
 /* LINTSTUB: Func: void bzero(void *, size_t) */
 ENTRY(bzero)
-	mov	r3, #0x00
+	चालय	r3, #0x00
 #else
 #if defined(__minix)
 /* LINTSTUB: Func: void *phys_memset(void *, int, size_t) */
@@ -113,10 +113,10 @@ ENTRY(phys_memset)
 ENTRY(memset)
 #endif
 	and	r3, r1, #0xff		/* We deal with bytes */
-	mov	r1, r2
+	चालय	r1, r2
 #endif
-	cmp	r1, #0x04		/* Do we have less than 4 bytes */
-	mov	ip, r0
+	तुलय	r1, #0x04		/* Do we have less than 4 bytes */
+	चालय	ip, r0
 	blt	.Lmemset_lessthanfour
 
 	/* Ok first we will word align the address */
@@ -131,7 +131,7 @@ ENTRY(memset)
 #ifdef _ARM_ARCH_DWORD_OK
 	tst	ip, #0x04		/* Quad-align for Xscale */
 #else
-	cmp	r1, #0x10
+	तुलय	r1, #0x10
 #endif
 #ifndef _BZERO
 	orr	r3, r3, r3, lsl #16	/* Extend value to 32-bits */
@@ -139,11 +139,11 @@ ENTRY(memset)
 #ifdef _ARM_ARCH_DWORD_OK
 	subne	r1, r1, #0x04		/* Quad-align if necessary */
 	strne	r3, [ip], #0x04
-	cmp	r1, #0x10
+	तुलय	r1, #0x10
 #endif
 	blt	.Lmemset_loop4		/* If less than 16 then use words */
-	mov	r2, r3			/* Duplicate data */
-	cmp	r1, #0x80		/* If < 128 then skip the big loop */
+	चालय	r2, r3			/* Duplicate data */
+	तुलय	r1, #0x80		/* If < 128 then skip the big loop */
 	blt	.Lmemset_loop32
 
 	/* Do 128 bytes at a time */
@@ -190,7 +190,7 @@ ENTRY(memset)
 #endif
 	RETc(eq)			/* Zero length so just exit */
 
-	add	r1, r1, #0x80		/* Adjust for extra sub */
+	योजय	r1, r1, #0x80		/* Adjust for extra वियोजय */
 
 	/* Do 32 bytes at a time */
 .Lmemset_loop32:
@@ -212,7 +212,7 @@ ENTRY(memset)
 #endif
 	RETc(eq)			/* Zero length so just exit */
 
-	adds	r1, r1, #0x10		/* Partially adjust for extra sub */
+	adds	r1, r1, #0x10		/* Partially adjust for extra वियोजय */
 
 	/* Deal with 16 bytes or more */
 #ifdef _ARM_ARCH_DWORD_OK
@@ -227,7 +227,7 @@ ENTRY(memset)
 #endif
 	RETc(eq)			/* Zero length so just exit */
 
-	addlt	r1, r1, #0x10		/* Possibly adjust for extra sub */
+	addlt	r1, r1, #0x10		/* Possibly adjust for extra वियोजय */
 
 	/* We have at least 4 bytes so copy as words */
 .Lmemset_loop4:
@@ -246,56 +246,56 @@ ENTRY(memset)
 	moveq	r0, #0
 #endif
 	RETc(eq)
-	cmp	r1, #2
+	तुलय	r1, #2
 #else
-	cmp	r1, #-2
+	तुलय	r1, #-2
 #endif
 
 	strb	r3, [ip], #0x01		/* Set 1 byte */
 	strbge	r3, [ip], #0x01		/* Set another byte */
 	strbgt	r3, [ip]		/* and a third */
 #if defined(__minix)
-	mov	r0, #0
+	चालय	r0, #0
 #endif
 	RET				/* Exit */
 
 .Lmemset_wordunaligned:
 	rsb	r2, r2, #0x004
 	strb	r3, [ip], #0x01		/* Set 1 byte */
-	cmp	r2, #0x02
+	तुलय	r2, #0x02
 	strbge	r3, [ip], #0x01		/* Set another byte */
-	sub	r1, r1, r2
+	वियोजय	r1, r1, r2
 	strbgt	r3, [ip], #0x01		/* and a third */
-	cmp	r1, #0x04		/* More than 4 bytes left? */
+	तुलय	r1, #0x04		/* More than 4 bytes left? */
 	bge	.Lmemset_wordaligned	/* Yup */
 
 .Lmemset_lessthanfour:
-	cmp	r1, #0x00
+	तुलय	r1, #0x00
 #if defined(__minix)
 	moveq	r0, #0
 #endif
 	RETc(eq)				/* Zero length so exit */
 	strb	r3, [ip], #0x01		/* Set 1 byte */
-	cmp	r1, #0x02
+	तुलय	r1, #0x02
 	strbge	r3, [ip], #0x01		/* Set another byte */
 	strbgt	r3, [ip]		/* and a third */
 #if defined(__minix)
-	mov     r0, #0
+	चालय     r0, #0
 #endif
 	RET				/* Exit */
 #ifdef _BZERO
-END(bzero)
+अन्त(bzero)
 #else
 #if !defined(__minix)
-END(memset)
+अन्त(memset)
 #else
-END(phys_memset)
+अन्त(phys_memset)
 #endif
 #endif
 
 #if defined(__minix)
 LABEL(memset_fault)		/* kernel can send us here */
-	mov	r0, #0
+	चालय	r0, #0
 	RET
 
 LABEL(memset_fault_in_kernel)	/* kernel can send us here */

@@ -1,44 +1,44 @@
-#ifndef __DEBUGREG_H__
-#define __DEBUGREG_H__
+#यदि_अपरिभाषितम् __DEBUGREG_H__
+#परिभाषय __DEBUGREG_H__
 
 /* DR6: status flags */
-#define DR6_B(bp)	(1 << (bp))	/* breakpoint was triggered */
-#define DR6_BD		(1 << 13)	/* debug register access detected */
-#define DR6_BS		(1 << 14)	/* single step */
-#define DR6_BT		(1 << 15)	/* task switch */
+#परिभाषय DR6_B(bp)	(1 << (bp))	/* breakpoint was triggered */
+#परिभाषय DR6_BD		(1 << 13)	/* debug register access detected */
+#परिभाषय DR6_BS		(1 << 14)	/* single step */
+#परिभाषय DR6_BT		(1 << 15)	/* task switch */
 
 /* DR7: control flags */
-#define	DR7_L(bp)	(1 << (2*(bp)))		/* breakpoint armed locally */
-#define	DR7_G(bp)	(1 << (1+2*(bp)))	/* breakpoint armed globally */
-#define	DR7_LE		(1 << 8)		/* exact local breakpoints */
-#define	DR7_GE		(1 << 9)		/* exact global breakpoints */
-#define	DR7_GD		(1 << 13)		/* detect debug reg movs */
+#परिभाषय	DR7_L(bp)	(1 << (2*(bp)))		/* breakpoint armed locally */
+#परिभाषय	DR7_G(bp)	(1 << (1+2*(bp)))	/* breakpoint armed globally */
+#परिभाषय	DR7_LE		(1 << 8)		/* exact local breakpoints */
+#परिभाषय	DR7_GE		(1 << 9)		/* exact global breakpoints */
+#परिभाषय	DR7_GD		(1 << 13)		/* detect debug reg movs */
 
-#define	DR7_RW_MASK(bp)		(3 << (16+4*(bp)))	
-#define	DR7_RW_EXEC(bp)		(0 << (16+4*(bp)))	/* execute */
-#define	DR7_RW_WRITE(bp)	(1 << (16+4*(bp)))	/* write */
-#define	DR7_RW_IO(bp)		(2 << (16+4*(bp)))	/* IO */
-#define	DR7_RW_RW(bp)		(3 << (16+4*(bp)))	/* read or write */
+#परिभाषय	DR7_RW_आवरणम्(bp)		(3 << (16+4*(bp)))	
+#परिभाषय	DR7_RW_EXEC(bp)		(0 << (16+4*(bp)))	/* execute */
+#परिभाषय	DR7_RW_WRITE(bp)	(1 << (16+4*(bp)))	/* write */
+#परिभाषय	DR7_RW_IO(bp)		(2 << (16+4*(bp)))	/* IO */
+#परिभाषय	DR7_RW_RW(bp)		(3 << (16+4*(bp)))	/* read or write */
 
-#define	DR7_LN_MASK(bp)	(3 << (18+4*(bp)))
-#define	DR7_LN_1(bp)	(0 << (18+4*(bp)))	/* 1 byte */
-#define	DR7_LN_2(bp)	(1 << (18+4*(bp)))	/* 2 bytes */
-#define	DR7_LN_8(bp)	(2 << (18+4*(bp)))	/* 8 bytes */
-#define	DR7_LN_4(bp)	(3 << (18+4*(bp)))	/* 4 bytes */
+#परिभाषय	DR7_LN_आवरणम्(bp)	(3 << (18+4*(bp)))
+#परिभाषय	DR7_LN_1(bp)	(0 << (18+4*(bp)))	/* 1 byte */
+#परिभाषय	DR7_LN_2(bp)	(1 << (18+4*(bp)))	/* 2 bytes */
+#परिभाषय	DR7_LN_8(bp)	(2 << (18+4*(bp)))	/* 8 bytes */
+#परिभाषय	DR7_LN_4(bp)	(3 << (18+4*(bp)))	/* 4 bytes */
 
 /* debugreg.S */
-void ld_dr0(phys_bytes value);
-void ld_dr1(phys_bytes value);
-void ld_dr2(phys_bytes value);
-void ld_dr3(phys_bytes value);
-void ld_dr6(unsigned long value);
-void ld_dr7(unsigned long value);
-phys_bytes st_dr0(void); 
-phys_bytes st_dr1(void); 
-phys_bytes st_dr2(void); 
-phys_bytes st_dr3(void); 
-unsigned long st_dr6(void); 
-unsigned long st_dr7(void); 
+शून्य ld_dr0(phys_अष्टकानि मानम्);
+शून्य ld_dr1(phys_अष्टकानि मानम्);
+शून्य ld_dr2(phys_अष्टकानि मानम्);
+शून्य ld_dr3(phys_अष्टकानि मानम्);
+शून्य ld_dr6(अचिह्नित दीर्घ मानम्);
+शून्य ld_dr7(अचिह्नित दीर्घ मानम्);
+phys_अष्टकानि st_dr0(शून्य); 
+phys_अष्टकानि st_dr1(शून्य); 
+phys_अष्टकानि st_dr2(शून्य); 
+phys_अष्टकानि st_dr3(शून्य); 
+अचिह्नित दीर्घ st_dr6(शून्य); 
+अचिह्नित दीर्घ st_dr7(शून्य); 
 
-#endif /* __DEBUGREG_H__ */
+#यदि_अन्तः /* __DEBUGREG_H__ */
 

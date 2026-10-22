@@ -18,11 +18,11 @@
 
 #include "arch_proto.h" /* K_STACK_SIZE */
 
-.section .startup
+.खण्डः .startup
 /*===========================================================================*/
 /*					MINIX				     */
 /*===========================================================================*/
-.global MINIX
+.वैश्विक MINIX
 MINIX:
 /* this is the entry point for the MINIX kernel */
 	b multiboot_init
@@ -30,18 +30,18 @@ MINIX:
 .text
 multiboot_init:
 	ldr	sp, =load_stack_start	/* make usable stack */
-	mov	fp, #0
+	चालय	fp, #0
 	bl	_C_LABEL(pre_init)
 
 	/* Kernel is mapped high now and ready to go, with
 	 * the boot info pointer returned by pre_init in r0.
 	 * Set the highly mapped stack and initialize it.
 	 *
-	 * Afther that call kmain with r0 still pointing to boot info
+	 * Afther that आह्वान kmain with r0 still pointing to boot info
 	 */
 	ldr	sp, =k_initial_stktop
-	mov	r1, #0
-	push	{r1}			/* Terminate stack */
+	चालय	r1, #0
+	निक्षिप	{r1}			/* Terminate stack */
 	ldr	r2, =_C_LABEL(kmain)	/* r0 holds kinfo_t ptr */
 	bx	r2
 

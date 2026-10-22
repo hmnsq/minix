@@ -1,93 +1,93 @@
-#ifndef __APIC_ASM_H__
-#define __APIC_ASM_H__
+#यदि_अपरिभाषितम् __APIC_ASM_H__
+#परिभाषय __APIC_ASM_H__
 
 
-#ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#यदि_अपरिभाषितम् __ASSEMBLY__
+#अन्तर्भाव "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+शून्य apic_hwint0(शून्य);
+शून्य apic_hwint1(शून्य);
+शून्य apic_hwint2(शून्य);
+शून्य apic_hwint3(शून्य);
+शून्य apic_hwint4(शून्य);
+शून्य apic_hwint5(शून्य);
+शून्य apic_hwint6(शून्य);
+शून्य apic_hwint7(शून्य);
+शून्य apic_hwint8(शून्य);
+शून्य apic_hwint9(शून्य);
+शून्य apic_hwint10(शून्य);
+शून्य apic_hwint11(शून्य);
+शून्य apic_hwint12(शून्य);
+शून्य apic_hwint13(शून्य);
+शून्य apic_hwint14(शून्य);
+शून्य apic_hwint15(शून्य);
+शून्य apic_hwint16(शून्य);
+शून्य apic_hwint17(शून्य);
+शून्य apic_hwint18(शून्य);
+शून्य apic_hwint19(शून्य);
+शून्य apic_hwint20(शून्य);
+शून्य apic_hwint21(शून्य);
+शून्य apic_hwint22(शून्य);
+शून्य apic_hwint23(शून्य);
+शून्य apic_hwint24(शून्य);
+शून्य apic_hwint25(शून्य);
+शून्य apic_hwint26(शून्य);
+शून्य apic_hwint27(शून्य);
+शून्य apic_hwint28(शून्य);
+शून्य apic_hwint29(शून्य);
+शून्य apic_hwint30(शून्य);
+शून्य apic_hwint31(शून्य);
+शून्य apic_hwint32(शून्य);
+शून्य apic_hwint33(शून्य);
+शून्य apic_hwint34(शून्य);
+शून्य apic_hwint35(शून्य);
+शून्य apic_hwint36(शून्य);
+शून्य apic_hwint37(शून्य);
+शून्य apic_hwint38(शून्य);
+शून्य apic_hwint39(शून्य);
+शून्य apic_hwint40(शून्य);
+शून्य apic_hwint41(शून्य);
+शून्य apic_hwint42(शून्य);
+शून्य apic_hwint43(शून्य);
+शून्य apic_hwint44(शून्य);
+शून्य apic_hwint45(शून्य);
+शून्य apic_hwint46(शून्य);
+शून्य apic_hwint47(शून्य);
+शून्य apic_hwint48(शून्य);
+शून्य apic_hwint49(शून्य);
+शून्य apic_hwint50(शून्य);
+शून्य apic_hwint51(शून्य);
+शून्य apic_hwint52(शून्य);
+शून्य apic_hwint53(शून्य);
+शून्य apic_hwint54(शून्य);
+शून्य apic_hwint55(शून्य);
+शून्य apic_hwint56(शून्य);
+शून्य apic_hwint57(शून्य);
+शून्य apic_hwint58(शून्य);
+शून्य apic_hwint59(शून्य);
+शून्य apic_hwint60(शून्य);
+शून्य apic_hwint61(शून्य);
+शून्य apic_hwint62(शून्य);
+शून्य apic_hwint63(शून्य);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+शून्य lapic_timer_int_handler(शून्य);
+शून्य apic_spurios_intr(शून्य);
+शून्य apic_error_intr(शून्य);
 
-#endif
+#यदि_अन्तः
 
-#define APIC_DEBUG
+#परिभाषय APIC_DEBUG
 
-#ifdef APIC_DEBUG
+#यदि_परिभाषितम् APIC_DEBUG
 
-#define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
+#परिभाषय LAPIC_INTR_DUMMY_HANDLER_आकार	32
 
-#ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
-#endif
+#यदि_अपरिभाषितम् __ASSEMBLY__
+EXTERN वर्ण lapic_intr_dummy_handles_start;
+EXTERN वर्ण lapic_intr_dummy_handles_अन्तः;
+#यदि_अन्तः
 
-#endif /* APIC_DEBUG */
+#यदि_अन्तः /* APIC_DEBUG */
 
-#endif /* __APIC_ASM_H__ */
+#यदि_अन्तः /* __APIC_ASM_H__ */

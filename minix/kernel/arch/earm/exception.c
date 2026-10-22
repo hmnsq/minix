@@ -3,21 +3,21 @@
  * a panic.
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <signal.h>
-#include <string.h>
-#include <assert.h>
-#include "kernel/proc.h"
-#include "kernel/proto.h"
-#include <machine/vm.h>
+#अन्तर्भाव "kernel/kernel.h"
+#अन्तर्भाव "arch_proto.h"
+#अन्तर्भाव <signal.h>
+#अन्तर्भाव <string.h>
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव "kernel/proc.h"
+#अन्तर्भाव "kernel/proto.h"
+#अन्तर्भाव <machine/vm.h>
 
-struct ex_s {
-	char *msg;
-	int signum;
+संरचना ex_s {
+	वर्ण *सन्देशः_2;
+	पूर्णाङ्क signum;
 };
 
-static struct ex_s ex_data[] = {
+स्थिर संरचना ex_s ex_दत्त[] = {
 	{ "Reset", 0},
 	{ "Undefined instruction", SIGILL},
 	{ "Supervisor call", 0},
@@ -28,130 +28,130 @@ static struct ex_s ex_data[] = {
 	{ "Fast Interrupt", 0},
 };
 
-static void inkernel_disaster(struct proc *saved_proc,
-	reg_t *saved_lr, struct ex_s *ep, int is_nested);
+स्थिर शून्य inkernel_disaster(संरचना proc *saved_proc,
+	reg_t *saved_lr, संरचना ex_s *ep, पूर्णाङ्क is_nested);
 
-extern int catch_pagefaults;
+बाह्य पूर्णाङ्क catch_pagefaults;
 
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc);
+स्थिर शून्य proc_stacktrace_execute(संरचना proc *whichproc, reg_t v_bp, reg_t pc);
 
-static void pagefault( struct proc *pr,
+स्थिर शून्य pagefault( संरचना proc *pr,
 			reg_t *saved_lr,
-			int is_nested,
+			पूर्णाङ्क is_nested,
 			u32_t pagefault_addr,
-			u32_t pagefault_status)
+			u32_t pagefault_स्थितिः)
 {
-	int in_physcopy = 0, in_memset = 0;
+	पूर्णाङ्क अन्तर्_physcopy = 0, अन्तर्_memset = 0;
 
-	message m_pagefault;
-	int err;
+	सन्देशः m_pagefault;
+	पूर्णाङ्क err;
 
-	in_physcopy = (*saved_lr > (vir_bytes) phys_copy) &&
-	   (*saved_lr < (vir_bytes) phys_copy_fault);
+	अन्तर्_physcopy = (*saved_lr > (vir_अष्टकानि) phys_copy) &&
+	   (*saved_lr < (vir_अष्टकानि) phys_copy_fault);
 
-	in_memset = (*saved_lr > (vir_bytes) phys_memset) &&
-	   (*saved_lr < (vir_bytes) memset_fault);
+	अन्तर्_memset = (*saved_lr > (vir_अष्टकानि) phys_memset) &&
+	   (*saved_lr < (vir_अष्टकानि) memset_fault);
 
-	if((is_nested || iskernelp(pr)) &&
-		catch_pagefaults && (in_physcopy || in_memset)) {
-		if (is_nested) {
-			if(in_physcopy) {
-				assert(!in_memset);
-				*saved_lr = (reg_t) phys_copy_fault_in_kernel;
-			} else {
-				*saved_lr = (reg_t) memset_fault_in_kernel;
+	यदि((is_nested || iskernelp(pr)) &&
+		catch_pagefaults && (अन्तर्_physcopy || अन्तर्_memset)) {
+		यदि (is_nested) {
+			यदि(अन्तर्_physcopy) {
+				प्रतिज्ञा(!अन्तर्_memset);
+				*saved_lr = (reg_t) phys_copy_fault_अन्तर्_kernel;
+			} अन्यथा {
+				*saved_lr = (reg_t) memset_fault_अन्तर्_kernel;
 			}
 		}
-		else {
+		अन्यथा {
 			pr->p_reg.pc = (reg_t) phys_copy_fault;
 			pr->p_reg.retreg = pagefault_addr;
 		}
 
-		return;
+		प्रत्यागम;
 	}
 
-	if(is_nested) {
-		printf("pagefault in kernel at pc 0x%lx address 0x%lx\n",
+	यदि(is_nested) {
+		प्रारूप_लिख("pagefault in kernel at pc 0x%lx address 0x%lx\n",
 			*saved_lr, pagefault_addr);
-		inkernel_disaster(pr, saved_lr, NULL, is_nested);
+		inkernel_disaster(pr, saved_lr, रिक्त, is_nested);
 	}
 
 	/* VM can't handle page faults. */
-	if(pr->p_endpoint == VM_PROC_NR) {
+	यदि(pr->p_endpoint == VM_PROC_NR) {
 		/* Page fault we can't / don't want to
 		 * handle.
 		 */
-		printf("pagefault for VM on CPU %d, "
+		प्रारूप_लिख("pagefault for VM on CPU %d, "
 			"pc = 0x%x, addr = 0x%x, flags = 0x%x, is_nested %d\n",
-			cpuid, pr->p_reg.pc, pagefault_addr, pagefault_status,
+			cpuid, pr->p_reg.pc, pagefault_addr, pagefault_स्थितिः,
 			is_nested);
 		proc_stacktrace(pr);
-		printf("pc of pagefault: 0x%lx\n", pr->p_reg.pc);
+		प्रारूप_लिख("pc of pagefault: 0x%lx\n", pr->p_reg.pc);
 		panic("pagefault in VM");
 
-		return;
+		प्रत्यागम;
 	}
 
 	/* Don't schedule this process until pagefault is handled. */
-	RTS_SET(pr, RTS_PAGEFAULT);
+	RTS_समुच्चयः(pr, RTS_PAGEFAULT);
 
 	/* tell Vm about the pagefault */
 	m_pagefault.m_source = pr->p_endpoint;
 	m_pagefault.m_type   = VM_PAGEFAULT;
 	m_pagefault.VPF_ADDR = pagefault_addr;
-	m_pagefault.VPF_FLAGS = pagefault_status;
+	m_pagefault.VPF_FLAGS = pagefault_स्थितिः;
 
-	if ((err = mini_send(pr, VM_PROC_NR,
+	यदि ((err = mini_send(pr, VM_PROC_NR,
 					&m_pagefault, FROM_KERNEL))) {
 		panic("WARNING: pagefault: mini_send returned %d\n", err);
 	}
 
-	return;
+	प्रत्यागम;
 }
 
-static void
-data_abort(int is_nested, struct proc *pr, reg_t *saved_lr,
-		       struct ex_s *ep, u32_t dfar, u32_t dfsr)
+स्थिर शून्य
+दत्त_abort(पूर्णाङ्क is_nested, संरचना proc *pr, reg_t *saved_lr,
+		       संरचना ex_s *ep, u32_t dfar, u32_t dfsr)
 {
 	/* Extract fault status bit [0:3, 10] from DFSR */
 	u32_t fs = dfsr & 0x0F;
 	fs |= ((dfsr >> 6) & 0x10);
 
 	 /* Translation and permission faults are handled as pagefaults. */
-	if (is_trans_fault(fs) || is_perm_fault(fs)) {
+	यदि (is_trans_fault(fs) || is_perm_fault(fs)) {
 		pagefault(pr, saved_lr, is_nested, dfar, dfsr);
-	} else if (!is_nested) {
+	} अन्यथा यदि (!is_nested) {
 		/* A user process caused some other kind of data abort. */
-		int signum = SIGSEGV;
+		पूर्णाङ्क signum = SIGSEGV;
 
-		if (is_align_fault(fs)) {
+		यदि (is_align_fault(fs)) {
 			signum = SIGBUS;
-		} else {
-			printf("KERNEL: unknown data abort by proc %d sending "
+		} अन्यथा {
+			प्रारूप_लिख("KERNEL: unknown data abort by proc %d sending "
 			       "SIGSEGV (dfar=0x%lx dfsr=0x%lx fs=0x%lx)\n",
 			       proc_nr(pr), dfar, dfsr, fs);
 		}
 		cause_sig(proc_nr(pr), signum);
-	} else { /* is_nested */
-		printf("KERNEL: inkernel data abort - disaster (dfar=0x%lx "
+	} अन्यथा { /* is_nested */
+		प्रारूप_लिख("KERNEL: inkernel data abort - disaster (dfar=0x%lx "
 		       "dfsr=0x%lx fs=0x%lx)\n", dfar, dfsr, fs);
 		inkernel_disaster(pr, saved_lr, ep, is_nested);
 	}
 }
 
-static void inkernel_disaster(struct proc *saved_proc,
-	reg_t *saved_lr, struct ex_s *ep,
-	int is_nested)
+स्थिर शून्य inkernel_disaster(संरचना proc *saved_proc,
+	reg_t *saved_lr, संरचना ex_s *ep,
+	पूर्णाङ्क is_nested)
 {
-#if USE_SYSDEBUG
-  if(ep)
-	printf("\n%s\n", ep->msg);
+#यदि USE_SYSDEBUG
+  यदि(ep)
+	प्रारूप_लिख("\n%s\n", ep->सन्देशः_2);
 
-  printf("cpu %d is_nested = %d ", cpuid, is_nested);
+  प्रारूप_लिख("cpu %d is_nested = %d ", cpuid, is_nested);
 
-  if (saved_proc) {
-	  printf("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
-	  printf("pc = 0x%x\n", (unsigned) saved_proc->p_reg.pc);
+  यदि (saved_proc) {
+	  प्रारूप_लिख("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
+	  प्रारूप_लिख("pc = 0x%x\n", (अचिह्नित) saved_proc->p_reg.pc);
 	  proc_stacktrace(saved_proc);
 
 	  panic("Unhandled kernel exception");
@@ -160,53 +160,53 @@ static void inkernel_disaster(struct proc *saved_proc,
   /* in an early stage of boot process we don't have processes yet */
   panic("exception in kernel while booting, no saved_proc yet");
 
-#endif /* USE_SYSDEBUG */
+#यदि_अन्तः /* USE_SYSDEBUG */
 }
 
-void exception_handler(int is_nested, reg_t *saved_lr, int vector)
+शून्य exception_handler(पूर्णाङ्क is_nested, reg_t *saved_lr, पूर्णाङ्क सदिशम्)
 {
 /* An exception or unexpected interrupt has occurred. */
-  struct ex_s *ep;
-  struct proc *saved_proc;
+  संरचना ex_s *ep;
+  संरचना proc *saved_proc;
 
   saved_proc = get_cpulocal_var(proc_ptr);
 
-  ep = &ex_data[vector];
+  ep = &ex_दत्त[सदिशम्];
 
-  assert((vir_bytes) saved_lr >= kinfo.vir_kern_start);
+  प्रतिज्ञा((vir_अष्टकानि) saved_lr >= kinfo.vir_kern_start);
 
   /*
    * handle special cases for nested problems as they might be tricky or filter
    * them out quickly if the traps are not nested
    */
-  if (is_nested) {
+  यदि (is_nested) {
 	/*
 	 * if a problem occurred while copying a message from userspace because
 	 * of a wrong pointer supplied by userland, handle it the only way we
 	 * can handle it ...
 	 */
-	if (((void*)*saved_lr >= (void*)copy_msg_to_user &&
-			(void*)*saved_lr <= (void*)__copy_msg_to_user_end) ||
-			((void*)*saved_lr >= (void*)copy_msg_from_user &&
-			(void*)*saved_lr <= (void*)__copy_msg_from_user_end)) {
-		switch(vector) {
+	यदि (((शून्य*)*saved_lr >= (शून्य*)copy_सन्देशः_गन्तव्यम्_user &&
+			(शून्य*)*saved_lr <= (शून्य*)__copy_msg_to_user_end) ||
+			((शून्य*)*saved_lr >= (शून्य*)copy_सन्देशः_from_user &&
+			(शून्य*)*saved_lr <= (शून्य*)__copy_msg_from_user_end)) {
+		विकल्प(सदिशम्) {
 		/* these error are expected */
-		case DATA_ABORT_VECTOR:
+		पक्ष दत्त_ABORT_सदिशम्:
 			*saved_lr = (reg_t) __user_copy_msg_pointer_failure;
-			return;
-		default:
+			प्रत्यागम;
+		स्वभाव:
 			panic("Copy involving a user pointer failed unexpectedly!");
 		}
 	}
   }
 
-  if (vector == DATA_ABORT_VECTOR) {
-	data_abort(is_nested, saved_proc, saved_lr, ep, read_dfar(), read_dfsr());
-	return;
+  यदि (सदिशम् == दत्त_ABORT_सदिशम्) {
+	दत्त_abort(is_nested, saved_proc, saved_lr, ep, read_dfar(), read_dfsr());
+	प्रत्यागम;
   }
 
-  if (!is_nested && vector == PREFETCH_ABORT_VECTOR) {
-	static int warned = FALSE;
+  यदि (!is_nested && सदिशम् == PREFETCH_ABORT_सदिशम्) {
+	स्थिर पूर्णाङ्क warned = FALSE;
 	reg_t ifar = read_ifar(), ifsr = read_ifsr();
 
 	/* The saved_lr is the instruction we're going to execute after
@@ -222,24 +222,24 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
 	 * of this behavior is unknown.  We have not yet seen the same on
 	 * actual hardware, which is why we warn about this problem once.
 	 */
-	if (*saved_lr != ifar && !warned) {
-		printf("KERNEL: prefetch abort with differing IFAR and LR\n");
-		printf("KERNEL: IFSR %"PRIx32" IFAR %"PRIx32" LR %"PRIx32" in "
+	यदि (*saved_lr != ifar && !warned) {
+		प्रारूप_लिख("KERNEL: prefetch abort with differing IFAR and LR\n");
+		प्रारूप_लिख("KERNEL: IFSR %"PRIx32" IFAR %"PRIx32" LR %"PRIx32" in "
 		    "%s/%d\n", ifsr, ifar, *saved_lr, saved_proc->p_name,
 		    saved_proc->p_endpoint);
 		warned = TRUE;
 	}
 	pagefault(saved_proc, saved_lr, is_nested, ifar, ifsr);
-	return;
+	प्रत्यागम;
   }
 
   /* If an exception occurs while running a process, the is_nested variable
    * will be zero. Exceptions in interrupt handlers or system traps will make
    * is_nested non-zero.
    */
-  if (is_nested == 0 && ! iskernelp(saved_proc)) {
+  यदि (is_nested == 0 && ! iskernelp(saved_proc)) {
 	cause_sig(proc_nr(saved_proc), ep->signum);
-	return;
+	प्रत्यागम;
   }
 
   /* Exception in system code. This is not supposed to happen. */
@@ -248,28 +248,28 @@ void exception_handler(int is_nested, reg_t *saved_lr, int vector)
   panic("return from inkernel_disaster");
 }
 
-#if USE_SYSDEBUG
+#यदि USE_SYSDEBUG
 /*===========================================================================*
  *				proc_stacktrace_execute			     *
  *===========================================================================*/
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc)
+स्थिर शून्य proc_stacktrace_execute(संरचना proc *whichproc, reg_t v_bp, reg_t pc)
 {
-	printf("%-8.8s %6d 0x%lx \n",
+	प्रारूप_लिख("%-8.8s %6d 0x%lx \n",
 		whichproc->p_name, whichproc->p_endpoint, pc);
 }
-#endif
+#यदि_अन्तः
 
-void proc_stacktrace(struct proc *whichproc)
+शून्य proc_stacktrace(संरचना proc *whichproc)
 {
-#if USE_SYSDEBUG
+#यदि USE_SYSDEBUG
 	proc_stacktrace_execute(whichproc, whichproc->p_reg.fp, whichproc->p_reg.pc);
-#endif /* USE_SYSDEBUG */
+#यदि_अन्तः /* USE_SYSDEBUG */
 }
 
-void enable_fpu_exception(void)
+शून्य enable_fpu_exception(शून्य)
 {
 }
 
-void disable_fpu_exception(void)
+शून्य disable_fpu_exception(शून्य)
 {
 }

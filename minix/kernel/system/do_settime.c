@@ -8,30 +8,30 @@
  *   m_lsys_krn_sys_settime.nsec
  */
 
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include <time.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव <minix/endpoint.h>
+#अन्तर्भाव <time.h>
 
 /*===========================================================================*
  *				do_settime				     *
  *===========================================================================*/
-int do_settime(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_settime(संरचना proc * caller, सन्देशः * m_ptr)
 {
   clock_t newclock;
   int32_t ticks;
   time_t boottime, timediff, timediff_ticks;
 
   /* only realtime can change */
-  if (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
-	return EINVAL;
+  यदि (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
+	प्रत्यागम EINVAL;
 
   /* user just wants to adjtime() */
-  if (m_ptr->m_lsys_krn_sys_settime.now == 0) {
+  यदि (m_ptr->m_lsys_krn_sys_settime.now == 0) {
 	/* convert delta value from seconds and nseconds to ticks */
 	ticks = (m_ptr->m_lsys_krn_sys_settime.sec * system_hz) +
 		(m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
-	set_adjtime_delta(ticks);
-	return(OK);
+	समुच्चयः_adjtime_delta(ticks);
+	प्रत्यागम(OK);
   } /* else user wants to set the time */
 
   boottime = get_boottime();
@@ -40,19 +40,19 @@ int do_settime(struct proc * caller, message * m_ptr)
   timediff_ticks = timediff * system_hz;
 
   /* prevent a negative value for realtime */
-  if (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
+  यदि (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
       timediff_ticks < LONG_MIN/2 || timediff_ticks > LONG_MAX/2) {
   	/* boottime was likely wrong, try to correct it. */
-	set_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
-	set_realtime(1);
-	return(OK);
+	समुच्चयः_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
+	समुच्चयः_realtime(1);
+	प्रत्यागम(OK);
   }
 
   /* calculate the new value of realtime in ticks */
   newclock = timediff_ticks +
       (m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
 
-  set_realtime(newclock);
+  समुच्चयः_realtime(newclock);
 
-  return(OK);
+  प्रत्यागम(OK);
 }

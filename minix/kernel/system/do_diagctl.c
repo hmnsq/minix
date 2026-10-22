@@ -9,60 +9,60 @@
  *	m_lsys_krn_sys_diagctl.endpt
  */
 
-#include "kernel/system.h"
+#अन्तर्भाव "kernel/system.h"
 
 
 /*===========================================================================*
  *			        do_diagctl				     *
  *===========================================================================*/
-int do_diagctl(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_diagctl(संरचना proc * caller, सन्देशः * m_ptr)
 {
-  vir_bytes len, buf;
-  static char mybuf[DIAG_BUFSIZE];
-  int s, i, proc_nr;
+  vir_अष्टकानि len, buf;
+  स्थिर वर्ण mybuf[DIAG_BUFSIZE];
+  पूर्णाङ्क s, i, proc_nr;
 
-  switch (m_ptr->m_lsys_krn_sys_diagctl.code) {
-    case DIAGCTL_CODE_DIAG:
+  विकल्प (m_ptr->m_lsys_krn_sys_diagctl.संहिता) {
+    पक्ष DIAGCTL_संहिता_DIAG:
         buf = m_ptr->m_lsys_krn_sys_diagctl.buf;
         len = m_ptr->m_lsys_krn_sys_diagctl.len;
-	if(len < 1 || len > DIAG_BUFSIZE) {
-		printf("do_diagctl: diag for %d: len %d out of range\n",
+	यदि(len < 1 || len > DIAG_BUFSIZE) {
+		प्रारूप_लिख("do_diagctl: diag for %d: len %d out of range\n",
 			caller->p_endpoint, len);
-		return EINVAL;
+		प्रत्यागम EINVAL;
 	}
-	if((s=data_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
-					(vir_bytes) mybuf, len)) != OK) {
-		printf("do_diagctl: diag for %d: len %d: copy failed: %d\n",
+	यदि((s=दत्त_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
+					(vir_अष्टकानि) mybuf, len)) != OK) {
+		प्रारूप_लिख("do_diagctl: diag for %d: len %d: copy failed: %d\n",
 			caller->p_endpoint, len, s);
-		return s;
+		प्रत्यागम s;
 	}
-	for(i = 0; i < len; i++)
+	प्रति(i = 0; i < len; i++)
 		kputc(mybuf[i]);
-	kputc(END_OF_KMESS);
-	return OK;
-    case DIAGCTL_CODE_STACKTRACE:
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
-		return EINVAL;
+	kputc(अन्तः_सम्बन्धि_KMESS);
+	प्रत्यागम OK;
+    पक्ष DIAGCTL_संहिता_STACKTRACE:
+	यदि(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
+		प्रत्यागम EINVAL;
 	proc_stacktrace(proc_addr(proc_nr));
-	return OK;
-    case DIAGCTL_CODE_REGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	प्रत्यागम OK;
+    पक्ष DIAGCTL_संहिता_पञ्जिकाकोशः:
+	यदि (!(priv(caller)->s_flags & SYS_PROC))
+		प्रत्यागम EPERM;
 	priv(caller)->s_diag_sig = TRUE;
 	/* If the message log is not empty, send a first notification
 	 * immediately. After bootup the log is basically never empty.
 	 */
-	if (kmess.km_size > 0 && !kinfo.do_serial_debug)
+	यदि (kmess.km_आकार > 0 && !kinfo.do_serial_debug)
 		send_sig(caller->p_endpoint, SIGKMESS);
-	return OK;
-    case DIAGCTL_CODE_UNREGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	प्रत्यागम OK;
+    पक्ष DIAGCTL_संहिता_UNREGISTER:
+	यदि (!(priv(caller)->s_flags & SYS_PROC))
+		प्रत्यागम EPERM;
 	priv(caller)->s_diag_sig = FALSE;
-	return OK;
-    default:
-	printf("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.code);
-        return(EINVAL);
+	प्रत्यागम OK;
+    स्वभाव:
+	प्रारूप_लिख("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.संहिता);
+        प्रत्यागम(EINVAL);
   }
 }
 

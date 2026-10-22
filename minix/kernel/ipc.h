@@ -1,29 +1,29 @@
-#ifndef IPC_H
-#define IPC_H
+#यदि_अपरिभाषितम् IPC_H
+#परिभाषय IPC_H
 
 /* This header file defines constants for MINIX inter-process communication.
  * These definitions are used in the file proc.c.
  */
-#include <minix/com.h>
-#include <minix/ipcconst.h>
+#अन्तर्भाव <minix/com.h>
+#अन्तर्भाव <minix/ipcconst.h>
 
 /* Masks and flags for system calls. */
-#define NON_BLOCKING    0x0080  /* do not block if target not ready */
-#define FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
+#परिभाषय NON_BLOCKING    0x0080  /* do not block if target not ready */
+#परिभाषय FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
 
-#define WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
+#परिभाषय WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
 	((RTS_ISSET(dst_ptr, RTS_RECEIVING) && \
 	!RTS_ISSET(dst_ptr, RTS_SENDING)) && \
 	CANRECEIVE(dst_ptr->p_getfrom_e,src_e,dst_ptr,m_src_v,m_src_p))
 
-#define CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
+#परिभाषय CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
 	(((receive_e) == ANY || (receive_e) == (src_e)) && \
-	(priv(dst_ptr)->s_ipcf == NULL || \
-	allow_ipc_filtered_msg(dst_ptr,src_e,m_src_v,m_src_p)))
+	(priv(dst_ptr)->s_ipcf == रिक्त || \
+	allow_ipc_filtered_सन्देशः(dst_ptr,src_e,m_src_v,m_src_p)))
 
 /* IPC status code macros. */
-#define IPC_STATUS_GET(p)	((p)->p_reg.IPC_STATUS_REG)
-#define IPC_STATUS_CLEAR(p)	((p)->p_reg.IPC_STATUS_REG = 0)
+#परिभाषय IPC_स्थितिः_GET(p)	((p)->p_reg.IPC_स्थितिः_REG)
+#परिभाषय IPC_स्थितिः_CLEAR(p)	((p)->p_reg.IPC_स्थितिः_REG = 0)
 
 /*
  * XXX: the following check is used to set the status code only on RECEIVE.
@@ -37,14 +37,14 @@
  * A possible reliable solution is to improve our Posix signal handling
  * implementation and guarantee SENDREC atomicity w.r.t. the process context.
  */
-#define IPC_STATUS_ADD(p, m)	do { \
-        if(!((p)->p_misc_flags & MF_REPLY_PEND)) { \
-            (p)->p_reg.IPC_STATUS_REG |= (m); \
+#परिभाषय IPC_स्थितिः_सङ्कलय(p, m)	कुरु { \
+        यदि(!((p)->p_misc_flags & MF_प्रत्युत्तरम्_PEND)) { \
+            (p)->p_reg.IPC_स्थितिः_REG |= (m); \
         } \
-    } while(0)
-#define IPC_STATUS_ADD_CALL(p, call) \
-    IPC_STATUS_ADD(p, IPC_STATUS_CALL_TO(call))
-#define IPC_STATUS_ADD_FLAGS(p, flags) \
-    IPC_STATUS_ADD(p, IPC_STATUS_FLAGS(flags))
+    } यावत्(0)
+#परिभाषय IPC_स्थितिः_सङ्कलय_CALL(p, call) \
+    IPC_स्थितिः_सङ्कलय(p, IPC_स्थितिः_CALL_गन्तव्यम्(call))
+#परिभाषय IPC_स्थितिः_सङ्कलय_FLAGS(p, flags) \
+    IPC_स्थितिः_सङ्कलय(p, IPC_स्थितिः_FLAGS(flags))
 
-#endif /* IPC_H */
+#यदि_अन्तः /* IPC_H */

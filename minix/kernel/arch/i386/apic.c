@@ -1,160 +1,160 @@
 /*
  * APIC handling routines. APIC is a requirement for SMP
  */
-#include <assert.h>
+#अन्तर्भाव <assert.h>
 
-#include <unistd.h>
-#include <minix/portio.h>
+#अन्तर्भाव <unistd.h>
+#अन्तर्भाव <minix/portio.h>
 
-#include <minix/syslib.h>
-#include <machine/cmos.h>
+#अन्तर्भाव <minix/syslib.h>
+#अन्तर्भाव <machine/cmos.h>
 
-#include <minix/u64.h>
+#अन्तर्भाव <minix/u64.h>
 
-#include "apic.h"
-#include "apic_asm.h"
-#include "kernel/clock.h"
-#include "glo.h"
-#include "hw_intr.h"
+#अन्तर्भाव "apic.h"
+#अन्तर्भाव "apic_asm.h"
+#अन्तर्भाव "kernel/clock.h"
+#अन्तर्भाव "glo.h"
+#अन्तर्भाव "hw_intr.h"
 
-#include "acpi.h"
+#अन्तर्भाव "acpi.h"
 
-#ifdef USE_WATCHDOG
-#include "kernel/watchdog.h"
-#endif
+#यदि_परिभाषितम् USE_WATCHDOG
+#अन्तर्भाव "kernel/watchdog.h"
+#यदि_अन्तः
 
-#define APIC_ENABLE		0x100
-#define APIC_FOCUS_DISABLED	(1 << 9)
-#define APIC_SIV		0xFF
+#परिभाषय APIC_ENABLE		0x100
+#परिभाषय APIC_FOCUS_DISABLED	(1 << 9)
+#परिभाषय APIC_SIV		0xFF
 
-#define APIC_TDCR_2	0x00
-#define APIC_TDCR_4	0x01
-#define APIC_TDCR_8	0x02
-#define APIC_TDCR_16	0x03
-#define APIC_TDCR_32	0x08
-#define APIC_TDCR_64	0x09
-#define APIC_TDCR_128	0x0a
-#define APIC_TDCR_1	0x0b
+#परिभाषय APIC_TDCR_2	0x00
+#परिभाषय APIC_TDCR_4	0x01
+#परिभाषय APIC_TDCR_8	0x02
+#परिभाषय APIC_TDCR_16	0x03
+#परिभाषय APIC_TDCR_32	0x08
+#परिभाषय APIC_TDCR_64	0x09
+#परिभाषय APIC_TDCR_128	0x0a
+#परिभाषय APIC_TDCR_1	0x0b
 
-#define IS_SET(mask)		(mask)
-#define IS_CLEAR(mask)		0
+#परिभाषय IS_समुच्चयः(आवरणम्)		(आवरणम्)
+#परिभाषय IS_CLEAR(आवरणम्)		0
 
-#define APIC_LVTT_VECTOR_MASK	0x000000FF
-#define APIC_LVTT_DS_PENDING	(1 << 12)
-#define APIC_LVTT_MASK		(1 << 16)
-#define APIC_LVTT_TM		(1 << 17)
+#परिभाषय APIC_LVTT_सदिशम्_आवरणम्	0x000000FF
+#परिभाषय APIC_LVTT_DS_PENDING	(1 << 12)
+#परिभाषय APIC_LVTT_आवरणम्		(1 << 16)
+#परिभाषय APIC_LVTT_TM		(1 << 17)
 
-#define APIC_LVT_IIPP_MASK	0x00002000
-#define APIC_LVT_IIPP_AH	0x00002000
-#define APIC_LVT_IIPP_AL	0x00000000
+#परिभाषय APIC_LVT_IIPP_आवरणम्	0x00002000
+#परिभाषय APIC_LVT_IIPP_AH	0x00002000
+#परिभाषय APIC_LVT_IIPP_AL	0x00000000
 
-#define APIC_LVT_TM_ONESHOT	IS_CLEAR(APIC_LVTT_TM)
-#define APIC_LVT_TM_PERIODIC	IS_SET(APIC_LVTT_TM)
+#परिभाषय APIC_LVT_TM_ONESHOT	IS_CLEAR(APIC_LVTT_TM)
+#परिभाषय APIC_LVT_TM_PERIODIC	IS_समुच्चयः(APIC_LVTT_TM)
 
-#define IOAPIC_REGSEL		0x0
-#define IOAPIC_RW		0x10
+#परिभाषय IOAPIC_REGSEL		0x0
+#परिभाषय IOAPIC_RW		0x10
 
-#define APIC_ICR_DM_MASK		0x00000700
-#define APIC_ICR_VECTOR			APIC_LVTT_VECTOR_MASK
-#define APIC_ICR_DM_FIXED		(0 << 8)
-#define APIC_ICR_DM_LOWEST_PRIORITY	(1 << 8)
-#define APIC_ICR_DM_SMI			(2 << 8)
-#define APIC_ICR_DM_RESERVED		(3 << 8)
-#define APIC_ICR_DM_NMI			(4 << 8)
-#define APIC_ICR_DM_INIT		(5 << 8)
-#define APIC_ICR_DM_STARTUP		(6 << 8)
-#define APIC_ICR_DM_EXTINT		(7 << 8)
+#परिभाषय APIC_ICR_DM_आवरणम्		0x00000700
+#परिभाषय APIC_ICR_सदिशम्			APIC_LVTT_सदिशम्_आवरणम्
+#परिभाषय APIC_ICR_DM_FIXED		(0 << 8)
+#परिभाषय APIC_ICR_DM_निम्नतमम्_प्राथमिकता	(1 << 8)
+#परिभाषय APIC_ICR_DM_SMI			(2 << 8)
+#परिभाषय APIC_ICR_DM_RESERVED		(3 << 8)
+#परिभाषय APIC_ICR_DM_NMI			(4 << 8)
+#परिभाषय APIC_ICR_DM_INIT		(5 << 8)
+#परिभाषय APIC_ICR_DM_STARTUP		(6 << 8)
+#परिभाषय APIC_ICR_DM_EXTINT		(7 << 8)
 
-#define APIC_ICR_DM_PHYSICAL		(0 << 11)
-#define APIC_ICR_DM_LOGICAL		(1 << 11)
+#परिभाषय APIC_ICR_DM_PHYSICAL		(0 << 11)
+#परिभाषय APIC_ICR_DM_LOGICAL		(1 << 11)
 
-#define APIC_ICR_DELIVERY_PENDING	(1 << 12)
+#परिभाषय APIC_ICR_DELIVERY_PENDING	(1 << 12)
 
-#define APIC_ICR_INT_POLARITY		(1 << 13)
-#define APIC_ICR_INTPOL_LOW		IS_SET(APIC_ICR_INT_POLARITY)
-#define APIC_ICR_INTPOL_HIGH		IS_CLEAR(APIC_ICR_INT_POLARITY)
+#परिभाषय APIC_ICR_INT_POLARITY		(1 << 13)
+#परिभाषय APIC_ICR_INTPOL_नीचः		IS_समुच्चयः(APIC_ICR_INT_POLARITY)
+#परिभाषय APIC_ICR_INTPOL_उच्चः		IS_CLEAR(APIC_ICR_INT_POLARITY)
 
-#define APIC_ICR_LEVEL_ASSERT		(1 << 14)
-#define APIC_ICR_LEVEL_DEASSERT		(0 << 14)
+#परिभाषय APIC_ICR_LEVEL_ASSERT		(1 << 14)
+#परिभाषय APIC_ICR_LEVEL_DEASSERT		(0 << 14)
 
-#define APIC_ICR_TRIGGER		(1 << 15)
-#define APIC_ICR_TM_LEVEL		IS_CLEAR(APIC_ICR_TRIGGER)
-#define APIC_ICR_TM_EDGE		IS_CLEAR(APIC_ICR_TRIGGER)
+#परिभाषय APIC_ICR_TRIGGER		(1 << 15)
+#परिभाषय APIC_ICR_TM_LEVEL		IS_CLEAR(APIC_ICR_TRIGGER)
+#परिभाषय APIC_ICR_TM_EDGE		IS_CLEAR(APIC_ICR_TRIGGER)
 
-#define APIC_ICR_INT_MASK		(1 << 16)
+#परिभाषय APIC_ICR_INT_आवरणम्		(1 << 16)
 
-#define APIC_ICR_DEST_FIELD		(0 << 18)
-#define APIC_ICR_DEST_SELF		(1 << 18)
-#define APIC_ICR_DEST_ALL		(2 << 18)
-#define APIC_ICR_DEST_ALL_BUT_SELF	(3 << 18)
+#परिभाषय APIC_ICR_DEST_क्षेत्रम्		(0 << 18)
+#परिभाषय APIC_ICR_DEST_SELF		(1 << 18)
+#परिभाषय APIC_ICR_DEST_ALL		(2 << 18)
+#परिभाषय APIC_ICR_DEST_ALL_BUT_SELF	(3 << 18)
 
-#define IA32_APIC_BASE	0x1b
-#define IA32_APIC_BASE_ENABLE_BIT	11
+#परिभाषय IA32_APIC_आधारः	0x1b
+#परिभाषय IA32_APIC_आधारः_ENABLE_BIT	11
 
 /* FIXME we should spread the irqs across as many priority levels as possible
  * due to buggy hw */
-#define LAPIC_VECTOR(irq)	(IRQ0_VECTOR +(irq))
+#परिभाषय LAPIC_सदिशम्(irq)	(IRQ0_सदिशम् +(irq))
 
-#define IOAPIC_IRQ_STATE_MASKED 0x1
+#परिभाषय IOAPIC_IRQ_STATE_MASKED 0x1
 
 /* currently only 2 interrupt priority levels are used */
-#define SPL0				0x0
-#define	SPLHI				0xF
+#परिभाषय SPL0				0x0
+#परिभाषय	SPLHI				0xF
 
 
-struct io_apic io_apic[MAX_NR_IOAPICS];
-unsigned nioapics;
+संरचना io_apic io_apic[MAX_NR_IOAPICS];
+अचिह्नित nioapics;
 
-struct irq;
-typedef void (* eoi_method_t)(struct irq *);
+संरचना irq;
+प्रकारनिर्देश शून्य (* eoi_विधानम्_t)(संरचना irq *);
 
-struct irq {
-	struct io_apic * 	ioa;
-	unsigned		pin;
-	unsigned		vector;
-	eoi_method_t		eoi;
-	unsigned		state;
+संरचना irq {
+	संरचना io_apic * 	ioa;
+	अचिह्नित		pin;
+	अचिह्नित		सदिशम्;
+	eoi_विधानम्_t		eoi;
+	अचिह्नित		state;
 };
 
-static struct irq io_apic_irq[NR_IRQ_VECTORS];
+स्थिर संरचना irq io_apic_irq[NR_IRQ_VECTORS];
 
 /* 
  * to make APIC work if SMP is not configured, we need to set the maximal number
  * of CPUS to 1, cpuid to return 0 and the current cpu is always BSP
  */
-#ifdef CONFIG_SMP
+#यदि_परिभाषितम् CONFIG_SMP
 
-#include "kernel/smp.h"
+#अन्तर्भाव "kernel/smp.h"
 
-#endif
+#यदि_अन्तः
 
-#include "kernel/spinlock.h"
+#अन्तर्भाव "kernel/spinlock.h"
 
 
-#define lapic_write_icr1(val)	lapic_write(LAPIC_ICR1, val)
-#define lapic_write_icr2(val)	lapic_write(LAPIC_ICR2, val)
+#परिभाषय lapic_write_icr1(val)	lapic_write(LAPIC_ICR1, val)
+#परिभाषय lapic_write_icr2(val)	lapic_write(LAPIC_ICR2, val)
 
-#define lapic_read_icr1(x)	lapic_read(LAPIC_ICR1)
-#define lapic_read_icr2(x)	lapic_read(LAPIC_ICR2)
+#परिभाषय lapic_read_icr1(x)	lapic_read(LAPIC_ICR1)
+#परिभाषय lapic_read_icr2(x)	lapic_read(LAPIC_ICR2)
 
-#define is_boot_apic(apicid)	((apicid) == bsp_lapic_id)
+#परिभाषय is_boot_apic(apicid)	((apicid) == bsp_lapic_id)
 
-#define VERBOSE_APIC(x) x
+#परिभाषय VERBOSE_APIC(x) x
 
-int ioapic_enabled;
+पूर्णाङ्क ioapic_enabled;
 u32_t lapic_addr_vaddr;
-vir_bytes lapic_addr;
-vir_bytes lapic_eoi_addr;
-int bsp_lapic_id;
+vir_अष्टकानि lapic_addr;
+vir_अष्टकानि lapic_eoi_addr;
+पूर्णाङ्क bsp_lapic_id;
 
-static volatile unsigned probe_ticks;
-static	u64_t tsc0, tsc1;
-static	u32_t lapic_tctr0, lapic_tctr1;
+स्थिर चञ्चल अचिह्नित probe_ticks;
+स्थिर	u64_t tsc0, tsc1;
+स्थिर	u32_t lapic_tctr0, lapic_tctr1;
 
-static unsigned apic_imcrp;
-static const unsigned nlints = 0;
+स्थिर अचिह्नित apic_imcrp;
+स्थिर ध्रुव अचिह्नित nlints = 0;
 
-void arch_eoi(void)
+शून्य arch_eoi(शून्य)
 {
 	apic_eoi();
 }
@@ -164,190 +164,190 @@ void arch_eoi(void)
  * arch specific cpulocals. As this variable is write-once-read-only it is ok to
  * have at as an array until we resolve the cpulocals properly
  */
-static u32_t lapic_bus_freq[CONFIG_MAX_CPUS];
+स्थिर u32_t lapic_bus_freq[CONFIG_MAX_CPUS];
 /* the probe period will be roughly 100ms */
-#define PROBE_TICKS	(system_hz / 10)
+#परिभाषय PROBE_TICKS	(system_hz / 10)
 
-#define IOAPIC_IOREGSEL	0x0
-#define IOAPIC_IOWIN	0x10
+#परिभाषय IOAPIC_IOREGSEL	0x0
+#परिभाषय IOAPIC_IOWIN	0x10
 
-static u32_t ioapic_read(u32_t ioa_base, u32_t reg)
+स्थिर u32_t ioapic_read(u32_t ioa_आधारः, u32_t reg)
 {
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = (reg & 0xff);
-	return *(volatile u32_t *)(ioa_base + IOAPIC_IOWIN);
+	*((चञ्चल u32_t *)(ioa_आधारः + IOAPIC_IOREGSEL)) = (reg & 0xff);
+	प्रत्यागम *(चञ्चल u32_t *)(ioa_आधारः + IOAPIC_IOWIN);
 }
 
-static void ioapic_write(u32_t ioa_base, u8_t reg, u32_t val)
+स्थिर शून्य ioapic_write(u32_t ioa_आधारः, u8_t reg, u32_t val)
 {
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = reg;
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOWIN)) = val;
+	*((चञ्चल u32_t *)(ioa_आधारः + IOAPIC_IOREGSEL)) = reg;
+	*((चञ्चल u32_t *)(ioa_आधारः + IOAPIC_IOWIN)) = val;
 }
 
-void lapic_microsec_sleep(unsigned count);
-void apic_idt_init(const int reset);
+शून्य lapic_microsec_sleep(अचिह्नित गणनम्);
+शून्य apic_idt_init(ध्रुव पूर्णाङ्क reset);
 
-static void ioapic_enable_pin(vir_bytes ioapic_addr, int pin)
+स्थिर शून्य ioapic_enable_pin(vir_अष्टकानि ioapic_addr, पूर्णाङ्क pin)
 {
-	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2);
+	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_सारणी + pin * 2);
 
-	lo &= ~APIC_ICR_INT_MASK;
-	ioapic_write(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2, lo);
+	lo &= ~APIC_ICR_INT_आवरणम्;
+	ioapic_write(ioapic_addr, IOAPIC_REDIR_सारणी + pin * 2, lo);
 }
 
-static void ioapic_disable_pin(vir_bytes ioapic_addr, int pin)
+स्थिर शून्य ioapic_disable_pin(vir_अष्टकानि ioapic_addr, पूर्णाङ्क pin)
 {
-	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2);
+	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_सारणी + pin * 2);
 
-	lo |= APIC_ICR_INT_MASK;
-	ioapic_write(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2, lo);
+	lo |= APIC_ICR_INT_आवरणम्;
+	ioapic_write(ioapic_addr, IOAPIC_REDIR_सारणी + pin * 2, lo);
 }
 
-#if 0
-static void ioapic_redirt_entry_read(void * ioapic_addr,
-					int entry,
+#यदि 0
+स्थिर शून्य ioapic_redirt_प्रविष्टिः_read(शून्य * ioapic_addr,
+					पूर्णाङ्क प्रविष्टिः,
 					u32_t *hi,
 					u32_t *lo)
 {
-	*lo = ioapic_read((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_TABLE + entry * 2));
-	*hi = ioapic_read((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_TABLE + entry * 2 + 1));
+	*lo = ioapic_read((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_सारणी + प्रविष्टिः * 2));
+	*hi = ioapic_read((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_सारणी + प्रविष्टिः * 2 + 1));
 
 }
-#endif
+#यदि_अन्तः
 
-static void ioapic_redirt_entry_write(void * ioapic_addr,
-					int entry,
+स्थिर शून्य ioapic_redirt_प्रविष्टिः_write(शून्य * ioapic_addr,
+					पूर्णाङ्क प्रविष्टिः,
 					u32_t hi,
 					u32_t lo)
 {
-#if 0
-	VERBOSE_APIC(printf("IO apic redir entry %3d "
-				"write 0x%08x 0x%08x\n", entry, hi, lo));
-#endif
-	ioapic_write((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_TABLE + entry * 2 + 1), hi);
-	ioapic_write((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_TABLE + entry * 2), lo);
+#यदि 0
+	VERBOSE_APIC(प्रारूप_लिख("IO apic redir entry %3d "
+				"write 0x%08x 0x%08x\n", प्रविष्टिः, hi, lo));
+#यदि_अन्तः
+	ioapic_write((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_सारणी + प्रविष्टिः * 2 + 1), hi);
+	ioapic_write((u32_t)ioapic_addr, (u8_t) (IOAPIC_REDIR_सारणी + प्रविष्टिः * 2), lo);
 }
 
-#define apic_read_tmr_vector(vec) \
+#परिभाषय apic_read_tmr_सदिशम्(vec) \
 		lapic_read(LAPIC_TMR + 0x10 * ((vec) >> 5))
 
-#define apic_read_irr_vector(vec) \
+#परिभाषय apic_read_irr_सदिशम्(vec) \
 		lapic_read(LAPIC_IRR + 0x10 * ((vec) >> 5))
 
-#define apic_read_isr_vector(vec) \
+#परिभाषय apic_read_isr_सदिशम्(vec) \
 		lapic_read(LAPIC_ISR + 0x10 * ((vec) >> 5))
 
-#define lapic_test_delivery_val(val, vector) ((val) & (1 << ((vector) & 0x1f)))
+#परिभाषय lapic_test_delivery_val(val, सदिशम्) ((val) & (1 << ((सदिशम्) & 0x1f)))
 
-static void ioapic_eoi_level(struct irq * irq)
+स्थिर शून्य ioapic_eoi_level(संरचना irq * irq)
 {
 	reg_t tmr;
 
-	tmr = apic_read_tmr_vector(irq->vector);
+	tmr = apic_read_tmr_सदिशम्(irq->सदिशम्);
 	apic_eoi();
 
 	/* 
 	 * test if it was a level or edge triggered interrupt. If delivered as
 	 * edge exec the workaround for broken chipsets
 	 */
-	if (!lapic_test_delivery_val(tmr, irq->vector)) {
-		int is_masked;
+	यदि (!lapic_test_delivery_val(tmr, irq->सदिशम्)) {
+		पूर्णाङ्क is_masked;
 		u32_t lo;
 		
 		panic("EDGE instead of LEVEL!");
 
 		lo = ioapic_read(irq->ioa->addr,
-				IOAPIC_REDIR_TABLE + irq->pin * 2);
+				IOAPIC_REDIR_सारणी + irq->pin * 2);
 
-		is_masked = lo & APIC_ICR_INT_MASK;
+		is_masked = lo & APIC_ICR_INT_आवरणम्;
 
 		/* set mask and edge */
-		lo |= APIC_ICR_INT_MASK;
+		lo |= APIC_ICR_INT_आवरणम्;
 		lo &= ~APIC_ICR_TRIGGER;
 		ioapic_write(irq->ioa->addr,
-				IOAPIC_REDIR_TABLE + irq->pin * 2, lo);
+				IOAPIC_REDIR_सारणी + irq->pin * 2, lo);
 
 		/* set back to level and restore the mask bit */
 		lo = ioapic_read(irq->ioa->addr,
-				IOAPIC_REDIR_TABLE + irq->pin * 2);
+				IOAPIC_REDIR_सारणी + irq->pin * 2);
 
 		lo |= APIC_ICR_TRIGGER;
-		if (is_masked)
-			lo |= APIC_ICR_INT_MASK;
-		else
-			lo &= ~APIC_ICR_INT_MASK;
+		यदि (is_masked)
+			lo |= APIC_ICR_INT_आवरणम्;
+		अन्यथा
+			lo &= ~APIC_ICR_INT_आवरणम्;
 		ioapic_write(irq->ioa->addr,
-				IOAPIC_REDIR_TABLE + irq->pin * 2, lo);
+				IOAPIC_REDIR_सारणी + irq->pin * 2, lo);
 	}
 }
 
-static void ioapic_eoi_edge(__unused struct irq * irq)
+स्थिर शून्य ioapic_eoi_edge(__unused संरचना irq * irq)
 {
 	apic_eoi();
 }
 
-void ioapic_eoi(int irq)
+शून्य ioapic_eoi(पूर्णाङ्क irq)
 {
-	if (ioapic_enabled) {
+	यदि (ioapic_enabled) {
 		io_apic_irq[irq].eoi(&io_apic_irq[irq]);
 	}
-	else
+	अन्यथा
 		irq_8259_eoi(irq);
 }
  
-void ioapic_set_id(u32_t addr, unsigned int id)
+शून्य ioapic_समुच्चयः_id(u32_t addr, अचिह्नित पूर्णाङ्क id)
 {
 	ioapic_write(addr, IOAPIC_ID, id << 24);
 }
 
-int ioapic_enable_all(void)
+पूर्णाङ्क ioapic_enable_all(शून्य)
 {
 	i8259_disable();
 
-	if (apic_imcrp) {
+	यदि (apic_imcrp) {
 		/* Select IMCR and disconnect 8259s. */
 		outb(0x22, 0x70);
 		outb(0x23, 0x01);
 	}
 
-	return ioapic_enabled = 1;
+	प्रत्यागम ioapic_enabled = 1;
 }
 
 /* disables a single IO APIC */
-static void ioapic_disable(struct io_apic * ioapic)
+स्थिर शून्य ioapic_disable(संरचना io_apic * ioapic)
 {
-	unsigned p;
+	अचिह्नित p;
 	
-	for (p = 0; p < io_apic->pins; p++) {
-		u32_t low_32, hi_32;
-		low_32 = ioapic_read((u32_t)ioapic->addr,
-				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2));
+	प्रति (p = 0; p < io_apic->pins; p++) {
+		u32_t नीचः_32, hi_32;
+		नीचः_32 = ioapic_read((u32_t)ioapic->addr,
+				(uint8_t) (IOAPIC_REDIR_सारणी + p * 2));
 		hi_32 = ioapic_read((u32_t)ioapic->addr,
-				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1));
+				(uint8_t) (IOAPIC_REDIR_सारणी + p * 2 + 1));
 
-		if (!(low_32 & APIC_ICR_INT_MASK)) {
-			low_32 |= APIC_ICR_INT_MASK;
+		यदि (!(नीचः_32 & APIC_ICR_INT_आवरणम्)) {
+			नीचः_32 |= APIC_ICR_INT_आवरणम्;
 			ioapic_write((u32_t)ioapic->addr,
-				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1), hi_32);
+				(uint8_t) (IOAPIC_REDIR_सारणी + p * 2 + 1), hi_32);
 			ioapic_write((u32_t)ioapic->addr,
-				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2), low_32);
+				(uint8_t) (IOAPIC_REDIR_सारणी + p * 2), नीचः_32);
 		}
 	}
 }
 
 /* disables all IO APICs */
-void ioapic_disable_all(void)
+शून्य ioapic_disable_all(शून्य)
 {
-	unsigned ioa;
-	if (!ioapic_enabled)
-		return;
+	अचिह्नित ioa;
+	यदि (!ioapic_enabled)
+		प्रत्यागम;
 
-	for (ioa = 0 ; ioa < nioapics; ioa++) 
+	प्रति (ioa = 0 ; ioa < nioapics; ioa++) 
 		ioapic_disable(&io_apic[ioa]);
 
 	ioapic_enabled = 0; /* io apic, disabled */
 
 	/* Enable 8259 - write 0x00 in OCW1 master and slave.  */
-	if (apic_imcrp) {
+	यदि (apic_imcrp) {
 		outb(0x22, 0x70);
 		outb(0x23, 0x00);
 	}
@@ -358,56 +358,56 @@ void ioapic_disable_all(void)
 	idt_reload();
 }
 
-static void ioapic_disable_irq(unsigned irq)
+स्थिर शून्य ioapic_disable_irq(अचिह्नित irq)
 {
-	if(!(io_apic_irq[irq].ioa)) {
-		printf("ioapic_disable_irq: no ioa set for irq %d!\n", irq);
-		return;
+	यदि(!(io_apic_irq[irq].ioa)) {
+		प्रारूप_लिख("ioapic_disable_irq: no ioa set for irq %d!\n", irq);
+		प्रत्यागम;
 	}
 
-	assert(io_apic_irq[irq].ioa);
+	प्रतिज्ञा(io_apic_irq[irq].ioa);
 
 	ioapic_disable_pin(io_apic_irq[irq].ioa->addr, io_apic_irq[irq].pin);
 	io_apic_irq[irq].state |= IOAPIC_IRQ_STATE_MASKED;
 }
 
-static void ioapic_enable_irq(unsigned irq)
+स्थिर शून्य ioapic_enable_irq(अचिह्नित irq)
 {
-	if(!(io_apic_irq[irq].ioa)) {
-		printf("ioapic_enable_irq: no ioa set for irq %d!\n", irq);
-		return;
+	यदि(!(io_apic_irq[irq].ioa)) {
+		प्रारूप_लिख("ioapic_enable_irq: no ioa set for irq %d!\n", irq);
+		प्रत्यागम;
 	}
 
-	assert(io_apic_irq[irq].ioa);
+	प्रतिज्ञा(io_apic_irq[irq].ioa);
 
 	ioapic_enable_pin(io_apic_irq[irq].ioa->addr, io_apic_irq[irq].pin);
 	io_apic_irq[irq].state &= ~IOAPIC_IRQ_STATE_MASKED;
 }
 
-void ioapic_unmask_irq(unsigned irq)
+शून्य ioapic_unmask_irq(अचिह्नित irq)
 {
-	if (ioapic_enabled)
+	यदि (ioapic_enabled)
 		ioapic_enable_irq(irq);
-	else
+	अन्यथा
 		/* FIXME unlikely */
 		irq_8259_unmask(irq);
 }
 
-void ioapic_mask_irq(unsigned irq)
+शून्य ioapic_आवरणम्_irq(अचिह्नित irq)
 {
-	if (ioapic_enabled)
+	यदि (ioapic_enabled)
 		ioapic_disable_irq(irq);
-	else
+	अन्यथा
 		/* FIXME unlikely */
-		irq_8259_mask(irq);
+		irq_8259_आवरणम्(irq);
 }
 
-unsigned int apicid(void)
+अचिह्नित पूर्णाङ्क apicid(शून्य)
 {
-	return lapic_read(LAPIC_ID) >> 24;
+	प्रत्यागम lapic_read(LAPIC_ID) >> 24;
 }
 
-static int calib_clk_handler(irq_hook_t * UNUSED(hook))
+स्थिर पूर्णाङ्क calib_clk_handler(irq_hook_t * अप्रयुक्तम्(hook))
 {
 	u32_t tcrt;
 	u64_t tsc;
@@ -417,30 +417,30 @@ static int calib_clk_handler(irq_hook_t * UNUSED(hook))
 	tcrt = lapic_read(LAPIC_TIMER_CCR);
 
 
-	if (probe_ticks == 1) {
+	यदि (probe_ticks == 1) {
 		lapic_tctr0 = tcrt;
 		tsc0 = tsc;
 	}
-	else if (probe_ticks == PROBE_TICKS) {
+	अन्यथा यदि (probe_ticks == PROBE_TICKS) {
 		lapic_tctr1 = tcrt;
 		tsc1 = tsc;
 		stop_8253A_timer();
 	}
 
 	BKL_UNLOCK();
-	return 1;
+	प्रत्यागम 1;
 }
 
-static int spurious_irq_handler(irq_hook_t * UNUSED(hook))
+स्थिर पूर्णाङ्क spurious_irq_handler(irq_hook_t * अप्रयुक्तम्(hook))
 {
 	/*
 	 * Do nothing, only unlock the kernel so we do not deadlock!
 	 */
 	BKL_UNLOCK();
-	return 1;
+	प्रत्यागम 1;
 }
 
-static void apic_calibrate_clocks(unsigned cpu)
+स्थिर शून्य apic_calibrate_clocks(अचिह्नित cpu)
 {
 	u32_t lvtt, val, lapic_delta;
 	u64_t tsc_delta;
@@ -448,7 +448,7 @@ static void apic_calibrate_clocks(unsigned cpu)
 
 	irq_hook_t calib_clk, spurious_irq;
 
-	BOOT_VERBOSE(printf("Calibrating clock\n"));
+	BOOT_VERBOSE(प्रारूप_लिख("Calibrating clock\n"));
 	/*
 	 * Set Initial count register to the highest value so it does not
 	 * underflow during the testing period
@@ -473,7 +473,7 @@ static void apic_calibrate_clocks(unsigned cpu)
 	 * the clock which mean that we cannot run processes
 	 */
 	lvtt = lapic_read (LAPIC_LVTTR);
-	lvtt |= APIC_LVTT_MASK;
+	lvtt |= APIC_LVTT_आवरणम्;
 	lapic_write (LAPIC_LVTTR, lvtt);
 
 	/* set the probe, we use the legacy timer, IRQ 0 */
@@ -500,12 +500,12 @@ static void apic_calibrate_clocks(unsigned cpu)
 	intr_enable();
 
 	/* loop for some time to get a sample */
-	while(probe_ticks < PROBE_TICKS) {
+	यावत्(probe_ticks < PROBE_TICKS) {
 		intr_enable();
 	}
 
 	intr_disable();
-	BKL_LOCK();
+	BKL_तालकम्();
 
 	/* remove the probe */
 	rm_irq_handler(&calib_clk);
@@ -515,140 +515,140 @@ static void apic_calibrate_clocks(unsigned cpu)
 	tsc_delta = tsc1 - tsc0;
 
 	lapic_bus_freq[cpuid] = system_hz * lapic_delta / (PROBE_TICKS - 1);
-	BOOT_VERBOSE(printf("APIC bus freq %u MHz\n",
+	BOOT_VERBOSE(प्रारूप_लिख("APIC bus freq %u MHz\n",
 				lapic_bus_freq[cpuid] / 1000000));
 	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * make64(system_hz, 0);
-	cpu_set_freq(cpuid, cpu_freq);
-	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
+	cpu_समुच्चयः_freq(cpuid, cpu_freq);
+	cpu_info[cpuid].freq = (अचिह्नित दीर्घ)(cpu_freq / 1000000);
 	BOOT_VERBOSE(cpu_print_freq(cpuid));
 }
 
-void lapic_set_timer_one_shot(const u32_t usec)
+शून्य lapic_समुच्चयः_timer_one_shot(ध्रुव u32_t usec)
 {
 	/* sleep in micro seconds */
 	u32_t lvtt;
-	u32_t ticks_per_us;
-	const u8_t cpu = cpuid;
+	u32_t ticks_प्रत्येकम्_us;
+	ध्रुव u8_t cpu = cpuid;
 
-	ticks_per_us = (lapic_bus_freq[cpu] / 1000000) * config_apic_timer_x;
+	ticks_प्रत्येकम्_us = (lapic_bus_freq[cpu] / 1000000) * config_apic_timer_x;
 
-	lapic_write(LAPIC_TIMER_ICR, usec * ticks_per_us);
+	lapic_write(LAPIC_TIMER_ICR, usec * ticks_प्रत्येकम्_us);
 
 	lvtt = APIC_TDCR_1;
 	lapic_write(LAPIC_TIMER_DCR, lvtt);
 
 	/* configure timer as one-shot */
-	lvtt = APIC_TIMER_INT_VECTOR;
+	lvtt = APIC_TIMER_INT_सदिशम्;
 	lapic_write(LAPIC_LVTTR, lvtt);
 }
 
-void lapic_set_timer_periodic(const unsigned freq)
+शून्य lapic_समुच्चयः_timer_periodic(ध्रुव अचिह्नित freq)
 {
 	/* sleep in micro seconds */
 	u32_t lvtt;
-	u32_t lapic_ticks_per_clock_tick;
-	const u8_t cpu = cpuid;
+	u32_t lapic_ticks_प्रत्येकम्_clock_tick;
+	ध्रुव u8_t cpu = cpuid;
 
-	lapic_ticks_per_clock_tick = (lapic_bus_freq[cpu] / freq) * config_apic_timer_x;
+	lapic_ticks_प्रत्येकम्_clock_tick = (lapic_bus_freq[cpu] / freq) * config_apic_timer_x;
 
 	lvtt = APIC_TDCR_1;
 	lapic_write(LAPIC_TIMER_DCR, lvtt);
 
 	/* configure timer as periodic */
-	lvtt = APIC_LVTT_TM | APIC_TIMER_INT_VECTOR;
+	lvtt = APIC_LVTT_TM | APIC_TIMER_INT_सदिशम्;
 	lapic_write(LAPIC_LVTTR, lvtt);
 
-	lapic_write(LAPIC_TIMER_ICR, lapic_ticks_per_clock_tick);
+	lapic_write(LAPIC_TIMER_ICR, lapic_ticks_प्रत्येकम्_clock_tick);
 }
 
-void lapic_stop_timer(void)
+शून्य lapic_stop_timer(शून्य)
 {
 	u32_t lvtt;
 	lvtt = lapic_read(LAPIC_LVTTR);
-	lapic_write(LAPIC_LVTTR, lvtt | APIC_LVTT_MASK);
+	lapic_write(LAPIC_LVTTR, lvtt | APIC_LVTT_आवरणम्);
 	/* zero the current counter so it can be restarted again */
 	lapic_write(LAPIC_TIMER_ICR, 0);
 	lapic_write(LAPIC_TIMER_CCR, 0);
 }
 
-void lapic_restart_timer(void)
+शून्य lapic_restart_timer(शून्य)
 {
 	/* restart the timer only if the counter reached zero, i.e. expired */
-	if (lapic_read(LAPIC_TIMER_CCR) == 0)
-		lapic_set_timer_one_shot(1000000/system_hz);
+	यदि (lapic_read(LAPIC_TIMER_CCR) == 0)
+		lapic_समुच्चयः_timer_one_shot(1000000/system_hz);
 }
 
-void lapic_microsec_sleep(unsigned count)
+शून्य lapic_microsec_sleep(अचिह्नित गणनम्)
 {
-	lapic_set_timer_one_shot(count);
-	while (lapic_read(LAPIC_TIMER_CCR))
+	lapic_समुच्चयः_timer_one_shot(गणनम्);
+	यावत् (lapic_read(LAPIC_TIMER_CCR))
 		arch_pause();
 }
 
-static  u32_t lapic_errstatus(void)
+स्थिर  u32_t lapic_errstatus(शून्य)
 {
 	lapic_write(LAPIC_ESR, 0);
-	return lapic_read(LAPIC_ESR);
+	प्रत्यागम lapic_read(LAPIC_ESR);
 }
 
-#ifdef CONFIG_SMP
-static int lapic_disable_in_msr(void)
+#यदि_परिभाषितम् CONFIG_SMP
+स्थिर पूर्णाङ्क lapic_disable_अन्तर्_msr(शून्य)
 {
 	u32_t msr_hi, msr_lo;
 
-	ia32_msr_read(IA32_APIC_BASE, &msr_hi, &msr_lo);
+	ia32_msr_read(IA32_APIC_आधारः, &msr_hi, &msr_lo);
 
-	msr_lo &= ~(1 << IA32_APIC_BASE_ENABLE_BIT);
-	ia32_msr_write(IA32_APIC_BASE, msr_hi, msr_lo);
+	msr_lo &= ~(1 << IA32_APIC_आधारः_ENABLE_BIT);
+	ia32_msr_write(IA32_APIC_आधारः, msr_hi, msr_lo);
 
-	return 1;
+	प्रत्यागम 1;
 }
-#endif /* CONFIG_SMP */
+#यदि_अन्तः /* CONFIG_SMP */
 
-void lapic_disable(void)
+शून्य lapic_disable(शून्य)
 {
 	/* Disable current APIC and close interrupts from PIC */
 	u32_t val;
 
-	if (!lapic_addr)
-		return;
+	यदि (!lapic_addr)
+		प्रत्यागम;
 	
-#ifdef CONFIG_SMP
-	if (cpu_is_bsp(cpuid) && !apic_imcrp)
-#endif
+#यदि_परिभाषितम् CONFIG_SMP
+	यदि (cpu_is_bsp(cpuid) && !apic_imcrp)
+#यदि_अन्तः
 	{
 		/* leave it enabled if imcr is not set */
 		val = lapic_read(LAPIC_LINT0);
-		val &= ~(APIC_ICR_DM_MASK|APIC_ICR_INT_MASK);
+		val &= ~(APIC_ICR_DM_आवरणम्|APIC_ICR_INT_आवरणम्);
 		val |= APIC_ICR_DM_EXTINT; /* ExtINT at LINT0 */
 		lapic_write (LAPIC_LINT0, val);
-		return;
+		प्रत्यागम;
 	}
 
-#ifdef CONFIG_SMP
+#यदि_परिभाषितम् CONFIG_SMP
 	val = lapic_read(LAPIC_LINT0) & 0xFFFE58FF;
-	val |= APIC_ICR_INT_MASK;
+	val |= APIC_ICR_INT_आवरणम्;
 	lapic_write (LAPIC_LINT0, val);
 
 	val = lapic_read(LAPIC_LINT1) & 0xFFFE58FF;
-	val |= APIC_ICR_INT_MASK;
+	val |= APIC_ICR_INT_आवरणम्;
 	lapic_write (LAPIC_LINT1, val);
 
 	val = lapic_read(LAPIC_SIVR) & 0xFFFFFF00;
 	val &= ~APIC_ENABLE;
 	lapic_write(LAPIC_SIVR, val);
 
-	lapic_disable_in_msr();
-#endif /* CONFIG_SMP */
+	lapic_disable_अन्तर्_msr();
+#यदि_अन्तः /* CONFIG_SMP */
 }
 
-static int lapic_enable_in_msr(void)
+स्थिर पूर्णाङ्क lapic_enable_अन्तर्_msr(शून्य)
 {
 	u32_t msr_hi, msr_lo;
 
-	ia32_msr_read(IA32_APIC_BASE, &msr_hi, &msr_lo);
+	ia32_msr_read(IA32_APIC_आधारः, &msr_hi, &msr_lo);
 
-#if 0
+#यदि 0
 	u32_t addr;
 	/*FIXME this is a problem on AP */
 	/*
@@ -656,37 +656,37 @@ static int lapic_enable_in_msr(void)
 	 * update it
 	 */
 	addr = (msr_lo >> 12) | ((msr_hi & 0xf) << 20);
-	if (addr != (lapic_addr >> 12)) {
-		if (msr_hi & 0xf) {
-			printf("ERROR : APIC address needs more then 32 bits\n");
-			return 0;
+	यदि (addr != (lapic_addr >> 12)) {
+		यदि (msr_hi & 0xf) {
+			प्रारूप_लिख("ERROR : APIC address needs more then 32 bits\n");
+			प्रत्यागम 0;
 		}
 		lapic_addr = msr_lo & ~((1 << 12) - 1);
 	}
-#endif
+#यदि_अन्तः
 
-	msr_lo |= (1 << IA32_APIC_BASE_ENABLE_BIT);
-	ia32_msr_write(IA32_APIC_BASE, msr_hi, msr_lo);
+	msr_lo |= (1 << IA32_APIC_आधारः_ENABLE_BIT);
+	ia32_msr_write(IA32_APIC_आधारः, msr_hi, msr_lo);
 
-	return 1;
+	प्रत्यागम 1;
 }
 
-int lapic_enable(unsigned cpu)
+पूर्णाङ्क lapic_enable(अचिह्नित cpu)
 {
 	u32_t val, nlvt;
 
-	if (!lapic_addr)
-		return 0;
+	यदि (!lapic_addr)
+		प्रत्यागम 0;
 
 	cpu_has_tsc = _cpufeature(_CPUF_I386_TSC);
-	if (!cpu_has_tsc) {
-		printf("CPU lacks timestamp counter, "
+	यदि (!cpu_has_tsc) {
+		प्रारूप_लिख("CPU lacks timestamp counter, "
 			"cannot calibrate LAPIC timer\n");
-		return 0;
+		प्रत्यागम 0;
 	}
 
-	if (!lapic_enable_in_msr())
-		return 0;
+	यदि (!lapic_enable_अन्तर्_msr())
+		प्रत्यागम 0;
 
 	/* set the highest priority for ever */
 	lapic_write(LAPIC_TPR, 0x0);
@@ -697,10 +697,10 @@ int lapic_enable(unsigned cpu)
 
 	/* Enable Local APIC and set the spurious vector to 0xff. */
 	val = lapic_read(LAPIC_SIVR);
-	val |= APIC_ENABLE | APIC_SPURIOUS_INT_VECTOR;
+	val |= APIC_ENABLE | APIC_SPURIOUS_INT_सदिशम्;
 	val &= ~APIC_FOCUS_DISABLED;
 	lapic_write(LAPIC_SIVR, val);
-	(void) lapic_read(LAPIC_SIVR);
+	(शून्य) lapic_read(LAPIC_SIVR);
 
 	apic_eoi();
 
@@ -716,16 +716,16 @@ int lapic_enable(unsigned cpu)
 	val = lapic_read (LAPIC_LVTER) & 0xFFFFFF00;
 	lapic_write (LAPIC_LVTER, val);
 
-	nlvt = (lapic_read(LAPIC_VERSION)>>16) & 0xFF;
+	nlvt = (lapic_read(LAPIC_संस्करणम्)>>16) & 0xFF;
 
-	if(nlvt >= 4) {
+	यदि(nlvt >= 4) {
 		val = lapic_read(LAPIC_LVTTMR);
-		lapic_write(LAPIC_LVTTMR, val | APIC_ICR_INT_MASK);
+		lapic_write(LAPIC_LVTTMR, val | APIC_ICR_INT_आवरणम्);
 	}
 
-	if(nlvt >= 5) {
+	यदि(nlvt >= 5) {
 		val = lapic_read(LAPIC_LVTPCR);
-		lapic_write(LAPIC_LVTPCR, val | APIC_ICR_INT_MASK);
+		lapic_write(LAPIC_LVTPCR, val | APIC_ICR_INT_आवरणम्);
 	}
 
 	/* setup TPR to allow all interrupts. */
@@ -733,283 +733,283 @@ int lapic_enable(unsigned cpu)
 	/* accept all interrupts */
 	lapic_write (LAPIC_TPR, val & ~0xFF);
 
-	(void) lapic_read (LAPIC_SIVR);
+	(शून्य) lapic_read (LAPIC_SIVR);
 	apic_eoi();
 
 	apic_calibrate_clocks(cpu);
-	BOOT_VERBOSE(printf("APIC timer calibrated\n"));
+	BOOT_VERBOSE(प्रारूप_लिख("APIC timer calibrated\n"));
 
-	return 1;
+	प्रत्यागम 1;
 }
 
-void apic_spurios_intr_handler(void)
+शून्य apic_spurios_intr_handler(शून्य)
 {
-	static unsigned x;
+	स्थिर अचिह्नित x;
 
 	x++;
-	if (x == 1 || (x % 100) == 0)
-		printf("WARNING spurious interrupt(s) %d on cpu %d\n", x, cpuid);
+	यदि (x == 1 || (x % 100) == 0)
+		प्रारूप_लिख("WARNING spurious interrupt(s) %d on cpu %d\n", x, cpuid);
 }
 
-void apic_error_intr_handler(void)
+शून्य apic_error_intr_handler(शून्य)
 {
-	static unsigned x;
+	स्थिर अचिह्नित x;
 
 	x++;
-	if (x == 1 || (x % 100) == 0)
-		printf("WARNING apic error (0x%x) interrupt(s) %d on cpu %d\n",
+	यदि (x == 1 || (x % 100) == 0)
+		प्रारूप_लिख("WARNING apic error (0x%x) interrupt(s) %d on cpu %d\n",
 				lapic_errstatus(), x, cpuid);
 }
 
-static struct gate_table_s gate_table_ioapic[] = {
-	{ apic_hwint0, LAPIC_VECTOR( 0), INTR_PRIVILEGE },
-	{ apic_hwint1, LAPIC_VECTOR( 1), INTR_PRIVILEGE },
-	{ apic_hwint2, LAPIC_VECTOR( 2), INTR_PRIVILEGE },
-	{ apic_hwint3, LAPIC_VECTOR( 3), INTR_PRIVILEGE },
-	{ apic_hwint4, LAPIC_VECTOR( 4), INTR_PRIVILEGE },
-	{ apic_hwint5, LAPIC_VECTOR( 5), INTR_PRIVILEGE },
-	{ apic_hwint6, LAPIC_VECTOR( 6), INTR_PRIVILEGE },
-	{ apic_hwint7, LAPIC_VECTOR( 7), INTR_PRIVILEGE },
-	{ apic_hwint8, LAPIC_VECTOR( 8), INTR_PRIVILEGE },
-	{ apic_hwint9, LAPIC_VECTOR( 9), INTR_PRIVILEGE },
-	{ apic_hwint10, LAPIC_VECTOR(10), INTR_PRIVILEGE },
-	{ apic_hwint11, LAPIC_VECTOR(11), INTR_PRIVILEGE },
-	{ apic_hwint12, LAPIC_VECTOR(12), INTR_PRIVILEGE },
-	{ apic_hwint13, LAPIC_VECTOR(13), INTR_PRIVILEGE },
-	{ apic_hwint14, LAPIC_VECTOR(14), INTR_PRIVILEGE },
-	{ apic_hwint15, LAPIC_VECTOR(15), INTR_PRIVILEGE },
-	{ apic_hwint16, LAPIC_VECTOR(16), INTR_PRIVILEGE },
-	{ apic_hwint17, LAPIC_VECTOR(17), INTR_PRIVILEGE },
-	{ apic_hwint18, LAPIC_VECTOR(18), INTR_PRIVILEGE },
-	{ apic_hwint19, LAPIC_VECTOR(19), INTR_PRIVILEGE },
-	{ apic_hwint20, LAPIC_VECTOR(20), INTR_PRIVILEGE },
-	{ apic_hwint21, LAPIC_VECTOR(21), INTR_PRIVILEGE },
-	{ apic_hwint22, LAPIC_VECTOR(22), INTR_PRIVILEGE },
-	{ apic_hwint23, LAPIC_VECTOR(23), INTR_PRIVILEGE },
-	{ apic_hwint24, LAPIC_VECTOR(24), INTR_PRIVILEGE },
-	{ apic_hwint25, LAPIC_VECTOR(25), INTR_PRIVILEGE },
-	{ apic_hwint26, LAPIC_VECTOR(26), INTR_PRIVILEGE },
-	{ apic_hwint27, LAPIC_VECTOR(27), INTR_PRIVILEGE },
-	{ apic_hwint28, LAPIC_VECTOR(28), INTR_PRIVILEGE },
-	{ apic_hwint29, LAPIC_VECTOR(29), INTR_PRIVILEGE },
-	{ apic_hwint30, LAPIC_VECTOR(30), INTR_PRIVILEGE },
-	{ apic_hwint31, LAPIC_VECTOR(31), INTR_PRIVILEGE },
-	{ apic_hwint32, LAPIC_VECTOR(32), INTR_PRIVILEGE },
-	{ apic_hwint33, LAPIC_VECTOR(33), INTR_PRIVILEGE },
-	{ apic_hwint34, LAPIC_VECTOR(34), INTR_PRIVILEGE },
-	{ apic_hwint35, LAPIC_VECTOR(35), INTR_PRIVILEGE },
-	{ apic_hwint36, LAPIC_VECTOR(36), INTR_PRIVILEGE },
-	{ apic_hwint37, LAPIC_VECTOR(37), INTR_PRIVILEGE },
-	{ apic_hwint38, LAPIC_VECTOR(38), INTR_PRIVILEGE },
-	{ apic_hwint39, LAPIC_VECTOR(39), INTR_PRIVILEGE },
-	{ apic_hwint40, LAPIC_VECTOR(40), INTR_PRIVILEGE },
-	{ apic_hwint41, LAPIC_VECTOR(41), INTR_PRIVILEGE },
-	{ apic_hwint42, LAPIC_VECTOR(42), INTR_PRIVILEGE },
-	{ apic_hwint43, LAPIC_VECTOR(43), INTR_PRIVILEGE },
-	{ apic_hwint44, LAPIC_VECTOR(44), INTR_PRIVILEGE },
-	{ apic_hwint45, LAPIC_VECTOR(45), INTR_PRIVILEGE },
-	{ apic_hwint46, LAPIC_VECTOR(46), INTR_PRIVILEGE },
-	{ apic_hwint47, LAPIC_VECTOR(47), INTR_PRIVILEGE },
-	{ apic_hwint48, LAPIC_VECTOR(48), INTR_PRIVILEGE },
-	{ apic_hwint49, LAPIC_VECTOR(49), INTR_PRIVILEGE },
-	{ apic_hwint50, LAPIC_VECTOR(50), INTR_PRIVILEGE },
-	{ apic_hwint51, LAPIC_VECTOR(51), INTR_PRIVILEGE },
-	{ apic_hwint52, LAPIC_VECTOR(52), INTR_PRIVILEGE },
-	{ apic_hwint53, LAPIC_VECTOR(53), INTR_PRIVILEGE },
-	{ apic_hwint54, LAPIC_VECTOR(54), INTR_PRIVILEGE },
-	{ apic_hwint55, LAPIC_VECTOR(55), INTR_PRIVILEGE },
-	{ apic_hwint56, LAPIC_VECTOR(56), INTR_PRIVILEGE },
-	{ apic_hwint57, LAPIC_VECTOR(57), INTR_PRIVILEGE },
-	{ apic_hwint58, LAPIC_VECTOR(58), INTR_PRIVILEGE },
-	{ apic_hwint59, LAPIC_VECTOR(59), INTR_PRIVILEGE },
-	{ apic_hwint60, LAPIC_VECTOR(60), INTR_PRIVILEGE },
-	{ apic_hwint61, LAPIC_VECTOR(61), INTR_PRIVILEGE },
-	{ apic_hwint62, LAPIC_VECTOR(62), INTR_PRIVILEGE },
-	{ apic_hwint63, LAPIC_VECTOR(63), INTR_PRIVILEGE },
-	{ apic_spurios_intr, APIC_SPURIOUS_INT_VECTOR, INTR_PRIVILEGE },
-	{ apic_error_intr, APIC_ERROR_INT_VECTOR, INTR_PRIVILEGE },
-	{ NULL, 0, 0}
+स्थिर संरचना gate_सारणी_s gate_सारणी_ioapic[] = {
+	{ apic_hwint0, LAPIC_सदिशम्( 0), INTR_PRIVILEGE },
+	{ apic_hwint1, LAPIC_सदिशम्( 1), INTR_PRIVILEGE },
+	{ apic_hwint2, LAPIC_सदिशम्( 2), INTR_PRIVILEGE },
+	{ apic_hwint3, LAPIC_सदिशम्( 3), INTR_PRIVILEGE },
+	{ apic_hwint4, LAPIC_सदिशम्( 4), INTR_PRIVILEGE },
+	{ apic_hwint5, LAPIC_सदिशम्( 5), INTR_PRIVILEGE },
+	{ apic_hwint6, LAPIC_सदिशम्( 6), INTR_PRIVILEGE },
+	{ apic_hwint7, LAPIC_सदिशम्( 7), INTR_PRIVILEGE },
+	{ apic_hwint8, LAPIC_सदिशम्( 8), INTR_PRIVILEGE },
+	{ apic_hwint9, LAPIC_सदिशम्( 9), INTR_PRIVILEGE },
+	{ apic_hwint10, LAPIC_सदिशम्(10), INTR_PRIVILEGE },
+	{ apic_hwint11, LAPIC_सदिशम्(11), INTR_PRIVILEGE },
+	{ apic_hwint12, LAPIC_सदिशम्(12), INTR_PRIVILEGE },
+	{ apic_hwint13, LAPIC_सदिशम्(13), INTR_PRIVILEGE },
+	{ apic_hwint14, LAPIC_सदिशम्(14), INTR_PRIVILEGE },
+	{ apic_hwint15, LAPIC_सदिशम्(15), INTR_PRIVILEGE },
+	{ apic_hwint16, LAPIC_सदिशम्(16), INTR_PRIVILEGE },
+	{ apic_hwint17, LAPIC_सदिशम्(17), INTR_PRIVILEGE },
+	{ apic_hwint18, LAPIC_सदिशम्(18), INTR_PRIVILEGE },
+	{ apic_hwint19, LAPIC_सदिशम्(19), INTR_PRIVILEGE },
+	{ apic_hwint20, LAPIC_सदिशम्(20), INTR_PRIVILEGE },
+	{ apic_hwint21, LAPIC_सदिशम्(21), INTR_PRIVILEGE },
+	{ apic_hwint22, LAPIC_सदिशम्(22), INTR_PRIVILEGE },
+	{ apic_hwint23, LAPIC_सदिशम्(23), INTR_PRIVILEGE },
+	{ apic_hwint24, LAPIC_सदिशम्(24), INTR_PRIVILEGE },
+	{ apic_hwint25, LAPIC_सदिशम्(25), INTR_PRIVILEGE },
+	{ apic_hwint26, LAPIC_सदिशम्(26), INTR_PRIVILEGE },
+	{ apic_hwint27, LAPIC_सदिशम्(27), INTR_PRIVILEGE },
+	{ apic_hwint28, LAPIC_सदिशम्(28), INTR_PRIVILEGE },
+	{ apic_hwint29, LAPIC_सदिशम्(29), INTR_PRIVILEGE },
+	{ apic_hwint30, LAPIC_सदिशम्(30), INTR_PRIVILEGE },
+	{ apic_hwint31, LAPIC_सदिशम्(31), INTR_PRIVILEGE },
+	{ apic_hwint32, LAPIC_सदिशम्(32), INTR_PRIVILEGE },
+	{ apic_hwint33, LAPIC_सदिशम्(33), INTR_PRIVILEGE },
+	{ apic_hwint34, LAPIC_सदिशम्(34), INTR_PRIVILEGE },
+	{ apic_hwint35, LAPIC_सदिशम्(35), INTR_PRIVILEGE },
+	{ apic_hwint36, LAPIC_सदिशम्(36), INTR_PRIVILEGE },
+	{ apic_hwint37, LAPIC_सदिशम्(37), INTR_PRIVILEGE },
+	{ apic_hwint38, LAPIC_सदिशम्(38), INTR_PRIVILEGE },
+	{ apic_hwint39, LAPIC_सदिशम्(39), INTR_PRIVILEGE },
+	{ apic_hwint40, LAPIC_सदिशम्(40), INTR_PRIVILEGE },
+	{ apic_hwint41, LAPIC_सदिशम्(41), INTR_PRIVILEGE },
+	{ apic_hwint42, LAPIC_सदिशम्(42), INTR_PRIVILEGE },
+	{ apic_hwint43, LAPIC_सदिशम्(43), INTR_PRIVILEGE },
+	{ apic_hwint44, LAPIC_सदिशम्(44), INTR_PRIVILEGE },
+	{ apic_hwint45, LAPIC_सदिशम्(45), INTR_PRIVILEGE },
+	{ apic_hwint46, LAPIC_सदिशम्(46), INTR_PRIVILEGE },
+	{ apic_hwint47, LAPIC_सदिशम्(47), INTR_PRIVILEGE },
+	{ apic_hwint48, LAPIC_सदिशम्(48), INTR_PRIVILEGE },
+	{ apic_hwint49, LAPIC_सदिशम्(49), INTR_PRIVILEGE },
+	{ apic_hwint50, LAPIC_सदिशम्(50), INTR_PRIVILEGE },
+	{ apic_hwint51, LAPIC_सदिशम्(51), INTR_PRIVILEGE },
+	{ apic_hwint52, LAPIC_सदिशम्(52), INTR_PRIVILEGE },
+	{ apic_hwint53, LAPIC_सदिशम्(53), INTR_PRIVILEGE },
+	{ apic_hwint54, LAPIC_सदिशम्(54), INTR_PRIVILEGE },
+	{ apic_hwint55, LAPIC_सदिशम्(55), INTR_PRIVILEGE },
+	{ apic_hwint56, LAPIC_सदिशम्(56), INTR_PRIVILEGE },
+	{ apic_hwint57, LAPIC_सदिशम्(57), INTR_PRIVILEGE },
+	{ apic_hwint58, LAPIC_सदिशम्(58), INTR_PRIVILEGE },
+	{ apic_hwint59, LAPIC_सदिशम्(59), INTR_PRIVILEGE },
+	{ apic_hwint60, LAPIC_सदिशम्(60), INTR_PRIVILEGE },
+	{ apic_hwint61, LAPIC_सदिशम्(61), INTR_PRIVILEGE },
+	{ apic_hwint62, LAPIC_सदिशम्(62), INTR_PRIVILEGE },
+	{ apic_hwint63, LAPIC_सदिशम्(63), INTR_PRIVILEGE },
+	{ apic_spurios_intr, APIC_SPURIOUS_INT_सदिशम्, INTR_PRIVILEGE },
+	{ apic_error_intr, APIC_ERROR_INT_सदिशम्, INTR_PRIVILEGE },
+	{ रिक्त, 0, 0}
 };
 
-static struct gate_table_s gate_table_common[] = {
-	{ ipc_entry_softint_orig, IPC_VECTOR_ORIG, USER_PRIVILEGE },
-	{ kernel_call_entry_orig, KERN_CALL_VECTOR_ORIG, USER_PRIVILEGE },
-	{ ipc_entry_softint_um, IPC_VECTOR_UM, USER_PRIVILEGE },
-	{ kernel_call_entry_um, KERN_CALL_VECTOR_UM, USER_PRIVILEGE },
-	{ NULL, 0, 0}
+स्थिर संरचना gate_सारणी_s gate_सारणी_common[] = {
+	{ ipc_प्रविष्टिः_softint_orig, IPC_सदिशम्_ORIG, USER_PRIVILEGE },
+	{ kernel_call_प्रविष्टिः_orig, KERN_CALL_सदिशम्_ORIG, USER_PRIVILEGE },
+	{ ipc_प्रविष्टिः_softint_um, IPC_सदिशम्_UM, USER_PRIVILEGE },
+	{ kernel_call_प्रविष्टिः_um, KERN_CALL_सदिशम्_UM, USER_PRIVILEGE },
+	{ रिक्त, 0, 0}
 };
 
-#ifdef CONFIG_SMP
-static struct gate_table_s gate_table_smp[] = {
-	{ apic_ipi_sched_intr, APIC_SMP_SCHED_PROC_VECTOR, INTR_PRIVILEGE },
-	{ apic_ipi_halt_intr,  APIC_SMP_CPU_HALT_VECTOR, INTR_PRIVILEGE },
-	{ NULL, 0, 0}
+#यदि_परिभाषितम् CONFIG_SMP
+स्थिर संरचना gate_सारणी_s gate_सारणी_smp[] = {
+	{ apic_ipi_sched_intr, APIC_SMP_SCHED_PROC_सदिशम्, INTR_PRIVILEGE },
+	{ apic_ipi_halt_intr,  APIC_SMP_CPU_HALT_सदिशम्, INTR_PRIVILEGE },
+	{ रिक्त, 0, 0}
 };
-#endif
+#यदि_अन्तः
 
-#ifdef APIC_DEBUG
-static void lapic_set_dummy_handlers(void)
+#यदि_परिभाषितम् APIC_DEBUG
+स्थिर शून्य lapic_समुच्चयः_dummy_handlers(शून्य)
 {
-	char * handler;
-	int vect = 32; /* skip the reserved vectors */
+	वर्ण * handler;
+	पूर्णाङ्क vect = 32; /* skip the reserved vectors */
 
 	handler = &lapic_intr_dummy_handles_start;
-	handler += vect * LAPIC_INTR_DUMMY_HANDLER_SIZE;
-	for(; handler < &lapic_intr_dummy_handles_end;
-			handler += LAPIC_INTR_DUMMY_HANDLER_SIZE) {
-		int_gate_idt(vect++, (vir_bytes) handler,
+	handler += vect * LAPIC_INTR_DUMMY_HANDLER_आकार;
+	प्रति(; handler < &lapic_intr_dummy_handles_अन्तः;
+			handler += LAPIC_INTR_DUMMY_HANDLER_आकार) {
+		int_gate_idt(vect++, (vir_अष्टकानि) handler,
 				PRESENT | INT_GATE_TYPE |
-				(INTR_PRIVILEGE << DPL_SHIFT));
+				(INTR_PRIVILEGE << DPL_सरणम्));
 	}
 }
-#endif
+#यदि_अन्तः
 
 /* Build descriptors for interrupt gates in IDT. */
-void apic_idt_init(const int reset)
+शून्य apic_idt_init(ध्रुव पूर्णाङ्क reset)
 {
 	u32_t val;
 
 	/* Set up idt tables for smp mode.
 	 */
-	int is_bsp;
+	पूर्णाङ्क is_bsp;
 
-	if (reset) {
+	यदि (reset) {
 		idt_copy_vectors_pic();
-		idt_copy_vectors(gate_table_common);
-		return;
+		idt_copy_vectors(gate_सारणी_common);
+		प्रत्यागम;
 	}
 
 	is_bsp = is_boot_apic(apicid());
 
-#ifdef APIC_DEBUG
-	if (is_bsp)
-		printf("APIC debugging is enabled\n");
-	lapic_set_dummy_handlers();
-#endif
+#यदि_परिभाषितम् APIC_DEBUG
+	यदि (is_bsp)
+		प्रारूप_लिख("APIC debugging is enabled\n");
+	lapic_समुच्चयः_dummy_handlers();
+#यदि_अन्तः
 
 	/* Build descriptors for interrupt gates in IDT. */
-	if (ioapic_enabled)
-		idt_copy_vectors(gate_table_ioapic);
-	else
+	यदि (ioapic_enabled)
+		idt_copy_vectors(gate_सारणी_ioapic);
+	अन्यथा
 		idt_copy_vectors_pic();
 
-	idt_copy_vectors(gate_table_common);
+	idt_copy_vectors(gate_सारणी_common);
 
-#ifdef CONFIG_SMP
-	idt_copy_vectors(gate_table_smp);
-#endif
+#यदि_परिभाषितम् CONFIG_SMP
+	idt_copy_vectors(gate_सारणी_smp);
+#यदि_अन्तः
 
 	/* Setup error interrupt vector */
 	val = lapic_read(LAPIC_LVTER);
-	val |= APIC_ERROR_INT_VECTOR;
-	val &= ~ APIC_ICR_INT_MASK;
+	val |= APIC_ERROR_INT_सदिशम्;
+	val &= ~ APIC_ICR_INT_आवरणम्;
 	lapic_write(LAPIC_LVTER, val);
-	(void) lapic_read(LAPIC_LVTER);
+	(शून्य) lapic_read(LAPIC_LVTER);
 
 	/* configure the timer interupt handler */
-	if (is_bsp) {
-		BOOT_VERBOSE(printf("Initiating APIC timer handler\n"));
+	यदि (is_bsp) {
+		BOOT_VERBOSE(प्रारूप_लिख("Initiating APIC timer handler\n"));
 		/* register the timer interrupt handler for this CPU */
-		int_gate_idt(APIC_TIMER_INT_VECTOR, (vir_bytes) lapic_timer_int_handler,
-				PRESENT | INT_GATE_TYPE | (INTR_PRIVILEGE << DPL_SHIFT));
+		int_gate_idt(APIC_TIMER_INT_सदिशम्, (vir_अष्टकानि) lapic_timer_int_handler,
+				PRESENT | INT_GATE_TYPE | (INTR_PRIVILEGE << DPL_सरणम्));
 	}
 
 }
 
-static int acpi_get_ioapics(struct io_apic * ioa, unsigned * nioa, unsigned max)
+स्थिर पूर्णाङ्क acpi_get_ioapics(संरचना io_apic * ioa, अचिह्नित * nioa, अचिह्नित max)
 {
-	unsigned n = 0;
-	struct acpi_madt_ioapic * acpi_ioa;
+	अचिह्नित n = 0;
+	संरचना acpi_madt_ioapic * acpi_ioa;
 
-	while (n < max) {
-		acpi_ioa = acpi_get_ioapic_next();
-		if (acpi_ioa == NULL)
-			break;
+	यावत् (n < max) {
+		acpi_ioa = acpi_get_ioapic_अग्र();
+		यदि (acpi_ioa == रिक्त)
+			भङ्ग;
 
-		assert(acpi_ioa->address);
+		प्रतिज्ञा(acpi_ioa->स्थानाङ्कः);
 
 		ioa[n].id = acpi_ioa->id;
-		ioa[n].addr = acpi_ioa->address;
-		ioa[n].paddr = (phys_bytes) acpi_ioa->address;
-		ioa[n].gsi_base = acpi_ioa->global_int_base;
+		ioa[n].addr = acpi_ioa->स्थानाङ्कः;
+		ioa[n].paddr = (phys_अष्टकानि) acpi_ioa->स्थानाङ्कः;
+		ioa[n].gsi_आधारः = acpi_ioa->global_int_आधारः;
 		ioa[n].pins = ((ioapic_read(ioa[n].addr,
-				IOAPIC_VERSION) & 0xff0000) >> 16)+1;
-		printf("IO APIC idx %d id %d addr 0x%lx paddr 0x%lx pins %d\n",
+				IOAPIC_संस्करणम्) & 0xff0000) >> 16)+1;
+		प्रारूप_लिख("IO APIC idx %d id %d addr 0x%lx paddr 0x%lx pins %d\n",
 				n, acpi_ioa->id, ioa[n].addr, ioa[n].paddr,
 				ioa[n].pins);
 		n++;
 	}
 
 	*nioa = n;
-	return n;
+	प्रत्यागम n;
 }
 
-int detect_ioapics(void)
+पूर्णाङ्क detect_ioapics(शून्य)
 {
-	int status;
+	पूर्णाङ्क स्थितिः;
 
-	if (machine.acpi_rsdp) {
-		status = acpi_get_ioapics(io_apic, &nioapics, MAX_NR_IOAPICS);
-	} else {
-		status = 0;
+	यदि (machine.acpi_rsdp) {
+		स्थितिः = acpi_get_ioapics(io_apic, &nioapics, MAX_NR_IOAPICS);
+	} अन्यथा {
+		स्थितिः = 0;
 	}
-	if (!status) {
+	यदि (!स्थितिः) {
 		/* try something different like MPS */
 	}
 
-	return status;
+	प्रत्यागम स्थितिः;
 }
 
-#ifdef CONFIG_SMP
+#यदि_परिभाषितम् CONFIG_SMP
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type)
+शून्य apic_send_ipi(अचिह्नित सदिशम्, अचिह्नित cpu, पूर्णाङ्क type)
 {
 	u32_t icr1, icr2;
 
-	if (ncpus == 1)
+	यदि (ncpus == 1)
 		/* no need of sending an IPI */
-		return;
+		प्रत्यागम;
 
-	while (lapic_read_icr1() & APIC_ICR_DELIVERY_PENDING) 
+	यावत् (lapic_read_icr1() & APIC_ICR_DELIVERY_PENDING) 
 		arch_pause();
 
 	icr1 = lapic_read_icr1() & 0xFFF0F800;
 	icr2 = lapic_read_icr2() & 0xFFFFFF;
 
-	switch (type) {
-		case APIC_IPI_DEST:
-			if (!cpu_is_ready(cpu))
-				return;
+	विकल्प (type) {
+		पक्ष APIC_IPI_DEST:
+			यदि (!cpu_is_ready(cpu))
+				प्रत्यागम;
 			lapic_write_icr2(icr2 |	(cpuid2apicid[cpu] << 24));
-			lapic_write_icr1(icr1 |	APIC_ICR_DEST_FIELD | vector);
-			break;
-		case APIC_IPI_SELF:
+			lapic_write_icr1(icr1 |	APIC_ICR_DEST_क्षेत्रम् | सदिशम्);
+			भङ्ग;
+		पक्ष APIC_IPI_SELF:
 			lapic_write_icr2(icr2);
-			lapic_write_icr1(icr1 |	APIC_ICR_DEST_SELF | vector);
-			break;
-		case APIC_IPI_TO_ALL_BUT_SELF:
+			lapic_write_icr1(icr1 |	APIC_ICR_DEST_SELF | सदिशम्);
+			भङ्ग;
+		पक्ष APIC_IPI_गन्तव्यम्_ALL_BUT_SELF:
 			lapic_write_icr2(icr2);
-			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL_BUT_SELF | vector);
-			break;
-		case APIC_IPI_TO_ALL:
+			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL_BUT_SELF | सदिशम्);
+			भङ्ग;
+		पक्ष APIC_IPI_गन्तव्यम्_ALL:
 			lapic_write_icr2(icr2);
-			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL | vector);
-			break;
-		default:
-			printf("WARNING : unknown send ipi type request\n");
+			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL | सदिशम्);
+			भङ्ग;
+		स्वभाव:
+			प्रारूप_लिख("WARNING : unknown send ipi type request\n");
 	}
 
 }
 
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline)
+पूर्णाङ्क apic_send_startup_ipi(अचिह्नित cpu, phys_अष्टकानि trampoline)
 {
-	int timeout;
+	पूर्णाङ्क timeout;
 	u32_t errstatus = 0;
-	int i;
+	पूर्णाङ्क i;
 
 	/* INIT-SIPI-SIPI sequence */
 
-	for (i = 0; i < 2; i++) {
+	प्रति (i = 0; i < 2; i++) {
 		u32_t val;
 		
 		/* clear err status */
@@ -1032,38 +1032,38 @@ int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline)
 		lapic_microsec_sleep (200);
 		errstatus = 0;
 
-		while ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) &&
+		यावत् ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) &&
 				!errstatus) {
 			errstatus = lapic_errstatus();
 			timeout--;
-			if (!timeout) break;
+			यदि (!timeout) भङ्ग;
 		}
 
 		/* skip this one and continue with another cpu */
-		if (errstatus)
-			return -1;
+		यदि (errstatus)
+			प्रत्यागम -1;
 	}
 
-	return 0;
+	प्रत्यागम 0;
 }
 
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline) 
+पूर्णाङ्क apic_send_init_ipi(अचिह्नित cpu, phys_अष्टकानि trampoline) 
 {
 	u32_t ptr, errstatus = 0;
-	int timeout;
+	पूर्णाङ्क timeout;
 
 	/* set the warm reset vector */
 	ptr = (u32_t)(trampoline & 0xF);
-	phys_copy(0x467, vir2phys(&ptr), sizeof(u16_t ));
+	phys_copy(0x467, vir2phys(&ptr), परिमाण(u16_t ));
 	ptr = (u32_t)(trampoline >> 4);
-	phys_copy(0x469, vir2phys(&ptr), sizeof(u16_t ));
+	phys_copy(0x469, vir2phys(&ptr), परिमाण(u16_t ));
 
 	/* set shutdown code */
-	outb (RTC_INDEX, 0xF);
+	outb (RTC_सूचकांक, 0xF);
 	outb (RTC_IO, 0xA);
 
 	/* clear error state register. */
-	(void) lapic_errstatus();
+	(शून्य) lapic_errstatus();
 
 	/* assert INIT IPI , No Shorthand, destination mode : physical */
 	lapic_write(LAPIC_ICR2, (lapic_read (LAPIC_ICR2) & 0xFFFFFF) |
@@ -1078,14 +1078,14 @@ int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline)
 
 	errstatus = 0;
 
-	while ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) && !errstatus) {
+	यावत् ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) && !errstatus) {
 		errstatus = lapic_errstatus();
 		timeout--;
-		if (!timeout) break;
+		यदि (!timeout) भङ्ग;
 	}
 
-	if (errstatus) 
-		return -1; /* to continue with a new processor */
+	यदि (errstatus) 
+		प्रत्यागम -1; /* to continue with a new processor */
 
 	/* clear error state register. */
 	lapic_errstatus();
@@ -1102,144 +1102,144 @@ int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline)
 	/* sleep for 200 micro-seconds */
 	lapic_microsec_sleep(200);
 
-	while ((lapic_read(LAPIC_ICR1)&APIC_ICR_DELIVERY_PENDING) && !errstatus) {
+	यावत् ((lapic_read(LAPIC_ICR1)&APIC_ICR_DELIVERY_PENDING) && !errstatus) {
 		errstatus = lapic_errstatus();
 		timeout--;
-		if(!timeout) break;
+		यदि(!timeout) भङ्ग;
 	}
 
-	if (errstatus) 
-		return -1; /* with the new processor */
+	यदि (errstatus) 
+		प्रत्यागम -1; /* with the new processor */
 
 	/* clear error state register.  */
-	(void) lapic_errstatus();
+	(शून्य) lapic_errstatus();
 
 	/* wait 10ms */
 	lapic_microsec_sleep (10000);
 
-	return 0;
+	प्रत्यागम 0;
 }
-#endif
+#यदि_अन्तः
 
-#ifndef CONFIG_SMP
-int apic_single_cpu_init(void)
+#यदि_अपरिभाषितम् CONFIG_SMP
+पूर्णाङ्क apic_single_cpu_init(शून्य)
 {
-	if (!cpu_feature_apic_on_chip())
-		return 0;
+	यदि (!cpu_feature_apic_on_chip())
+		प्रत्यागम 0;
 
 	lapic_addr = LOCAL_APIC_DEF_ADDR;
 	ioapic_enabled = 0;
 
-	if (!lapic_enable(0)) {
+	यदि (!lapic_enable(0)) {
 		lapic_addr = 0x0;
-		return 0;
+		प्रत्यागम 0;
 	}
 
 	bsp_lapic_id = apicid();
-	printf("Boot cpu apic id %d\n", bsp_lapic_id);
+	प्रारूप_लिख("Boot cpu apic id %d\n", bsp_lapic_id);
 
 	acpi_init();
 
-	if (!detect_ioapics()) {
+	यदि (!detect_ioapics()) {
 		lapic_disable();
 		lapic_addr = 0x0;
-		return 0;
+		प्रत्यागम 0;
 	}
 
 	ioapic_enable_all();
 
-	if (ioapic_enabled)
+	यदि (ioapic_enabled)
 		machine.apic_enabled = 1;
 
 	apic_idt_init(0); /* Not a reset ! */
 	idt_reload();
-	return 1;
+	प्रत्यागम 1;
 }
-#endif
+#यदि_अन्तः
 
-static eoi_method_t set_eoi_method(unsigned irq)
+स्थिर eoi_विधानम्_t समुच्चयः_eoi_विधानम्(अचिह्नित irq)
 {
 	/*
 	 * in APIC mode the lowest 16 IRQs are reserved for legacy (E)ISA edge
 	 * triggered interrupts. All the rest is for PCI level triggered
 	 * interrupts
 	 */
-	if (irq < 16)
-		return ioapic_eoi_edge;
-	else
-		return ioapic_eoi_level;
+	यदि (irq < 16)
+		प्रत्यागम ioapic_eoi_edge;
+	अन्यथा
+		प्रत्यागम ioapic_eoi_level;
 }
 
-void set_irq_redir_low(unsigned irq, u32_t * low)
+शून्य समुच्चयः_irq_redir_नीचः(अचिह्नित irq, u32_t * नीचः)
 {
 	u32_t val = 0;
 
 	/* clear the polarity, trigger, mask and vector fields */
-	val &= ~(APIC_ICR_VECTOR | APIC_ICR_INT_MASK |
+	val &= ~(APIC_ICR_सदिशम् | APIC_ICR_INT_आवरणम् |
 			APIC_ICR_TRIGGER | APIC_ICR_INT_POLARITY);
 
-	if (irq < 16) {
+	यदि (irq < 16) {
 		/* ISA active-high */
 		val &= ~APIC_ICR_INT_POLARITY;
 		/* ISA edge triggered */
 		val &= ~APIC_ICR_TRIGGER;
 	}
-	else {
+	अन्यथा {
 		/* PCI active-low */
 		val |= APIC_ICR_INT_POLARITY;
 		/* PCI level triggered */
 		val |= APIC_ICR_TRIGGER;
 	}
 
-	val |= io_apic_irq[irq].vector;
+	val |= io_apic_irq[irq].सदिशम्;
 
-	*low = val;
+	*नीचः = val;
 }
 
-void ioapic_set_irq(unsigned irq)
+शून्य ioapic_समुच्चयः_irq(अचिह्नित irq)
 {
-	unsigned ioa;
+	अचिह्नित ioa;
 
-	assert(irq < NR_IRQ_VECTORS);
+	प्रतिज्ञा(irq < NR_IRQ_VECTORS);
 	
 	/* shared irq, already set */
-	if (io_apic_irq[irq].ioa && io_apic_irq[irq].eoi)
-		return;
+	यदि (io_apic_irq[irq].ioa && io_apic_irq[irq].eoi)
+		प्रत्यागम;
 	
-	assert(!io_apic_irq[irq].ioa || !io_apic_irq[irq].eoi);
+	प्रतिज्ञा(!io_apic_irq[irq].ioa || !io_apic_irq[irq].eoi);
 
-	for (ioa = 0; ioa < nioapics; ioa++) {
-		if (io_apic[ioa].gsi_base <= irq &&
-				io_apic[ioa].gsi_base +
+	प्रति (ioa = 0; ioa < nioapics; ioa++) {
+		यदि (io_apic[ioa].gsi_आधारः <= irq &&
+				io_apic[ioa].gsi_आधारः +
 				io_apic[ioa].pins > irq) {
-			u32_t hi_32, low_32;
+			u32_t hi_32, नीचः_32;
 
 			io_apic_irq[irq].ioa = &io_apic[ioa];
-			io_apic_irq[irq].pin = irq - io_apic[ioa].gsi_base;
-			io_apic_irq[irq].eoi = set_eoi_method(irq);
-			io_apic_irq[irq].vector = LAPIC_VECTOR(irq);
+			io_apic_irq[irq].pin = irq - io_apic[ioa].gsi_आधारः;
+			io_apic_irq[irq].eoi = समुच्चयः_eoi_विधानम्(irq);
+			io_apic_irq[irq].सदिशम् = LAPIC_सदिशम्(irq);
 
-			set_irq_redir_low(irq, &low_32);
+			समुच्चयः_irq_redir_नीचः(irq, &नीचः_32);
 			/*
 			 * route the interrupts to the bsp by default
 			 */
 			hi_32 = bsp_lapic_id << 24;
-			ioapic_redirt_entry_write((void *) io_apic[ioa].addr,
-					io_apic_irq[irq].pin, hi_32, low_32);
+			ioapic_redirt_प्रविष्टिः_write((शून्य *) io_apic[ioa].addr,
+					io_apic_irq[irq].pin, hi_32, नीचः_32);
 		}
 	}
 }
 
-void ioapic_unset_irq(unsigned irq)
+शून्य ioapic_unset_irq(अचिह्नित irq)
 {
-	assert(irq < NR_IRQ_VECTORS);
+	प्रतिज्ञा(irq < NR_IRQ_VECTORS);
 
 	ioapic_disable_irq(irq);
-	io_apic_irq[irq].ioa = NULL;
-	io_apic_irq[irq].eoi = NULL;
+	io_apic_irq[irq].ioa = रिक्त;
+	io_apic_irq[irq].eoi = रिक्त;
 }
 
-void ioapic_reset_pic(void)
+शून्य ioapic_reset_pic(शून्य)
 {       
 	apic_idt_init(TRUE); /* reset */
 	idt_reload();
@@ -1250,55 +1250,55 @@ void ioapic_reset_pic(void)
 		outb(0x23, 0x00);
 }
 
-static void irq_lapic_status(int irq)
+स्थिर शून्य irq_lapic_स्थितिः(पूर्णाङ्क irq)
 {
 	u32_t lo;
 	reg_t tmr, irr, isr;
-	int vector;
-	struct irq * intr;
+	पूर्णाङ्क सदिशम्;
+	संरचना irq * intr;
 
 	intr = &io_apic_irq[irq];
 	
-	if (!intr->ioa)
-		return;
+	यदि (!intr->ioa)
+		प्रत्यागम;
 
-	vector = LAPIC_VECTOR(irq);
-	tmr =  apic_read_tmr_vector(vector);
-	irr =  apic_read_irr_vector(vector);
-	isr =  apic_read_isr_vector(vector);
+	सदिशम् = LAPIC_सदिशम्(irq);
+	tmr =  apic_read_tmr_सदिशम्(सदिशम्);
+	irr =  apic_read_irr_सदिशम्(सदिशम्);
+	isr =  apic_read_isr_सदिशम्(सदिशम्);
 
 
-	if (lapic_test_delivery_val(isr, vector)) {
-		printf("IRQ %d vec %d trigger %s irr %d isr %d\n",
-				irq, vector,
-				lapic_test_delivery_val(tmr, vector) ?
+	यदि (lapic_test_delivery_val(isr, सदिशम्)) {
+		प्रारूप_लिख("IRQ %d vec %d trigger %s irr %d isr %d\n",
+				irq, सदिशम्,
+				lapic_test_delivery_val(tmr, सदिशम्) ?
 				"level" : "edge",
-				lapic_test_delivery_val(irr, vector) ? 1 : 0,
-				lapic_test_delivery_val(isr, vector) ? 1 : 0);
-	} else {
-		printf("IRQ %d vec %d irr %d\n",
-				irq, vector,
-				lapic_test_delivery_val(irr, vector) ? 1 : 0);
+				lapic_test_delivery_val(irr, सदिशम्) ? 1 : 0,
+				lapic_test_delivery_val(isr, सदिशम्) ? 1 : 0);
+	} अन्यथा {
+		प्रारूप_लिख("IRQ %d vec %d irr %d\n",
+				irq, सदिशम्,
+				lapic_test_delivery_val(irr, सदिशम्) ? 1 : 0);
 	}
 	
 	lo = ioapic_read(intr->ioa->addr,
-			IOAPIC_REDIR_TABLE + intr->pin * 2);
-	printf("\tpin %2d vec 0x%02x ioa %d redir_lo 0x%08x %s\n",
+			IOAPIC_REDIR_सारणी + intr->pin * 2);
+	प्रारूप_लिख("\tpin %2d vec 0x%02x ioa %d redir_lo 0x%08x %s\n",
 			intr->pin,
-			intr->vector,
+			intr->सदिशम्,
 			intr->ioa->id,
 			lo,
 			intr->state & IOAPIC_IRQ_STATE_MASKED ?
 			"masked" : "unmasked");
 }
 
-void dump_apic_irq_state(void)
+शून्य dump_apic_irq_state(शून्य)
 {
-	int irq;
+	पूर्णाङ्क irq;
 
-	printf("--- IRQs state dump ---\n");
-	for (irq = 0; irq < NR_IRQ_VECTORS; irq++) {
-		irq_lapic_status(irq);
+	प्रारूप_लिख("--- IRQs state dump ---\n");
+	प्रति (irq = 0; irq < NR_IRQ_VECTORS; irq++) {
+		irq_lapic_स्थितिः(irq);
 	}
-	printf("--- all ---\n");
+	प्रारूप_लिख("--- all ---\n");
 }

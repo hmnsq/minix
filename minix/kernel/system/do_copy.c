@@ -10,63 +10,63 @@
  *   m_lsys_krn_sys_copy.flags
  */
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
-#include <assert.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव "kernel/vm.h"
+#अन्तर्भाव <assert.h>
 
-#if (USE_VIRCOPY || USE_PHYSCOPY)
+#यदि (USE_VIRCOPY || USE_PHYSCOPY)
 
 /*===========================================================================*
  *				do_copy					     *
  *===========================================================================*/
-int do_copy(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_copy(संरचना proc * caller, सन्देशः * m_ptr)
 {
 /* Handle sys_vircopy() and sys_physcopy().  Copy data using virtual or
  * physical addressing. Although a single handler function is used, there 
  * are two different kernel calls so that permissions can be checked. 
  */
-  struct vir_addr vir_addr[2];	/* virtual source and destination address */
-  phys_bytes bytes;		/* number of bytes to copy */
-  int i;
+  संरचना vir_addr vir_addr[2];	/* virtual source and destination address */
+  phys_अष्टकानि अष्टकानि;		/* number of bytes to copy */
+  पूर्णाङ्क i;
 
-#if 0
-  if (caller->p_endpoint != PM_PROC_NR && caller->p_endpoint != VFS_PROC_NR &&
+#यदि 0
+  यदि (caller->p_endpoint != PM_PROC_NR && caller->p_endpoint != VFS_PROC_NR &&
 	caller->p_endpoint != RS_PROC_NR && caller->p_endpoint != MEM_PROC_NR &&
 	caller->p_endpoint != VM_PROC_NR)
   {
-	static int first=1;
-	if (first)
+	स्थिर पूर्णाङ्क first=1;
+	यदि (first)
 	{
 		first= 0;
-		printf(
+		प्रारूप_लिख(
 "do_copy: got request from %d (source %d, destination %d)\n",
 			caller->p_endpoint,
 			m_ptr->m_lsys_krn_sys_copy.src_endpt,
 			m_ptr->m_lsys_krn_sys_copy.dst_endpt);
 	}
   }
-#endif
+#यदि_अन्तः
 
   /* Dismember the command message. */
   vir_addr[_SRC_].proc_nr_e = m_ptr->m_lsys_krn_sys_copy.src_endpt;
   vir_addr[_DST_].proc_nr_e = m_ptr->m_lsys_krn_sys_copy.dst_endpt;
 
-  vir_addr[_SRC_].offset = m_ptr->m_lsys_krn_sys_copy.src_addr;
-  vir_addr[_DST_].offset = m_ptr->m_lsys_krn_sys_copy.dst_addr;
-  bytes = m_ptr->m_lsys_krn_sys_copy.nr_bytes;
+  vir_addr[_SRC_].विस्थापनम् = m_ptr->m_lsys_krn_sys_copy.src_addr;
+  vir_addr[_DST_].विस्थापनम् = m_ptr->m_lsys_krn_sys_copy.dst_addr;
+  अष्टकानि = m_ptr->m_lsys_krn_sys_copy.nr_अष्टकानि;
 
   /* Now do some checks for both the source and destination virtual address.
    * This is done once for _SRC_, then once for _DST_. 
    */
-  for (i=_SRC_; i<=_DST_; i++) {
-	int p;
+  प्रति (i=_SRC_; i<=_DST_; i++) {
+	पूर्णाङ्क p;
       /* Check if process number was given implicitly with SELF and is valid. */
-      if (vir_addr[i].proc_nr_e == SELF)
+      यदि (vir_addr[i].proc_nr_e == SELF)
 	vir_addr[i].proc_nr_e = caller->p_endpoint;
-      if (vir_addr[i].proc_nr_e != NONE) {
-	if(! isokendpt(vir_addr[i].proc_nr_e, &p)) {
-	  printf("do_copy: %d: %d not ok endpoint\n", i, vir_addr[i].proc_nr_e);
-          return(EINVAL); 
+      यदि (vir_addr[i].proc_nr_e != NONE) {
+	यदि(! isokendpt(vir_addr[i].proc_nr_e, &p)) {
+	  प्रारूप_लिख("do_copy: %d: %d not ok endpoint\n", i, vir_addr[i].proc_nr_e);
+          प्रत्यागम(EINVAL); 
         }
       }
   }
@@ -74,18 +74,18 @@ int do_copy(struct proc * caller, message * m_ptr)
   /* Check for overflow. This would happen for 64K segments and 16-bit 
    * vir_bytes. Especially copying by the PM on do_fork() is affected. 
    */
-  if (bytes != (phys_bytes) (vir_bytes) bytes) return(E2BIG);
+  यदि (अष्टकानि != (phys_अष्टकानि) (vir_अष्टकानि) अष्टकानि) प्रत्यागम(E2BIG);
 
   /* Now try to make the actual virtual copy. */
-  if(m_ptr->m_lsys_krn_sys_copy.flags & CP_FLAG_TRY) {
-	int r;
-	assert(caller->p_endpoint == VFS_PROC_NR);
-	r = virtual_copy(&vir_addr[_SRC_], &vir_addr[_DST_], bytes);
-	if(r == EFAULT_SRC || r == EFAULT_DST) return r = EFAULT;
-	return r;
-  } else {
-	return( virtual_copy_vmcheck(caller, &vir_addr[_SRC_],
-			  	&vir_addr[_DST_], bytes) );
+  यदि(m_ptr->m_lsys_krn_sys_copy.flags & CP_FLAG_TRY) {
+	पूर्णाङ्क r;
+	प्रतिज्ञा(caller->p_endpoint == VFS_PROC_NR);
+	r = virtual_copy(&vir_addr[_SRC_], &vir_addr[_DST_], अष्टकानि);
+	यदि(r == EFAULT_SRC || r == EFAULT_DST) प्रत्यागम r = EFAULT;
+	प्रत्यागम r;
+  } अन्यथा {
+	प्रत्यागम( virtual_copy_vmcheck(caller, &vir_addr[_SRC_],
+			  	&vir_addr[_DST_], अष्टकानि) );
   }
 }
-#endif /* (USE_VIRCOPY || USE_PHYSCOPY) */
+#यदि_अन्तः /* (USE_VIRCOPY || USE_PHYSCOPY) */

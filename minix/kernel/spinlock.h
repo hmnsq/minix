@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#यदि_अपरिभाषितम् __SPINLOCK_H__
+#परिभाषय __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#अन्तर्भाव "kernel/kernel.h"
 
-typedef struct spinlock {
+प्रकारनिर्देश संरचना spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#यदि_अपरिभाषितम् CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#परिभाषय SPINLOCK_DEFINE(name)
+#परिभाषय वैयक्तिकम्_SPINLOCK_DEFINE(name)
+#परिभाषय SPINLOCK_DECLARE(name)
+#परिभाषय spinlock_init(sl)
+#परिभाषय spinlock_तालकम्(sl)
+#परिभाषय spinlock_unlock(sl)
 
-#else
+#अन्यथा
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#परिभाषय SPINLOCK_DEFINE(name)	spinlock_t name;
+#परिभाषय वैयक्तिकम्_SPINLOCK_DEFINE(name)	वैयक्तिकम् SPINLOCK_DEFINE(name)
+#परिभाषय SPINLOCK_DECLARE(name)	बाह्य SPINLOCK_DEFINE(name)
+#परिभाषय spinlock_init(sl) कुरु { (sl)->val = 0; } यावत् (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#यदि CONFIG_MAX_CPUS == 1
+#परिभाषय spinlock_तालकम्(sl)
+#परिभाषय spinlock_unlock(sl)
+#अन्यथा
+शून्य arch_spinlock_तालकम्(atomic_t * sl);
+शून्य arch_spinlock_unlock(atomic_t * sl);
+#परिभाषय spinlock_तालकम्(sl)	arch_spinlock_तालकम्((atomic_t*) sl)
+#परिभाषय spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#यदि_अन्तः
 
 
-#endif /* CONFIG_SMP */
+#यदि_अन्तः /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#परिभाषय BKL_तालकम्()	spinlock_तालकम्(&big_kernel_तालकम्)
+#परिभाषय BKL_UNLOCK()	spinlock_unlock(&big_kernel_तालकम्)
 
-#endif /* __SPINLOCK_H__ */
+#यदि_अन्तः /* __SPINLOCK_H__ */

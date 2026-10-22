@@ -31,24 +31,24 @@
  * userspace as if wrong values or request were passed to the kernel
  */
 ENTRY(copy_msg_from_user)
-	push	{r4-r10, lr}
+	निक्षिप	{r4-r10, lr}
 	/* load the source pointer */
-	mov	r9, r0
+	चालय	r9, r0
 	/* load the destination pointer */
-	mov	r10, r1
+	चालय	r10, r1
 	/* do the copy, first 32 bytes */
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
 	/* next 32 bytes */
-	add	r9,  r9, #32
-	add	r10, r10, #32
+	योजय	r9,  r9, #32
+	योजय	r10, r10, #32
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
 LABEL(__copy_msg_from_user_end)
-	pop	{r4-r10, lr}
-	mov	r0, #0
+	उद्धर	{r4-r10, lr}
+	चालय	r0, #0
 	bx	lr
 
 /*===========================================================================*/
@@ -62,24 +62,24 @@ LABEL(__copy_msg_from_user_end)
  * All the other copy_msg_from_user() comments apply here as well!
  */
 ENTRY(copy_msg_to_user)
-	push	{r4-r10, lr}
+	निक्षिप	{r4-r10, lr}
 	/* load the source pointer */
-	mov	r9, r0
+	चालय	r9, r0
 	/* load the destination pointer */
-	mov	r10, r1
+	चालय	r10, r1
 	/* do the copy, first 32 bytes */
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
 	/* next 32 bytes */
-	add	r9,  r9,  #32
-	add	r10, r10, #32
+	योजय	r9,  r9,  #32
+	योजय	r10, r10, #32
 	ldm	r9,  {r0-r7}
 	stm	r10, {r0-r7}
 
 LABEL(__copy_msg_to_user_end)
-	pop	{r4-r10, lr}
-	mov	r0, #0
+	उद्धर	{r4-r10, lr}
+	चालय	r0, #0
 	bx	lr
 
 /*
@@ -90,8 +90,8 @@ LABEL(__copy_msg_to_user_end)
  * here to continue, clean up and report the error
  */
 ENTRY(__user_copy_msg_pointer_failure)
-	pop	{r4-r10, lr}
-	mov	r0, #-1
+	उद्धर	{r4-r10, lr}
+	चालय	r0, #-1
 	bx	lr
 
 ENTRY(intr_enable)

@@ -5,9 +5,9 @@
 #include <machine/asm.h>
 
 #define APIC_IRQ_HANDLER(irq)	\
-	push	$irq						;\
-	call	_C_LABEL(irq_handle)		/* intr_handle(irq) */	;\
-	add	$4, %esp					;
+	निक्षिप	$irq						;\
+	आह्वान	_C_LABEL(irq_handle)		/* intr_handle(irq) */	;\
+	योजय	$4, %esp					;
 
 /*===========================================================================*/
 /*				interrupt handlers			     */
@@ -19,16 +19,16 @@ ENTRY(apic_hwint##irq)							\
 	TEST_INT_IN_KERNEL(4, 0f)					;\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
-	push	%ebp							;\
-	call	_C_LABEL(context_stop)					;\
-	add	$4, %esp						;\
+	निक्षिप	%ebp							;\
+	आह्वान	_C_LABEL(context_stop)					;\
+	योजय	$4, %esp						;\
 	movl	$0, %ebp	/* for stack trace */			;\
 	APIC_IRQ_HANDLER(irq)						;\
-	jmp	_C_LABEL(switch_to_user)				;\
+	कूर्द	_C_LABEL(switch_to_user)				;\
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	आह्वान	_C_LABEL(context_stop_idle)				;\
 	APIC_IRQ_HANDLER(irq)						;\
 	CLEAR_IF(10*4(%esp))						;\
 	popa								;\
@@ -36,8 +36,8 @@ ENTRY(apic_hwint##irq)							\
 
 #define LAPIC_INTR_HANDLER(func)	\
 	movl	$func, %eax						;\
-	call	*%eax           /* call the actual handler */		;\
-	mov	_C_LABEL(lapic_eoi_addr), %eax	/* the end of handler*/	;\
+	आह्वान	*%eax           /* आह्वान the actual handler */		;\
+	चालय	_C_LABEL(lapic_eoi_addr), %eax	/* the end of handler*/	;\
 	movl	$0, (%eax)						;
 
 /*===========================================================================*/
@@ -48,16 +48,16 @@ ENTRY(apic_hwint##irq)							\
 	TEST_INT_IN_KERNEL(4, 0f)					;\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
-	push	%ebp							;\
-	call	_C_LABEL(context_stop)					;\
-	add	$4, %esp						;\
+	निक्षिप	%ebp							;\
+	आह्वान	_C_LABEL(context_stop)					;\
+	योजय	$4, %esp						;\
 	movl	$0, %ebp		/* for stack trace */		;\
 	LAPIC_INTR_HANDLER(func)					;\
-	jmp	_C_LABEL(switch_to_user)				;\
+	कूर्द	_C_LABEL(switch_to_user)				;\
 	\
 0:	\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	आह्वान	_C_LABEL(context_stop_idle)				;\
 	LAPIC_INTR_HANDLER(func)					;\
 	CLEAR_IF(10*4(%esp))						;\
 	popa								;\
@@ -93,9 +93,9 @@ lapic_intr_dummy_handler_msg:
 
 #define lapic_intr_dummy_handler(vect)			\
 	pushl	$vect;					\
-	push	$lapic_intr_dummy_handler_msg;		\
-	call	_C_LABEL(panic);			\
-1:	jmp	1b; /* never return */
+	निक्षिप	$lapic_intr_dummy_handler_msg;		\
+	आह्वान	_C_LABEL(panic);			\
+1:	कूर्द	1b; /* never return */
 
 #define LAPIC_INTR_DUMMY_HANDLER(vect)			\
 	.balign	LAPIC_INTR_DUMMY_HANDLER_SIZE;		\

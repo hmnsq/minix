@@ -62,9 +62,9 @@ IMPORT(multiboot_init)
 /*===========================================================================*/
 
 #define PIC_IRQ_HANDLER(irq)	\
-	push	$irq							    	;\
-	call	_C_LABEL(irq_handle)	/* intr_handle(irq_handlers[irq]) */	;\
-	add	$4, %esp						    	;
+	निक्षिप	$irq							    	;\
+	आह्वान	_C_LABEL(irq_handle)	/* intr_handle(irq_handlers[irq]) */	;\
+	योजय	$4, %esp						    	;
 
 /*===========================================================================*/
 /*				hwint00 - 07				     */
@@ -75,18 +75,18 @@ IMPORT(multiboot_init)
 	TEST_INT_IN_KERNEL(4, 0f)					;\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
-	push	%ebp							;\
+	निक्षिप	%ebp							;\
 	movl	$0, %ebp	/* for stack trace */			;\
-	call	_C_LABEL(context_stop)					;\
-	add	$4, %esp						;\
+	आह्वान	_C_LABEL(context_stop)					;\
+	योजय	$4, %esp						;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
-	jmp	_C_LABEL(switch_to_user)				;\
+	कूर्द	_C_LABEL(switch_to_user)				;\
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	आह्वान	_C_LABEL(context_stop_idle)				;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
@@ -135,19 +135,19 @@ ENTRY(hwint07)
 	TEST_INT_IN_KERNEL(4, 0f)					;\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
-	push	%ebp							;\
+	निक्षिप	%ebp							;\
 	movl	$0, %ebp	/* for stack trace */			;\
-	call	_C_LABEL(context_stop)					;\
-	add	$4, %esp						;\
+	आह्वान	_C_LABEL(context_stop)					;\
+	योजय	$4, %esp						;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
 	outb	$INT2_CTL	/* reenable slave 8259		  */	;\
-	jmp	_C_LABEL(switch_to_user)				;\
+	कूर्द	_C_LABEL(switch_to_user)				;\
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	आह्वान	_C_LABEL(context_stop_idle)				;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
@@ -194,7 +194,7 @@ ENTRY(hwint15)
  *     %esp is not configured)
  *   - we have to save the post-SYSRET %eip, provided by the cpu
  *     in %ecx
- *   - the system call parameters are passed in %ecx, so we userland
+ *   - the system आह्वान parameters are passed in %ecx, so we userland
  *     code that executes SYSCALL copies %ecx to %edx. So the roles
  *     of %ecx and %edx are reversed
  *   - we can use %esi as a scratch register
@@ -202,11 +202,11 @@ ENTRY(hwint15)
 #define ipc_entry_syscall_percpu(cpu)			;\
 ENTRY(ipc_entry_syscall_cpu ## cpu)			;\
 	xchg	%ecx, %edx				;\
-	mov	k_percpu_stacks+4*cpu, %esi		;\
-	mov	(%esi), %ebp 				;\
+	चालय	k_percpu_stacks+4*cpu, %esi		;\
+	चालय	(%esi), %ebp 				;\
 	movl	$KTS_SYSCALL, P_KERN_TRAP_STYLE(%ebp)	;\
 	xchg	%esp, %esi				;\
-	jmp	syscall_sysenter_common
+	कूर्द	syscall_sysenter_common
 
 ipc_entry_syscall_percpu(0)
 ipc_entry_syscall_percpu(1)
@@ -223,123 +223,123 @@ ENTRY(ipc_entry_sysenter)
 	 * interrupts are disabled.
 	 *
 	 * register usage:
-	 * edi: call type (IPCVEC, KERVEC)
+	 * edi: आह्वान type (IPCVEC, KERVEC)
 	 * ebx, eax, ecx: syscall params, set by userland
 	 * esi, edx: esp, eip to restore, set by userland
 	 *
 	 * no state is automatically saved; userland does all of that.
 	 */
-	mov	(%esp), %ebp /* get proc saved by arch_finish_switch_to_user */
+	चालय	(%esp), %ebp /* get proc saved by arch_finish_switch_to_user */
 
 	/* inform kernel we entered by sysenter and should
 	 * therefore exit through restore_user_context_sysenter
 	 */
 	movl	$KTS_SYSENTER, P_KERN_TRAP_STYLE(%ebp)
-	add	usermapped_offset, %edx	/* compensate for mapping difference */
+	योजय	usermapped_offset, %edx	/* compensate for mapping difference */
 
 syscall_sysenter_common:
-	mov	%esi, SPREG(%ebp)	/* esi is return esp */
-	mov	%edx, PCREG(%ebp)	/* edx is return eip */
+	चालय	%esi, SPREG(%ebp)	/* esi is return esp */
+	चालय	%edx, PCREG(%ebp)	/* edx is return eip */
 
 	/* save PSW */
 	pushf
-	pop	%edx
-	mov	%edx, PSWREG(%ebp)
+	उद्धर	%edx
+	चालय	%edx, PSWREG(%ebp)
 
-	/* check for call type; do_ipc? */
-	cmp	$IPCVEC_UM, %edi
+	/* check for आह्वान type; do_ipc? */
+	तुलय	$IPCVEC_UM, %edi
 	jz	ipc_entry_common
 
 	/* check for kernel trap */
-	cmp	$KERVEC_UM, %edi
+	तुलय	$KERVEC_UM, %edi
 	jz	kernel_call_entry_common
 
-	/* unrecognized call number; restore user with error */
+	/* unrecognized आह्वान number; restore user with error */
 	movl	$-1, AXREG(%ebp)
-	push	%ebp	
-	call	restore_user_context	/* restore_user_context(%ebp); */
+	निक्षिप	%ebp	
+	आह्वान	restore_user_context	/* restore_user_context(%ebp); */
 
 /*
  * IPC is only from a process to kernel
  */
 ENTRY(ipc_entry_softint_orig)
 	SAVE_PROCESS_CTX(0, KTS_INT_ORIG)
-	jmp ipc_entry_common
+	कूर्द ipc_entry_common
 
 ENTRY(ipc_entry_softint_um)
 	SAVE_PROCESS_CTX(0, KTS_INT_UM)
-	jmp ipc_entry_common
+	कूर्द ipc_entry_common
 
 ENTRY(ipc_entry_common)
 	/* save the pointer to the current process */
-	push	%ebp
+	निक्षिप	%ebp
 
 	/*
 	 * pass the syscall arguments from userspace to the handler.
 	 * SAVE_PROCESS_CTX() does not clobber these registers, they are still
 	 * set as the userspace have set them
 	 */
-	push	%ebx
-	push	%eax
-	push	%ecx
+	निक्षिप	%ebx
+	निक्षिप	%eax
+	निक्षिप	%ecx
 
 	/* stop user process cycles */
-	push	%ebp
+	निक्षिप	%ebp
 	/* for stack trace */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
-	add	$4, %esp
+	आह्वान	_C_LABEL(context_stop)
+	योजय	$4, %esp
 
-	call	_C_LABEL(do_ipc)
+	आह्वान	_C_LABEL(do_ipc)
 
 	/* restore the current process pointer and save the return value */
-	add	$3 * 4, %esp
-	pop	%esi
-	mov     %eax, AXREG(%esi)
+	योजय	$3 * 4, %esp
+	उद्धर	%esi
+	चालय     %eax, AXREG(%esi)
 
-	jmp	_C_LABEL(switch_to_user)
+	कूर्द	_C_LABEL(switch_to_user)
 
 
 /*
- * kernel call is only from a process to kernel
+ * kernel आह्वान is only from a process to kernel
  */
 ENTRY(kernel_call_entry_orig)
 	SAVE_PROCESS_CTX(0, KTS_INT_ORIG)
-	jmp	kernel_call_entry_common
+	कूर्द	kernel_call_entry_common
 
 ENTRY(kernel_call_entry_um)
 	SAVE_PROCESS_CTX(0, KTS_INT_UM)
-	jmp	kernel_call_entry_common
+	कूर्द	kernel_call_entry_common
 
 ENTRY(kernel_call_entry_common)
 	/* save the pointer to the current process */
-	push	%ebp
+	निक्षिप	%ebp
 
 	/*
 	 * pass the syscall arguments from userspace to the handler.
 	 * SAVE_PROCESS_CTX() does not clobber these registers, they are still
 	 * set as the userspace have set them
 	 */
-	push	%eax
+	निक्षिप	%eax
 
 	/* stop user process cycles */
-	push	%ebp
+	निक्षिप	%ebp
 	/* for stack trace */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
-	add	$4, %esp
+	आह्वान	_C_LABEL(context_stop)
+	योजय	$4, %esp
 
-	call	_C_LABEL(kernel_call)
+	आह्वान	_C_LABEL(kernel_call)
 
 	/* restore the current process pointer and save the return value */
-	add	$8, %esp
+	योजय	$8, %esp
 
-	jmp	_C_LABEL(switch_to_user)
+	कूर्द	_C_LABEL(switch_to_user)
 
 
 .balign 16
 /*
- * called by the exception interrupt vectors. If the exception does not push
+ * called by the exception interrupt vectors. If the exception does not निक्षिप
  * errorcode, we assume that the vector handler pushed 0 instead. Next pushed
  * thing is the vector number. From this point on we can continue as if every
  * exception pushes an error code
@@ -355,36 +355,36 @@ exception_entry_from_user:
 	SAVE_PROCESS_CTX(8, KTS_INT_HARD)
 
 	/* stop user process cycles */
-	push	%ebp
+	निक्षिप	%ebp
 	/* for stack trace clear %ebp */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
-	add	$4, %esp
+	आह्वान	_C_LABEL(context_stop)
+	योजय	$4, %esp
 
 	/*
-	 * push a pointer to the interrupt state pushed by the cpu and the
+	 * निक्षिप a pointer to the interrupt state pushed by the cpu and the
 	 * vector number pushed by the vector handler just before calling
-	 * exception_entry and call the exception handler.
+	 * exception_entry and आह्वान the exception handler.
 	 */
-	push	%esp
-	push	$0	/* it's not a nested exception */
-	call 	_C_LABEL(exception_handler)
+	निक्षिप	%esp
+	निक्षिप	$0	/* it's not a nested exception */
+	आह्वान 	_C_LABEL(exception_handler)
 
-	jmp	_C_LABEL(switch_to_user)
+	कूर्द	_C_LABEL(switch_to_user)
 
 exception_entry_nested:
 
 	pusha
-	mov	%esp, %eax
-	add	$(8 * 4), %eax
-	push	%eax
+	चालय	%esp, %eax
+	योजय	$(8 * 4), %eax
+	निक्षिप	%eax
 	pushl	$1			/* it's a nested exception */
-	call	_C_LABEL(exception_handler)
-	add	$8, %esp
+	आह्वान	_C_LABEL(exception_handler)
+	योजय	$8, %esp
 	popa
 
 	/* clear the error code and the exception number */
-	add	$8, %esp
+	योजय	$8, %esp
 	/* resume execution at the point of exception */
 	iret
 
@@ -395,17 +395,17 @@ ENTRY(restore_user_context_sysenter)
 	 * and ESP restoring here to resume execution, and set EAX and
 	 * EBX to the saved status values.
 	 */
-	mov	4(%esp), %ebp		/* retrieve proc ptr arg */
+	चालय	4(%esp), %ebp		/* retrieve proc ptr arg */
 	movw	$USER_DS_SELECTOR, %ax
 	movw	%ax, %ds
-	mov	PCREG(%ebp), %edx	/* sysexit restores EIP using EDX */
-	mov	SPREG(%ebp), %ecx	/* sysexit restores ESP using ECX */
-	mov	AXREG(%ebp), %eax	/* trap return value */
-	mov	BXREG(%ebp), %ebx	/* secondary return value */
+	चालय	PCREG(%ebp), %edx	/* sysexit restores EIP using EDX */
+	चालय	SPREG(%ebp), %ecx	/* sysexit restores ESP using ECX */
+	चालय	AXREG(%ebp), %eax	/* trap return value */
+	चालय	BXREG(%ebp), %ebx	/* secondary return value */
 
         /* restore PSW */
         movl    PSWREG(%ebp), %edi      /* load desired PSW to EDI */
-        push    %edi
+        निक्षिप    %edi
         popf
 
 	sti				/* enable interrupts */
@@ -417,32 +417,32 @@ ENTRY(restore_user_context_syscall)
 	 * manual %esp restoring, new EIP in ECX, does not require
 	 * enabling interrupts, and of course sysret instead of sysexit.
 	 */
-	mov	4(%esp), %ebp		/* retrieve proc ptr arg */
+	चालय	4(%esp), %ebp		/* retrieve proc ptr arg */
 
         /* restore PSW (before we switch to user stack!) */
         movl    PSWREG(%ebp), %edi      /* load desired PSW to EDI */
-        push    %edi
+        निक्षिप    %edi
         popf
 
-	mov	PCREG(%ebp), %ecx	/* sysret restores EIP using ECX */
-	mov	SPREG(%ebp), %esp	/* restore ESP directly */
-	mov	AXREG(%ebp), %eax	/* trap return value */
-	mov	BXREG(%ebp), %ebx	/* secondary return value */
+	चालय	PCREG(%ebp), %ecx	/* sysret restores EIP using ECX */
+	चालय	SPREG(%ebp), %esp	/* restore ESP directly */
+	चालय	AXREG(%ebp), %eax	/* trap return value */
+	चालय	BXREG(%ebp), %ebx	/* secondary return value */
 
 	sysret				/* jump to EIP in user */
 
 ENTRY(restore_user_context_int)
-	mov	4(%esp), %ebp	/* will assume P_STACKBASE == 0 */
+	चालय	4(%esp), %ebp	/* will assume P_STACKBASE == 0 */
 
 	/* reconstruct the stack for iret */
-	push	$USER_DS_SELECTOR	/* ss */
+	निक्षिप	$USER_DS_SELECTOR	/* ss */
 	movl	SPREG(%ebp), %eax
-	push	%eax
+	निक्षिप	%eax
 	movl	PSWREG(%ebp), %eax
-	push	%eax
-	push	$USER_CS_SELECTOR	/* cs */
+	निक्षिप	%eax
+	निक्षिप	$USER_CS_SELECTOR	/* cs */
 	movl	PCREG(%ebp), %eax
-	push	%eax
+	निक्षिप	%eax
 
 	/* Restore segments as the user should see them. */
 	movw	$USER_DS_SELECTOR, %si
@@ -463,8 +463,8 @@ ENTRY(restore_user_context_int)
 /*===========================================================================*/
 
 #define EXCEPTION_ERR_CODE(vector)	\
-	push	$vector			;\
-	jmp	exception_entry
+	निक्षिप	$vector			;\
+	कूर्द	exception_entry
 
 #define EXCEPTION_NO_ERR_CODE(vector)	\
 	pushl	$0		;\
@@ -504,13 +504,13 @@ LABEL(nmi)
 	 * We cannot be sure about the state of the kernel segment register,
 	 * however, we always set %ds and %es to the same as %ss
 	 */
-	mov	%ss, %si
-	mov	%si, %ds
-	mov	%si, %es
+	चालय	%ss, %si
+	चालय	%si, %ds
+	चालय	%si, %es
 
-	push	%esp
-	call	_C_LABEL(nmi_watchdog_handler)
-	add	$4, %esp
+	निक्षिप	%esp
+	आह्वान	_C_LABEL(nmi_watchdog_handler)
+	योजय	$4, %esp
 
 	/* restore all the important registers as they were before the trap */
 	popa
@@ -539,17 +539,17 @@ LABEL(copr_not_available)
 	cld			/* set direction flag to a known value */
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)
 	/* stop user process cycles */
-	push	%ebp
-	mov	$0, %ebp
-	call	_C_LABEL(context_stop)
-	call	_C_LABEL(copr_not_available_handler)
+	निक्षिप	%ebp
+	चालय	$0, %ebp
+	आह्वान	_C_LABEL(context_stop)
+	आह्वान	_C_LABEL(copr_not_available_handler)
 	/* reached upon failure only */
-	jmp	_C_LABEL(switch_to_user)
+	कूर्द	_C_LABEL(switch_to_user)
 
 copr_not_available_in_kernel:
 	pushl	$0
 	pushl	$COPROC_NOT_VECTOR
-	jmp	exception_entry_nested
+	कूर्द	exception_entry_nested
 
 LABEL(double_fault)
 	EXCEPTION_ERR_CODE(DOUBLE_FAULT_VECTOR)
@@ -587,14 +587,14 @@ LABEL(simd_exception)
 /*===========================================================================*/
 /*				reload_cr3				     */
 /*===========================================================================*/
-/* PUBLIC void reload_cr3(void); */
+/* सार्वजनिक void reload_cr3(void); */
 ENTRY(reload_cr3)
-	push    %ebp
-	mov     %esp, %ebp
-	mov	%cr3, %eax
-	mov	%eax, %cr3
-	pop     %ebp
-	ret
+	निक्षिप    %ebp
+	चालय     %esp, %ebp
+	चालय	%cr3, %eax
+	चालय	%eax, %cr3
+	उद्धर     %ebp
+	प्रत्यागच्छ
 
 #ifdef CONFIG_SMP
 ENTRY(startup_ap_32)
@@ -610,14 +610,14 @@ ENTRY(startup_ap_32)
 	 * own stack, the rest is still waiting to be booted
 	 */
 	movw	$KERN_DS_SELECTOR, %ax
-	mov	%ax, %ds
-	mov	%ax, %ss
-	mov	$_C_LABEL(k_boot_stktop) - 4, %esp
+	चालय	%ax, %ds
+	चालय	%ax, %ss
+	चालय	$_C_LABEL(k_boot_stktop) - 4, %esp
 
 	/* load the highly mapped idt, gdt, per-cpu tss */
-	call	_C_LABEL(prot_load_selectors)
+	आह्वान	_C_LABEL(prot_load_selectors)
 
-	jmp	_C_LABEL(smp_ap_boot)
+	कूर्द	_C_LABEL(smp_ap_boot)
 	hlt
 #endif
 

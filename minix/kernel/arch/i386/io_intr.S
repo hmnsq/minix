@@ -7,8 +7,8 @@
 
 ENTRY(intr_disable)
 	cli
-	ret
+	प्रत्यागच्छ
 
 ENTRY(intr_enable)
 	sti
-	ret
+	प्रत्यागच्छ

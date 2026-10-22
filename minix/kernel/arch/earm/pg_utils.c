@@ -1,208 +1,208 @@
-#include <minix/cpufeature.h>
+#अन्तर्भाव <minix/cpufeature.h>
 
-#include <minix/type.h>
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <machine/cpu.h>
-#include <arm/armreg.h>
+#अन्तर्भाव <minix/type.h>
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव "kernel/kernel.h"
+#अन्तर्भाव "arch_proto.h"
+#अन्तर्भाव <machine/cpu.h>
+#अन्तर्भाव <arm/armreg.h>
 
-#include <string.h>
-#include <minix/type.h>
+#अन्तर्भाव <string.h>
+#अन्तर्भाव <minix/type.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+बाह्य वर्ण kern_vir_आधारः, kern_phys_आधारः, kern_आकार;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+स्थिर phys_अष्टकानि kern_vir_start = (phys_अष्टकानि) &kern_vir_आधारः;
+स्थिर phys_अष्टकानि kern_phys_start = (phys_अष्टकानि) &kern_phys_आधारः;
+स्थिर phys_अष्टकानि kern_kernlen = (phys_अष्टकानि) &kern_आकार;
 
 /* page directory we can use to map things */
-static u32_t pagedir[4096]  __aligned(16384);
+स्थिर u32_t pagedir[4096]  __aligned(16384);
 
-void print_memmap(kinfo_t *cbi)
+शून्य print_memmap(kinfo_t *cbi)
 {
-	int m;
-	assert(cbi->mmap_size < MAXMEMMAP);
-	for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
-		printf("%08lx-%08lx ",addr, endit);
+	पूर्णाङ्क m;
+	प्रतिज्ञा(cbi->mmap_आकार < MAXMEMMAP);
+	प्रति(m = 0; m < cbi->mmap_आकार; m++) {
+		phys_अष्टकानि addr = cbi->memmap[m].mm_आधारः_addr, endit = cbi->memmap[m].mm_आधारः_addr + cbi->memmap[m].mm_दीर्घता;
+		प्रारूप_लिख("%08lx-%08lx ",addr, endit);
 	}
-	printf("\nsize %08lx\n", cbi->mmap_size);
+	प्रारूप_लिख("\nsize %08lx\n", cbi->mmap_आकार);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+शून्य cut_memmap(kinfo_t *cbi, phys_अष्टकानि start, phys_अष्टकानि अन्तः_2)
 {
-	int m;
-	phys_bytes o;
+	पूर्णाङ्क m;
+	phys_अष्टकानि o;
 
-	if((o=start % ARM_PAGE_SIZE))
+	यदि((o=start % ARM_PAGE_आकार))
 		start -= o;
-	if((o=end % ARM_PAGE_SIZE))
-		end += ARM_PAGE_SIZE - o;
+	यदि((o=अन्तः_2 % ARM_PAGE_आकार))
+		अन्तः_2 += ARM_PAGE_आकार - o;
 
-	assert(kernel_may_alloc);
+	प्रतिज्ञा(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes substart = start, subend = end;
-		phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
-		    memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
+	प्रति(m = 0; m < cbi->mmap_आकार; m++) {
+		phys_अष्टकानि substart = start, subend = अन्तः_2;
+		phys_अष्टकानि memaddr = cbi->memmap[m].mm_आधारः_addr,
+		    memend = cbi->memmap[m].mm_आधारः_addr + cbi->memmap[m].mm_दीर्घता;
 
 		/* adjust cut range to be a subset of the free memory */
-		if(substart < memaddr) substart = memaddr;
-		if(subend > memend) subend = memend;
-		if(substart >= subend) continue;
+		यदि(substart < memaddr) substart = memaddr;
+		यदि(subend > memend) subend = memend;
+		यदि(substart >= subend) अनुवर्त;
 
 		/* if there is any overlap, forget this one and add
 		 * 1-2 subranges back
 		 */
-		cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-		if(substart > memaddr)
-			add_memmap(cbi, memaddr, substart-memaddr);
-		if(subend < memend)
-			add_memmap(cbi, subend, memend-subend);
+		cbi->memmap[m].mm_आधारः_addr = cbi->memmap[m].mm_दीर्घता = 0;
+		यदि(substart > memaddr)
+			सङ्कलय_memmap(cbi, memaddr, substart-memaddr);
+		यदि(subend < memend)
+			सङ्कलय_memmap(cbi, subend, memend-subend);
 	}
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+शून्य सङ्कलय_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-	int m;
-#define LIMIT 0xFFFFF000
+	पूर्णाङ्क m;
+#परिभाषय सीमा 0xFFFFF000
 	/* Truncate available memory at 4GB as the rest of minix
 	 * currently can't deal with any bigger.
 	 */
-	if(addr > LIMIT) {
-		return;
+	यदि(addr > सीमा) {
+		प्रत्यागम;
 	}
 
-	if(addr + len > LIMIT) {
-		len -= (addr + len - LIMIT);
+	यदि(addr + len > सीमा) {
+		len -= (addr + len - सीमा);
 	}
 
-	assert(cbi->mmap_size < MAXMEMMAP);
-	if(len == 0) {
-		return;
+	प्रतिज्ञा(cbi->mmap_आकार < MAXMEMMAP);
+	यदि(len == 0) {
+		प्रत्यागम;
 	}
-	addr = roundup(addr, ARM_PAGE_SIZE);
-	len = rounddown(len, ARM_PAGE_SIZE);
+	addr = roundup(addr, ARM_PAGE_आकार);
+	len = rounddown(len, ARM_PAGE_आकार);
 
-	assert(kernel_may_alloc);
+	प्रतिज्ञा(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
-		phys_bytes highmark;
-		if(cbi->memmap[m].mm_length) {
-			continue;
+        प्रति(m = 0; m < MAXMEMMAP; m++) {
+		phys_अष्टकानि highmark;
+		यदि(cbi->memmap[m].mm_दीर्घता) {
+			अनुवर्त;
 		}
-		cbi->memmap[m].mm_base_addr = addr;
-		cbi->memmap[m].mm_length = len;
-		cbi->memmap[m].type = MULTIBOOT_MEMORY_AVAILABLE;
-		if(m >= cbi->mmap_size) {
-			cbi->mmap_size = m+1;
+		cbi->memmap[m].mm_आधारः_addr = addr;
+		cbi->memmap[m].mm_दीर्घता = len;
+		cbi->memmap[m].type = MULTIBOOT_स्मृतिः_उपलब्धम्;
+		यदि(m >= cbi->mmap_आकार) {
+			cbi->mmap_आकार = m+1;
 		}
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		यदि(highmark > cbi->mem_उच्चः_phys) {
+			cbi->mem_उच्चः_phys = highmark;
 		}
-		return;
+		प्रत्यागम;
         }
 
 	panic("no available memmap slot");
 }
 
-u32_t *alloc_pagetable(phys_bytes *ph)
+u32_t *alloc_pagetable(phys_अष्टकानि *ph)
 {
 	u32_t *ret;
-#define PG_PAGETABLES 24
-	static u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) {
+#परिभाषय PG_PAGETABLES 24
+	स्थिर u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
+	स्थिर पूर्णाङ्क pt_inuse = 0;
+	यदि(pt_inuse >= PG_PAGETABLES) {
 		panic("no more pagetables");
 	}
-	assert(sizeof(pagetables[pt_inuse]) == 1024);
+	प्रतिज्ञा(परिमाण(pagetables[pt_inuse]) == 1024);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	प्रत्यागम ret;
 }
 
-#define PAGE_KB (ARM_PAGE_SIZE / 1024)
+#परिभाषय PAGE_KB (ARM_PAGE_आकार / 1024)
 
-phys_bytes pg_alloc_page(kinfo_t *cbi)
+phys_अष्टकानि pg_alloc_page(kinfo_t *cbi)
 {
-	int m;
-	multiboot_memory_map_t *mmap;
+	पूर्णाङ्क m;
+	multiboot_स्मृतिः_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	प्रतिज्ञा(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
+	प्रति(m = 0; m < cbi->mmap_आकार; m++) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) {
-			continue;
+		यदि(!mmap->mm_दीर्घता) {
+			अनुवर्त;
 		}
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % ARM_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % ARM_PAGE_SIZE));
+		प्रतिज्ञा(mmap->mm_दीर्घता > 0);
+		प्रतिज्ञा(!(mmap->mm_दीर्घता % ARM_PAGE_आकार));
+		प्रतिज्ञा(!(mmap->mm_आधारः_addr % ARM_PAGE_आकार));
 
-		u32_t addr = mmap->mm_base_addr;
-		mmap->mm_base_addr += ARM_PAGE_SIZE;
-		mmap->mm_length  -= ARM_PAGE_SIZE;
+		u32_t addr = mmap->mm_आधारः_addr;
+		mmap->mm_आधारः_addr += ARM_PAGE_आकार;
+		mmap->mm_दीर्घता  -= ARM_PAGE_आकार;
 
-		cbi->kernel_allocated_bytes_dynamic += ARM_PAGE_SIZE;
+		cbi->kernel_allocated_अष्टकानि_dynamic += ARM_PAGE_आकार;
 
-		return addr;
+		प्रत्यागम addr;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+शून्य pg_तटस्थः(kinfo_t *cbi)
 {
 	uint32_t i;
-	phys_bytes phys;
+	phys_अष्टकानि phys;
 
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	प्रतिज्ञा(cbi->mem_उच्चः_phys);
 
         /* Set up an identity mapping page directory */
-	 for(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
+	 प्रति(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
 		u32_t flags = ARM_VM_SECTION
 			| ARM_VM_SECTION_USER
 			| ARM_VM_SECTION_DOMAIN;
 
-		phys = i * ARM_SECTION_SIZE;
+		phys = i * ARM_SECTION_आकार;
 		/* mark mormal memory as cacheable. TODO: fix hard coded values */
-		if (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_END) {
+		यदि (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_अन्तः) {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_CACHED;
-		} else {
+		} अन्यथा {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_DEVICE;
 		}
         }
 }
 
-int pg_mapkernel(void)
+पूर्णाङ्क pg_mapkernel(शून्य)
 {
-	int pde;
+	पूर्णाङ्क pde;
 	u32_t mapped = 0, kern_phys = kern_phys_start;
 
-	assert(!(kern_vir_start % ARM_SECTION_SIZE));
-	assert(!(kern_phys_start % ARM_SECTION_SIZE));
-	pde = kern_vir_start / ARM_SECTION_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
-		pagedir[pde] = (kern_phys & ARM_VM_SECTION_MASK) 
+	प्रतिज्ञा(!(kern_vir_start % ARM_SECTION_आकार));
+	प्रतिज्ञा(!(kern_phys_start % ARM_SECTION_आकार));
+	pde = kern_vir_start / ARM_SECTION_आकार; /* start pde */
+	यावत्(mapped < kern_kernlen) {
+		pagedir[pde] = (kern_phys & ARM_VM_SECTION_आवरणम्) 
 			| ARM_VM_SECTION
 			| ARM_VM_SECTION_SUPER
 			| ARM_VM_SECTION_DOMAIN
 			| ARM_VM_SECTION_CACHED;
-		mapped += ARM_SECTION_SIZE;
-		kern_phys += ARM_SECTION_SIZE;
+		mapped += ARM_SECTION_आकार;
+		kern_phys += ARM_SECTION_आकार;
 		pde++;
 	}
-	return pde;	/* free pde */
+	प्रत्यागम pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+शून्य vm_enable_paging(शून्य)
 {
 	u32_t sctlr;
 	u32_t actlr;
@@ -232,7 +232,7 @@ void vm_enable_paging(void)
 	sctlr |= CPU_CONTROL_32BD_ENABLE;
 
 	/* Enable L2 cache (cortex-a8) */
-	#define CORTEX_A8_L2EN   (0x02)
+	#परिभाषय CORTEX_A8_L2EN   (0x02)
 	actlr = read_actlr();
 	actlr |= CORTEX_A8_L2EN;
 	write_actlr(actlr);
@@ -240,77 +240,77 @@ void vm_enable_paging(void)
 	write_sctlr(sctlr);
 }
 
-phys_bytes pg_load(void)
+phys_अष्टकानि pg_आरोपय(शून्य)
 {
-	phys_bytes phpagedir = vir2phys(pagedir);
+	phys_अष्टकानि phpagedir = vir2phys(pagedir);
 	write_ttbr0(phpagedir);
-	return phpagedir;
+	प्रत्यागम phpagedir;
 }
 
-void pg_clear(void)
+शून्य pg_clear(शून्य)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	स्मृतिं_पूरय(pagedir, 0, परिमाण(pagedir));
 }
 
-phys_bytes pg_rounddown(phys_bytes b)
+phys_अष्टकानि pg_rounddown(phys_अष्टकानि b)
 {
-	phys_bytes o;
-	if(!(o = b % ARM_PAGE_SIZE)) {
-		return b;
+	phys_अष्टकानि o;
+	यदि(!(o = b % ARM_PAGE_आकार)) {
+		प्रत्यागम b;
 	}
-	return b  - o;
+	प्रत्यागम b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+शून्य pg_map(phys_अष्टकानि phys, vir_अष्टकानि vaddr, vir_अष्टकानि vaddr_अन्तः,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	स्थिर पूर्णाङ्क mapped_pde = -1;
+	स्थिर u32_t *pt = रिक्त;
+	पूर्णाङ्क pde, pte;
 
-	assert(kernel_may_alloc);
+	प्रतिज्ञा(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % ARM_PAGE_SIZE));
-	} else  {
-		assert((vaddr % ARM_PAGE_SIZE) == (phys % ARM_PAGE_SIZE));
+	यदि(phys == PG_ALLOCATEME) {
+		प्रतिज्ञा(!(vaddr % ARM_PAGE_आकार));
+	} अन्यथा  {
+		प्रतिज्ञा((vaddr % ARM_PAGE_आकार) == (phys % ARM_PAGE_आकार));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}
-	assert(vaddr < kern_vir_start);
+	प्रतिज्ञा(vaddr < kern_vir_start);
 
-	while(vaddr < vaddr_end) {
-		phys_bytes source = phys;
-		assert(!(vaddr % ARM_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
+	यावत्(vaddr < vaddr_अन्तः) {
+		phys_अष्टकानि source = phys;
+		प्रतिज्ञा(!(vaddr % ARM_PAGE_आकार));
+		यदि(phys == PG_ALLOCATEME) {
 			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % ARM_PAGE_SIZE));
+		} अन्यथा {
+			प्रतिज्ञा(!(phys % ARM_PAGE_आकार));
 		}
-		assert(!(source % ARM_PAGE_SIZE));
+		प्रतिज्ञा(!(source % ARM_PAGE_आकार));
 		pde = ARM_VM_PDE(vaddr);
 		pte = ARM_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
-			phys_bytes ph;
+		यदि(mapped_pde < pde) {
+			phys_अष्टकानि ph;
 			pt = alloc_pagetable(&ph);
-			pagedir[pde] = (ph & ARM_VM_PDE_MASK)
+			pagedir[pde] = (ph & ARM_VM_PDE_आवरणम्)
 					| ARM_VM_PAGEDIR
 					| ARM_VM_PDE_DOMAIN;
 			mapped_pde = pde;
 		}
-		assert(pt);
-		pt[pte] = (source & ARM_VM_PTE_MASK)
+		प्रतिज्ञा(pt);
+		pt[pte] = (source & ARM_VM_PTE_आवरणम्)
 			| ARM_VM_PAGETABLE
 			| ARM_VM_PTE_CACHED
 			| ARM_VM_PTE_USER;
-		vaddr += ARM_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME) {
-			phys += ARM_PAGE_SIZE;
+		vaddr += ARM_PAGE_आकार;
+		यदि(phys != PG_ALLOCATEME) {
+			phys += ARM_PAGE_आकार;
 		}
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+शून्य pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

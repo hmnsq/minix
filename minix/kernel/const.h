@@ -1,53 +1,53 @@
 /* General macros and constants used by the kernel. */
-#ifndef CONST_H
-#define CONST_H
+#यदि_अपरिभाषितम् CONST_H
+#परिभाषय CONST_H
 
-#include <minix/config.h>
-#include <minix/bitmap.h>
+#अन्तर्भाव <minix/config.h>
+#अन्तर्भाव <minix/bitmap.h>
 
-#include "debug.h"
+#अन्तर्भाव "debug.h"
 
 /* Translate an endpoint number to a process number, return success. */
-#ifndef isokendpt
-#define isokendpt(e,p) isokendpt_d((e),(p),0)
-#define okendpt(e,p)   isokendpt_d((e),(p),1)
-#endif
+#यदि_अपरिभाषितम् isokendpt
+#परिभाषय isokendpt(e,p) isokendpt_d((e),(p),0)
+#परिभाषय okendpt(e,p)   isokendpt_d((e),(p),1)
+#यदि_अन्तः
 
 /* Constants used in virtual_copy(). Values must be 0 and 1, respectively. */
-#define _SRC_	0
-#define _DST_	1
+#परिभाषय _SRC_	0
+#परिभाषय _DST_	1
 
-#define get_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) & (1 << CHUNK_OFFSET(bit) ))
-#define get_sys_bits(map,bit) \
+#परिभाषय get_sys_bit(map,bit) \
+	( MAP_CHUNK((map).chunk,bit) & (1 << CHUNK_विस्थापनम्(bit) ))
+#परिभाषय get_sys_द्वयङ्काः(map,bit) \
 	( MAP_CHUNK((map).chunk,bit) )
-#define set_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) |= (1 << CHUNK_OFFSET(bit) ))
-#define unset_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) &= ~(1 << CHUNK_OFFSET(bit) ))
+#परिभाषय समुच्चयः_sys_bit(map,bit) \
+	( MAP_CHUNK((map).chunk,bit) |= (1 << CHUNK_विस्थापनम्(bit) ))
+#परिभाषय unset_sys_bit(map,bit) \
+	( MAP_CHUNK((map).chunk,bit) &= ~(1 << CHUNK_विस्थापनम्(bit) ))
 
 /* for kputc() */
-#define END_OF_KMESS	0
+#परिभाषय अन्तः_सम्बन्धि_KMESS	0
 
 /* User limits. */
-#ifndef USR_DATATOP
-#ifndef _MINIX_MAGIC
-#define USR_DATATOP 0xF0000000
-#else
-#define USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
-#endif
-#endif
+#यदि_अपरिभाषितम् USR_DATATOP
+#यदि_अपरिभाषितम् _MINIX_MAGIC
+#परिभाषय USR_DATATOP 0xF0000000
+#अन्यथा
+#परिभाषय USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
+#यदि_अन्तः
+#यदि_अन्तः
 
-#ifndef USR_STACKTOP
-#define USR_STACKTOP USR_DATATOP
-#endif
+#यदि_अपरिभाषितम् USR_STACKTOP
+#परिभाषय USR_STACKTOP USR_DATATOP
+#यदि_अन्तः
 
-#ifndef USR_DATATOP_COMPACT
-#define USR_DATATOP_COMPACT USR_DATATOP
-#endif
+#यदि_अपरिभाषितम् USR_DATATOP_COMPACT
+#परिभाषय USR_DATATOP_COMPACT USR_DATATOP
+#यदि_अन्तः
 
-#ifndef USR_STACKTOP_COMPACT
-#define USR_STACKTOP_COMPACT 0x50000000
-#endif
+#यदि_अपरिभाषितम् USR_STACKTOP_COMPACT
+#परिभाषय USR_STACKTOP_COMPACT 0x50000000
+#यदि_अन्तः
 
-#endif /* CONST_H */
+#यदि_अन्तः /* CONST_H */

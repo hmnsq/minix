@@ -1,25 +1,25 @@
-#ifndef PROFILE_H
-#define PROFILE_H
+#यदि_अपरिभाषितम् PROFILE_H
+#परिभाषय PROFILE_H
 
-#include <minix/profile.h>
+#अन्तर्भाव <minix/profile.h>
 
-#if SPROFILE	/* statistical profiling */
+#यदि SPROFILE	/* statistical profiling */
 
-#include "arch_watchdog.h"
+#अन्तर्भाव "arch_watchdog.h"
 
-#define SAMPLE_BUFFER_SIZE	(64 << 20)
-extern char sprof_sample_buffer[SAMPLE_BUFFER_SIZE];
+#परिभाषय SAMPLE_बफर_आकार	(64 << 20)
+बाह्य वर्ण sprof_sample_बफर[SAMPLE_बफर_आकार];
 
-EXTERN int sprofiling;			/* whether profiling is running */
-EXTERN int sprofiling_type;			/* whether profiling is running */
-EXTERN int sprof_mem_size;		/* available user memory for data */
-EXTERN struct sprof_info_s sprof_info;	/* profiling info for user program */
-EXTERN vir_bytes sprof_data_addr_vir;	/* user address to write data */
+EXTERN पूर्णाङ्क sprofiling;			/* whether profiling is running */
+EXTERN पूर्णाङ्क sprofiling_type;			/* whether profiling is running */
+EXTERN पूर्णाङ्क sprof_mem_आकार;		/* available user memory for data */
+EXTERN संरचना sprof_info_s sprof_info;	/* profiling info for user program */
+EXTERN vir_अष्टकानि sprof_दत्त_addr_vir;	/* user address to write data */
 EXTERN endpoint_t sprof_ep;		/* user process */
 
-void nmi_sprofile_handler(struct nmi_frame * frame);
+शून्य nmi_sprofile_handler(संरचना nmi_frame * frame);
 
-#endif /* SPROFILE */
+#यदि_अन्तः /* SPROFILE */
 
-#endif /* PROFILE_H */
+#यदि_अन्तः /* PROFILE_H */
 

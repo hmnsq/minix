@@ -16,213 +16,213 @@
  *
  */
 
-#include <string.h>
+#अन्तर्भाव <string.h>
 
-#include "kernel/system.h"
+#अन्तर्भाव "kernel/system.h"
 
 
-#if USE_GETINFO
+#यदि USE_GETINFO
 
-#include <minix/u64.h>
-#include <sys/resource.h>
+#अन्तर्भाव <minix/u64.h>
+#अन्तर्भाव <sys/resource.h>
 
 /*===========================================================================*
  *			        update_idle_time			     *
  *===========================================================================*/
-static void update_idle_time(void)
+स्थिर शून्य update_idle_time(शून्य)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	पूर्णाङ्क i;
+	संरचना proc * idl = proc_addr(IDLE);
 
-	idl->p_cycles = make64(0, 0);
+	idl->p_आवृत्तयः = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
-		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
+	प्रति (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+		idl->p_आवृत्तयः += get_cpu_var(i, idle_proc).p_आवृत्तयः;
 	}
 }
 
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_getinfo(संरचना proc * caller, सन्देशः * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
-  size_t length;
-  vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  size_t दीर्घता;
+  vir_अष्टकानि src_vir; 
+  पूर्णाङ्क nr_e, nr, r;
+  पूर्णाङ्क wipe_rnd_bin = -1;
+  संरचना proc *p;
+  संरचना rusage r_usage;
 
   /* Set source address and length based on request type. */
-  switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
-        src_vir = (vir_bytes) &machine;
-        break;
+  विकल्प (m_ptr->m_lsys_krn_sys_getinfo.request) {
+    पक्ष GET_MACHINE: {
+        दीर्घता = परिमाण(संरचना machine);
+        src_vir = (vir_अष्टकानि) &machine;
+        भङ्ग;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
-        src_vir = (vir_bytes) &kinfo;
-        break;
+    पक्ष GET_KINFO: {
+        दीर्घता = परिमाण(संरचना kinfo);
+        src_vir = (vir_अष्टकानि) &kinfo;
+        भङ्ग;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
-        src_vir = (vir_bytes) &kloadinfo;
-        break;
+    पक्ष GET_LOADINFO: {
+        दीर्घता = परिमाण(संरचना loadinfo);
+        src_vir = (vir_अष्टकानि) &kloadinfo;
+        भङ्ग;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
-        src_vir = (vir_bytes) &cpu_info;
-        break;
+    पक्ष GET_CPUINFO: {
+        दीर्घता = परिमाण(cpu_info);
+        src_vir = (vir_अष्टकानि) &cpu_info;
+        भङ्ग;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
-        src_vir = (vir_bytes) &system_hz;
-        break;
+    पक्ष GET_HZ: {
+        दीर्घता = परिमाण(system_hz);
+        src_vir = (vir_अष्टकानि) &system_hz;
+        भङ्ग;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
-        src_vir = (vir_bytes) image;
-        break;
+    पक्ष GET_IMAGE: {
+        दीर्घता = परिमाण(संरचना boot_image) * NR_BOOT_PROCS;
+        src_vir = (vir_अष्टकानि) image;
+        भङ्ग;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
-        src_vir = (vir_bytes) irq_hooks;
-        break;
+    पक्ष GET_IRQHOOKS: {
+        दीर्घता = परिमाण(संरचना irq_hook) * NR_IRQ_HOOKS;
+        src_vir = (vir_अष्टकानि) irq_hooks;
+        भङ्ग;
     }
-    case GET_PROCTAB: {
+    पक्ष GET_PROCTAB: {
 	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
-        src_vir = (vir_bytes) proc;
-        break;
+        दीर्घता = परिमाण(संरचना proc) * (NR_PROCS + NR_TASKS);
+        src_vir = (vir_अष्टकानि) proc;
+        भङ्ग;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
-        src_vir = (vir_bytes) priv;
-        break;
+    पक्ष GET_PRIVTAB: {
+        दीर्घता = परिमाण(संरचना priv) * (NR_SYS_PROCS);
+        src_vir = (vir_अष्टकानि) priv;
+        भङ्ग;
     }
-    case GET_PROC: {
+    पक्ष GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
-        src_vir = (vir_bytes) proc_addr(nr);
-        break;
+	यदि(!isokendpt(nr_e, &nr)) प्रत्यागम EINVAL; /* validate request */
+        दीर्घता = परिमाण(संरचना proc);
+        src_vir = (vir_अष्टकानि) proc_addr(nr);
+        भङ्ग;
     }
-    case GET_PRIV: {
+    पक्ष GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
-        src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        यदि(!isokendpt(nr_e, &nr)) प्रत्यागम EINVAL; /* validate request */
+        दीर्घता = परिमाण(संरचना priv);
+        src_vir = (vir_अष्टकानि) priv_addr(nr_गन्तव्यम्_id(nr));
+        भङ्ग;
     }
-    case GET_REGS: {
+    पक्ष GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        यदि(!isokendpt(nr_e, &nr)) प्रत्यागम EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
-        src_vir = (vir_bytes) &p->p_reg;
-        break;
+        दीर्घता = परिमाण(p->p_reg);
+        src_vir = (vir_अष्टकानि) &p->p_reg;
+        भङ्ग;
     }
-    case GET_WHOAMI: {
-	int len;
+    पक्ष GET_WHOAMI: {
+	पूर्णाङ्क len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(परिमाण(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		परिमाण(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	प्रत्यागम OK;
     }
-    case GET_MONPARAMS: {
-        src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+    पक्ष GET_MONPARAMS: {
+        src_vir = (vir_अष्टकानि) kinfo.param_buf;
+	दीर्घता = परिमाण(kinfo.param_buf);
+        भङ्ग;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    पक्ष GET_RANDOMNESS: {		
+        स्थिर संरचना k_randomness copy;	/* copy to keep counters */
+	पूर्णाङ्क i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
-  		krandom.bin[i].r_size = 0;	/* invalidate random data */
-  		krandom.bin[i].r_next = 0;
+        प्रति (i= 0; i<RANDOM_SOURCES; i++) {
+  		krandom.bin[i].r_आकार = 0;	/* invalidate random data */
+  		krandom.bin[i].r_अग्र = 0;
 	}
-    	length = sizeof(copy);
-    	src_vir = (vir_bytes) &copy;
-    	break;
+    	दीर्घता = परिमाण(copy);
+    	src_vir = (vir_अष्टकानि) &copy;
+    	भङ्ग;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    पक्ष GET_RANDOMNESS_BIN: {		
+	पूर्णाङ्क bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
-		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+	यदि(bin < 0 || bin >= RANDOM_SOURCES) {
+		प्रारूप_लिख("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
+		प्रत्यागम EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	यदि(krandom.bin[bin].r_आकार < RANDOM_ELEMENTS)
+		प्रत्यागम ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
-    	src_vir = (vir_bytes) &krandom.bin[bin];
+    	दीर्घता = परिमाण(krandom.bin[bin]);
+    	src_vir = (vir_अष्टकानि) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	भङ्ग;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
-        src_vir = (vir_bytes) irq_actids;
-        break;
+    पक्ष GET_IRQACTIDS: {
+        दीर्घता = परिमाण(irq_actids);
+        src_vir = (vir_अष्टकानि) irq_actids;
+        भङ्ग;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
+    पक्ष GET_IDLETSC: {
+	संरचना proc * idl;
 	update_idle_time();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
-        src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        दीर्घता = परिमाण(idl->p_आवृत्तयः);
+        src_vir = (vir_अष्टकानि) &idl->p_आवृत्तयः;
+        भङ्ग;
     }
-    case GET_CPUTICKS: {
+    पक्ष GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	अचिह्नित पूर्णाङ्क cpu;
+	cpu = (अचिह्नित पूर्णाङ्क)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	यदि (cpu >= CONFIG_MAX_CPUS)
+		प्रत्यागम EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
-	src_vir = (vir_bytes)ticks;
-	break;
+	दीर्घता = परिमाण(ticks);
+	src_vir = (vir_अष्टकानि)ticks;
+	भङ्ग;
     }
-    default:
-	printf("do_getinfo: invalid request %d\n",
+    स्वभाव:
+	प्रारूप_लिख("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        प्रत्यागम(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
-	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+  यदि (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+	दीर्घता > m_ptr->m_lsys_krn_sys_getinfo.val_len)
+	प्रत्यागम (E2BIG);
 
-  r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
-	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
+  r = दत्त_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
+	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, दीर्घता);
 
-  if(r != OK) return r;
+  यदि(r != OK) प्रत्यागम r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
-		krandom.bin[wipe_rnd_bin].r_size = 0;
-		krandom.bin[wipe_rnd_bin].r_next = 0;
+	यदि(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+		krandom.bin[wipe_rnd_bin].r_आकार = 0;
+		krandom.bin[wipe_rnd_bin].r_अग्र = 0;
 	}
 
-  return(OK);
+  प्रत्यागम(OK);
 }
 
-#endif /* USE_GETINFO */
+#यदि_अन्तः /* USE_GETINFO */
 

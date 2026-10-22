@@ -2,13 +2,13 @@
 
 #define LD_ST_REG(reg)							;\
 ENTRY(ld_##reg)							;\
-	mov	4(%esp), %eax						;\
-	mov	%eax,	%reg						;\
-	ret								;\
+	चालय	4(%esp), %eax						;\
+	चालय	%eax,	%reg						;\
+	प्रत्यागच्छ								;\
 									;\
 ENTRY(st_##reg)							;\
-	mov	%reg,	%eax						;\
-	ret
+	चालय	%reg,	%eax						;\
+	प्रत्यागच्छ
 
 /*
  * void ld_dr0(phys_bytes value)

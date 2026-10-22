@@ -1,5 +1,5 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#यदि_अपरिभाषितम् DEBUG_H
+#परिभाषय DEBUG_H
 
 /* This header file defines all debugging constants and macros, and declares
  * some variables. Certain debugging features redefine standard constants
@@ -7,13 +7,13 @@
  * other kernel headers.
  */
 
-#ifndef __ASSEMBLY__
-#include <minix/debug.h>
-#include "config.h"
-#endif
+#यदि_अपरिभाषितम् __ASSEMBLY__
+#अन्तर्भाव <minix/debug.h>
+#अन्तर्भाव "config.h"
+#यदि_अन्तः
 
 /* Debug info via serial (see ser_debug()) */
-#define DEBUG_SERIAL			1
+#परिभाषय DEBUG_SERIAL			1
 
 /* Enable prints such as
  *  . send/receive failed due to deadlock or dead source or dead destination
@@ -24,70 +24,70 @@
  * Of course the call still fails, but nothing is printed if these warnings
  * are disabled.
  */
-#define DEBUG_ENABLE_IPC_WARNINGS	1
+#परिभाषय DEBUG_ENABLE_IPC_WARNINGS	1
 
 /* Sanity checks. */
-#define DEBUG_SANITYCHECKS		0
+#परिभाषय DEBUG_SANITYCHECKS		0
 
 /* Verbose messages. */
-#define DEBUG_TRACE			0
+#परिभाषय DEBUG_TRACE			0
 
 /* DEBUG_RACE makes every process preemptible, schedules
  * every process on the same priority queue, and randomizes
  * the next process to run, in order to help catch race
  * conditions that could otherwise be masked.
  */
-#define DEBUG_RACE			0
+#परिभाषय DEBUG_RACE			0
 
 /* DEBUG_DUMPIPC dumps all IPC to serial; due to the amount of logging it is 
  * strongly recommended to set "ctty 0" in the boot monitor and run inside a 
  * virtual machine if you enable this; on the hardware it would take forever 
  * just to boot
  */
-#define DEBUG_DUMPIPC			0
+#परिभाषय DEBUG_DUMPIPC			0
 
 /* DEBUG_DUMPIPCF dumps filtered IPC to serial.
  */
-#define DEBUG_DUMPIPCF			0
+#परिभाषय DEBUG_DUMPIPCF			0
 
 /* If defined, restrict DEBUG_DUMPIPC to particular process names */
 /* #define DEBUG_DUMPIPC_NAMES		{ "tty", "pty" } */
 
 /* DEBUG_IPCSTATS collects information on who sends messages to whom. */
-#define DEBUG_IPCSTATS			0
+#परिभाषय DEBUG_IPCSTATS			0
 
-#if !USE_SYSDEBUG
-#undef DEBUG_SERIAL
-#undef DEBUG_ENABLE_IPC_WARNINGS
-#endif
+#यदि !USE_SYSDEBUG
+#अपरिभाषय DEBUG_SERIAL
+#अपरिभाषय DEBUG_ENABLE_IPC_WARNINGS
+#यदि_अन्तः
 
-#if DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
-#define DEBUG_IPC_HOOK			1
-#endif
+#यदि DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
+#परिभाषय DEBUG_IPC_HOOK			1
+#यदि_अन्तः
 
-#if DEBUG_TRACE
+#यदि DEBUG_TRACE
 
-#define VF_SCHEDULING		(1L << 1)
-#define VF_PICKPROC		(1L << 2)
+#परिभाषय VF_SCHEDULING		(1L << 1)
+#परिभाषय VF_PICKPROC		(1L << 2)
 
-#define TRACE(code, statement) if(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
+#परिभाषय TRACE(संहिता, statement) यदि(verboseflags & संहिता) { प्रारूप_लिख("%s:%d: ", __FILE__, __LINE__); statement }
 
-#else
-#define TRACE(code, statement)
-#endif
+#अन्यथा
+#परिभाषय TRACE(संहिता, statement)
+#यदि_अन्तः
 
-#ifdef CONFIG_BOOT_VERBOSE
-#define BOOT_VERBOSE(x)	x
-#else
-#define BOOT_VERBOSE(x)
-#endif
+#यदि_परिभाषितम् CONFIG_BOOT_VERBOSE
+#परिभाषय BOOT_VERBOSE(x)	x
+#अन्यथा
+#परिभाषय BOOT_VERBOSE(x)
+#यदि_अन्तः
 
-#ifdef _SYSTEM
-#define DEBUG_PRINT(params, level) do { \
-	if (verboseboot >= (level)) printf params; } while (0)
-#define DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
-#define DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
-#define DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
-#endif
+#यदि_परिभाषितम् _SYSTEM
+#परिभाषय DEBUG_PRINT(params, level) कुरु { \
+	यदि (verboseboot >= (level)) प्रारूप_लिख params; } यावत् (0)
+#परिभाषय DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
+#परिभाषय DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
+#परिभाषय DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
+#यदि_अन्तः
 
-#endif /* DEBUG_H */
+#यदि_अन्तः /* DEBUG_H */

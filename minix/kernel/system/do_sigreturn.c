@@ -7,41 +7,41 @@
  *
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <machine/cpu.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव <string.h>
+#अन्तर्भाव <machine/cpu.h>
 
-#if USE_SIGRETURN 
+#यदि USE_SIGRETURN 
 
 /*===========================================================================*
  *			      do_sigreturn				     *
  *===========================================================================*/
-int do_sigreturn(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_sigreturn(संरचना proc * caller, सन्देशः * m_ptr)
 {
 /* POSIX style signals require sys_sigreturn to put things in order before 
  * the signalled process can resume execution
  */
-  struct sigcontext sc;
-  register struct proc *rp;
-  int proc_nr, r;
+  संरचना sigcontext sc;
+  पञ्जिका संरचना proc *rp;
+  पूर्णाङ्क proc_nr, r;
 
-  if (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) return EINVAL;
-  if (iskerneln(proc_nr)) return EPERM;
+  यदि (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) प्रत्यागम EINVAL;
+  यदि (iskerneln(proc_nr)) प्रत्यागम EPERM;
   rp = proc_addr(proc_nr);
 
   /* Copy in the sigcontext structure. */
-  if ((r = data_copy(m_ptr->m_sigcalls.endpt,
-		 (vir_bytes)m_ptr->m_sigcalls.sigctx, KERNEL,
-		 (vir_bytes)&sc, sizeof(struct sigcontext))) != OK)
-	return r;
+  यदि ((r = दत्त_copy(m_ptr->m_sigcalls.endpt,
+		 (vir_अष्टकानि)m_ptr->m_sigcalls.sigctx, KERNEL,
+		 (vir_अष्टकानि)&sc, परिमाण(संरचना sigcontext))) != OK)
+	प्रत्यागम r;
 
-#if defined(__i386__)
+#यदि defined(__i386__)
   /* Restore user bits of psw from sc, maintain system bits from proc. */
   sc.sc_eflags  =  (sc.sc_eflags & X86_FLAGS_USER) |
                 (rp->p_reg.psw & ~X86_FLAGS_USER);
-#endif
+#यदि_अन्तः
 
-#if defined(__i386__)
+#यदि defined(__i386__)
   /* Write back registers we allow to be restored, i.e.
    * not the segment ones.
    */
@@ -55,9 +55,9 @@ int do_sigreturn(struct proc * caller, message * m_ptr)
   rp->p_reg.pc = sc.sc_eip;
   rp->p_reg.psw = sc.sc_eflags;
   rp->p_reg.sp = sc.sc_esp;
-#endif
+#यदि_अन्तः
 
-#if defined(__arm__)
+#यदि defined(__arm__)
   rp->p_reg.psr = sc.sc_spsr;
   rp->p_reg.retreg = sc.sc_r0;
   rp->p_reg.r1 = sc.sc_r1;
@@ -75,24 +75,24 @@ int do_sigreturn(struct proc * caller, message * m_ptr)
   rp->p_reg.sp = sc.sc_usr_sp;
   rp->p_reg.lr = sc.sc_usr_lr;
   rp->p_reg.pc = sc.sc_pc;
-#endif
+#यदि_अन्तः
 
   /* Restore the registers. */
   arch_proc_setcontext(rp, &rp->p_reg, 1, sc.trap_style);
 
-  if(sc.sc_magic != SC_MAGIC) { printf("kernel sigreturn: corrupt signal context\n"); }
+  यदि(sc.sc_magic != SC_MAGIC) { प्रारूप_लिख("kernel sigreturn: corrupt signal context\n"); }
 
-#if defined(__i386__)
-  if (sc.sc_flags & MF_FPU_INITIALIZED)
+#यदि defined(__i386__)
+  यदि (sc.sc_flags & MF_FPU_INITIALIZED)
   {
-	memcpy(rp->p_seg.fpu_state, &sc.sc_fpu_state, FPU_XFP_SIZE);
+	स्मृतिं_प्रतिलिख(rp->p_seg.fpu_state, &sc.sc_fpu_state, FPU_XFP_आकार);
 	rp->p_misc_flags |=  MF_FPU_INITIALIZED; /* Restore math usage flag. */
 	/* force reloading FPU */
 	release_fpu(rp);
   }
-#endif
+#यदि_अन्तः
 
-  return OK;
+  प्रत्यागम OK;
 }
-#endif /* USE_SIGRETURN */
+#यदि_अन्तः /* USE_SIGRETURN */
 

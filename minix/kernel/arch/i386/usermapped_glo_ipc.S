@@ -1,13 +1,13 @@
 #include <minix/ipcconst.h>
 #include <machine/asm.h>
 
-/* Redefine _ENTRY to put the following function in the section
+/* Redefine _ENTRY to put the following function in the खण्डः
  * ".usermapped_glo". */
 #undef _ENTRY
 #define _ENTRY(x) \
 	_ALIGN_TEXT; .globl x; .type x,@function; x:
 
-.section .usermapped_glo, "wax", @progbits
+.खण्डः .usermapped_glo, "wax", @progbits
 
 /**========================================================================* */
 /*                           IPC assembly routines			  * */
@@ -16,66 +16,66 @@
 
 #define IPCFUNC(name,SETARGS,VEC,POSTTRAP)			 \
 ENTRY(usermapped_ ## name ## _softint)					;\
-	push	%ebp							;\
+	निक्षिप	%ebp							;\
 	movl	%esp, %ebp						;\
-	push	%ebx							;\
+	निक्षिप	%ebx							;\
 	SETARGS								;\
 	int	$VEC	/* trap to the kernel */			;\
-	mov	%ebx, %ecx	/* save %ebx */				;\
+	चालय	%ebx, %ecx	/* save %ebx */				;\
 	POSTTRAP							;\
-	pop	%ebx							;\
-	pop	%ebp							;\
-	ret								;\
+	उद्धर	%ebx							;\
+	उद्धर	%ebp							;\
+	प्रत्यागच्छ								;\
 ENTRY(usermapped_ ## name ## _sysenter)					;\
-	push	%ebp							;\
+	निक्षिप	%ebp							;\
 	movl	%esp, %ebp						;\
-	push	%ebp							;\
-	push	%edx							;\
-	push	%ebx							;\
-	push	%esi							;\
-	push	%edi							;\
+	निक्षिप	%ebp							;\
+	निक्षिप	%edx							;\
+	निक्षिप	%ebx							;\
+	निक्षिप	%esi							;\
+	निक्षिप	%edi							;\
 	movl	%esp, %esi	/* kernel uses %esi for restored %esp */;\
 	movl	$0f, %edx	/* kernel uses %edx for restored %eip */;\
 	movl	$VEC, %edi	/* %edi to distinguish ipc/kerncall */	;\
 	/* !!! There is a dependency of proc_stacktrace()		;\
 	 * on this stack layout; it needs to find %ebp on it.		;\
 	 */								;\
-	SETARGS			/* call-specific register setup */	;\
+	SETARGS			/* आह्वान-specific register setup */	;\
 	sysenter		/* disappear into kernel */		;\
 0:									;\
-	mov	%ebx, %ecx	/* return w. state mangled; save %ebx */;\
-	pop	%edi							;\
-	pop	%esi							;\
-	pop	%ebx							;\
-	pop	%edx							;\
-	pop	%ebp							;\
+	चालय	%ebx, %ecx	/* return w. state mangled; save %ebx */;\
+	उद्धर	%edi							;\
+	उद्धर	%esi							;\
+	उद्धर	%ebx							;\
+	उद्धर	%edx							;\
+	उद्धर	%ebp							;\
 	POSTTRAP							;\
-	pop	%ebp							;\
-	ret								;\
+	उद्धर	%ebp							;\
+	प्रत्यागच्छ								;\
 ENTRY(usermapped_ ## name ## _syscall)					;\
-	push	%ebp							;\
+	निक्षिप	%ebp							;\
 	movl	%esp, %ebp						;\
-	push	%ebp							;\
-	push	%edx							;\
-	push	%ebx							;\
-	push	%esi							;\
-	push	%edi							;\
+	निक्षिप	%ebp							;\
+	निक्षिप	%edx							;\
+	निक्षिप	%ebx							;\
+	निक्षिप	%esi							;\
+	निक्षिप	%edi							;\
 	movl	$VEC, %edi	/* %edi to distinguish ipc/kerncall */	;\
 	/* !!! There is a dependency of proc_stacktrace()		;\
 	 * on this stack layout; it needs to find %ebp on it.		;\
 	 */								;\
-	SETARGS			/* call-specific register setup */	;\
+	SETARGS			/* आह्वान-specific register setup */	;\
 	movl	%ecx, %edx	/* %ecx is clobbered by SYSCALL */	;\
 	syscall			/* disappear into kernel */		;\
-	mov	%ebx, %ecx	/* return w. state mangled; save %ebx */;\
-	pop	%edi							;\
-	pop	%esi							;\
-	pop	%ebx							;\
-	pop	%edx							;\
-	pop	%ebp							;\
+	चालय	%ebx, %ecx	/* return w. state mangled; save %ebx */;\
+	उद्धर	%edi							;\
+	उद्धर	%esi							;\
+	उद्धर	%ebx							;\
+	उद्धर	%edx							;\
+	उद्धर	%ebp							;\
 	POSTTRAP							;\
-	pop	%ebp							;\
-	ret
+	उद्धर	%ebp							;\
+	प्रत्यागच्छ
 
 #define IPCARGS(opcode)							\
 	movl	8(%ebp), %eax	/* eax = dest-src */			;\
@@ -88,12 +88,12 @@ ENTRY(usermapped_ ## name ## _syscall)					;\
 	movl	$SENDA, %ecx						;\
 
 #define GETSTATUS							\
-	push	%eax							;\
+	निक्षिप	%eax							;\
 	movl    16(%ebp), %eax      /* ecx = saved %ebx */		;\
 	movl	%ecx,  (%eax)						;\
-	pop	%eax
+	उद्धर	%eax
 
-#define KERNARGS mov 8(%ebp), %eax
+#define KERNARGS चालय 8(%ebp), %eax
 
 IPCFUNC(send,IPCARGS(SEND),IPCVEC_UM,)
 IPCFUNC(receive,IPCARGS(RECEIVE),IPCVEC_UM,GETSTATUS)

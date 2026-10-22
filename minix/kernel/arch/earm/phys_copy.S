@@ -16,16 +16,16 @@
  *    notice, this list of conditions and the following disclaimer in the
  *    documentation and/or other materials provided with the distribution.
  *
- * THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
- * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
- * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * एतत् SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. च CONTRIBUTORS
+ * ``AS IS'' च ANY EXPRESS वा IMPLIED WARRANTIES, INCLUDING, BUT न LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY च FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  अन्तः NO EVENT SHALL THE FOUNDATION वा CONTRIBUTORS
+ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, वा
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT न LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS वा SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED च ON ANY THEORY OF LIABILITY, WHETHER अन्तः
+ * CONTRACT, STRICT LIABILITY, वा TORT (INCLUDING NEGLIGENCE वा OTHERWISE)
+ * ARISING अन्तः ANY WAY OUT OF THE USE OF एतत् SOFTWARE, EVEN यदि ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -84,9 +84,9 @@ ENTRY(memcpy)
 #endif
 	/* save leaf functions having to store this away */
 #if defined(__minix)
-	push	{r0, r4, r5, lr}	/* memcpy() returns dest addr */
+	निक्षिप	{r0, r4, r5, lr}	/* memcpy() returns dest addr */
 #else
-	push	{r0, lr}		/* memcpy() returns dest addr */
+	निक्षिप	{r0, lr}		/* memcpy() returns dest addr */
 #endif
 
 	subs	r2, r2, #4
@@ -103,7 +103,7 @@ ENTRY(memcpy)
 	subs	r2, r2, #0x14
 	blt	.Lmemcpy_l32		/* less than 32 bytes (12 from above) */
 #if !defined(__minix)
-	push	{r4}		/* borrow r4 */
+	निक्षिप	{r4}		/* borrow r4 */
 #endif
 
 	/* blat 32 bytes at a time */
@@ -121,7 +121,7 @@ ENTRY(memcpy)
 	stmiage	r0!, {r3, r4, r12, lr}
 	subge	r2, r2, #0x10
 #if !defined(__minix)
-	pop	{r4}		/* return r4 */
+	उद्धर	{r4}		/* return r4 */
 #endif
 
 .Lmemcpy_l32:
@@ -160,7 +160,7 @@ ENTRY(memcpy)
 #endif
 #endif
 	/* copy the crud byte at a time */
-	cmp	r2, #2
+	तुलय	r2, #2
 	ldrb	r3, [r1], #1
 	strb	r3, [r0], #1
 	ldrbge	r3, [r1], #1
@@ -168,17 +168,17 @@ ENTRY(memcpy)
 	ldrbgt	r3, [r1], #1
 	strbgt	r3, [r0], #1
 #if defined(__minix)
-	pop	{r0, r4, r5}
-	mov	r0, #0
-	pop	{pc}
+	उद्धर	{r0, r4, r5}
+	चालय	r0, #0
+	उद्धर	{pc}
 #else
-	pop	{r0, pc}
+	उद्धर	{r0, pc}
 #endif
 
 	/* erg - unaligned destination */
 .Lmemcpy_destul:
 	rsb	r12, r12, #4
-	cmp	r12, #2
+	तुलय	r12, #2
 
 	/* align destination with byte copies */
 	ldrb	r3, [r1], #1
@@ -198,54 +198,54 @@ ENTRY(memcpy)
 .Lmemcpy_srcul:
 	bic	r1, r1, #3
 	ldr	lr, [r1], #4
-	cmp	r12, #2
+	तुलय	r12, #2
 	bgt	.Lmemcpy_srcul3
 	beq	.Lmemcpy_srcul2
-	cmp	r2, #0x0c
+	तुलय	r2, #0x0c
 	blt	.Lmemcpy_srcul1loop4
-	sub	r2, r2, #0x0c
+	वियोजय	r2, r2, #0x0c
 #if !defined(__minix)
-	push	{r4, r5}
+	निक्षिप	{r4, r5}
 #endif
 
 .Lmemcpy_srcul1loop16:
 #ifdef __ARMEB__
-	mov	r3, lr, lsl #8
+	चालय	r3, lr, lsl #8
 #else
-	mov	r3, lr, lsr #8
+	चालय	r3, lr, lsr #8
 #endif
 	ldmia	r1!, {r4, r5, r12, lr}
 #ifdef __ARMEB__
 	orr	r3, r3, r4, lsr #24
-	mov	r4, r4, lsl #8
+	चालय	r4, r4, lsl #8
 	orr	r4, r4, r5, lsr #24
-	mov	r5, r5, lsl #8
+	चालय	r5, r5, lsl #8
 	orr	r5, r5, r12, lsr #24
-	mov	r12, r12, lsl #8
+	चालय	r12, r12, lsl #8
 	orr	r12, r12, lr, lsr #24
 #else
 	orr	r3, r3, r4, lsl #24
-	mov	r4, r4, lsr #8
+	चालय	r4, r4, lsr #8
 	orr	r4, r4, r5, lsl #24
-	mov	r5, r5, lsr #8
+	चालय	r5, r5, lsr #8
 	orr	r5, r5, r12, lsl #24
-	mov	r12, r12, lsr #8
+	चालय	r12, r12, lsr #8
 	orr	r12, r12, lr, lsl #24
 #endif
 	stmia	r0!, {r3-r5, r12}
 	subs	r2, r2, #0x10
 	bge	.Lmemcpy_srcul1loop16
 #if !defined(__minix)
-	pop	{r4, r5}
+	उद्धर	{r4, r5}
 #endif
 	adds	r2, r2, #0x0c
 	blt	.Lmemcpy_srcul1l4
 
 .Lmemcpy_srcul1loop4:
 #ifdef __ARMEB__
-	mov	r12, lr, lsl #8
+	चालय	r12, lr, lsl #8
 #else
-	mov	r12, lr, lsr #8
+	चालय	r12, lr, lsr #8
 #endif
 	ldr	lr, [r1], #4
 #ifdef __ARMEB__
@@ -258,55 +258,55 @@ ENTRY(memcpy)
 	bge	.Lmemcpy_srcul1loop4
 
 .Lmemcpy_srcul1l4:
-	sub	r1, r1, #3
+	वियोजय	r1, r1, #3
 	b	.Lmemcpy_l4
 
 .Lmemcpy_srcul2:
-	cmp	r2, #0x0c
+	तुलय	r2, #0x0c
 	blt	.Lmemcpy_srcul2loop4
-	sub	r2, r2, #0x0c
+	वियोजय	r2, r2, #0x0c
 #if !defined(__minix)
-	push	{r4, r5}
+	निक्षिप	{r4, r5}
 #endif
 
 .Lmemcpy_srcul2loop16:
 #ifdef __ARMEB__
-	mov	r3, lr, lsl #16
+	चालय	r3, lr, lsl #16
 #else
-	mov	r3, lr, lsr #16
+	चालय	r3, lr, lsr #16
 #endif
 	ldmia	r1!, {r4, r5, r12, lr}
 #ifdef __ARMEB__
 	orr	r3, r3, r4, lsr #16
-	mov	r4, r4, lsl #16
+	चालय	r4, r4, lsl #16
 	orr	r4, r4, r5, lsr #16
-	mov	r5, r5, lsl #16
+	चालय	r5, r5, lsl #16
 	orr	r5, r5, r12, lsr #16
-	mov	r12, r12, lsl #16
+	चालय	r12, r12, lsl #16
 	orr	r12, r12, lr, lsr #16
 #else
 	orr	r3, r3, r4, lsl #16
-	mov	r4, r4, lsr #16
+	चालय	r4, r4, lsr #16
 	orr	r4, r4, r5, lsl #16
-	mov	r5, r5, lsr #16
+	चालय	r5, r5, lsr #16
 	orr	r5, r5, r12, lsl #16
-	mov	r12, r12, lsr #16
+	चालय	r12, r12, lsr #16
 	orr	r12, r12, lr, lsl #16
 #endif
 	stmia	r0!, {r3-r5, r12}
 	subs	r2, r2, #0x10
 	bge	.Lmemcpy_srcul2loop16
 #if !defined(__minix)
-	pop	{r4, r5}
+	उद्धर	{r4, r5}
 #endif
 	adds	r2, r2, #0x0c
 	blt	.Lmemcpy_srcul2l4
 
 .Lmemcpy_srcul2loop4:
 #ifdef __ARMEB__
-	mov	r12, lr, lsl #16
+	चालय	r12, lr, lsl #16
 #else
-	mov	r12, lr, lsr #16
+	चालय	r12, lr, lsr #16
 #endif
 	ldr	lr, [r1], #4
 #ifdef __ARMEB__
@@ -319,55 +319,55 @@ ENTRY(memcpy)
 	bge	.Lmemcpy_srcul2loop4
 
 .Lmemcpy_srcul2l4:
-	sub	r1, r1, #2
+	वियोजय	r1, r1, #2
 	b	.Lmemcpy_l4
 
 .Lmemcpy_srcul3:
-	cmp	r2, #0x0c
+	तुलय	r2, #0x0c
 	blt	.Lmemcpy_srcul3loop4
-	sub	r2, r2, #0x0c
+	वियोजय	r2, r2, #0x0c
 #if !defined(__minix)
-	push	{r4, r5}
+	निक्षिप	{r4, r5}
 #endif
 
 .Lmemcpy_srcul3loop16:
 #ifdef __ARMEB__
-	mov	r3, lr, lsl #24
+	चालय	r3, lr, lsl #24
 #else
-	mov	r3, lr, lsr #24
+	चालय	r3, lr, lsr #24
 #endif
 	ldmia	r1!, {r4, r5, r12, lr}
 #ifdef __ARMEB__
 	orr	r3, r3, r4, lsr #8
-	mov	r4, r4, lsl #24
+	चालय	r4, r4, lsl #24
 	orr	r4, r4, r5, lsr #8
-	mov	r5, r5, lsl #24
+	चालय	r5, r5, lsl #24
 	orr	r5, r5, r12, lsr #8
-	mov	r12, r12, lsl #24
+	चालय	r12, r12, lsl #24
 	orr	r12, r12, lr, lsr #8
 #else
 	orr	r3, r3, r4, lsl #8
-	mov	r4, r4, lsr #24
+	चालय	r4, r4, lsr #24
 	orr	r4, r4, r5, lsl #8
-	mov	r5, r5, lsr #24
+	चालय	r5, r5, lsr #24
 	orr	r5, r5, r12, lsl #8
-	mov	r12, r12, lsr #24
+	चालय	r12, r12, lsr #24
 	orr	r12, r12, lr, lsl #8
 #endif
 	stmia	r0!, {r3-r5, r12}
 	subs	r2, r2, #0x10
 	bge	.Lmemcpy_srcul3loop16
 #if !defined(__minix)
-	pop	{r4, r5}
+	उद्धर	{r4, r5}
 #endif
 	adds	r2, r2, #0x0c
 	blt	.Lmemcpy_srcul3l4
 
 .Lmemcpy_srcul3loop4:
 #ifdef __ARMEB__
-	mov	r12, lr, lsl #24
+	चालय	r12, lr, lsl #24
 #else
-	mov	r12, lr, lsr #24
+	चालय	r12, lr, lsr #24
 #endif
 	ldr	lr, [r1], #4
 #ifdef __ARMEB__
@@ -380,18 +380,18 @@ ENTRY(memcpy)
 	bge	.Lmemcpy_srcul3loop4
 
 .Lmemcpy_srcul3l4:
-	sub	r1, r1, #1
+	वियोजय	r1, r1, #1
 	b	.Lmemcpy_l4
 
 #if defined(__minix)
 LABEL(phys_copy_fault)		/* kernel can send us here */
-	pop	{r0, r4, r5}
-	pop	{pc}
+	उद्धर	{r0, r4, r5}
+	उद्धर	{pc}
 
 LABEL(phys_copy_fault_in_kernel)	/* kernel can send us here */
-	pop	 {r0, r4, r5}
+	उद्धर	 {r0, r4, r5}
 	mrc	p15, 0, r0, c6, c0, 0	/* Read DFAR */
-	pop	{pc}
+	उद्धर	{pc}
 #else
-END(memcpy)
+अन्त(memcpy)
 #endif
