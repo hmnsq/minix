@@ -27,7 +27,7 @@
 #include "acpi.h"
 #endif
 
-static int osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
+static ចំនួនគត់ osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
 
 /* set MP and NE flags to handle FPU exceptions in native mode. */
 #define CR0_MP_NE	0x0022
@@ -38,13 +38,13 @@ static int osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
 
 void * k_stacks;
 
-static void ser_debug(int c);
+static void ser_debug(ចំនួនគត់ c);
 static void ser_dump_vfs(void);
 
 #ifdef CONFIG_SMP
 static void ser_dump_proc_cpu(void);
 #endif
-#if !CONFIG_OXPCIE
+#ប្រសិនបើ !CONFIG_OXPCIE
 static void ser_init(void);
 #endif
 
@@ -56,63 +56,63 @@ void fpu_init(void)
 	sw = fnstsw();
 	fnstcw(&cw);
 
-	if((sw & 0xff) == 0 &&
+	ប្រសិនបើ((sw & 0xff) == 0 &&
 	   (cw & 0x103f) == 0x3f) {
 		/* We have some sort of FPU, but don't check exact model.
 		 * Set CR0_NE and CR0_MP to handle fpu exceptions
 		 * in native mode. */
 		write_cr0(read_cr0() | CR0_MP_NE);
 		get_cpulocal_var(fpu_presence) = 1;
-		if(_cpufeature(_CPUF_I386_FXSR)) {
+		ប្រសិនបើ(_cpufeature(_CPUF_I386_FXSR)) {
 			u32_t cr4 = read_cr4() | CR4_OSFXSR; /* Enable FXSR. */
 
 			/* OSXMMEXCPT if supported
 			 * FXSR feature can be available without SSE
 			 */
-			if(_cpufeature(_CPUF_I386_SSE))
+			ប្រសិនបើ(_cpufeature(_CPUF_I386_SSE))
 				cr4 |= CR4_OSXMMEXCPT; 
 
 			write_cr4(cr4);
 			osfxsr_feature = 1;
-		} else {
+		} បើមិនដូច្នេះ {
 			osfxsr_feature = 0;
 		}
-	} else {
+	} បើមិនដូច្នេះ {
 		/* No FPU presents. */
 		get_cpulocal_var(fpu_presence) = 0;
                 osfxsr_feature = 0;
-                return;
+                ត្រឡប់;
         }
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+void save_local_fpu(sa_nracanaa proc *pr, ចំនួនគត់ retain)
 {
-	char *state = pr->p_seg.fpu_state;
+	var_na *state = pr->p_seg.fpu_state;
 
 	/* Save process FPU context. If the 'retain' flag is set, keep the FPU
 	 * state as is. If the flag is not set, the state is undefined upon
 	 * return, and the caller is responsible for reloading a proper state.
 	 */
 
-	if(!is_fpu())
-		return;
+	ប្រសិនបើ(!is_fpu())
+		ត្រឡប់;
 
 	assert(state);
 
-	if(osfxsr_feature) {
+	ប្រសិនបើ(osfxsr_feature) {
 		fxsave(state);
-	} else {
+	} បើមិនដូច្នេះ {
 		fnsave(state);
-		if (retain)
+		ប្រសិនបើ (retain)
 			(void) frstor(state);
 	}
 }
 
-void save_fpu(struct proc *pr)
+void save_fpu(sa_nracanaa proc *pr)
 {
 #ifdef CONFIG_SMP
-	if (cpuid != pr->p_cpu) {
-		int stopped;
+	ប្រសិនបើ (cpuid != pr->p_cpu) {
+		ចំនួនគត់ stopped;
 
 		/* remember if the process was already stopped */
 		stopped = RTS_ISSET(pr, RTS_PROC_STOP);
@@ -125,14 +125,14 @@ void save_fpu(struct proc *pr)
 		 * process is kept block by the fact that the kernel cannot run
 		 * on its cpu
 		 */
-		if (!stopped)
+		ប្រសិនបើ (!stopped)
 			RTS_UNSET(pr, RTS_PROC_STOP);
 
-		return;
+		ត្រឡប់;
 	}
 #endif
 
-	if (get_cpulocal_var(fpu_owner) == pr) {
+	ប្រសិនបើ (get_cpulocal_var(fpu_owner) == pr) {
 		disable_fpu_exception();
 		save_local_fpu(pr, TRUE /*retain*/);
 	}
@@ -141,16 +141,16 @@ void save_fpu(struct proc *pr)
 /* reserve a chunk of memory for fpu state; every one has to
  * be FPUALIGN-aligned.
  */
-static char fpu_state[NR_PROCS][FPU_XFP_SIZE] __aligned(FPUALIGN);
+static var_na fpu_state[NR_PROCS][FPU_XFP_SIZE] __aligned(FPUALIGN);
 
-void arch_proc_reset(struct proc *pr)
+void arch_proc_reset(sa_nracanaa proc *pr)
 {
-	char *v = NULL;
-	struct stackframe_s reg;
+	var_na *v = NULL;
+	sa_nracanaa stackframe_s reg;
 
 	assert(pr->p_nr < NR_PROCS);
 
-	if(pr->p_nr >= 0) {
+	ប្រសិនបើ(pr->p_nr >= 0) {
 		v = fpu_state[pr->p_nr];
 		/* verify alignment */
 		assert(!((vir_bytes)v % FPUALIGN));
@@ -159,10 +159,10 @@ void arch_proc_reset(struct proc *pr)
 	}
 
 	/* Clear process state. */
-        memset(&reg, 0, sizeof(pr->p_reg));
-        if(iskerneln(pr->p_nr))
+        memset(&reg, 0, parimaa_na(pr->p_reg));
+        ប្រសិនបើ(iskerneln(pr->p_nr))
         	reg.psw = INIT_TASK_PSW;
-        else
+        បើមិនដូច្នេះ
         	reg.psw = INIT_PSW;
 
 	pr->p_seg.fpu_state = v;
@@ -181,32 +181,32 @@ void arch_proc_reset(struct proc *pr)
 	arch_proc_setcontext(pr, &reg, 0, KTS_FULLCONTEXT);
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+void arch_set_secondary_ipc_return(sa_nracanaa proc *p, u32_t val)
 {
 	p->p_reg.bx = val;
 }
 
-int restore_fpu(struct proc *pr)
+ចំនួនគត់ restore_fpu(sa_nracanaa proc *pr)
 {
-	int failed;
-	char *state = pr->p_seg.fpu_state;
+	ចំនួនគត់ failed;
+	var_na *state = pr->p_seg.fpu_state;
 
 	assert(state);
 
-	if(!proc_used_fpu(pr)) {
+	ប្រសិនបើ(!proc_used_fpu(pr)) {
 		fninit();
 		pr->p_misc_flags |= MF_FPU_INITIALIZED;
-	} else {
-		if(osfxsr_feature) {
+	} បើមិនដូច្នេះ {
+		ប្រសិនបើ(osfxsr_feature) {
 			failed = fxrstor(state);
-		} else {
+		} បើមិនដូច្នេះ {
 			failed = frstor(state);
 		}
 
-		if (failed) return EINVAL;
+		ប្រសិនបើ (failed) ត្រឡប់ EINVAL;
 	}
 
-	return OK;
+	ត្រឡប់ OK;
 }
 
 void cpu_identify(void)
@@ -217,26 +217,26 @@ void cpu_identify(void)
 	eax = 0;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
-	if (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
+	ប្រសិនបើ (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
 			edx == INTEL_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_INTEL;
-	} else if (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
+	} បើមិនដូច្នេះ ប្រសិនបើ (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
 			edx == AMD_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_AMD;
-	} else
+	} បើមិនដូច្នេះ
 		cpu_info[cpu].vendor = CPU_VENDOR_UNKNOWN;
 
-	if (eax == 0) 
-		return;
+	ប្រសិនបើ (eax == 0) 
+		ត្រឡប់;
 
 	eax = 1;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
 	cpu_info[cpu].family = (eax >> 8) & 0xf;
-	if (cpu_info[cpu].family == 0xf)
+	ប្រសិនបើ (cpu_info[cpu].family == 0xf)
 		cpu_info[cpu].family += (eax >> 20) & 0xff;
 	cpu_info[cpu].model = (eax >> 4) & 0xf;
-	if (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
+	ប្រសិនបើ (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
 		cpu_info[cpu].model += ((eax >> 16) & 0xf) << 4 ;
 	cpu_info[cpu].stepping = eax & 0xf;
 	cpu_info[cpu].flags[0] = ecx;
@@ -256,7 +256,7 @@ void arch_init(void)
 	tss_init(0, get_k_stack_top(0));
 #endif
 
-#if !CONFIG_OXPCIE
+#ប្រសិនបើ !CONFIG_OXPCIE
 	ser_init();
 #endif
 
@@ -264,11 +264,11 @@ void arch_init(void)
 	acpi_init();
 #endif
 
-#if defined(USE_APIC) && !defined(CONFIG_SMP)
-	if (config_no_apic) {
+#ប្រសិនបើ defined(USE_APIC) && !defined(CONFIG_SMP)
+	ប្រសិនបើ (config_no_apic) {
 		DEBUGBASIC(("APIC disabled, using legacy PIC\n"));
 	}
-	else if (!apic_single_cpu_init()) {
+	បើមិនដូច្នេះ ប្រសិនបើ (!apic_single_cpu_init()) {
 		DEBUGBASIC(("APIC not present, using legacy PIC\n"));
 	}
 #endif
@@ -285,33 +285,33 @@ void do_ser_debug(void)
 {
 	u8_t c, lsr;
 
-#if CONFIG_OXPCIE
+#ប្រសិនបើ CONFIG_OXPCIE
 	{
-		int oxin;
-		if((oxin = oxpcie_in()) >= 0)
+		ចំនួនគត់ oxin;
+		ប្រសិនបើ((oxin = oxpcie_in()) >= 0)
 		ser_debug(oxin);
 	}
 #endif
 
 	lsr= inb(COM1_LSR);
-	if (!(lsr & LSR_DR))
-		return;
+	ប្រសិនបើ (!(lsr & LSR_DR))
+		ត្រឡប់;
 	c = inb(COM1_RBR);
 	ser_debug(c);
 }
 
 static void ser_dump_queue_cpu(unsigned cpu)
 {
-	int q;
-	struct proc ** rdy_head;
+	ចំនួនគត់ q;
+	sa_nracanaa proc ** rdy_head;
 	
 	rdy_head = get_cpu_var(cpu, run_q_head);
 
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		struct proc *p;
-		if(rdy_head[q])	 {
+	សម្រាប់(q = 0; q < NR_SCHED_QUEUES; q++) {
+		sa_nracanaa proc *p;
+		ប្រសិនបើ(rdy_head[q])	 {
 			printf("%2d: ", q);
-			for(p = rdy_head[q]; p; p = p->p_nextready) {
+			សម្រាប់(p = rdy_head[q]; p; p = p->p_nextready) {
 				printf("%s / %d  ", p->p_name, p->p_endpoint);
 			}
 			printf("\n");
@@ -325,11 +325,11 @@ static void ser_dump_queues(void)
 	unsigned cpu;
 
 	printf("--- run queues ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	សម្រាប់ (cpu = 0; cpu < ncpus; cpu++) {
 		printf("CPU %d :\n", cpu);
 		ser_dump_queue_cpu(cpu);
 	}
-#else
+#បើមិនដូច្នេះ
 	ser_dump_queue_cpu(0);
 #endif
 }
@@ -340,7 +340,7 @@ static void dump_bkl_usage(void)
 	unsigned cpu;
 
 	printf("--- BKL usage ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	សម្រាប់ (cpu = 0; cpu < ncpus; cpu++) {
 		printf("cpu %3d kernel ticks 0x%x%08x bkl ticks 0x%x%08x succ %d tries %d\n", cpu,
 				ex64hi(kernel_ticks[cpu]),
 				ex64lo(kernel_ticks[cpu]),
@@ -352,69 +352,69 @@ static void dump_bkl_usage(void)
 
 static void reset_bkl_usage(void)
 {
-	memset(kernel_ticks, 0, sizeof(kernel_ticks));
-	memset(bkl_ticks, 0, sizeof(bkl_ticks));
-	memset(bkl_tries, 0, sizeof(bkl_tries));
-	memset(bkl_succ, 0, sizeof(bkl_succ));
+	memset(kernel_ticks, 0, parimaa_na(kernel_ticks));
+	memset(bkl_ticks, 0, parimaa_na(bkl_ticks));
+	memset(bkl_tries, 0, parimaa_na(bkl_tries));
+	memset(bkl_succ, 0, parimaa_na(bkl_succ));
 }
 #endif
 
-static void ser_debug(const int c)
+static void ser_debug(const ចំនួនគត់ c)
 {
 	serial_debug_active = 1;
 
 	switch(c)
 	{
-	case 'Q':
+	pak_sa 'Q':
 		minix_shutdown(0);
 		NOT_REACHABLE;
 #ifdef CONFIG_SMP
-	case 'B':
+	pak_sa 'B':
 		dump_bkl_usage();
-		break;
-	case 'b':
+		bha_nga;
+	pak_sa 'b':
 		reset_bkl_usage();
-		break;
+		bha_nga;
 #endif
-	case '1':
+	pak_sa '1':
 		ser_dump_proc();
-		break;
-	case '2':
+		bha_nga;
+	pak_sa '2':
 		ser_dump_queues();
-		break;
+		bha_nga;
 #ifdef CONFIG_SMP
-	case '4':
+	pak_sa '4':
 		ser_dump_proc_cpu();
-		break;
+		bha_nga;
 #endif
-	case '5':
+	pak_sa '5':
 		ser_dump_vfs();
-		break;
-#if DEBUG_TRACE
+		bha_nga;
+#ប្រសិនបើ DEBUG_TRACE
 #define TOGGLECASE(ch, flag)				\
-	case ch: {					\
-		if(verboseflags & flag)	{		\
+	pak_sa ch: {					\
+		ប្រសិនបើ(verboseflags & flag)	{		\
 			verboseflags &= ~flag;		\
 			printf("%s disabled\n", #flag);	\
-		} else {				\
+		} បើមិនដូច្នេះ {				\
 			verboseflags |= flag;		\
 			printf("%s enabled\n", #flag);	\
 		}					\
-		break;					\
+		bha_nga;					\
 		}
 	TOGGLECASE('8', VF_SCHEDULING)
 	TOGGLECASE('9', VF_PICKPROC)
 #endif
 #ifdef USE_APIC
-	case 'I':
+	pak_sa 'I':
 		dump_apic_irq_state();
-		break;
+		bha_nga;
 #endif
 	}
 	serial_debug_active = 0;
 }
 
-#if DEBUG_SERIAL
+#ប្រសិនបើ DEBUG_SERIAL
 
 static void ser_dump_vfs(void)
 {
@@ -427,13 +427,13 @@ static void ser_dump_vfs(void)
 #ifdef CONFIG_SMP
 static void ser_dump_proc_cpu(void)
 {
-	struct proc *pp;
+	sa_nracanaa proc *pp;
 	unsigned cpu;
 
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	សម្រាប់ (cpu = 0; cpu < ncpus; cpu++) {
 		printf("CPU %d processes : \n", cpu);
-		for (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
-			if (isemptyp(pp) || pp->p_cpu != cpu)
+		សម្រាប់ (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
+			ប្រសិនបើ (isemptyp(pp) || pp->p_cpu != cpu)
 				continue;
 			print_proc(pp);
 		}
@@ -443,11 +443,11 @@ static void ser_dump_proc_cpu(void)
 
 #endif /* DEBUG_SERIAL */
 
-#if SPROFILE
+#ប្រសិនបើ SPROFILE
 
-int arch_init_profile_clock(const u32_t freq)
+ចំនួនគត់ arch_init_profile_clock(const u32_t freq)
 {
-  int r;
+  ចំនួនគត់ r;
   /* Set CMOS timer frequency. */
   outb(RTC_INDEX, RTC_REG_A);
   outb(RTC_IO, RTC_A_DV_OK | freq);
@@ -460,12 +460,12 @@ int arch_init_profile_clock(const u32_t freq)
   outb(RTC_INDEX, RTC_REG_C);
   inb(RTC_IO);
 
-  return CMOS_CLOCK_IRQ;
+  ត្រឡប់ CMOS_CLOCK_IRQ;
 }
 
 void arch_stop_profile_clock(void)
 {
-  int r;
+  ចំនួនគត់ r;
   /* Disable CMOS timer interrupts. */
   outb(RTC_INDEX, RTC_REG_B);
   r = inb(RTC_IO);
@@ -482,7 +482,7 @@ void arch_ack_profile_clock(void)
 
 #endif
 
-void arch_do_syscall(struct proc *proc)
+void arch_do_syscall(sa_nracanaa proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
   assert(proc == get_cpulocal_var(proc_ptr));
@@ -492,15 +492,15 @@ void arch_do_syscall(struct proc *proc)
 	  do_ipc(proc->p_defer.r1, proc->p_defer.r2, proc->p_defer.r3);
 }
 
-struct proc * arch_finish_switch_to_user(void)
+sa_nracanaa proc * arch_finish_switch_to_user(void)
 {
-	char * stk;
-	struct proc * p;
+	var_na * stk;
+	sa_nracanaa proc * p;
 
 #ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
+	stk = (var_na *)tss[cpuid].sp0;
+#បើមិនដូច្នេះ
+	stk = (var_na *)tss[0].sp0;
 #endif
 	/* set pointer to the process to run on the stack */
 	p = get_cpulocal_var(proc_ptr);
@@ -512,18 +512,18 @@ struct proc * arch_finish_switch_to_user(void)
         p->p_reg.psw |= IF_MASK;
 
 	/* Set TRACEBIT state properly. */
-	if(p->p_misc_flags & MF_STEP)
+	ប្រសិនបើ(p->p_misc_flags & MF_STEP)
         	p->p_reg.psw |= TRACEBIT;
-	else
+	បើមិនដូច្នេះ
         	p->p_reg.psw &= ~TRACEBIT;
 
-	return p;
+	ត្រឡប់ p;
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trap_style)
+void arch_proc_setcontext(sa_nracanaa proc *p, sa_nracanaa stackframe_s *state,
+	ចំនួនគត់ isuser, ចំនួនគត់ trap_style)
 {
-	if(isuser) {
+	ប្រសិនបើ(isuser) {
 		/* Restore user bits of psw from sc, maintain system bits
 		 * from proc.
 		 */
@@ -532,9 +532,9 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	}
 
 	/* someone wants to totally re-initialize process state */
-	assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-		memcpy(&p->p_reg, state, sizeof(*state));
+	assert(parimaa_na(p->p_reg) == parimaa_na(*state));
+	ប្រសិនបើ(state != &p->p_reg) {
+		memcpy(&p->p_reg, state, parimaa_na(*state));
 	}
 
 	/* further code is instructed to not touch the context
@@ -553,30 +553,30 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	 * not go well for the process (restored context will be ignored)
 	 * and the situation should be debugged.
 	 */
-	if(!(p->p_rts_flags)) {
+	ប្រសិនបើ(!(p->p_rts_flags)) {
 		printf("WARNINIG: setting full context of runnable process\n");
 		print_proc(p);
 		util_stacktrace();
 	}
-	if(p->p_seg.p_kern_trap_style == KTS_NONE)
+	ប្រសិនបើ(p->p_seg.p_kern_trap_style == KTS_NONE)
 		printf("WARNINIG: setting full context of out-of-kernel process\n");
 	p->p_seg.p_kern_trap_style = trap_style;
 }
 
-void restore_user_context(struct proc *p)
+void restore_user_context(sa_nracanaa proc *p)
 {
-	int trap_style = p->p_seg.p_kern_trap_style;
-#if 0
+	ចំនួនគត់ trap_style = p->p_seg.p_kern_trap_style;
+#ប្រសិនបើ 0
 #define TYPES 10
-	static int restores[TYPES], n = 0;
+	static ចំនួនគត់ restores[TYPES], n = 0;
 
-	if(trap_style >= 0 && trap_style < TYPES)
+	ប្រសិនបើ(trap_style >= 0 && trap_style < TYPES)
 		restores[trap_style]++;
 
-	if(!(n++ % 500000)) {
-		int t;
-		for(t = 0; t < TYPES; t++)
-			if(restores[t])
+	ប្រសិនបើ(!(n++ % 500000)) {
+		ចំនួនគត់ t;
+		សម្រាប់(t = 0; t < TYPES; t++)
+			ប្រសិនបើ(restores[t])
 				printf("%d: %d   ", t, restores[t]);
 		printf("\n");
 	}
@@ -584,23 +584,23 @@ void restore_user_context(struct proc *p)
 
 	p->p_seg.p_kern_trap_style = KTS_NONE;
 
-	if(trap_style == KTS_SYSENTER) {
+	ប្រសិនបើ(trap_style == KTS_SYSENTER) {
 		restore_user_context_sysenter(p);
 		NOT_REACHABLE;
         }
 
-	if(trap_style == KTS_SYSCALL) {
+	ប្រសិនបើ(trap_style == KTS_SYSCALL) {
 		restore_user_context_syscall(p);
 		NOT_REACHABLE;
 	}
 
         switch(trap_style) {
-                case KTS_NONE:
+                pak_sa KTS_NONE:
                         panic("no entry trap style known");
-                case KTS_INT_HARD:
-                case KTS_INT_UM:
-                case KTS_FULLCONTEXT:
-                case KTS_INT_ORIG:
+                pak_sa KTS_INT_HARD:
+                pak_sa KTS_INT_UM:
+                pak_sa KTS_FULLCONTEXT:
+                pak_sa KTS_INT_ORIG:
 			restore_user_context_int(p);
 			NOT_REACHABLE;
                 default:
@@ -611,49 +611,49 @@ void restore_user_context(struct proc *p)
         NOT_REACHABLE;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+void fpu_sigcontext(sa_nracanaa proc *pr, sa_nracanaa sigframe_sigcontext *fr, sa_nracanaa sigcontext *sc)
 {
-	int fp_error;
+	ចំនួនគត់ fp_error;
 
-	if (osfxsr_feature) {
+	ប្រសិនបើ (osfxsr_feature) {
 		fp_error = sc->sc_fpu_state.xfp_regs.fp_status &
 			~sc->sc_fpu_state.xfp_regs.fp_control;
-	} else {
+	} បើមិនដូច្នេះ {
 		fp_error = sc->sc_fpu_state.fpu_regs.fp_status &
 			~sc->sc_fpu_state.fpu_regs.fp_control;
 	}
 
-	if (fp_error & 0x001) {      /* Invalid op */
+	ប្រសិនបើ (fp_error & 0x001) {      /* Invalid op */
 		/*
 		 * swd & 0x240 == 0x040: Stack Underflow
 		 * swd & 0x240 == 0x240: Stack Overflow
 		 * User must clear the SF bit (0x40) if set
 		 */
 		fr->sf_code = FPE_FLTINV;
-	} else if (fp_error & 0x004) {
+	} បើមិនដូច្នេះ ប្រសិនបើ (fp_error & 0x004) {
 		fr->sf_code = FPE_FLTDIV; /* Divide by Zero */
-	} else if (fp_error & 0x008) {
+	} បើមិនដូច្នេះ ប្រសិនបើ (fp_error & 0x008) {
 		fr->sf_code = FPE_FLTOVF; /* Overflow */
-	} else if (fp_error & 0x012) {
+	} បើមិនដូច្នេះ ប្រសិនបើ (fp_error & 0x012) {
 		fr->sf_code = FPE_FLTUND; /* Denormal, Underflow */
-	} else if (fp_error & 0x020) {
+	} បើមិនដូច្នេះ ប្រសិនបើ (fp_error & 0x020) {
 		fr->sf_code = FPE_FLTRES; /* Precision */
-	} else {
+	} បើមិនដូច្នេះ {
 		fr->sf_code = 0;  /* XXX - probably should be used for FPE_INTOVF or
 				  * FPE_INTDIV */
 	}
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(sa_nracanaa proc *p) { ត្រឡប់ p->p_reg.sp; }
 
-#if !CONFIG_OXPCIE
+#ប្រសិនបើ !CONFIG_OXPCIE
 static void ser_init(void)
 {
-	unsigned char lcr;
+	unsigned var_na lcr;
 	unsigned divisor;
 
 	/* keep BIOS settings if cttybaud is not set */
-	if (kinfo.serial_debug_baud <= 0) return;
+	ប្រសិនបើ (kinfo.serial_debug_baud <= 0) ត្រឡប់;
 
 	/* set DLAB to make baud accessible */
 	lcr = LCR_8BIT | LCR_1STOP | LCR_NPAR;
@@ -661,8 +661,8 @@ static void ser_init(void)
 
 	/* set baud rate */
 	divisor = UART_BASE_FREQ / kinfo.serial_debug_baud;
-	if (divisor < 1) divisor = 1;
-	if (divisor > 65535) divisor = 65535;
+	ប្រសិនបើ (divisor < 1) divisor = 1;
+	ប្រសិនបើ (divisor > 65535) divisor = 65535;
 	
 	outb(COM1_DLL, divisor & 0xff);
 	outb(COM1_DLM, (divisor >> 8) & 0xff);

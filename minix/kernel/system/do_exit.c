@@ -6,21 +6,21 @@
 
 #include <signal.h>
 
-#if USE_EXIT
+#ប្រសិនបើ USE_EXIT
 
 /*===========================================================================*
  *				 do_exit				     *
  *===========================================================================*/
-int do_exit(struct proc * caller, message * m_ptr)
+ចំនួនគត់ do_exit(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Handle sys_exit. A system process has requested to exit. Generate a
  * self-termination signal.
  */
-  int sig_nr = SIGABRT;
+  ចំនួនគត់ sig_nr = SIGABRT;
 
   cause_sig(caller->p_nr, sig_nr);      /* send a signal to the caller */
 
-  return(EDONTREPLY);			/* don't reply */
+  ត្រឡប់(EDONTREPLY);			/* don't reply */
 }
 
 #endif /* USE_EXIT */

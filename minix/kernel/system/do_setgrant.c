@@ -12,19 +12,19 @@
 /*===========================================================================*
  *				do_setgrant				     *
  *===========================================================================*/
-int do_setgrant(struct proc * caller, message * m_ptr)
+ចំនួនគត់ do_setgrant(sa_nracanaa proc * caller, message * m_ptr)
 {
-	int r;
+	ចំនួនគត់ r;
 
 	/* Copy grant table set in priv. struct. */
-	if (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
+	ប្រសិនបើ (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
 		r = EPERM;
-	} else {
+	} បើមិនដូច្នេះ {
 		_K_SET_GRANT_TABLE(caller,
 			m_ptr->m_lsys_krn_sys_setgrant.addr,
 			m_ptr->m_lsys_krn_sys_setgrant.size);
 		r = OK;
 	}
 
-	return r;
+	ត្រឡប់ r;
 }

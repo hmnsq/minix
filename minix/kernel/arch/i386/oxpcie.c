@@ -1,16 +1,16 @@
 
 #include "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#ប្រសិនបើ CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
 #include "oxpcie.h"
 #include "serial.h"
 
-static unsigned char *oxpcie_vaddr = NULL;
+static unsigned var_na *oxpcie_vaddr = NULL;
 
-void oxpcie_set_vaddr(unsigned char *vaddr)
+void oxpcie_set_vaddr(unsigned var_na *vaddr)
 {
 	oxpcie_vaddr = vaddr;
 }
@@ -45,39 +45,39 @@ static void oxpcie_init(void)
 	OXPCIE_CPR2 = 0;
 }
 
-void oxpcie_putc(char c)
+void oxpcie_putc(var_na c)
 {
-	static int inuse = 0;
+	static ចំនួនគត់ inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	ប្រសិនបើ(vm_running && oxpcie_vaddr && !inuse) {
+        	ចំនួនគត់ i;
+		static ចំនួនគត់ init_done;
 		inuse = 1;
 
-		if(!init_done) {
+		ប្រសិនបើ(!init_done) {
 			oxpcie_init();
 			init_done = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
-                       		break;
+        	សម្រាប់ (i= 0; i<100000; i++) {
+			ប្រសិនបើ(OXPCIE_LSR & LSR_THRE)
+                       		bha_nga;
 		}
 		OXPCIE_THR = c;
 		inuse = 0;
 	}
 }
 
-int oxpcie_in(void)
+ចំនួនគត់ oxpcie_in(void)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	ប្រសិនបើ(vm_running && oxpcie_vaddr) {
+		ចំនួនគត់ lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		ប្រសិនបើ(lsr & LSR_DR)
+			ត្រឡប់ (ចំនួនគត់) OXPCIE_RBR;
 	}
 
-	return -1;
+	ត្រឡប់ -1;
 }
 
 #endif

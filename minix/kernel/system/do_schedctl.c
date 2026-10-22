@@ -4,28 +4,28 @@
 /*===========================================================================*
  *			          do_schedctl			     *
  *===========================================================================*/
-int do_schedctl(struct proc * caller, message * m_ptr)
+ចំនួនគត់ do_schedctl(sa_nracanaa proc * caller, message * m_ptr)
 {
-	struct proc *p;
+	sa_nracanaa proc *p;
 	uint32_t flags;
-	int priority, quantum, cpu;
-	int proc_nr;
-	int r;
+	ចំនួនគត់ priority, quantum, cpu;
+	ចំនួនគត់ proc_nr;
+	ចំនួនគត់ r;
 
 	/* check parameter validity */
 	flags = m_ptr->m_lsys_krn_schedctl.flags;
-	if (flags & ~SCHEDCTL_FLAG_KERNEL) {
+	ប្រសិនបើ (flags & ~SCHEDCTL_FLAG_KERNEL) {
 		printf("do_schedctl: flags 0x%x invalid, caller=%d\n", 
 			flags, caller - proc);
-		return EINVAL;
+		ត្រឡប់ EINVAL;
 	}
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
-		return EINVAL;
+	ប្រសិនបើ (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
+		ត្រឡប់ EINVAL;
 
 	p = proc_addr(proc_nr);
 
-	if ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
+	ប្រសិនបើ ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
 		/* the kernel becomes the scheduler and starts 
 		 * scheduling the process.
 		 */
@@ -34,13 +34,13 @@ int do_schedctl(struct proc * caller, message * m_ptr)
 		cpu = m_ptr->m_lsys_krn_schedctl.cpu;
 
 		/* Try to schedule the process. */
-		if((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
-			return r;
+		ប្រសិនបើ((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
+			ត្រឡប់ r;
 		p->p_scheduler = NULL;
-	} else {
+	} បើមិនដូច្នេះ {
 		/* the caller becomes the scheduler */
 		p->p_scheduler = caller;
 	}
 
-	return(OK);
+	ត្រឡប់(OK);
 }
