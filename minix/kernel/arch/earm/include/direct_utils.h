@@ -4,8 +4,8 @@
 #include "kernel/kernel.h"
 
 void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
+void direct_इलिम्बाग(const char*);
+void direct_इलिम्बाग_char(char);
 int direct_read_char(unsigned char*);
 
 #endif

@@ -27,7 +27,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   endpoint_t newep;
   int proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
-  vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
+  vir_bytes बिलांग = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
   long port = m_ptr->m_lsys_krn_sys_sdevio.port;
   phys_bytes vir_buf;
   int i, r, req_type, req_dir, size, nr_io_range;
@@ -68,8 +68,8 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
      /* Map grant address to physical address. */
      if((r=verify_grant(proc_nr_e, caller->p_endpoint,
-		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
-		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
+		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, बिलांग,
+		req_dir == DIO_पासोक ? CPF_WRITE : CPF_READ,
 		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
 		NULL)) != OK) {
 	if(r == ENOTREADY) return r;
@@ -131,18 +131,18 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
+  if (req_dir == DIO_पासोक) { 
       switch (req_type) {
-      case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
+      case _DIO_BYTE: phys_insb(port, vir_buf, बिलांग); break; 
+      case _DIO_WORD: phys_insw(port, vir_buf, बिलांग); break; 
       default:
   		retval = EINVAL;
 		goto return_error;
       } 
   } else if (req_dir == _DIO_OUTPUT) { 
       switch (req_type) {
-      case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
+      case _DIO_BYTE: phys_outsb(port, vir_buf, बिलांग); break; 
+      case _DIO_WORD: phys_outsw(port, vir_buf, बिलांग); break; 
       default:
   		retval = EINVAL;
 		goto return_error;

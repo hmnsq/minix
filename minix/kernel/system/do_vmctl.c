@@ -83,7 +83,7 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 		assert(p->p_vmrequest.vmresult == VMSUSPEND);
   		okendpt(p->p_vmrequest.target, &proc_nr);
 		target = proc_addr(proc_nr);
-		p->p_vmrequest.vmresult = m_ptr->SVMCTL_VALUE;
+		p->p_vmrequest.vmresult = m_ptr->SVMCTL_हालागा;
 		assert(p->p_vmrequest.vmresult != VMSUSPEND);
 
 		switch(p->p_vmrequest.type) {
@@ -111,7 +111,7 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 
 	case VMCTL_KERN_PHYSMAP:
 	{
-		int i = m_ptr->SVMCTL_VALUE;
+		int i = m_ptr->SVMCTL_हालागा;
 		return arch_phys_map(i,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_ADDR,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_LEN,
@@ -119,7 +119,7 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 	}
 	case VMCTL_KERN_MAP_REPLY:
 	{
-		return arch_phys_map_reply(m_ptr->SVMCTL_VALUE,
+		return arch_phys_map_reply(m_ptr->SVMCTL_हालागा,
 			(vir_bytes) m_ptr->SVMCTL_MAP_VIR_ADDR);
 	}
 	case VMCTL_VMINHIBIT_SET:

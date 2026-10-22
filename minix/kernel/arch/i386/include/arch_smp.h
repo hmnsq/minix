@@ -8,14 +8,14 @@
 #ifndef __ASSEMBLY__
 
 /* returns the current cpu id */
-#define cpuid	(((u32_t *)(((u32_t)get_stack_frame() + (K_STACK_SIZE - 1)) \
-						& ~(K_STACK_SIZE - 1)))[-1])
+#define cpuid	(((u32_t *)(((u32_t)get_सालानसान_frame() + (K_सालानसान_SIZE - 1)) \
+						& ~(K_सालानसान_SIZE - 1)))[-1])
 /* 
  * in case apic or smp is disabled in boot monitor, we need to finish single cpu
  * boot using the legacy PIC
  */
 #define smp_single_cpu_fallback() do {		\
-	  tss_init(0, get_k_stack_top(0));	\
+	  tss_init(0, get_k_सालानसान_इताअस(0));	\
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
 	  bsp_finish_booting();			\

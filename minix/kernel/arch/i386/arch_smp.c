@@ -252,8 +252,8 @@ static void ap_finish_booting(void)
 
 void smp_ap_boot(void)
 {
-	switch_k_stack((char *)get_k_stack_top(__ap_id) -
-			X86_STACK_TOP_RESERVED, ap_finish_booting);
+	switch_k_सालानसान((char *)get_k_सालानसान_इताअस(__ap_id) -
+			X86_सालानसान_इताअस_RESERVED, ap_finish_booting);
 }
 
 static void smp_reinit_vars(void)
@@ -269,7 +269,7 @@ static void tss_init_all(void)
 	unsigned cpu;
 
 	for(cpu = 0; cpu < ncpus ; cpu++)
-		tss_init(cpu, get_k_stack_top(cpu)); 
+		tss_init(cpu, get_k_सालानसान_इताअस(cpu)); 
 }
 
 static int discover_cpus(void)
@@ -331,8 +331,8 @@ void smp_init (void)
 
 	BOOT_VERBOSE(printf("SMP initialized\n"));
 
-	switch_k_stack((char *)get_k_stack_top(bsp_cpu_id) -
-			X86_STACK_TOP_RESERVED, smp_start_aps);
+	switch_k_सालानसान((char *)get_k_सालानसान_इताअस(bsp_cpu_id) -
+			X86_सालानसान_इताअस_RESERVED, smp_start_aps);
 	
 	return;
 

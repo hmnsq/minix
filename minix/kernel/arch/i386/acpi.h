@@ -80,7 +80,7 @@ struct acpi_fadt_header
 	u8_t reserved1;
 	u32_t flags;
 	struct acpi_generic_address reset_reg;
-	u8_t reset_value;
+	u8_t reset_हालागा;
 	u8_t reserved2[3];
 	u64_t xfacs;
 	u64_t xdsdt;

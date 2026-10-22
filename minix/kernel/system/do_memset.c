@@ -20,7 +20,7 @@ int do_memset(struct proc * caller, message * m_ptr)
   vm_memset(caller, m_ptr->m_lsys_krn_sys_memset.process,
 	  m_ptr->m_lsys_krn_sys_memset.base,
 	  m_ptr->m_lsys_krn_sys_memset.pattern,
-	  m_ptr->m_lsys_krn_sys_memset.count);
+	  m_ptr->m_lsys_krn_sys_memset.बिलांग);
   return(OK);
 }
 

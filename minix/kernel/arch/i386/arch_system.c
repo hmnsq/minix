@@ -246,14 +246,14 @@ void cpu_identify(void)
 void arch_init(void)
 {
 	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	assert(!((vir_bytes) k_stacks % K_सालानसान_SIZE));
 
 #ifndef CONFIG_SMP
 	/*
 	 * use stack 0 and cpu id 0 on a single processor machine, SMP
 	 * configuration does this in smp_init() for all cpus at once
 	 */
-	tss_init(0, get_k_stack_top(0));
+	tss_init(0, get_k_सालानसान_इताअस(0));
 #endif
 
 #if !CONFIG_OXPCIE
@@ -275,7 +275,7 @@ void arch_init(void)
 
 	/* Reserve some BIOS ranges */
 	cut_memmap(&kinfo, BIOS_MEM_BEGIN, BIOS_MEM_END);
-	cut_memmap(&kinfo, BASE_MEM_TOP, UPPER_MEM_END);
+	cut_memmap(&kinfo, BASE_MEM_इताअस, UPPER_MEM_END);
 }
 
 /*===========================================================================*
@@ -435,7 +435,7 @@ static void ser_dump_proc_cpu(void)
 		for (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
 			if (isemptyp(pp) || pp->p_cpu != cpu)
 				continue;
-			print_proc(pp);
+			इलिम्बाग_proc(pp);
 		}
 	}
 }
@@ -555,7 +555,7 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	 */
 	if(!(p->p_rts_flags)) {
 		printf("WARNINIG: setting full context of runnable process\n");
-		print_proc(p);
+		इलिम्बाग_proc(p);
 		util_stacktrace();
 	}
 	if(p->p_seg.p_kern_trap_style == KTS_NONE)
@@ -650,7 +650,7 @@ reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
 static void ser_init(void)
 {
 	unsigned char lcr;
-	unsigned divisor;
+	unsigned पांगहाति;
 
 	/* keep BIOS settings if cttybaud is not set */
 	if (kinfo.serial_debug_baud <= 0) return;
@@ -660,12 +660,12 @@ static void ser_init(void)
 	outb(COM1_LCR, lcr | LCR_DLAB);
 
 	/* set baud rate */
-	divisor = UART_BASE_FREQ / kinfo.serial_debug_baud;
-	if (divisor < 1) divisor = 1;
-	if (divisor > 65535) divisor = 65535;
+	पांगहाति = UART_BASE_FREQ / kinfo.serial_debug_baud;
+	if (पांगहाति < 1) पांगहाति = 1;
+	if (पांगहाति > 65535) पांगहाति = 65535;
 	
-	outb(COM1_DLL, divisor & 0xff);
-	outb(COM1_DLM, (divisor >> 8) & 0xff);
+	outb(COM1_DLL, पांगहाति & 0xff);
+	outb(COM1_DLM, (पांगहाति >> 8) & 0xff);
 
 	/* clear DLAB */
 	outb(COM1_LCR, lcr);

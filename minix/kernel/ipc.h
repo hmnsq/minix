@@ -19,7 +19,7 @@
 #define CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
 	(((receive_e) == ANY || (receive_e) == (src_e)) && \
 	(priv(dst_ptr)->s_ipcf == NULL || \
-	allow_ipc_filtered_msg(dst_ptr,src_e,m_src_v,m_src_p)))
+	allow_ipc_filtered_मेनसाहे(dst_ptr,src_e,m_src_v,m_src_p)))
 
 /* IPC status code macros. */
 #define IPC_STATUS_GET(p)	((p)->p_reg.IPC_STATUS_REG)

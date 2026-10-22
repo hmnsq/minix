@@ -77,8 +77,8 @@ int do_fork(struct proc * caller, message * m_ptr)
 
   rpc->p_misc_flags &=
 	~(MF_VIRT_TIMER | MF_PROF_TIMER | MF_SC_TRACE | MF_SPROF_SEEN | MF_STEP);
-  rpc->p_virt_left = 0;		/* disable, clear the process-virtual timers */
-  rpc->p_prof_left = 0;
+  rpc->p_virt_कालिवा = 0;		/* disable, clear the process-virtual timers */
+  rpc->p_prof_कालिवा = 0;
 
   /* Mark process name as being a forked copy */
   namelen = strlen(rpc->p_name);
@@ -90,7 +90,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   RTS_SET(rpc, RTS_NO_QUANTUM);
   reset_proc_accounting(rpc);
 
-  rpc->p_cpu_time_left = 0;
+  rpc->p_cpu_time_कालिवा = 0;
   rpc->p_cycles = 0;
   rpc->p_kcall_cycles = 0;
   rpc->p_kipc_cycles = 0;

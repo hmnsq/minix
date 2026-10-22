@@ -26,11 +26,11 @@
 
 /* Clock parameters. */
 #define COUNTER_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
-#define LATCH_COUNT     0x00    /* cc00xxxx, c = channel, x = any */
+#define LATCH_बिलांग     0x00    /* cc00xxxx, c = channel, x = any */
 #define SQUARE_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
                                 /*   11x11, 11 = LSB then MSB, x11 = sq wave */
 #define TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
-#define TIMER_COUNT(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
+#define TIMER_बिलांग(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
 
 static irq_hook_t pic_timer_hook;		/* interrupt handler hook */
 
@@ -52,8 +52,8 @@ int init_8253A_timer(const unsigned freq)
 	 * on every clock tick.
 	 */
 	outb(TIMER_MODE, SQUARE_WAVE);  /* run continuously */
-	outb(TIMER0, (TIMER_COUNT(freq) & 0xff)); /* timer low byte */
-	outb(TIMER0, TIMER_COUNT(freq) >> 8); /* timer high byte */
+	outb(TIMER0, (TIMER_बिलांग(freq) & 0xff)); /* timer low byte */
+	outb(TIMER0, TIMER_बिलांग(freq) >> 8); /* timer high byte */
 
 	return OK;
 }
@@ -125,7 +125,7 @@ static void estimate_cpu_freq(void)
 	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * system_hz;
 	cpu_set_freq(cpuid, cpu_freq);
 	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
-	BOOT_VERBOSE(cpu_print_freq(cpuid));
+	BOOT_VERBOSE(cpu_इलिम्बाग_freq(cpuid));
 }
 
 int init_local_timer(unsigned freq)
@@ -321,12 +321,12 @@ void context_stop(struct proc * p)
 			counter = CP_USER;
 
 #if DEBUG_RACE
-		p->p_cpu_time_left = 0;
+		p->p_cpu_time_कालिवा = 0;
 #else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
+		if (tsc_delta < p->p_cpu_time_कालिवा) {
+			p->p_cpu_time_कालिवा -= tsc_delta;
 		} else {
-			p->p_cpu_time_left = 0;
+			p->p_cpu_time_कालिवा = 0;
 		}
 #endif
 	} else {

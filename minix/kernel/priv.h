@@ -46,7 +46,7 @@ struct priv {
   ipc_filter_t *s_ipcf;         /* ipc filter (NULL when no filter is set) */
 
   minix_timer_t s_alarm_timer;	/* synchronous alarm timer */
-  reg_t *s_stack_guard;		/* stack guard word for kernel tasks */
+  reg_t *s_सालानसान_guard;		/* stack guard word for kernel tasks */
 
   char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
@@ -66,7 +66,7 @@ struct priv {
 };
 
 /* Guard word for task stacks. */
-#define STACK_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
+#define सालानसान_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
 
 /* Magic system structure table addresses. */
 #define BEG_PRIV_ADDR              (&priv[0])

@@ -36,7 +36,7 @@ void
 reset(void)
 {
 	bsp_reset(); /* should not exit */
-	direct_print("Reset not supported.");
+	direct_इलिम्बाग("Reset not supported.");
 	while (1);
 }
 
@@ -45,7 +45,7 @@ poweroff(void)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
-	direct_print("Unable to power-off this device.");
+	direct_इलिम्बाग("Unable to power-off this device.");
 	while (1);
 }
 

@@ -134,12 +134,12 @@ void context_stop(struct proc * p)
 			counter = CP_USER;
 
 #if DEBUG_RACE
-		p->p_cpu_time_left = 0;
+		p->p_cpu_time_कालिवा = 0;
 #else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
+		if (tsc_delta < p->p_cpu_time_कालिवा) {
+			p->p_cpu_time_कालिवा -= tsc_delta;
 		} else {
-			p->p_cpu_time_left = 0;
+			p->p_cpu_time_कालिवा = 0;
 		}
 #endif
 	} else {

@@ -30,7 +30,7 @@ phys_bytes vir2phys(void *vir)
 	return (phys_bytes)vir - offset;
 }
 
-int tss_init(unsigned cpu, void * kernel_stack)
+int tss_init(unsigned cpu, void * kernel_सालानसान)
 {
 
 	struct tss_s * t = &tss[cpu];
@@ -39,7 +39,7 @@ int tss_init(unsigned cpu, void * kernel_stack)
 	 * make space for process pointer and cpu id and point to the first
 	 * usable word
 	 */
-	t->sp0 = ((unsigned) kernel_stack) - ARM_STACK_TOP_RESERVED;
+	t->sp0 = ((unsigned) kernel_सालानसान) - ARM_सालानसान_इताअस_RESERVED;
 	/*
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
@@ -64,7 +64,7 @@ multiboot_module_t *bootmod(int pnr)
 		p = i - NR_TASKS;
 		if(image[i].proc_nr == pnr) {
 			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
+			assert(p < kinfo.mbi.mi_mods_बिलांग);
 			return &kinfo.module_list[p];
 		}
 	}
@@ -132,8 +132,8 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		memset(&execi, 0, sizeof(execi));
 
 		/* exec parameters */
-		execi.stack_high = kinfo.user_sp;
-		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
+		execi.सालानसान_माताअस = kinfo.user_sp;
+		execi.सालानसान_size = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
 		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
 		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
@@ -154,7 +154,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
+		sp = (char *)execi.सालानसान_माताअस;
 		sp -= sizeof(struct ps_strings);
 		psp = (struct ps_strings *) sp;
 
@@ -170,7 +170,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		psp->ps_nenvstr = 0;
 
 		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+			execi.सालानसान_माताअस - sizeof(struct ps_strings),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */

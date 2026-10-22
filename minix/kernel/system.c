@@ -56,7 +56,7 @@ static int (*call_vec[NR_SYS_CALLS])(struct proc * caller, message *m_ptr);
     	assert(call_index >= 0 && call_index < NR_SYS_CALLS);			\
     call_vec[call_index] = (handler)  ; }
 
-static void kernel_call_finish(struct proc * caller, message *msg, int result)
+static void kernel_call_finish(struct proc * caller, message *मेनसाहे, int result)
 {
   if(result == VMSUSPEND) {
 	  /* Special case: message has to be saved for handling
@@ -65,7 +65,7 @@ static void kernel_call_finish(struct proc * caller, message *msg, int result)
 	   */
 	  assert(RTS_ISSET(caller, RTS_VMREQUEST));
 	  assert(caller->p_vmrequest.type == VMSTYPE_KERNELCALL);
-	  caller->p_vmrequest.saved.reqmsg = *msg;
+	  caller->p_vmrequest.saved.reqmsg = *मेनसाहे;
 	  caller->p_misc_flags |= MF_KCALL_RESUME;
   } else {
 	  /*
@@ -75,12 +75,12 @@ static void kernel_call_finish(struct proc * caller, message *msg, int result)
 	  caller->p_vmrequest.saved.reqmsg.m_source = NONE;
 	  if (result != EDONTREPLY) {
 		  /* copy the result as a message to the original user buffer */
-		  msg->m_source = SYSTEM;
-		  msg->m_type = result;		/* report status of call */
+		  मेनसाहे->m_source = SYSTEM;
+		  मेनसाहे->m_type = result;		/* report status of call */
 #if DEBUG_IPC_HOOK
-	hook_ipc_msgkresult(msg, caller);
+	hook_ipc_msgkresult(मेनसाहे, caller);
 #endif
-		  if (copy_msg_to_user(msg, (message *)caller->p_delivermsg_vir)) {
+		  if (copy_मेनसाहे_to_user(मेनसाहे, (message *)caller->p_delivermsg_vir)) {
 			  printf("WARNING wrong user pointer 0x%08x from "
 					  "process %s / %d\n",
 					  caller->p_delivermsg_vir,
@@ -92,30 +92,30 @@ static void kernel_call_finish(struct proc * caller, message *msg, int result)
   }
 }
 
-static int kernel_call_dispatch(struct proc * caller, message *msg)
+static int kernel_call_dispatch(struct proc * caller, message *मेनसाहे)
 {
   int result = OK;
   int call_nr;
 
 #if DEBUG_IPC_HOOK
-	hook_ipc_msgkcall(msg, caller);
+	hook_ipc_msgkcall(मेनसाहे, caller);
 #endif
-  call_nr = msg->m_type - KERNEL_CALL;
+  call_nr = मेनसाहे->m_type - KERNEL_CALL;
 
   /* See if the caller made a valid request and try to handle it. */
   if (call_nr < 0 || call_nr >= NR_SYS_CALLS) {	/* check call number */
 	  printf("SYSTEM: illegal request %d from %d.\n",
-			  call_nr,msg->m_source);
+			  call_nr,मेनसाहे->m_source);
 	  result = EBADREQUEST;			/* illegal message type */
   }
   else if (!GET_BIT(priv(caller)->s_k_call_mask, call_nr)) {
 	  printf("SYSTEM: denied request %d from %d.\n",
-			  call_nr,msg->m_source);
+			  call_nr,मेनसाहे->m_source);
 	  result = ECALLDENIED;			/* illegal message type */
   } else {
 	  /* handle the system call */
 	  if (call_vec[call_nr])
-		  result = (*call_vec[call_nr])(caller, msg);
+		  result = (*call_vec[call_nr])(caller, मेनसाहे);
 	  else {
 		  printf("Unused kernel call %d from %d\n",
 				  call_nr, caller->p_endpoint);
@@ -136,7 +136,7 @@ static int kernel_call_dispatch(struct proc * caller, message *msg)
 void kernel_call(message *m_user, struct proc * caller)
 {
   int result = OK;
-  message msg;
+  message मेनसाहे;
 
   caller->p_delivermsg_vir = (vir_bytes) m_user;
   /*
@@ -144,9 +144,9 @@ void kernel_call(message *m_user, struct proc * caller)
    * into the kernel or was already set in switch_to_user() before we resume
    * execution of an interrupted kernel call
    */
-  if (copy_msg_from_user(m_user, &msg) == 0) {
-	  msg.m_source = caller->p_endpoint;
-	  result = kernel_call_dispatch(caller, &msg);
+  if (copy_मेनसाहे_from_user(m_user, &मेनसाहे) == 0) {
+	  मेनसाहे.m_source = caller->p_endpoint;
+	  result = kernel_call_dispatch(caller, &मेनसाहे);
   }
   else {
 	  printf("WARNING wrong user pointer 0x%08x from process %s / %d\n",
@@ -159,7 +159,7 @@ void kernel_call(message *m_user, struct proc * caller)
   /* remember who invoked the kcall so we can bill it its time */
   kbill_kcall = caller;
 
-  kernel_call_finish(caller, &msg, result);
+  kernel_call_finish(caller, &मेनसाहे, result);
 }
 
 /*===========================================================================*
@@ -681,7 +681,7 @@ int sched_proc(struct proc *p, int priority, int quantum, int cpu, int niced)
 		p->p_priority = priority;
 	if (quantum != -1) {
 		p->p_quantum_size_ms = quantum;
-		p->p_cpu_time_left = ms_2_cpu_time(quantum);
+		p->p_cpu_time_कालिवा = ms_2_cpu_time(quantum);
 	}
 #ifdef CONFIG_SMP
 	if (cpu != -1)
@@ -705,7 +705,7 @@ int sched_proc(struct proc *p, int priority, int quantum, int cpu, int niced)
 int add_ipc_filter(struct proc *rp, int type, vir_bytes address,
 	size_t length)
 {
-	int num_elements, r;
+	int नुमेरो_elements, r;
 	ipc_filter_t *ipcf, **ipcfp;
 
 	/* Validate arguments. */
@@ -715,8 +715,8 @@ int add_ipc_filter(struct proc *rp, int type, vir_bytes address,
 	if (length % sizeof(ipc_filter_el_t) != 0)
 		return EINVAL;
 
-	num_elements = length / sizeof(ipc_filter_el_t);
-	if (num_elements <= 0 || num_elements > IPCF_MAX_ELEMENTS)
+	नुमेरो_elements = length / sizeof(ipc_filter_el_t);
+	if (नुमेरो_elements <= 0 || नुमेरो_elements > IPCF_MAX_ELEMENTS)
 		return E2BIG;
 
 	/* Allocate a new IPC filter slot. */
@@ -725,7 +725,7 @@ int add_ipc_filter(struct proc *rp, int type, vir_bytes address,
 		return ENOMEM;
 
 	/* Fill details. */
-	ipcf->num_elements = num_elements;
+	ipcf->नुमेरो_elements = नुमेरो_elements;
 	ipcf->next = NULL;
 	r = data_copy(rp->p_endpoint, address,
 		KERNEL, (vir_bytes)ipcf->elements, length);
@@ -776,14 +776,14 @@ void clear_ipc_filters(struct proc *rp)
 int check_ipc_filter(ipc_filter_t *ipcf, int fill_flags)
 {
 	ipc_filter_el_t *ipcf_el;
-	int i, num_elements, flags;
+	int i, नुमेरो_elements, flags;
 
 	if (ipcf == NULL)
 		return OK;
 
-	num_elements = ipcf->num_elements;
+	नुमेरो_elements = ipcf->नुमेरो_elements;
 	flags = 0;
-	for (i = 0; i < num_elements; i++) {
+	for (i = 0; i < नुमेरो_elements; i++) {
 		ipcf_el = &ipcf->elements[i];
 		if (!IPCF_EL_CHECK(ipcf_el))
 			return EINVAL;
@@ -800,10 +800,10 @@ int check_ipc_filter(ipc_filter_t *ipcf, int fill_flags)
 /*===========================================================================*
  *				allow_ipc_filtered_msg			     *
  *===========================================================================*/
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+int allow_ipc_filtered_मेनसाहे(struct proc *rp, endpoint_t src_e,
 	vir_bytes m_src_v, message *m_src_p)
 {
-	int i, r, num_elements, get_mtype, allow;
+	int i, r, नुमेरो_elements, get_mtype, allow;
 	ipc_filter_t *ipcf;
 	ipc_filter_el_t *ipcf_el;
 	message m_buff;
@@ -853,8 +853,8 @@ int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
 	allow = (ipcf->type == IPCF_BLACKLIST);
 	do {
 		if (allow != (ipcf->type == IPCF_WHITELIST)) {
-			num_elements = ipcf->num_elements;
-			for (i = 0; i < num_elements; i++) {
+			नुमेरो_elements = ipcf->नुमेरो_elements;
+			for (i = 0; i < नुमेरो_elements; i++) {
 				ipcf_el = &ipcf->elements[i];
 				if (IPCF_EL_MATCH(ipcf_el, m_src_p)) {
 					allow = (ipcf->type == IPCF_WHITELIST);
@@ -900,7 +900,7 @@ int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp)
 	 * but the extra check doesn't hurt.
 	 */
 	m_buf.m_type = NOTIFY_MESSAGE;
-	if (!allow_ipc_filtered_msg(vmp, SYSTEM, 0, &m_buf))
+	if (!allow_ipc_filtered_मेनसाहे(vmp, SYSTEM, 0, &m_buf))
 		return FALSE;
 
 	/* A more refined policy may be implemented here, for example to

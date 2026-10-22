@@ -3,17 +3,17 @@
 
 #if 0
 /* check interrupt state */
-static inline void check_int(unsigned int state, int line)
+static inline void check_int(unsigned int state, int लिन्या)
 {
 	unsigned int cpsr = 0;
 
 	asm volatile("mrs %0, cpsr" : "=r" (cpsr));
 
 	if ((cpsr & PSR_F) != (state & PSR_F))
-	    printf("%d: FIQs are unexpectedly %s\n", line, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
+	    printf("%d: FIQs are unexpectedly %s\n", लिन्या, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
 
 	if ((cpsr & PSR_I) != (state & PSR_I))
-	    printf("%d: IRQs are unexpectedly %s\n", line, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
+	    printf("%d: IRQs are unexpectedly %s\n", लिन्या, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
 
 }
 #endif
@@ -107,8 +107,8 @@ static inline void dcache_maint(int type){
 	u32_t clidr;
 	u32_t ctype;
 	u32_t  ccsidr;
-	u32_t  line_size,line_length;
-	u32_t  number_of_sets,number_of_ways;
+	u32_t  लिन्या_size,लिन्या_length;
+	u32_t  नुमेरो_of_sets,नुमेरो_of_ways;
 	u32_t  set,way;
 
 	clidr = read_clidr();
@@ -122,19 +122,19 @@ static inline void dcache_maint(int type){
 		write_csselr(cache_level << 1);
 		isb();
 		ccsidr = read_ccsidr();
-		line_size = ccsidr & 0x7;
-		line_length = 2 << (line_size + 1) ; /* 2**(line_size + 2) */
-		number_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
-		number_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
+		लिन्या_size = ccsidr & 0x7;
+		लिन्या_length = 2 << (लिन्या_size + 1) ; /* 2**(line_size + 2) */
+		नुमेरो_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
+		नुमेरो_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
 
-		u32_t way_bits = ilog2(number_of_ways);
-		if(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
+		u32_t way_bits = ilog2(नुमेरो_of_ways);
+		if(ipow2(ilog2(नुमेरो_of_ways) < नुमेरो_of_ways) ) {
 			way_bits++;
 		}
 
-		u32_t l = ilog2(line_length);
-		for (way =0 ; way < number_of_ways; way++) {
-			for (set =0 ; set < number_of_sets; set++) {
+		u32_t l = ilog2(लिन्या_length);
+		for (way =0 ; way < नुमेरो_of_ways; way++) {
+			for (set =0 ; set < नुमेरो_of_sets; set++) {
 				u32_t val = ( way << (32 - way_bits) ) |  (set << l) | (cache_level << 1 );
 				if (type == 1) {
 					/* DCCISW, Data Cache Clean and Invalidate by Set/Way */

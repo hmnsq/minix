@@ -67,7 +67,7 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 
         if(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
-                print_proc(p);
+                इलिम्बाग_proc(p);
                 util_stacktrace();
         }
 }
@@ -100,34 +100,34 @@ void cpu_identify(void)
 
 void arch_init(void)
 {
-        u32_t value;
+        u32_t हालागा;
 
 	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	assert(!((vir_bytes) k_stacks % K_सालानसान_SIZE));
 
 #ifndef CONFIG_SMP
 	/*
 	 * use stack 0 and cpu id 0 on a single processor machine, SMP
 	 * configuration does this in smp_init() for all cpus at once
 	 */
-	tss_init(0, get_k_stack_top(0));
+	tss_init(0, get_k_सालानसान_इताअस(0));
 #endif
 
 
         /* enable user space access to cycle counter */
         /* set cycle counter to 0: ARM ARM B4.1.113 and B4.1.117 */
-        asm volatile ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
-        value |= PMU_PMCR_C; /* Reset counter */
-        value |= PMU_PMCR_E; /* Enable counter hardware */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
+        asm volatile ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (हालागा));
+        हालागा |= PMU_PMCR_C; /* Reset counter */
+        हालागा |= PMU_PMCR_E; /* Enable counter hardware */
+        asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (हालागा));
 
         /* enable CCNT counting: ARM ARM B4.1.116 */
-        value = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
+        हालागा = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
+        asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (हालागा));
 
         /* enable cycle counter in user mode: ARM ARM B4.1.124 */
-        value = PMU_PMUSERENR_EN;
-        asm volatile ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
+        हालागा = PMU_PMUSERENR_EN;
+        asm volatile ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (हालागा));
 	bsp_init();
 }
 
@@ -147,7 +147,7 @@ void arch_do_syscall(struct proc *proc)
 	  do_ipc(proc->p_reg.retreg, proc->p_reg.r1, proc->p_reg.r2);
 }
 
-reg_t svc_stack;
+reg_t svc_सालानसान;
 
 struct proc * arch_finish_switch_to_user(void)
 {
@@ -159,7 +159,7 @@ struct proc * arch_finish_switch_to_user(void)
 #else
 	stk = (char *)tss[0].sp0;
 #endif
-	svc_stack = (reg_t)stk;
+	svc_सालानसान = (reg_t)stk;
 	/* set pointer to the process to run on the stack */
 	p = get_cpulocal_var(proc_ptr);
 	*((reg_t *)stk) = (reg_t) p;

@@ -47,16 +47,16 @@ static int32_t adjtime_delta = 0;
 void
 init_clock(void)
 {
-	char *value;
+	char *हालागा;
 
 	/* Initialize clock information structure. */
 	memset(&kclockinfo, 0, sizeof(kclockinfo));
 
 	/* Get clock tick frequency. */
-	value = env_get("hz");
-	if (value != NULL)
-		kclockinfo.hz = atoi(value);
-	if (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
+	हालागा = env_get("hz");
+	if (हालागा != NULL)
+		kclockinfo.hz = atoi(हालागा);
+	if (हालागा == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
 		kclockinfo.hz = DEFAULT_HZ;
 
 	/* Load average data initialization. */
@@ -125,16 +125,16 @@ int timer_int_handler(void)
 	 * well.  If any of the timers expire, do_clocktick() will send out
 	 * signals.
 	 */
-	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
-		p->p_virt_left--;
+	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_कालिवा > 0)) {
+		p->p_virt_कालिवा--;
 	}
-	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
-		p->p_prof_left--;
+	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_कालिवा > 0)) {
+		p->p_prof_कालिवा--;
 	}
 	if (! (priv(p)->s_flags & BILLABLE) &&
 			(billp->p_misc_flags & MF_PROF_TIMER) &&
-			(billp->p_prof_left > 0)) {
-		billp->p_prof_left--;
+			(billp->p_prof_कालिवा > 0)) {
+		billp->p_prof_कालिवा--;
 	}
 
 	/*

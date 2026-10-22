@@ -42,7 +42,7 @@ EXTERN int _ipcf_nr;
 
 struct ipc_filter_s {
   int type;
-  int num_elements;
+  int नुमेरो_elements;
   int flags;
   struct ipc_filter_s *next;
   ipc_filter_el_t elements[IPCF_MAX_ELEMENTS];

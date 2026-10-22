@@ -4,7 +4,7 @@
 
 #include <machine/vm.h>
 
-#define K_STACK_SIZE	I386_PAGE_SIZE
+#define K_सालानसान_SIZE	I386_PAGE_SIZE
 
 #ifndef __ASSEMBLY__
 
@@ -39,7 +39,7 @@ void double_fault(void);
 void copr_seg_overrun(void);
 void inval_tss(void);
 void segment_not_present(void);
-void stack_exception(void);
+void सालानसान_exception(void);
 void general_protection(void);
 void page_fault(void);
 void copr_error(void);
@@ -88,16 +88,16 @@ __dead void poweroff_vmware_clihlt(void);
 __dead void x86_triplefault(void);
 reg_t read_cr0(void);
 reg_t read_cr2(void);
-void write_cr0(unsigned long value);
+void write_cr0(unsigned long हालागा);
 unsigned long read_cr4(void);
-void write_cr4(unsigned long value);
-void write_cr3(unsigned long value);
+void write_cr4(unsigned long हालागा);
+void write_cr3(unsigned long हालागा);
 unsigned long read_cpu_flags(void);
 phys_bytes vir2phys(void *);
-void phys_insb(u16_t port, phys_bytes buf, size_t count);
-void phys_insw(u16_t port, phys_bytes buf, size_t count);
-void phys_outsb(u16_t port, phys_bytes buf, size_t count);
-void phys_outsw(u16_t port, phys_bytes buf, size_t count);
+void phys_insb(u16_t port, phys_bytes buf, size_t बिलांग);
+void phys_insw(u16_t port, phys_bytes buf, size_t बिलांग);
+void phys_outsb(u16_t port, phys_bytes buf, size_t बिलांग);
+void phys_outsw(u16_t port, phys_bytes buf, size_t बिलांग);
 u32_t read_cr3(void);
 void reload_cr3(void);
 void i386_invlpg(phys_bytes linaddr);
@@ -134,7 +134,7 @@ int usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
 int usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
 int usermapped_notify_softint(endpoint_t dest);
 int usermapped_do_kernel_call_softint(message *m_ptr);
-int usermapped_senda_softint(asynmsg_t *table, size_t count);
+int usermapped_senda_softint(asynmsg_t *table, size_t बिलांग);
 
 int usermapped_send_syscall(endpoint_t dest, message *m_ptr);
 int usermapped_receive_syscall(endpoint_t src, message *m_ptr, int *status_ptr);
@@ -142,7 +142,7 @@ int usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
 int usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
 int usermapped_notify_syscall(endpoint_t dest);
 int usermapped_do_kernel_call_syscall(message *m_ptr);
-int usermapped_senda_syscall(asynmsg_t *table, size_t count);
+int usermapped_senda_syscall(asynmsg_t *table, size_t बिलांग);
 
 int usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
 int usermapped_receive_sysenter(endpoint_t src, message *m_ptr, int *status_ptr);
@@ -150,9 +150,9 @@ int usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
 int usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
 int usermapped_notify_sysenter(endpoint_t dest);
 int usermapped_do_kernel_call_sysenter(message *m_ptr);
-int usermapped_senda_sysenter(asynmsg_t *table, size_t count);
+int usermapped_senda_sysenter(asynmsg_t *table, size_t बिलांग);
 
-void switch_k_stack(void * esp, void (* continuation)(void));
+void switch_k_सालानसान(void * esp, void (* continuation)(void));
 
 void __switch_address_space(struct proc * p, struct proc ** __ptproc);
 #define switch_address_space(proc)	\
@@ -228,8 +228,8 @@ void idt_reload(void);
 EXTERN void * k_stacks_start;
 extern void * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#define get_k_सालानसान_इताअस(cpu)	((void *)(((char*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_सालानसान_SIZE))
 
 void mfence(void);
 #define barrier()	do { mfence(); } while(0)
@@ -238,16 +238,16 @@ void mfence(void);
 #ifndef __GNUC__
 /* call a function to read the stack fram pointer (%ebp) */
 reg_t read_ebp(void);
-#define get_stack_frame(__X)	((reg_t)read_ebp())
+#define get_सालानसान_frame(__X)	((reg_t)read_ebp())
 #else
 /* read %ebp directly */
-#define get_stack_frame(__X)	((reg_t)__builtin_frame_address(0))
+#define get_सालानसान_frame(__X)	((reg_t)__builtin_frame_address(0))
 #endif
 
 /*
  * sets up TSS for a cpu and assigns kernel stack and cpu id
  */
-int tss_init(unsigned cpu, void * kernel_stack);
+int tss_init(unsigned cpu, void * kernel_सालानसान);
 
 void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type);
 
@@ -262,7 +262,7 @@ int platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
 
 /* breakpoints.c */
 int breakpoint_set(phys_bytes linaddr, int bp, const int flags);
-#define BREAKPOINT_COUNT		4
+#define BREAKPOINT_बिलांग		4
 #define BREAKPOINT_FLAG_RW_MASK		(3 << 0)
 #define BREAKPOINT_FLAG_RW_EXEC		(0 << 0)
 #define BREAKPOINT_FLAG_RW_WRITE	(1 << 0)

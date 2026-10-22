@@ -93,10 +93,10 @@ void bsp_finish_booting(void)
 
 #ifdef CONFIG_SMP
   cpu_set_flag(bsp_cpu_id, CPU_IS_READY);
-  machine.processors_count = ncpus;
+  machine.processors_बिलांग = ncpus;
   machine.bsp_id = bsp_cpu_id;
 #else
-  machine.processors_count = 1;
+  machine.processors_बिलांग = 1;
   machine.bsp_id = 0;
 #endif
   
@@ -157,9 +157,9 @@ void kmain(kinfo_t *local_cbi)
   proc_init();
   IPCF_POOL_INIT();
 
-   if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
+   if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_बिलांग)
    	panic("expecting %d boot processes/modules, found %d",
-		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
+		NR_BOOT_MODULES, kinfo.mbi.mi_mods_बिलांग);
 
   /* Set up proc table entries for processes in boot image. */
   for (i=0; i < NR_BOOT_PROCS; ++i) {
@@ -172,7 +172,7 @@ void kmain(kinfo_t *local_cbi)
 	DEBUGEXTRA(("initializing %s... ", ip->proc_name));
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
-	rp->p_cpu_time_left = 0;
+	rp->p_cpu_time_कालिवा = 0;
 	if(i < NR_TASKS)			/* name (tasks only) */
 		strlcpy(rp->p_name, ip->proc_name, sizeof(rp->p_name));
 
@@ -388,12 +388,12 @@ void minix_shutdown(int how)
   /* Show shutdown message */
   direct_cls();
   if((how & RB_POWERDOWN) == RB_POWERDOWN)
-	direct_print("MINIX has halted and will now power off.\n");
+	direct_इलिम्बाग("MINIX has halted and will now power off.\n");
   else if(how & RB_HALT)
-	direct_print("MINIX has halted. "
+	direct_इलिम्बाग("MINIX has halted. "
 		     "It is safe to turn off your computer.\n");
   else
-	direct_print("MINIX will now reset.\n");
+	direct_इलिम्बाग("MINIX will now reset.\n");
   arch_shutdown(how);
 }
 
@@ -405,21 +405,21 @@ void cstart(void)
 /* Perform system initializations prior to calling main(). Most settings are
  * determined with help of the environment strings passed by MINIX' loader.
  */
-  register char *value;				/* value in key=value pair */
+  register char *हालागा;				/* value in key=value pair */
 
   /* low-level initialization */
   prot_init();
 
   /* determine verbosity */
-  if ((value = env_get(VERBOSEBOOTVARNAME)))
-	  verboseboot = atoi(value);
+  if ((हालागा = env_get(VERBOSEBOOTVARNAME)))
+	  verboseboot = atoi(हालागा);
 
   /* Initialize clock variables. */
   init_clock();
 
   /* Get memory parameters. */
-  value = env_get("ac_layout");
-  if(value && atoi(value)) {
+  हालागा = env_get("ac_layout");
+  if(हालागा && atoi(हालागा)) {
         kinfo.user_sp = (vir_bytes) USR_STACKTOP_COMPACT;
         kinfo.user_end = (vir_bytes) USR_DATATOP_COMPACT;
   }
@@ -440,30 +440,30 @@ void cstart(void)
   kuserinfo.kui_user_sp = kinfo.user_sp;
 
 #ifdef USE_APIC
-  value = env_get("no_apic");
-  if(value)
-	config_no_apic = atoi(value);
+  हालागा = env_get("no_apic");
+  if(हालागा)
+	config_no_apic = atoi(हालागा);
   else
 	config_no_apic = 1;
-  value = env_get("apic_timer_x");
-  if(value)
-	config_apic_timer_x = atoi(value);
+  हालागा = env_get("apic_timer_x");
+  if(हालागा)
+	config_apic_timer_x = atoi(हालागा);
   else
 	config_apic_timer_x = 1;
 #endif
 
 #ifdef USE_WATCHDOG
-  value = env_get("watchdog");
-  if (value)
-	  watchdog_enabled = atoi(value);
+  हालागा = env_get("watchdog");
+  if (हालागा)
+	  watchdog_enabled = atoi(हालागा);
 #endif
 
 #ifdef CONFIG_SMP
   if (config_no_apic)
 	  config_no_smp = 1;
-  value = env_get("no_smp");
-  if(value)
-	config_no_smp = atoi(value);
+  हालागा = env_get("no_smp");
+  if(हालागा)
+	config_no_smp = atoi(हालागा);
   else
 	config_no_smp = 0;
 #endif
@@ -478,7 +478,7 @@ void cstart(void)
  *				get_value				     *
  *===========================================================================*/
 
-char *get_value(
+char *get_हालागा(
   const char *params,			/* boot monitor parameters */
   const char *name			/* key to look up */
 )
@@ -504,10 +504,10 @@ char *get_value(
  *===========================================================================*/
 char *env_get(const char *name)
 {
-	return get_value(kinfo.param_buf, name);
+	return get_हालागा(kinfo.param_buf, name);
 }
 
-void cpu_print_freq(unsigned cpu)
+void cpu_इलिम्बाग_freq(unsigned cpu)
 {
         u64_t freq;
 

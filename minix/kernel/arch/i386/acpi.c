@@ -18,7 +18,7 @@ static acpi_read_t read_func;
 #define AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK (0xC0)
 #define AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT (6)
 #define AMI_MIN_PACKAGE_LENGTH (1)
-#define AMI_NUM_ELEMENTS_LENGTH (1)
+#define AMI_नुमेरो_ELEMENTS_LENGTH (1)
 #define AMI_SLP_TYPA_SHIFT (10)
 #define AMI_SLP_TYPB_SHIFT (10)
 #define AMI_S5_NAME_OP_OFFSET_1 (-1)
@@ -36,7 +36,7 @@ static struct {
 	size_t	length;
 } sdt_trans[MAX_RSDT];
 
-static int sdt_count;
+static int sdt_बिलांग;
 static u16_t pm1a_cnt_blk = 0;
 static u16_t pm1b_cnt_blk = 0;
 static u16_t slp_typa = 0;
@@ -123,7 +123,7 @@ phys_bytes acpi_get_table_base(const char * name)
 {
 	int i;
 
-	for(i = 0; i < sdt_count; i++) {
+	for(i = 0; i < sdt_बिलांग; i++) {
 		if (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
 			return (phys_bytes) rsdt.data[i];
@@ -136,7 +136,7 @@ size_t acpi_get_table_length(const char * name)
 {
 	int i;
 
-	for(i = 0; i < sdt_count; i++) {
+	for(i = 0; i < sdt_बिलांग; i++) {
 		if (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
 			return sdt_trans[i].length;
@@ -234,21 +234,21 @@ static void acpi_init_poweroff(void)
 	u8_t *end = NULL;
 	struct acpi_fadt_header *fadt_header = NULL;
 	struct acpi_rsdt * dsdt_header = NULL;
-	char *msg = NULL;
+	char *मेनसाहे = NULL;
 
 	/* Everything used here existed since ACPI spec 1.0 */
 	/* So we can safely use them */
 	fadt_header = (struct acpi_fadt_header *)
 		acpi_phys2vir(acpi_get_table_base("FACP"));
 	if (fadt_header == NULL) {
-		msg = "Could not load FACP";
+		मेनसाहे = "Could not load FACP";
 		goto exit;
 	}
 
 	dsdt_header = (struct acpi_rsdt *)
 		acpi_phys2vir((phys_bytes) fadt_header->dsdt);
 	if (dsdt_header == NULL) {
-		msg = "Could not load DSDT";
+		मेनसाहे = "Could not load DSDT";
 		goto exit;
 	}
 
@@ -263,7 +263,7 @@ static void acpi_init_poweroff(void)
 	while (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
 		ptr++;
 
-	msg = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
+	मेनसाहे = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
 	if (ptr >= end || ptr == start)
 		goto exit;
 
@@ -284,7 +284,7 @@ static void acpi_init_poweroff(void)
 	/* package length */
 	ptr += ((*ptr & AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK) >>
 		AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT) +
-		AMI_MIN_PACKAGE_LENGTH + AMI_NUM_ELEMENTS_LENGTH;
+		AMI_MIN_PACKAGE_LENGTH + AMI_नुमेरो_ELEMENTS_LENGTH;
 	if (ptr >= end)
 		goto exit;
 
@@ -299,11 +299,11 @@ static void acpi_init_poweroff(void)
 
 	slp_typb = (*ptr) << AMI_SLP_TYPB_SHIFT;
 
-	msg = "poweroff initialized";
+	मेनसाहे = "poweroff initialized";
 
 exit:
-	if (msg) {
-		DEBUGBASIC(("acpi: %s\n", msg));
+	if (मेनसाहे) {
+		DEBUGBASIC(("acpi: %s\n", मेनसाहे));
 	}
 }
 
@@ -320,9 +320,9 @@ void acpi_init(void)
 	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (struct acpi_sdt_header *) &rsdt,
 			sizeof(struct acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
 
-	sdt_count = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
+	sdt_बिलांग = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
 
-	for (i = 0; i < sdt_count; i++) {
+	for (i = 0; i < sdt_बिलांग; i++) {
 		struct acpi_sdt_header hdr;
 		int j;
 		if (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {

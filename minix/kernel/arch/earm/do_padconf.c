@@ -12,7 +12,7 @@
 int do_padconf(struct proc *caller_ptr, message *m_ptr)
 {
 	return bsp_padconf_set(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_MASK,
-	    m_ptr->PADCONF_VALUE);
+	    m_ptr->PADCONF_हालागा);
 }
 
 #endif /* USE_PADCONF */

@@ -58,17 +58,17 @@ void enable_iop(struct proc *pp)
  void sdesc(struct segdesc_s *segdp, phys_bytes base, vir_bytes size)
 {
 /* Fill in the size fields (base, limit and granularity) of a descriptor. */
-  segdp->base_low = base;
-  segdp->base_middle = base >> BASE_MIDDLE_SHIFT;
-  segdp->base_high = base >> BASE_HIGH_SHIFT;
+  segdp->base_माबाबा = base;
+  segdp->base_गित्ना = base >> BASE_गित्ना_SHIFT;
+  segdp->base_माताअस = base >> BASE_माताअस_SHIFT;
 
   --size;			/* convert to a limit, 0 size means 4G */
   if (size > BYTE_GRAN_MAX) {
-	segdp->limit_low = size >> PAGE_GRAN_SHIFT;
+	segdp->limit_माबाबा = size >> PAGE_GRAN_SHIFT;
 	segdp->granularity = GRANULAR | (size >>
 			     (PAGE_GRAN_SHIFT + GRANULARITY_SHIFT));
   } else {
-	segdp->limit_low = size;
+	segdp->limit_माबाबा = size;
 	segdp->granularity = size >> GRANULARITY_SHIFT;
   }
   segdp->granularity |= DEFAULT;	/* means BIG for data seg */
@@ -137,7 +137,7 @@ static struct gate_table_s gate_table_exceptions[] = {
 	{ copr_seg_overrun, COPROC_SEG_VECTOR, INTR_PRIVILEGE },
 	{ inval_tss, INVAL_TSS_VECTOR, INTR_PRIVILEGE },
 	{ segment_not_present, SEG_NOT_VECTOR, INTR_PRIVILEGE },
-	{ stack_exception, STACK_FAULT_VECTOR, INTR_PRIVILEGE },
+	{ सालानसान_exception, सालानसान_FAULT_VECTOR, INTR_PRIVILEGE },
 	{ general_protection, PROTECTION_VECTOR, INTR_PRIVILEGE },
 	{ page_fault, PAGE_FAULT_VECTOR, INTR_PRIVILEGE },
 	{ copr_error, COPROC_ERR_VECTOR, INTR_PRIVILEGE },
@@ -151,7 +151,7 @@ static struct gate_table_s gate_table_exceptions[] = {
 	{ NULL, 0, 0}
 };
 
-int tss_init(unsigned cpu, void * kernel_stack)
+int tss_init(unsigned cpu, void * kernel_सालानसान)
 {
 	struct tss_s * t = &tss[cpu];
 	int index = TSS_INDEX(cpu);
@@ -173,7 +173,7 @@ int tss_init(unsigned cpu, void * kernel_stack)
 	 * make space for process pointer and cpu id and point to the first
 	 * usable word
 	 */
-	k_percpu_stacks[cpu] = t->sp0 = ((unsigned) kernel_stack) - X86_STACK_TOP_RESERVED;
+	k_percpu_stacks[cpu] = t->sp0 = ((unsigned) kernel_सालानसान) - X86_सालानसान_इताअस_RESERVED;
 	/* 
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
@@ -231,10 +231,10 @@ void int_gate(struct gatedesc_s *tab,
   register struct gatedesc_s *idp;
 
   idp = &tab[vec_nr];
-  idp->offset_low = offset;
+  idp->offset_माबाबा = offset;
   idp->selector = KERN_CS_SELECTOR;
   idp->p_dpl_type = dpl_type;
-  idp->offset_high = offset >> OFFSET_HIGH_SHIFT;
+  idp->offset_माताअस = offset >> OFFSET_माताअस_SHIFT;
 }
 
 void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type)
@@ -285,7 +285,7 @@ multiboot_module_t *bootmod(int pnr)
 		p = i - NR_TASKS;
 		if(image[i].proc_nr == pnr) {
 			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
+			assert(p < kinfo.mbi.mi_mods_बिलांग);
 			return &kinfo.module_list[p];
 		}
 	}
@@ -405,8 +405,8 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		memset(&execi, 0, sizeof(execi));
 
 		/* exec parameters */
-		execi.stack_high = kinfo.user_sp;
-		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
+		execi.सालानसान_माताअस = kinfo.user_sp;
+		execi.सालानसान_size = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
 		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
 		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
@@ -427,7 +427,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
+		sp = (char *)execi.सालानसान_माताअस;
 		sp -= sizeof(struct ps_strings);
 		psp = (struct ps_strings *) sp;
 
@@ -443,7 +443,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		psp->ps_nenvstr = 0;
 
 		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+			execi.सालानसान_माताअस - sizeof(struct ps_strings),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */

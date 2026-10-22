@@ -71,8 +71,8 @@
 #define APIC_ICR_DELIVERY_PENDING	(1 << 12)
 
 #define APIC_ICR_INT_POLARITY		(1 << 13)
-#define APIC_ICR_INTPOL_LOW		IS_SET(APIC_ICR_INT_POLARITY)
-#define APIC_ICR_INTPOL_HIGH		IS_CLEAR(APIC_ICR_INT_POLARITY)
+#define APIC_ICR_INTPOL_माबाबा		IS_SET(APIC_ICR_INT_POLARITY)
+#define APIC_ICR_INTPOL_माताअस		IS_CLEAR(APIC_ICR_INT_POLARITY)
 
 #define APIC_ICR_LEVEL_ASSERT		(1 << 14)
 #define APIC_ICR_LEVEL_DEASSERT		(0 << 14)
@@ -183,7 +183,7 @@ static void ioapic_write(u32_t ioa_base, u8_t reg, u32_t val)
 	*((volatile u32_t *)(ioa_base + IOAPIC_IOWIN)) = val;
 }
 
-void lapic_microsec_sleep(unsigned count);
+void lapic_microsec_sleep(unsigned बिलांग);
 void apic_idt_init(const int reset);
 
 static void ioapic_enable_pin(vir_bytes ioapic_addr, int pin)
@@ -318,18 +318,18 @@ static void ioapic_disable(struct io_apic * ioapic)
 	unsigned p;
 	
 	for (p = 0; p < io_apic->pins; p++) {
-		u32_t low_32, hi_32;
-		low_32 = ioapic_read((u32_t)ioapic->addr,
+		u32_t माबाबा_32, hi_32;
+		माबाबा_32 = ioapic_read((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2));
 		hi_32 = ioapic_read((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1));
 
-		if (!(low_32 & APIC_ICR_INT_MASK)) {
-			low_32 |= APIC_ICR_INT_MASK;
+		if (!(माबाबा_32 & APIC_ICR_INT_MASK)) {
+			माबाबा_32 |= APIC_ICR_INT_MASK;
 			ioapic_write((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1), hi_32);
 			ioapic_write((u32_t)ioapic->addr,
-				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2), low_32);
+				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2), माबाबा_32);
 		}
 	}
 }
@@ -520,7 +520,7 @@ static void apic_calibrate_clocks(unsigned cpu)
 	cpu_freq = (tsc_delta / (PROBE_TICKS - 1)) * make64(system_hz, 0);
 	cpu_set_freq(cpuid, cpu_freq);
 	cpu_info[cpuid].freq = (unsigned long)(cpu_freq / 1000000);
-	BOOT_VERBOSE(cpu_print_freq(cpuid));
+	BOOT_VERBOSE(cpu_इलिम्बाग_freq(cpuid));
 }
 
 void lapic_set_timer_one_shot(const u32_t usec)
@@ -578,9 +578,9 @@ void lapic_restart_timer(void)
 		lapic_set_timer_one_shot(1000000/system_hz);
 }
 
-void lapic_microsec_sleep(unsigned count)
+void lapic_microsec_sleep(unsigned बिलांग)
 {
-	lapic_set_timer_one_shot(count);
+	lapic_set_timer_one_shot(बिलांग);
 	while (lapic_read(LAPIC_TIMER_CCR))
 		arch_pause();
 }
@@ -1170,7 +1170,7 @@ static eoi_method_t set_eoi_method(unsigned irq)
 		return ioapic_eoi_level;
 }
 
-void set_irq_redir_low(unsigned irq, u32_t * low)
+void set_irq_redir_माबाबा(unsigned irq, u32_t * माबाबा)
 {
 	u32_t val = 0;
 
@@ -1193,7 +1193,7 @@ void set_irq_redir_low(unsigned irq, u32_t * low)
 
 	val |= io_apic_irq[irq].vector;
 
-	*low = val;
+	*माबाबा = val;
 }
 
 void ioapic_set_irq(unsigned irq)
@@ -1212,20 +1212,20 @@ void ioapic_set_irq(unsigned irq)
 		if (io_apic[ioa].gsi_base <= irq &&
 				io_apic[ioa].gsi_base +
 				io_apic[ioa].pins > irq) {
-			u32_t hi_32, low_32;
+			u32_t hi_32, माबाबा_32;
 
 			io_apic_irq[irq].ioa = &io_apic[ioa];
 			io_apic_irq[irq].pin = irq - io_apic[ioa].gsi_base;
 			io_apic_irq[irq].eoi = set_eoi_method(irq);
 			io_apic_irq[irq].vector = LAPIC_VECTOR(irq);
 
-			set_irq_redir_low(irq, &low_32);
+			set_irq_redir_माबाबा(irq, &माबाबा_32);
 			/*
 			 * route the interrupts to the bsp by default
 			 */
 			hi_32 = bsp_lapic_id << 24;
 			ioapic_redirt_entry_write((void *) io_apic[ioa].addr,
-					io_apic_irq[irq].pin, hi_32, low_32);
+					io_apic_irq[irq].pin, hi_32, माबाबा_32);
 		}
 	}
 }

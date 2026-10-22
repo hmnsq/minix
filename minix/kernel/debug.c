@@ -185,7 +185,7 @@ schedulerstr(struct proc *scheduler)
 }
 
 static void
-print_proc_name(struct proc *pp)
+इलिम्बाग_proc_name(struct proc *pp)
 {
 	char *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
@@ -199,7 +199,7 @@ print_proc_name(struct proc *pp)
 }
 
 static void
-print_endpoint(endpoint_t ep)
+इलिम्बाग_endpoint(endpoint_t ep)
 {
 	int proc_nr;
 	struct proc *pp = NULL;
@@ -224,7 +224,7 @@ print_endpoint(endpoint_t ep)
 				printf("??? empty slot %d\n", proc_nr);
 			}
 			else {
-				print_proc_name(pp);
+				इलिम्बाग_proc_name(pp);
 			}
 		}
 	break;
@@ -232,21 +232,21 @@ print_endpoint(endpoint_t ep)
 }
 
 static void
-print_sigmgr(struct proc *pp)
+इलिम्बाग_sigmgr(struct proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
 	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
 	printf("sigmgr ");
-	print_endpoint(sig_mgr);
+	इलिम्बाग_endpoint(sig_mgr);
 	if(bak_sig_mgr != NONE) {
 		printf(" / ");
-		print_endpoint(bak_sig_mgr);
+		इलिम्बाग_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+void इलिम्बाग_proc(struct proc *pp)
 {
 	endpoint_t dep;
 
@@ -264,17 +264,17 @@ void print_proc(struct proc *pp)
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
 		schedulerstr(pp->p_scheduler));
 
-	print_sigmgr(pp);
+	इलिम्बाग_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
 	if(dep != NONE) {
 		printf(" blocked on: ");
-		print_endpoint(dep);
+		इलिम्बाग_endpoint(dep);
 	}
 	printf("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+static void इलिम्बाग_proc_depends(struct proc *pp, const int level)
 {
 	struct proc *depproc = NULL;
 	endpoint_t dep;
@@ -287,7 +287,7 @@ static void print_proc_depends(struct proc *pp, const int level)
 
 	COL
 
-	print_proc(pp);
+	इलिम्बाग_proc(pp);
 
 	COL
 	proc_stacktrace(pp);
@@ -302,13 +302,13 @@ static void print_proc_depends(struct proc *pp, const int level)
 				depproc = NULL;
 		}
 		if (depproc)
-			print_proc_depends(depproc, level+1);
+			इलिम्बाग_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+void इलिम्बाग_proc_recursive(struct proc *pp)
 {
-	print_proc_depends(pp, 0);
+	इलिम्बाग_proc_depends(pp, 0);
 }
 
 #if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
@@ -383,11 +383,11 @@ static int namematch(char **names, int nnames, char *name)
 }
 #endif
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
+void printmsg(message *मेनसाहे, struct proc *src, struct proc *dst,
 	char operation, int printparams)
 {
 	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	int mtype = मेनसाहे->m_type, mightbecall = 0;
 
 #ifdef DEBUG_DUMPIPC_NAMES
   {
@@ -417,7 +417,7 @@ void printmsg(message *msg, struct proc *src, struct proc *dst,
 	}
 
 	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
+#define IDENT(x, y) if (mtype == x) printparam(#y, &मेनसाहे->y, sizeof(मेनसाहे->y));
 #include "kernel/extracted-mfield.h"
 #undef IDENT
 	}
@@ -490,7 +490,7 @@ static void sortstats(void)
 	assert(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+static void statmsg(message *मेनसाहे, struct proc *srcp, struct proc *dstp)
 {
 	int src, dst, now, secs, dt;
 	static int lastprint;
@@ -516,37 +516,37 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 #endif
 
 #if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+void hook_ipc_msgkcall(message *मेनसाहे, struct proc *proc)
 {
 #if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
+	printmsg(मेनसाहे, proc, NULL, 'k', 1);
 #endif
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+void hook_ipc_msgkresult(message *मेनसाहे, struct proc *proc)
 {
 #if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
+	printmsg(मेनसाहे, NULL, proc, 'k', 0);
 #endif
 #if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
+	statmsg(मेनसाहे, proc, NULL);
 #endif
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+void hook_ipc_msgrecv(message *मेनसाहे, struct proc *src, struct proc *dst)
 {
 #if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
+	printmsg(मेनसाहे, src, dst, 'r', 0);
 #endif
 #if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
+	statmsg(मेनसाहे, src, dst);
 #endif
 }
 
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
+void hook_ipc_msgsend(message *मेनसाहे, struct proc *src, struct proc *dst)
 {
 #if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
+	printmsg(मेनसाहे, src, dst, 's', 1);
 #endif
 }
 

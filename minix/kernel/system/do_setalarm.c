@@ -38,11 +38,11 @@ int do_setalarm(struct proc * caller, message * m_ptr)
   /* Return the ticks left on the previous alarm. */
   uptime = get_monotonic(); 
   if (!tmr_is_set(tp)) {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = TMR_NEVER;
+	m_ptr->m_lsys_krn_sys_setalarm.time_कालिवा = TMR_NEVER;
   } else if (tmr_is_first(uptime, tp->tmr_exp_time)) {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = tp->tmr_exp_time - uptime;
+	m_ptr->m_lsys_krn_sys_setalarm.time_कालिवा = tp->tmr_exp_time - uptime;
   } else {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = 0;
+	m_ptr->m_lsys_krn_sys_setalarm.time_कालिवा = 0;
   }
 
   /* For the caller's convenience, also return the current time. */

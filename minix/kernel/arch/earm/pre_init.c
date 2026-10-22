@@ -60,29 +60,29 @@ extern char _kern_unpaged_end;
  *       the end char
  *
 **/
-int find_value(char * content,char * key,char *value,int value_max_len){
+int find_हालागा(char * content,char * सुसि,char *हालागा,int हालागा_max_len){
 
 	char *iter,*keyp;
-	int key_len,content_len,match_len,value_len;
+	int सुसि_len,content_len,match_len,हालागा_len;
 
 	/* return if the input is invalid */
-	if  (key == NULL || content == NULL || value == NULL) {
+	if  (सुसि == NULL || content == NULL || हालागा == NULL) {
 		return 1;
 	}
 
 	/* find the key and content length */
-	key_len = content_len =0;
-	for(iter = key ; *iter != '\0'; iter++, key_len++);
+	सुसि_len = content_len =0;
+	for(iter = सुसि ; *iter != '\0'; iter++, सुसि_len++);
 	for(iter = content ; *iter != '\0'; iter++, content_len++);
 
 	/* return if key or content length invalid */
-	if (key_len == 0 || content_len == 0) {
+	if (सुसि_len == 0 || content_len == 0) {
 		return 1;
 	}
 
 	/* now find the key in the contents */
 	match_len =0;
-	for (iter = content ,keyp=key; match_len < key_len && *iter != '\0' ; iter++) {
+	for (iter = content ,keyp=सुसि; match_len < सुसि_len && *iter != '\0' ; iter++) {
 		if (*iter == *keyp) {
 			match_len++;
 			keyp++;
@@ -90,25 +90,25 @@ int find_value(char * content,char * key,char *value,int value_max_len){
 		} 
 		/* The current key does not match the value , reset */
 		match_len =0;
-		keyp=key;
+		keyp=सुसि;
 	}
 
-	if (match_len == key_len) {
+	if (match_len == सुसि_len) {
 		printf("key found at %d %s\n", match_len, &content[match_len]);
-		value_len = 0;
+		हालागा_len = 0;
 		/* copy the content to the value char iter already points to the first 
 		   char value */
-		while(*iter != '\0' && *iter != ' ' && value_len  + 1< value_max_len) {
-			*value++ = *iter++;
-			value_len++;
+		while(*iter != '\0' && *iter != ' ' && हालागा_len  + 1< हालागा_max_len) {
+			*हालागा++ = *iter++;
+			हालागा_len++;
 		}
-		*value='\0';
+		*हालागा='\0';
 		return 0;
 	}
 	return 1; /* not found */
 }
 
-static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
+static int mb_set_param(char *bigbuf,char *name,char *हालागा, kinfo_t *cbi)
 {
 	/* bigbuf contains a list of key=value pairs separated by \0 char.
 	 * The list itself is ended by a second \0 terminator*/
@@ -116,11 +116,11 @@ static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
 	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
 	char *q;
 	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	int valuelen = strlen(हालागा);
 
 	/* Some variables we recognize */
 	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(हालागा); }
 
 	/* Delete the item if already exists */
 	while (*p) {
@@ -153,7 +153,7 @@ static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
 	
 	strcpy(p, name);
 	p[namelen] = '=';
-	strcpy(p + namelen + 1, value);
+	strcpy(p + namelen + 1, हालागा);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0; /* end with a second delimiter */
 	return 0;
@@ -192,7 +192,7 @@ void setup_mbi(multiboot_info_t *mbi, char *bootargs)
 	memset(mbi, 0, sizeof(*mbi));
 	mbi->flags = MULTIBOOT_INFO_MODS | MULTIBOOT_INFO_MEM_MAP |
 			MULTIBOOT_INFO_CMDLINE;
-	mbi->mi_mods_count = MB_MODS_NR;
+	mbi->mi_mods_बिलांग = MB_MODS_NR;
 	mbi->mods_addr = (u32_t)&mb_modlist;
 
 	int i;
@@ -219,7 +219,7 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 {
 	multiboot_memory_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
+	int var_i,हालागा_i, m, k;
 	char *p;
 	extern char _kern_phys_base, _kern_vir_base, _kern_size,
 	    _kern_unpaged_start, _kern_unpaged_end;
@@ -232,7 +232,7 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	setup_mbi(mbi, bootargs);
 
 	/* Set various bits of info for the higher-level kernel. */
-	cbi->mem_high_phys = 0;
+	cbi->mem_माताअस_phys = 0;
 	cbi->user_sp = (vir_bytes) &_kern_vir_base;
 	cbi->vir_kern_start = (vir_bytes) &_kern_vir_base;
 	cbi->bootstrap_start = (vir_bytes) &_kern_unpaged_start;
@@ -247,26 +247,26 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	/* parse boot command line */
 	if (mbi->flags&MULTIBOOT_INFO_CMDLINE) {
 		static char var[BUF];
-		static char value[BUF];
+		static char हालागा[BUF];
 
 		/* Override values with cmdline argument */
 		memcpy(cmdline, (void *) mbi->cmdline, BUF);
 		p = cmdline;
 		while (*p) {
 			var_i = 0;
-			value_i = 0;
+			हालागा_i = 0;
 			while (*p == ' ') p++; /* skip spaces */
 			if (!*p) break; /* is this the end? */
 			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1)
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
 			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) {
-				value[value_i++] = *p++ ;
+			while (*p && *p != ' ' && हालागा_i < BUF - 1) {
+				हालागा[हालागा_i++] = *p++ ;
 			}
-			value[value_i] = 0;
+			हालागा[हालागा_i] = 0;
 			
-			mb_set_param(cbi->param_buf, var, value, cbi);
+			mb_set_param(cbi->param_buf, var, हालागा, cbi);
 		}
 	}
 
@@ -291,10 +291,10 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	assert(!(cbi->bootstrap_start % ARM_PAGE_SIZE));
 	cbi->bootstrap_len = rounddown(cbi->bootstrap_len, ARM_PAGE_SIZE);
 	assert(mbi->flags & MULTIBOOT_INFO_MODS);
-	assert(mbi->mi_mods_count < MULTIBOOT_MAX_MODS);
-	assert(mbi->mi_mods_count > 0);
+	assert(mbi->mi_mods_बिलांग < MULTIBOOT_MAX_MODS);
+	assert(mbi->mi_mods_बिलांग > 0);
 	memcpy(&cbi->module_list, (void *) mbi->mods_addr,
-		mbi->mi_mods_count * sizeof(multiboot_module_t));
+		mbi->mi_mods_बिलांग * sizeof(multiboot_module_t));
 	
 	memset(cbi->memmap, 0, sizeof(cbi->memmap));
 	/* mem_map has a variable layout */
@@ -317,11 +317,11 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	 * with each other. Pretend the kernel is an extra module for a
 	 * second.
 	 */
-	k = mbi->mi_mods_count;
+	k = mbi->mi_mods_बिलांग;
 	assert(k < MULTIBOOT_MAX_MODS);
 	cbi->module_list[k].mod_start = kernbase;
 	cbi->module_list[k].mod_end = kernbase + kernsize;
-	cbi->mods_with_kernel = mbi->mi_mods_count+1;
+	cbi->mods_with_kernel = mbi->mi_mods_बिलांग+1;
 	cbi->kern_mod = k;
 
 	for(m = 0; m < cbi->mods_with_kernel; m++) {
@@ -356,7 +356,7 @@ void set_machine_id(char *cmdline)
 
 	char boardname[20];
 	memset(boardname,'\0',20);
-	if (find_value(cmdline,"board_name=",boardname,20)){
+	if (find_हालागा(cmdline,"board_name=",boardname,20)){
 		/* we expect the bootloader to pass a board_name as argument
 		 * this however did not happen and given we still are in early
 		 * boot we can't use the serial. We therefore generate an interrupt

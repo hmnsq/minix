@@ -20,7 +20,7 @@
 
 #define MAX_INDIRECT_DEPTH 5	/* up to how many indirect grants to follow? */
 
-#define MEM_TOP 0xFFFFFFFFUL
+#define MEM_इताअस 0xFFFFFFFFUL
 
 static int safecopy(struct proc *, endpoint_t, endpoint_t,
 	cp_grant_id_t, size_t, vir_bytes, vir_bytes, int);
@@ -32,7 +32,7 @@ struct cp_sfinfo {		/* information for handling soft faults */
 	int try;		/* if nonzero, try copy only, stop on fault */
 	endpoint_t endpt;	/* endpoint owning grant with CPF_TRY flag */
 	vir_bytes addr;		/* address to write mark upon soft fault */
-	cp_grant_id_t value;	/* grant ID to use as mark value to write */
+	cp_grant_id_t हालागा;	/* grant ID to use as mark value to write */
 };
 
 /*===========================================================================*
@@ -184,7 +184,7 @@ int verify_grant(
 		/* Don't fiddle around with grants that wrap, arithmetic
 		 * below may be confused.
 		 */
-		if(MEM_TOP - g.cp_u.cp_direct.cp_len + 1 <
+		if(MEM_इताअस - g.cp_u.cp_direct.cp_len + 1 <
 			g.cp_u.cp_direct.cp_start) {
 			printf(
 		"verify_grant: direct grant verify failed: len too long\n");
@@ -259,7 +259,7 @@ int verify_grant(
 		sfinfo->endpt = granter;
 		sfinfo->addr = priv(granter_proc)->s_grant_table +
 		    sizeof(g) * grant_idx + offsetof(cp_grant_t, cp_faulted);
-		sfinfo->value = grant;
+		sfinfo->हालागा = grant;
 	}
 
 	return OK;
@@ -352,8 +352,8 @@ static int safecopy(
 			 * sequence number) as a form of protection in the
 			 * light of CPU concurrency.
 			 */
-			r = data_copy(KERNEL, (vir_bytes)&sfinfo.value,
-			    sfinfo.endpt, sfinfo.addr, sizeof(sfinfo.value));
+			r = data_copy(KERNEL, (vir_bytes)&sfinfo.हालागा,
+			    sfinfo.endpt, sfinfo.addr, sizeof(sfinfo.हालागा));
 			/*
 			 * Failure means the creator of the magic grant messed
 			 * up, which can only be unintentional, so report..
@@ -361,7 +361,7 @@ static int safecopy(
 			if (r != OK)
 				printf("Kernel: writing soft fault marker %d "
 				    "into %d at 0x%lx failed (%d)\n",
-				    sfinfo.value, sfinfo.endpt, sfinfo.addr,
+				    sfinfo.हालागा, sfinfo.endpt, sfinfo.addr,
 				    r);
 
 			return EFAULT;

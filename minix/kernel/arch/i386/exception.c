@@ -11,7 +11,7 @@
 #include <machine/vm.h>
 
 struct ex_s {
-	char *msg;
+	char *मेनसाहे;
 	int signum;
 	int minprocessor;
 };
@@ -135,10 +135,10 @@ static void inkernel_disaster(struct proc *saved_proc,
 {
 #if USE_SYSDEBUG
   if(ep) {
-	if (ep->msg == NULL)
+	if (ep->मेनसाहे == NULL)
 		printf("\nIntel-reserved exception %d\n", frame->vector);
 	  else
-		printf("\n%s\n", ep->msg);
+		printf("\n%s\n", ep->मेनसाहे);
   }
 
   printf("cpu %d is_nested = %d ", cpuid, is_nested);
@@ -203,9 +203,9 @@ void exception_handler(int is_nested, struct exception_frame * frame)
 	 * of a wrong pointer supplied by userland, handle it the only way we
 	 * can handle it ...
 	 */
-	if (((void*)frame->eip >= (void*)copy_msg_to_user &&
+	if (((void*)frame->eip >= (void*)copy_मेनसाहे_to_user &&
 			(void*)frame->eip <= (void*)__copy_msg_to_user_end) ||
-			((void*)frame->eip >= (void*)copy_msg_from_user &&
+			((void*)frame->eip >= (void*)copy_मेनसाहे_from_user &&
 			(void*)frame->eip <= (void*)__copy_msg_from_user_end)) {
 		switch(frame->vector) {
 		/* these error are expected */

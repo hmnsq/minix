@@ -29,7 +29,7 @@ int do_umap_remote(struct proc * caller, message * m_ptr)
   int seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
   int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
   vir_bytes offset = m_ptr->m_lsys_krn_sys_umap.src_addr;
-  int count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
+  int बिलांग = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
   endpoint_t endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
   endpoint_t grantee = m_ptr->m_lsys_krn_sys_umap.dst_endpt;
   int proc_nr, proc_nr_grantee;
@@ -63,9 +63,9 @@ int do_umap_remote(struct proc * caller, message * m_ptr)
 	int new_proc_nr;
 	cp_grant_id_t grant = (cp_grant_id_t) offset;
 
-        if(verify_grant(targetpr->p_endpoint, grantee, grant, count,
+        if(verify_grant(targetpr->p_endpoint, grantee, grant, बिलांग,
                 0, 0, &newoffset, &newep, NULL) != OK) {
-                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, count, caller->p_name);
+                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, बिलांग, caller->p_name);
 		proc_stacktrace(caller);
                 return EFAULT;
         }
@@ -103,7 +103,7 @@ int do_umap_remote(struct proc * caller, message * m_ptr)
   	return EINVAL;
   }
 
-  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
+  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, बिलांग) != बिलांग) {
 	printf("SYSTEM:do_umap: not contiguous\n");
 	return EFAULT;
   }

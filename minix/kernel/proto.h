@@ -75,7 +75,7 @@ void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
 struct proc * arch_finish_switch_to_user(void);
 struct proc *endpoint_lookup(endpoint_t ep);
 #if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+int isokendpt_f(const char *file, int लिन्या, endpoint_t e, int *p, int
 	f);
 #define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
 #else
@@ -90,7 +90,7 @@ int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
 
 /* start.c */
 void cstart(void);
-char *env_get(const char *key);
+char *env_get(const char *सुसि);
 
 /* system.c */
 int get_priv(register struct proc *rc, int proc_type);
@@ -111,7 +111,7 @@ int add_ipc_filter(struct proc *rp, int type,
     vir_bytes address, size_t length);
 void clear_ipc_filters(struct proc *rp);
 int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+int allow_ipc_filtered_मेनसाहे(struct proc *rp, endpoint_t src_e,
     vir_bytes m_src_v, message *m_src_p);
 int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
 int priv_add_irq(struct proc *rp, int irq);
@@ -142,16 +142,16 @@ char *rtsflagstr(u32_t flags);
 char *miscflagstr(u32_t flags);
 char *schedulerstr(struct proc *scheduler);
 /* prints process information */
-void print_proc(struct proc *pp);
+void इलिम्बाग_proc(struct proc *pp);
 /* prints the given process and recursively all processes it depends on */
-void print_proc_recursive(struct proc *pp);
-void printmsg(message *msg, struct proc *src, struct proc *dst,
+void इलिम्बाग_proc_recursive(struct proc *pp);
+void printmsg(message *मेनसाहे, struct proc *src, struct proc *dst,
     char operation, int printparams);
 #if DEBUG_IPC_HOOK
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgkcall(message *msg, struct proc *proc);
-void hook_ipc_msgkresult(message *msg, struct proc *proc);
+void hook_ipc_msgrecv(message *मेनसाहे, struct proc *src, struct proc *dst);
+void hook_ipc_msgsend(message *मेनसाहे, struct proc *src, struct proc *dst);
+void hook_ipc_msgkcall(message *मेनसाहे, struct proc *proc);
+void hook_ipc_msgkresult(message *मेनसाहे, struct proc *proc);
 void hook_ipc_clear(struct proc *proc);
 #endif
 
@@ -174,7 +174,7 @@ void prot_init(void);
 void arch_post_init(void);
 void arch_set_secondary_ipc_return(struct proc *, u32_t val);
 phys_bytes phys_copy(phys_bytes source, phys_bytes dest, phys_bytes
-	count);
+	बिलांग);
 void phys_copy_fault(void);
 void phys_copy_fault_in_kernel(void);
 void memset_fault(void);
@@ -193,7 +193,7 @@ phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
 	vir_bytes bytes);
 phys_bytes seg2phys(u16_t);
 int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
+	int pattern, phys_bytes बिलांग);
 int intr_init(int);
 void halt_cpu(void);
 void arch_init(void);
@@ -206,7 +206,7 @@ int is_fpu(void);
 void ser_putc(char);
 __dead void arch_shutdown(int);
 void restore_user_context(struct proc * p);
-void read_tsc(u32_t *high, u32_t *low);
+void read_tsc(u32_t *माताअस, u32_t *माबाबा);
 int arch_init_profile_clock(u32_t freq);
 void arch_stop_profile_clock(void);
 void arch_ack_profile_clock(void);
@@ -217,7 +217,7 @@ void mem_clear_mapcache(void);
 void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
 int arch_do_vmctl(message *m_ptr, struct proc *p);
 int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
-	size_t count);
+	size_t बिलांग);
 void proc_stacktrace(struct proc *proc);
 int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
 	*result, u32_t *ptent);
@@ -232,8 +232,8 @@ int arch_enable_paging(struct proc * caller);
 int vm_check_range(struct proc *caller,
        struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
+int copy_मेनसाहे_from_user(message * user_mbuf, message * dst);
+int copy_मेनसाहे_to_user(message * src, message * user_mbuf);
 void switch_address_space(struct proc * p);
 void release_address_space(struct proc *pr);
 
@@ -245,7 +245,7 @@ short cpu_load(void);
 void busy_delay_ms(int ms);
 
 /* utility.c */
-void cpu_print_freq(unsigned cpu);
+void cpu_इलिम्बाग_freq(unsigned cpu);
 #endif /* __kernel__ */
 
 #endif /* PROTO_H */

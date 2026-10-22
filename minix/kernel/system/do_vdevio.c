@@ -43,7 +43,7 @@ int do_vdevio(struct proc * caller, message * m_ptr)
   /* Get the request, size of the request vector, and check the values. */
   io_dir = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_DIRMASK;
   io_type = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_TYPEMASK;
-  if (io_dir == _DIO_INPUT) io_in = TRUE;
+  if (io_dir == DIO_पासोक) io_in = TRUE;
   else if (io_dir == _DIO_OUTPUT) io_in = FALSE;
   else return(EINVAL);
   if ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) return(EINVAL);
@@ -103,9 +103,9 @@ int do_vdevio(struct proc * caller, message * m_ptr)
   switch (io_type) {
   case _DIO_BYTE: 					 /* byte values */
       if (io_in) for (i=0; i<vec_size; i++) 
-		pvb[i].value = inb( pvb[i].port); 
+		pvb[i].हालागा = inb( pvb[i].port); 
       else      for (i=0; i<vec_size; i++)
-		outb( pvb[i].port, pvb[i].value); 
+		outb( pvb[i].port, pvb[i].हालागा); 
       break; 
   case _DIO_WORD:					  /* word values */
       if (io_in)
@@ -114,7 +114,7 @@ int do_vdevio(struct proc * caller, message * m_ptr)
 	{
 		port= pvw[i].port;
 		if (port & 1) goto bad;
-		pvw[i].value = inw( pvw[i].port);  
+		pvw[i].हालागा = inw( pvw[i].port);  
 	}
       }
       else
@@ -123,7 +123,7 @@ int do_vdevio(struct proc * caller, message * m_ptr)
 	{
 		port= pvw[i].port;
 		if (port & 1) goto bad;
-		outw( pvw[i].port, pvw[i].value); 
+		outw( pvw[i].port, pvw[i].हालागा); 
 	}
       }
       break; 
@@ -134,7 +134,7 @@ int do_vdevio(struct proc * caller, message * m_ptr)
 	{
 		port= pvl[i].port;
 		if (port & 3) goto bad;
-		pvl[i].value = inl(pvl[i].port);  
+		pvl[i].हालागा = inl(pvl[i].port);  
 	}
       }
       else
@@ -143,7 +143,7 @@ int do_vdevio(struct proc * caller, message * m_ptr)
 	{
 		port= pvl[i].port;
 		if (port & 3) goto bad;
-		outl( pvb[i].port, pvl[i].value); 
+		outl( pvb[i].port, pvl[i].हालागा); 
 	}
       }
   }

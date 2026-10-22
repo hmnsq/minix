@@ -18,7 +18,7 @@ static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
 /* page directory we can use to map things */
 static u32_t pagedir[1024]  __aligned(4096);
 
-void print_memmap(kinfo_t *cbi)
+void इलिम्बाग_memmap(kinfo_t *cbi)
 {
         int m;
         assert(cbi->mmap_size < MAXMEMMAP);
@@ -110,8 +110,8 @@ void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
                 if(m >= cbi->mmap_size)
                         cbi->mmap_size = m+1;
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		if(highmark > cbi->mem_माताअस_phys) {
+			cbi->mem_माताअस_phys = highmark;
 		}
 
                 return;
@@ -167,7 +167,7 @@ void pg_identity(kinfo_t *cbi)
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	assert(cbi->mem_माताअस_phys);
 
         /* Set up an identity mapping page directory */
         for(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
@@ -175,7 +175,7 @@ void pg_identity(kinfo_t *cbi)
 			| I386_VM_USER
 			| I386_VM_WRITE;
                 phys = i * I386_BIG_PAGE_SIZE;
-		if((cbi->mem_high_phys & I386_VM_ADDR_MASK_4MB)
+		if((cbi->mem_माताअस_phys & I386_VM_ADDR_MASK_4MB)
 			<= (phys & I386_VM_ADDR_MASK_4MB)) {
 			flags |= I386_VM_PWT | I386_VM_PCD;
 		}

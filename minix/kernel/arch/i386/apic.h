@@ -130,7 +130,7 @@ void ioapic_reset_pic(void);
 EXTERN int ioapic_enabled;
 EXTERN unsigned nioapics;
 
-void lapic_microsec_sleep(unsigned count);
+void lapic_microsec_sleep(unsigned बिलांग);
 void ioapic_disable_irqs(u32_t irqs);
 void ioapic_enable_irqs(u32_t irqs);
 
@@ -153,7 +153,7 @@ int apic_single_cpu_init(void);
 #endif
 
 void lapic_set_timer_periodic(const unsigned freq);
-void lapic_set_timer_one_shot(const u32_t value);
+void lapic_set_timer_one_shot(const u32_t हालागा);
 void lapic_stop_timer(void);
 void lapic_restart_timer(void);
 

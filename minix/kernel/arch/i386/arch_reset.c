@@ -122,9 +122,9 @@ __dead void arch_shutdown(int how)
 
 		/* Print accumulated diagnostics buffer and reset. */
 		direct_cls();
-		direct_print("Minix panic. System diagnostics buffer:\n\n");
-		direct_print(kmess.kmess_buf);
-		direct_print("\nSystem has panicked, press any key to reboot");
+		direct_इलिम्बाग("Minix panic. System diagnostics buffer:\n\n");
+		direct_इलिम्बाग(kmess.kmess_buf);
+		direct_इलिम्बाग("\nSystem has panicked, press any key to reboot");
 		while (!direct_read_char(&unused_ch))
 			;
 		reset();

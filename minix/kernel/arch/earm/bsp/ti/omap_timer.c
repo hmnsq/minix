@@ -16,7 +16,7 @@
 
 /* interrupt handler hook */
 static irq_hook_t omap3_timer_hook;
-static u64_t high_frc;
+static u64_t माताअस_frc;
 
 struct omap_timer_registers;
 
@@ -362,7 +362,7 @@ frc_overflow_check(u32_t cur_frc)
 	static int prev_frc_valid;
 	static u32_t prev_frc;
 	if (prev_frc_valid && prev_frc > cur_frc) {
-		high_frc++;
+		माताअस_frc++;
 	}
 	prev_frc = cur_frc;
 	prev_frc_valid = 1;
@@ -392,5 +392,5 @@ read_tsc_64(u64_t * t)
 	u32_t now;
 	now = read_frc();
 	frc_overflow_check(now);
-	*t = (u64_t) now + (high_frc << 32);
+	*t = (u64_t) now + (माताअस_frc << 32);
 }

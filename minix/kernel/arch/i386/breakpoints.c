@@ -7,7 +7,7 @@ int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
 {
 	unsigned long dr7, dr7flags;
 	
-	if (bp >= BREAKPOINT_COUNT)
+	if (bp >= BREAKPOINT_बिलांग)
 		return EINVAL;
 	
 	/* convert flags */

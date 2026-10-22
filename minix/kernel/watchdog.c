@@ -15,7 +15,7 @@ static void lockup_check(struct nmi_frame * frame)
 {
 	/* FIXME this should be CPU local */
 	static unsigned no_ticks;
-	static unsigned last_tick_count = (unsigned) -1;
+	static unsigned last_tick_बिलांग = (unsigned) -1;
 
 	/*
 	 * when debugging on serial console, printing takes a lot of time some
@@ -25,13 +25,13 @@ static void lockup_check(struct nmi_frame * frame)
 	if (serial_debug_active)
 		return;
 
-	if (last_tick_count != watchdog_local_timer_ticks) {
+	if (last_tick_बिलांग != watchdog_local_timer_ticks) {
 		if (no_ticks == 1) {
 			printf("watchdog : kernel unlocked\n");
 			no_ticks = 0;
 		}
 		/* we are still ticking, everything seems good */
-		last_tick_count = watchdog_local_timer_ticks;
+		last_tick_बिलांग = watchdog_local_timer_ticks;
 		return;
 	}
 

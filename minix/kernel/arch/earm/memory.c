@@ -302,7 +302,7 @@ phys_bytes umap_virtual(
 int vm_lookup(const struct proc *proc, const vir_bytes virtual,
  phys_bytes *physical, u32_t *ptent)
 {
-	u32_t *root, *pt;
+	u32_t *उगात, *pt;
 	int pde, pte;
 	u32_t pde_v, pte_v;
 
@@ -312,11 +312,11 @@ int vm_lookup(const struct proc *proc, const vir_bytes virtual,
 	assert(HASPT(proc));
 
 	/* Retrieve page directory entry. */
-	root = (u32_t *) (proc->p_seg.p_ttbr & ARM_TTBR_ADDR_MASK);
-	assert(!((u32_t) root % ARM_PAGEDIR_SIZE));
+	उगात = (u32_t *) (proc->p_seg.p_ttbr & ARM_TTBR_ADDR_MASK);
+	assert(!((u32_t) उगात % ARM_PAGEDIR_SIZE));
 	pde = ARM_VM_PDE(virtual);
 	assert(pde >= 0 && pde < ARM_VM_DIR_ENTRIES);
-	pde_v = phys_get32((u32_t) (root + pde));
+	pde_v = phys_get32((u32_t) (उगात + pde));
 
 	if(! ((pde_v & ARM_VM_PDE_PRESENT) 
 		|| (pde_v & ARM_VM_SECTION_PRESENT)
@@ -429,12 +429,12 @@ int vm_check_range(struct proc *caller, struct proc *target,
  *                                 vmmemset                                  *
  *===========================================================================*/
 int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
-	phys_bytes count)
+	phys_bytes बिलांग)
 {
 	u32_t pattern;
 	struct proc *whoptr = NULL;
 	phys_bytes cur_ph = ph;
-	phys_bytes left = count;
+	phys_bytes कालिवा = बिलांग;
 	phys_bytes ptr, chunk, pfa = 0;
 	int new_ttbr, r = OK;
 
@@ -455,9 +455,9 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 	/* We can memset as many bytes as we have remaining,
 	 * or as many as remain in the 1MB chunk we mapped in.
 	 */
-	while (left > 0) {
+	while (कालिवा > 0) {
 		new_ttbr = 0;
-		chunk = left;
+		chunk = कालिवा;
 		ptr = createpde(whoptr, cur_ph, &chunk, 0, &new_ttbr);
 
 		if (new_ttbr) {
@@ -468,7 +468,7 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 
 			/* If a process pagefaults, VM may help out */
 			if (whoptr) {
-				vm_suspend(caller, whoptr, ph, count,
+				vm_suspend(caller, whoptr, ph, बिलांग,
 						   VMSTYPE_KERNELCALL, 1);
 				assert(catch_pagefaults);
 				catch_pagefaults = 0;
@@ -481,7 +481,7 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 		}
 
 		cur_ph += chunk;
-		left -= chunk;
+		कालिवा -= chunk;
 	}
 
 	assert(get_cpulocal_var(ptproc)->p_seg.p_ttbr_v);

@@ -30,19 +30,19 @@ void put_irq_handler( irq_hook_t* hook, int irq,
   const irq_handler_t handler)
 {
   int id;
-  irq_hook_t **line;
+  irq_hook_t **लिन्या;
   unsigned long bitmap;
 
   if( irq < 0 || irq >= NR_IRQ_VECTORS )
 	panic("invalid call to put_irq_handler: %d",  irq);
 
-  line = &irq_handlers[irq];
+  लिन्या = &irq_handlers[irq];
 
   bitmap = 0;
-  while ( *line != NULL ) {
-	if(hook == *line) return; /* extra initialization */
-	bitmap |= (*line)->id;	/* mark ids in use */
-	line = &(*line)->next;
+  while ( *लिन्या != NULL ) {
+	if(hook == *लिन्या) return; /* extra initialization */
+	bitmap |= (*लिन्या)->id;	/* mark ids in use */
+	लिन्या = &(*लिन्या)->next;
   }
 
   /* find the lowest id not in use */
@@ -56,7 +56,7 @@ void put_irq_handler( irq_hook_t* hook, int irq,
   hook->handler = handler;
   hook->irq = irq;
   hook->id = id;
-  *line = hook;
+  *लिन्या = hook;
 
   /* And as last enable the irq at the hardware.
    *
@@ -75,21 +75,21 @@ void put_irq_handler( irq_hook_t* hook, int irq,
 void rm_irq_handler( const irq_hook_t* hook ) {
   const int irq = hook->irq; 
   const int id = hook->id;
-  irq_hook_t **line;
+  irq_hook_t **लिन्या;
 
   if( irq < 0 || irq >= NR_IRQ_VECTORS ) 
 	panic("invalid call to rm_irq_handler: %d",  irq);
 
   /* remove the hook  */
-  line = &irq_handlers[irq];
-  while( (*line) != NULL ) {
-	if((*line)->id == id) {
-		(*line) = (*line)->next;
+  लिन्या = &irq_handlers[irq];
+  while( (*लिन्या) != NULL ) {
+	if((*लिन्या)->id == id) {
+		(*लिन्या) = (*लिन्या)->next;
 		if (irq_actids[irq] & id)
 			irq_actids[irq] &= ~id;
     	}
     	else {
-		line = &(*line)->next;
+		लिन्या = &(*लिन्या)->next;
     	}
   }
 

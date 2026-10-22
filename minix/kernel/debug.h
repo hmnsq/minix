@@ -83,11 +83,11 @@
 #endif
 
 #ifdef _SYSTEM
-#define DEBUG_PRINT(params, level) do { \
+#define DEBUG_इलिम्बाग(params, level) do { \
 	if (verboseboot >= (level)) printf params; } while (0)
-#define DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
-#define DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
-#define DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
+#define DEBUGBASIC(params) DEBUG_इलिम्बाग(params, VERBOSEBOOT_BASIC)
+#define DEBUGEXTRA(params) DEBUG_इलिम्बाग(params, VERBOSEBOOT_EXTRA)
+#define DEBUGMAX(params)   DEBUG_इलिम्बाग(params, VERBOSEBOOT_MAX)
 #endif
 
 #endif /* DEBUG_H */

@@ -67,19 +67,19 @@ doit:
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
+    if (io_dir == DIO_पासोक) { 
       switch (io_type) {
 	/* maybe "it" should not be called ports */
         case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		m_ptr->m_krn_lsys_sys_devio.हालागा =
 			inb(m_ptr->m_lsys_krn_sys_devio.port);
 		break;
         case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		m_ptr->m_krn_lsys_sys_devio.हालागा =
 			inw(m_ptr->m_lsys_krn_sys_devio.port);
 		break;
         case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		m_ptr->m_krn_lsys_sys_devio.हालागा =
 			inl(m_ptr->m_lsys_krn_sys_devio.port);
 		break;
     	default: return(EINVAL);
@@ -88,15 +88,15 @@ doit:
       switch (io_type) {
 	case _DIO_BYTE:
 		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
+			m_ptr->m_lsys_krn_sys_devio.हालागा);
 		break;
 	case _DIO_WORD:
 		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
+			m_ptr->m_lsys_krn_sys_devio.हालागा);
 		break;
 	case _DIO_LONG:
 		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
+			m_ptr->m_lsys_krn_sys_devio.हालागा);
 		break;
     	default: return(EINVAL);
       } 

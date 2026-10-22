@@ -9,17 +9,17 @@ void direct_cls(void)
     /* Do nothing */
 }
 
-void direct_print_char(char c)
+void direct_इलिम्बाग_char(char c)
 {
 	if(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
-void direct_print(const char *str)
+void direct_इलिम्बाग(const char *str)
 {
 	while (*str) {
-		direct_print_char(*str);
+		direct_इलिम्बाग_char(*str);
 		str++;
 	}
 }

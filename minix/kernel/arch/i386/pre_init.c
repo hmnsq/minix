@@ -32,17 +32,17 @@ char *video_mem = (char *) MULTIBOOT_VIDEO_BUFFER;
 /* Kernel may use memory */
 int kernel_may_alloc = 1;
 
-static int mb_set_param(char *bigbuf, char *name, char *value, kinfo_t *cbi) 
+static int mb_set_param(char *bigbuf, char *name, char *हालागा, kinfo_t *cbi) 
 {
 	char *p = bigbuf;
 	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
 	char *q;
 	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	int valuelen = strlen(हालागा);
 
 	/* Some variables we recognize */
 	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(हालागा); }
 
 	/* Delete the item if already exists */
 	while (*p) {
@@ -68,7 +68,7 @@ static int mb_set_param(char *bigbuf, char *name, char *value, kinfo_t *cbi)
 	
 	strcpy(p, name);
 	p[namelen] = '=';
-	strcpy(p + namelen + 1, value);
+	strcpy(p + namelen + 1, हालागा);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0;
 	return 0;
@@ -95,7 +95,7 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 {
 	multiboot_memory_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
+	int var_i,हालागा_i, m, k;
 	char *p;
 	extern char _kern_phys_base, _kern_vir_base, _kern_size,
 		_kern_unpaged_start, _kern_unpaged_end;
@@ -108,7 +108,7 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	memcpy((void *) mbi, (void *) ebx, sizeof(*mbi));
 
 	/* Set various bits of info for the higher-level kernel. */
-	cbi->mem_high_phys = 0;
+	cbi->mem_माताअस_phys = 0;
 	cbi->user_sp = (vir_bytes) &_kern_vir_base;
 	cbi->vir_kern_start = (vir_bytes) &_kern_vir_base;
 	cbi->bootstrap_start = (vir_bytes) &_kern_unpaged_start;
@@ -123,25 +123,25 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	/* parse boot command line */
 	if (mbi->mi_flags & MULTIBOOT_INFO_HAS_CMDLINE) {
 		static char var[BUF];
-		static char value[BUF];
+		static char हालागा[BUF];
 
 		/* Override values with cmdline argument */
 		memcpy(cmdline, (void *) mbi->mi_cmdline, BUF);
 		p = cmdline;
 		while (*p) {
 			var_i = 0;
-			value_i = 0;
+			हालागा_i = 0;
 			while (*p == ' ') p++;
 			if (!*p) break;
 			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1) 
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
 			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) 
-				value[value_i++] = *p++ ;
-			value[value_i] = 0;
+			while (*p && *p != ' ' && हालागा_i < BUF - 1) 
+				हालागा[हालागा_i++] = *p++ ;
+			हालागा[हालागा_i] = 0;
 			
-			mb_set_param(cbi->param_buf, var, value, cbi);
+			mb_set_param(cbi->param_buf, var, हालागा, cbi);
 		}
 	}
 
@@ -165,10 +165,10 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	assert(!(cbi->bootstrap_start % I386_PAGE_SIZE));
 	cbi->bootstrap_len = rounddown(cbi->bootstrap_len, I386_PAGE_SIZE);
 	assert(mbi->mi_flags & MULTIBOOT_INFO_HAS_MODS);
-	assert(mbi->mi_mods_count < MULTIBOOT_MAX_MODS);
-	assert(mbi->mi_mods_count > 0);
+	assert(mbi->mi_mods_बिलांग < MULTIBOOT_MAX_MODS);
+	assert(mbi->mi_mods_बिलांग > 0);
 	memcpy(&cbi->module_list, (void *) mbi->mi_mods_addr,
-		mbi->mi_mods_count * sizeof(multiboot_module_t));
+		mbi->mi_mods_बिलांग * sizeof(multiboot_module_t));
 	
 	memset(cbi->memmap, 0, sizeof(cbi->memmap));
 	/* mem_map has a variable layout */
@@ -191,11 +191,11 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	 * with each other. Pretend the kernel is an extra module for a
 	 * second.
 	 */
-	k = mbi->mi_mods_count;
+	k = mbi->mi_mods_बिलांग;
 	assert(k < MULTIBOOT_MAX_MODS);
 	cbi->module_list[k].mod_start = kernbase;
 	cbi->module_list[k].mod_end = kernbase + kernsize;
-	cbi->mods_with_kernel = mbi->mi_mods_count+1;
+	cbi->mods_with_kernel = mbi->mi_mods_बिलांग+1;
 	cbi->kern_mod = k;
 
 	for(m = 0; m < cbi->mods_with_kernel; m++) {

@@ -266,7 +266,7 @@ static void delivermsg(struct proc *rp)
         assert(rp->p_misc_flags & MF_DELIVERMSG);
         assert(rp->p_delivermsg.m_source != NONE);
 
-        if (copy_msg_to_user(&rp->p_delivermsg,
+        if (copy_मेनसाहे_to_user(&rp->p_delivermsg,
                                 (message *) rp->p_delivermsg_vir)) {
                 if(rp->p_misc_flags & MF_MSGFAILED) {
                         /* 2nd consecutive failure means this won't succeed */
@@ -322,7 +322,7 @@ not_runnable_pick_new:
 	if (proc_is_preempted(p)) {
 		p->p_rts_flags &= ~RTS_PREEMPTED;
 		if (proc_is_runnable(p)) {
-			if (p->p_cpu_time_left)
+			if (p->p_cpu_time_कालिवा)
 				enqueue_head(p);
 			else
 				enqueue(p);
@@ -418,7 +418,7 @@ check_misc_flags:
 	 * as we are sure that a possible out-of-quantum message to the
 	 * scheduler will not collide with the regular ipc
 	 */
-	if (!p->p_cpu_time_left)
+	if (!p->p_cpu_time_कालिवा)
 		proc_no_time(p);
 	/*
 	 * After handling the misc flags the selected process might not be
@@ -435,7 +435,7 @@ check_misc_flags:
 #endif
 
 	p = arch_finish_switch_to_user();
-	assert(p->p_cpu_time_left);
+	assert(p->p_cpu_time_कालिवा);
 
 	context_stop(proc_addr(KERNEL));
 
@@ -670,7 +670,7 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   	     * Get and check the size of the argument in bytes as it is a
   	     * table
   	     */
-  	    size_t msg_size = (size_t) r2;
+  	    size_t मेनसाहे_size = (size_t) r2;
   
   	    /* Process accounting for scheduling */
 	    caller_ptr->p_accounting.ipc_async++;
@@ -678,9 +678,9 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   	    /* Limit size to something reasonable. An arbitrary choice is 16
   	     * times the number of process table entries.
   	     */
-  	    if (msg_size > 16*(NR_TASKS + NR_PROCS))
+  	    if (मेनसाहे_size > 16*(NR_TASKS + NR_PROCS))
 	        return EDOM;
-  	    return mini_senda(caller_ptr, (asynmsg_t *) r3, msg_size);
+  	    return mini_senda(caller_ptr, (asynmsg_t *) r3, मेनसाहे_size);
   	}
   	case MINIX_KERNINFO:
 	{
@@ -756,7 +756,7 @@ static int deadlock(
 		}
 		printf("\n\n");
 		for(i = 0; i < group_size; i++) {
-			print_proc(processes[i]);
+			इलिम्बाग_proc(processes[i]);
 			proc_stacktrace(processes[i]);
 		}
 	  }
@@ -805,7 +805,7 @@ static int has_pending(sys_map_t *map, int src_p, int asynm)
 			while (src_id < NR_SYS_PROCS) {
 				while (!get_sys_bit(*map, src_id)) {
 					if (src_id == NR_SYS_PROCS)
-						goto quit_search;
+						goto quit_हानाप;
 					src_id++;
 				}
 				p = proc_addr(id_to_nr(src_id));
@@ -820,16 +820,16 @@ static int has_pending(sys_map_t *map, int src_p, int asynm)
 					p->p_misc_flags |= MF_SENDA_VM_MISS;
 					src_id++;
 				} else
-					goto quit_search;
+					goto quit_हानाप;
 			}
 #else
 			while (!get_sys_bit(*map, src_id)) src_id++;
-			goto quit_search;
+			goto quit_हानाप;
 #endif
 		}
 	}
 
-quit_search:
+quit_हानाप:
 	if (src_id < NR_SYS_PROCS)	/* Found one */
 		id = src_id;
   }
@@ -898,11 +898,11 @@ int mini_send(
 	assert(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));	
 
 	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &dst_ptr->p_delivermsg))
+		if(copy_मेनसाहे_from_user(m_ptr, &dst_ptr->p_delivermsg))
 			return EFAULT;
 	} else {
 		dst_ptr->p_delivermsg = *m_ptr;
-		IPC_STATUS_ADD_FLAGS(dst_ptr, IPC_FLG_MSG_FROM_KERNEL);
+		IPC_STATUS_ADD_FLAGS(dst_ptr, IPC_FLG_मेनसाहे_FROM_KERNEL);
 	}
 
 	dst_ptr->p_delivermsg.m_source = caller_ptr->p_endpoint;
@@ -933,7 +933,7 @@ int mini_send(
 
 	/* Destination is not waiting.  Block and dequeue caller. */
 	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &caller_ptr->p_sendmsg))
+		if(copy_मेनसाहे_from_user(m_ptr, &caller_ptr->p_sendmsg))
 			return EFAULT;
 	} else {
 		caller_ptr->p_sendmsg = *m_ptr;
@@ -1075,7 +1075,7 @@ static int mini_receive(struct proc * caller_ptr,
 	     * process, we must send the status flags accordingly
 	     */
 	    if (sender->p_misc_flags & MF_SENDING_FROM_KERNEL) {
-		IPC_STATUS_ADD_FLAGS(caller_ptr, IPC_FLG_MSG_FROM_KERNEL);
+		IPC_STATUS_ADD_FLAGS(caller_ptr, IPC_FLG_मेनसाहे_FROM_KERNEL);
 		/* we can clean the flag now, not need anymore */
 		sender->p_misc_flags &= ~MF_SENDING_FROM_KERNEL;
 	    }
@@ -1278,10 +1278,10 @@ int try_deliver_senda(struct proc *caller_ptr,
 	 * a SENDREC.
 	 */
 	if (r == OK && WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr,
-	    (vir_bytes)&table[i].msg, NULL) &&
+	    (vir_bytes)&table[i].मेनसाहे, NULL) &&
 	    (!(flags&AMF_NOREPLY) || !(dst_ptr->p_misc_flags&MF_REPLY_PEND))) {
 		/* Destination is indeed waiting for this message. */
-		dst_ptr->p_delivermsg = tabent.msg;
+		dst_ptr->p_delivermsg = tabent.मेनसाहे;
 		dst_ptr->p_delivermsg.m_source = caller_ptr->p_endpoint;
 		dst_ptr->p_misc_flags |= MF_DELIVERMSG;
 		IPC_STATUS_ADD_CALL(dst_ptr, SENDA);
@@ -1455,7 +1455,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	if (dst != dst_ptr->p_endpoint) continue;
 
 	if (!CANRECEIVE(receive_e, src_e, dst_ptr,
-		table_v + i*sizeof(asynmsg_t) + offsetof(struct asynmsg,msg),
+		table_v + i*sizeof(asynmsg_t) + offsetof(struct asynmsg,मेनसाहे),
 		NULL)) {
 		continue;
 	}
@@ -1469,7 +1469,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 
 	/* Destination is ready to receive the message; deliver it */
 	r = OK;
-	dst_ptr->p_delivermsg = tabent.msg;
+	dst_ptr->p_delivermsg = tabent.मेनसाहे;
 	dst_ptr->p_delivermsg.m_source = src_ptr->p_endpoint;
 	dst_ptr->p_misc_flags |= MF_DELIVERMSG;
 #if DEBUG_IPC_HOOK
@@ -1680,7 +1680,7 @@ static void enqueue_head(struct proc *rp)
    * the process was runnable without its quantum expired when dequeued. A
    * process with no time left should have been handled else and differently
    */
-  assert(rp->p_cpu_time_left);
+  assert(rp->p_cpu_time_कालिवा);
 
   assert(q >= 0);
 
@@ -1734,7 +1734,7 @@ void dequeue(struct proc *rp)
   assert(!proc_is_runnable(rp));
 
   /* Side-effect for kernel: check if the task's stack still is ok? */
-  assert (!iskernelp(rp) || *priv(rp)->s_stack_guard == STACK_GUARD);
+  assert (!iskernelp(rp) || *priv(rp)->s_सालानसान_guard == सालानसान_GUARD);
 
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
@@ -1828,7 +1828,7 @@ struct proc *endpoint_lookup(endpoint_t e)
  *				isokendpt_f				     *
  *===========================================================================*/
 #if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char * file, int line, endpoint_t e, int * p,
+int isokendpt_f(const char * file, int लिन्या, endpoint_t e, int * p,
 	const int fatalflag)
 #else
 int isokendpt_f(endpoint_t e, int * p, const int fatalflag)
@@ -1901,7 +1901,7 @@ void proc_no_time(struct proc * p)
 		 * non-preemptible processes only need their quantum to
 		 * be renewed. In fact, they by pass scheduling
 		 */
-		p->p_cpu_time_left = ms_2_cpu_time(p->p_quantum_size_ms);
+		p->p_cpu_time_कालिवा = ms_2_cpu_time(p->p_quantum_size_ms);
 #if DEBUG_RACE
 		RTS_SET(p, RTS_PREEMPTED);
 		RTS_UNSET(p, RTS_PREEMPTED);
@@ -1975,6 +1975,6 @@ void ser_dump_proc(void)
         {
                 if (isemptyp(pp))
                         continue;
-                print_proc_recursive(pp);
+                इलिम्बाग_proc_recursive(pp);
         }
 }

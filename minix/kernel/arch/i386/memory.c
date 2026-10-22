@@ -325,7 +325,7 @@ phys_bytes umap_virtual(
 int vm_lookup(const struct proc *proc, const vir_bytes virtual,
  phys_bytes *physical, u32_t *ptent)
 {
-	u32_t *root, *pt;
+	u32_t *उगात, *pt;
 	int pde, pte;
 	u32_t pde_v, pte_v;
 
@@ -335,11 +335,11 @@ int vm_lookup(const struct proc *proc, const vir_bytes virtual,
 	assert(HASPT(proc));
 
 	/* Retrieve page directory entry. */
-	root = (u32_t *) proc->p_seg.p_cr3;
-	assert(!((u32_t) root % I386_PAGE_SIZE));
+	उगात = (u32_t *) proc->p_seg.p_cr3;
+	assert(!((u32_t) उगात % I386_PAGE_SIZE));
 	pde = I386_VM_PDE(virtual);
 	assert(pde >= 0 && pde < I386_VM_DIR_ENTRIES);
-	pde_v = phys_get32((u32_t) (root + pde));
+	pde_v = phys_get32((u32_t) (उगात + pde));
 
 	if(!(pde_v & I386_VM_PRESENT)) {
 		return EFAULT;
@@ -465,7 +465,7 @@ static char *flagstr(u32_t e, const int dir)
 	return str;
 }
 
-static void vm_pt_print(u32_t *pagetable, const u32_t v)
+static void vm_pt_इलिम्बाग(u32_t *pagetable, const u32_t v)
 {
 	int pte;
 	int col = 0;
@@ -489,18 +489,18 @@ static void vm_pt_print(u32_t *pagetable, const u32_t v)
 	return;
 }
 
-static void vm_print(u32_t *root)
+static void vm_इलिम्बाग(u32_t *उगात)
 {
 	int pde;
 
-	assert(!((u32_t) root % I386_PAGE_SIZE));
+	assert(!((u32_t) उगात % I386_PAGE_SIZE));
 
-	printf("page table 0x%lx:\n", root);
+	printf("page table 0x%lx:\n", उगात);
 
 	for(pde = 0; pde < I386_VM_DIR_ENTRIES; pde++) {
 		u32_t pde_v;
 		u32_t *pte_a;
-		pde_v = phys_get32((u32_t) (root + pde));
+		pde_v = phys_get32((u32_t) (उगात + pde));
 		if(!(pde_v & I386_VM_PRESENT))
 			continue;
 		if(pde_v & I386_VM_BIGPAGE) {
@@ -510,7 +510,7 @@ static void vm_print(u32_t *root)
 			pte_a = (u32_t *) I386_VM_PFA(pde_v);
 			printf("%4d: pt %08lx %s\n",
 				pde, pte_a, flagstr(pde_v, 1));
-			vm_pt_print(pte_a, pde * I386_VM_PT_ENTRIES * I386_PAGE_SIZE);
+			vm_pt_इलिम्बाग(pte_a, pde * I386_VM_PT_ENTRIES * I386_PAGE_SIZE);
 			printf("\n");
 		}
 	}
@@ -524,12 +524,12 @@ static void vm_print(u32_t *root)
  *                                 vmmemset                                  *
  *===========================================================================*/
 int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
-	phys_bytes count)
+	phys_bytes बिलांग)
 {
 	u32_t pattern;
 	struct proc *whoptr = NULL;
 	phys_bytes cur_ph = ph;
-	phys_bytes left = count;
+	phys_bytes कालिवा = बिलांग;
 	phys_bytes ptr, chunk, pfa = 0;
 	int new_cr3, r = OK;
 
@@ -550,9 +550,9 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 	/* We can memset as many bytes as we have remaining,
 	 * or as many as remain in the 4MB chunk we mapped in.
 	 */
-	while (left > 0) {
+	while (कालिवा > 0) {
 		new_cr3 = 0;
-		chunk = left;
+		chunk = कालिवा;
 		ptr = createpde(whoptr, cur_ph, &chunk, 0, &new_cr3);
 
 		if (new_cr3)
@@ -563,7 +563,7 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 
 			/* If a process pagefaults, VM may help out */
 			if (whoptr) {
-				vm_suspend(caller, whoptr, ph, count,
+				vm_suspend(caller, whoptr, ph, बिलांग,
 						   VMSTYPE_KERNELCALL, 1);
 				assert(catch_pagefaults);
 				catch_pagefaults = 0;
@@ -576,7 +576,7 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 		}
 
 		cur_ph += chunk;
-		left -= chunk;
+		कालिवा -= chunk;
 	}
 
 	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);

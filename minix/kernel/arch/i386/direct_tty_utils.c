@@ -8,24 +8,24 @@
 #include "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+static int इलिम्बाग_लिन्या = 1, इलिम्बाग_col = 1;
 
 #include <sys/video.h>
 
 extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+#define VIDOFFSET(लिन्या, col) ((लिन्या) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_मगा_लिन्या-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+void direct_put_char(char c, int लिन्या, int col) 
 {
-	int offset = VIDOFFSET(line, col);
+	int offset = VIDOFFSET(लिन्या, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+static char direct_get_char(int लिन्या, int col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	return video_mem[VIDOFFSET(लिन्या, col)];
 }
 
 void direct_cls(void)
@@ -34,10 +34,10 @@ void direct_cls(void)
 	int i,j;
 
 	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+		for(j = 0; j < MULTIBOOT_CONSOLE_मगा_लिन्या; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	इलिम्बाग_लिन्या = इलिम्बाग_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,60 +46,60 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+static void direct_scroll_up(int मगा_लिन्या) 
 {
 	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
+	for (i = 0; i < MULTIBOOT_CONSOLE_मगा_लिन्या; i++ ) {
 		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
 			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+			if(i < MULTIBOOT_CONSOLE_मगा_लिन्या-मगा_लिन्या)
+				c = direct_get_char(i + मगा_लिन्या, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	इलिम्बाग_लिन्या-= मगा_लिन्या;
 }
 
-void direct_print_char(char c)
+void direct_इलिम्बाग_char(char c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	while (इलिम्बाग_लिन्या >= MULTIBOOT_CONSOLE_मगा_लिन्या)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
 	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+		if(इलिम्बाग_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
 		} else {
 			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
+				direct_put_char(' ', इलिम्बाग_लिन्या, इलिम्बाग_col++);
+			} while(इलिम्बाग_col % TABWIDTH);
 			return;
 		}
 	}
 
 	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
-		print_col = 0;
+		while (इलिम्बाग_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', इलिम्बाग_लिन्या, इलिम्बाग_col++);
+		इलिम्बाग_लिन्या++;
+		इलिम्बाग_col = 0;
 		return;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, इलिम्बाग_लिन्या, इलिम्बाग_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
-		print_col = 0;
+	if (इलिम्बाग_col >= MULTIBOOT_CONSOLE_COLS) {
+		इलिम्बाग_लिन्या++;
+		इलिम्बाग_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	while (इलिम्बाग_लिन्या >= MULTIBOOT_CONSOLE_मगा_लिन्या)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+void direct_इलिम्बाग(const char *str)
 {
 	while (*str) {
-		direct_print_char(*str);
+		direct_इलिम्बाग_char(*str);
 		str++;
 	}
 }

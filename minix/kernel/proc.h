@@ -28,7 +28,7 @@ struct proc {
   volatile u32_t p_misc_flags;	/* flags that do not suspend the process */
 
   char p_priority;		/* current process priority */
-  u64_t p_cpu_time_left;	/* time left to use the cpu */
+  u64_t p_cpu_time_कालिवा;	/* time left to use the cpu */
   unsigned p_quantum_size_ms;	/* assigned time quantum in ms
 				   FIXME remove this */
   struct proc *p_scheduler;	/* who should get out of quantum msg */
@@ -59,8 +59,8 @@ struct proc {
   clock_t p_user_time;		/* user time in ticks */
   clock_t p_sys_time;		/* sys time in ticks */
 
-  clock_t p_virt_left;		/* number of ticks left on virtual timer */
-  clock_t p_prof_left;		/* number of ticks left on profile timer */
+  clock_t p_virt_कालिवा;		/* number of ticks left on virtual timer */
+  clock_t p_prof_कालिवा;		/* number of ticks left on profile timer */
 
   u64_t p_cycles;		/* how many cycles did the process use */
   u64_t p_kcall_cycles;		/* kernel cycles caused by this proc (kcall) */
@@ -276,7 +276,7 @@ struct proc {
 #define iskerneln(n)	  ((n) < 0)
 #define isuserp(p)        isusern((p) >= BEG_USER_ADDR)
 #define isusern(n)        ((n) >= 0)
-#define isrootsysn(n)	  ((n) == ROOT_SYS_PROC_NR)
+#define isrootsysn(n)	  ((n) == उगात_SYS_PROC_NR)
 
 #ifndef __ASSEMBLY__
 

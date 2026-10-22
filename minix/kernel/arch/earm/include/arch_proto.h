@@ -4,7 +4,7 @@
 
 #include <machine/vm.h>
 
-#define K_STACK_SIZE	ARM_PAGE_SIZE
+#define K_सालानसान_SIZE	ARM_PAGE_SIZE
 
 
 #ifndef __ASSEMBLY__
@@ -31,7 +31,7 @@ void multiboot_init(void);
 struct tss_s {
   reg_t sp0;                    /* stack pointer to use during interrupt */
 } __attribute__((packed));
-int tss_init(unsigned cpu, void * kernel_stack);
+int tss_init(unsigned cpu, void * kernel_सालानसान);
 
 void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
 phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
@@ -49,8 +49,8 @@ void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
 EXTERN void * k_stacks_start;
 extern void * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#define get_k_सालानसान_इताअस(cpu)	((void *)(((char*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_सालानसान_SIZE))
 
 
 /*
