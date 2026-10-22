@@ -8,7 +8,7 @@
 
 #include "kernel/kernel.h"
 
-#if SPROFILE
+#如果 SPROFILE
 
 #include <string.h>
 #include "watchdog.h"
@@ -16,7 +16,7 @@
 char sprof_sample_buffer[SAMPLE_BUFFER_SIZE];
 
 /* Function prototype for the profiling clock handler. */ 
-static int profile_clock_handler(irq_hook_t *hook);
+static 整数 profile_clock_handler(irq_hook_t *hook);
 
 /* A hook for the profiling clock interrupt handler. */
 static irq_hook_t profile_clock_hook;
@@ -26,9 +26,9 @@ static irq_hook_t profile_clock_hook;
  *===========================================================================*/
 void init_profile_clock(u32_t freq)
 {
-  int irq;
+  整数 irq;
 
-  if((irq = arch_init_profile_clock(freq)) >= 0) {
+  如果((irq = arch_init_profile_clock(freq)) >= 0) {
 	/* Register interrupt handler for statistical system profiling.  */
 	profile_clock_hook.proc_nr_e = CLOCK;
 	put_irq_handler(&profile_clock_hook, irq, profile_clock_handler);
@@ -77,31 +77,31 @@ static void profile_sample(struct proc * p, void * pc)
 /* This executes on every tick of the CMOS timer. */
 
   /* Are we profiling, and profiling memory not full? */
-  if (!sprofiling || sprof_info.mem_used == -1)
-	  return;
+  如果 (!sprofiling || sprof_info.mem_used == -1)
+	  返回;
 
   /* Check if enough memory available before writing sample. */
-  if (sprof_info.mem_used + sizeof(sprof_info) +
+  如果 (sprof_info.mem_used + sizeof(sprof_info) +
 		  2*sizeof(struct sprof_sample) +
 		  2*sizeof(struct sprof_sample) > sprof_mem_size) {
 	sprof_info.mem_used = -1;
-	return;
+	返回;
   }
 
   /* Runnable system process? */
-  if (p->p_endpoint == IDLE)
+  如果 (p->p_endpoint == IDLE)
 	sprof_info.idle_samples++;
-  else if (p->p_endpoint == KERNEL ||
+  否则 如果 (p->p_endpoint == KERNEL ||
 		(priv(p)->s_flags & SYS_PROC && proc_is_runnable(p))) {
 
-	if (!(p->p_misc_flags & MF_SPROF_SEEN)) {
+	如果 (!(p->p_misc_flags & MF_SPROF_SEEN)) {
 		p->p_misc_flags |= MF_SPROF_SEEN;
 		sprof_save_proc(p);
 	}
 
 	sprof_save_sample(p, pc);
 	sprof_info.system_samples++;
-  } else {
+  } 否则 {
 	/* User process. */
 	sprof_info.user_samples++;
   }
@@ -112,7 +112,7 @@ static void profile_sample(struct proc * p, void * pc)
 /*===========================================================================*
  *			profile_clock_handler                           *
  *===========================================================================*/
-static int profile_clock_handler(irq_hook_t *hook)
+static 整数 profile_clock_handler(irq_hook_t *hook)
 {
   struct proc * p;
   p = get_cpulocal_var(proc_ptr);
@@ -122,7 +122,7 @@ static int profile_clock_handler(irq_hook_t *hook)
   /* Acknowledge interrupt if necessary. */
   arch_ack_profile_clock();
 
-  return(1);                                    /* reenable interrupts */
+  返回(1);                                    /* reenable interrupts */
 }
 
 void nmi_sprofile_handler(struct nmi_frame * frame)
@@ -133,24 +133,24 @@ void nmi_sprofile_handler(struct nmi_frame * frame)
 	 * kernel and than for the current process, otherwise save just the
 	 * process
 	 */
-	if (nmi_in_kernel(frame)) {
+	如果 (nmi_in_kernel(frame)) {
 		struct proc *kern;
 
 		/*
 		 * if we sample kernel, check if IDLE is scheduled. If so,
 		 * account for idle time rather than taking kernel sample
 		 */
-		if (p->p_endpoint == IDLE) {
+		如果 (p->p_endpoint == IDLE) {
 			sprof_info.idle_samples++;
 			sprof_info.total_samples++;
-			return;
+			返回;
 		}
 
 		kern = proc_addr(KERNEL);
 
 		profile_sample(kern, (void *) frame->pc);
 	}
-	else
+	否则
 		profile_sample(p, (void *) frame->pc);
 }
 

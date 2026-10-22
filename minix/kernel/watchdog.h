@@ -4,7 +4,7 @@
 #include "kernel/kernel.h"
 #include "arch_watchdog.h"
 
-extern int watchdog_enabled; /* if set to non-zero the watch dog is enabled */
+extern 整数 watchdog_enabled; /* if set to non-zero the watch dog is enabled */
 extern unsigned watchdog_local_timer_ticks; /* is timer still ticking? */
 
 /*
@@ -14,7 +14,7 @@ extern unsigned watchdog_local_timer_ticks; /* is timer still ticking? */
  */
 
 typedef void (* arch_watchdog_method_t)(const unsigned);
-typedef int (* arch_watchdog_profile_init_t)(const unsigned);
+typedef 整数 (* arch_watchdog_profile_init_t)(const unsigned);
 
 struct arch_watchdog {
 	arch_watchdog_method_t		init;	/* initial setup */
@@ -28,7 +28,7 @@ struct arch_watchdog {
 extern struct arch_watchdog *watchdog;
 
 /* let the arch code do whatever it needs to setup or quit the watchdog */
-int arch_watchdog_init(void);
+整数 arch_watchdog_init(void);
 void arch_watchdog_stop(void);
 
 #ifdef __i386__
@@ -44,7 +44,7 @@ void nmi_watchdog_handler(struct nmi_frame * frame);
 /*
  * start and stop profiling using the NMI watchdog
  */
-int nmi_watchdog_start_profiling(const unsigned freq);
+整数 nmi_watchdog_start_profiling(const unsigned freq);
 void nmi_watchdog_stop_profiling(void);
 
 #endif /* __WATCHDOG_H__ */

@@ -45,9 +45,9 @@ static kern_phys_map serial_phys_map;
 void
 bsp_ser_init(void)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	如果 (BOARD_IS_BBXM(machine.board_id)) {
 		omap_serial.base = OMAP3_DM37XX_DEBUG_UART_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} 否则 如果 (BOARD_IS_BB(machine.board_id)) {
 		omap_serial.base = OMAP3_AM335X_DEBUG_UART_BASE;
 	}
 	omap_serial.size = 0x1000;	/* 4k */
@@ -61,12 +61,12 @@ bsp_ser_init(void)
 void
 bsp_ser_putc(char c)
 {
-	int i;
+	整数 i;
 	assert(omap_serial.base);
 
 	/* Wait until FIFO's empty */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
+	为 (i = 0; i < 100000; i++) {
+		如果 (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
 			break;
 		}
 	}
@@ -75,8 +75,8 @@ bsp_ser_putc(char c)
 	mmio_write(omap_serial.base + OMAP3_THR, c);
 
 	/* And wait again until FIFO's empty to prevent TTY from overwriting */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base +
+	为 (i = 0; i < 100000; i++) {
+		如果 (mmio_read(omap_serial.base +
 			OMAP3_LSR) & (OMAP3_LSR_THRE | OMAP3_LSR_TEMT)) {
 			break;
 		}

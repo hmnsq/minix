@@ -17,26 +17,26 @@
 #include "kernel/system.h"
 #include "kernel/watchdog.h"
 
-#if SPROFILE
+#如果 SPROFILE
 
 /* user address to write info struct */
 static vir_bytes sprof_info_addr_vir;
 
 static void clean_seen_flag(void)
 {
-	int i;
+	整数 i;
 
-	for (i = 0; i < NR_TASKS + NR_PROCS; i++)
+	为 (i = 0; i < NR_TASKS + NR_PROCS; i++)
 		proc[i].p_misc_flags &= ~MF_SPROF_SEEN;
 }
 
 /*===========================================================================*
  *				do_sprofile				     *
  *===========================================================================*/
-int do_sprofile(struct proc * caller, message * m_ptr)
+整数 do_sprofile(struct proc * caller, message * m_ptr)
 {
-  int proc_nr;
-  int err;
+  整数 proc_nr;
+  整数 err;
 
   switch(m_ptr->m_lsys_krn_sys_sprof.action) {
 
@@ -47,14 +47,14 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 	 * addresses of user pointers.  Reset counters.  Start CMOS timer.
 	 * Turn on profiling.
 	 */
-	if (sprofiling) {
+	如果 (sprofiling) {
 		printf("SYSTEM: start s-profiling: already started\n");
-		return EBUSY;
+		返回 EBUSY;
 	}
 
 	/* Test endpoint number. */
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
-		return EINVAL;
+	如果(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
+		返回 EINVAL;
 
 	/* Set parameters for statistical profiler. */
 	sprof_ep = m_ptr->m_lsys_krn_sys_sprof.endpt;
@@ -78,19 +78,19 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 		case PROF_NMI:
 			err = nmi_watchdog_start_profiling(
 				m_ptr->m_lsys_krn_sys_sprof.freq);
-			if (err)
-				return err;
+			如果 (err)
+				返回 err;
 			break;
 		default:
 			printf("ERROR : unknown profiling interrupt type\n");
-			return EINVAL;
+			返回 EINVAL;
 	}
 	
 	sprofiling = 1;
 
 	clean_seen_flag();
 
-  	return OK;
+  	返回 OK;
 
   case PROF_STOP:
 	/* Stopping profiling.
@@ -98,9 +98,9 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 	 * Check if profiling is indeed running.  Turn off profiling.
 	 * Stop CMOS timer.  Copy info struct to user process.
 	 */
-	if (!sprofiling) {
+	如果 (!sprofiling) {
 		printf("SYSTEM: stop s-profiling: not started\n");
-		return EBUSY;
+		返回 EBUSY;
 	}
 
 	sprofiling = 0;
@@ -121,10 +121,10 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 
 	clean_seen_flag();
 
-  	return OK;
+  	返回 OK;
 
   default:
-	return EINVAL;
+	返回 EINVAL;
   }
 }
 

@@ -11,7 +11,7 @@
 #include <minix/devio.h>
 #include <minix/endpoint.h>
 
-#if USE_VDEVIO
+#如果 USE_VDEVIO
 
 /* Buffer for SYS_VDEVIO to copy (port,value)-pairs from/ to user. */
 static char vdevio_buf[VDEVIO_BUF_SIZE];      
@@ -22,7 +22,7 @@ static pvl_pair_t * const pvl = (pvl_pair_t *) vdevio_buf;
 /*===========================================================================*
  *			        do_vdevio                                    *
  *===========================================================================*/
-int do_vdevio(struct proc * caller, message * m_ptr)
+整数 do_vdevio(struct proc * caller, message * m_ptr)
 {
 /* Perform a series of device I/O on behalf of a non-kernel process. The 
  * I/O addresses and I/O values are fetched from and returned to some buffer
@@ -30,23 +30,23 @@ int do_vdevio(struct proc * caller, message * m_ptr)
  * that I/O batch from being interrupted.
  * This is the counterpart of do_devio, which performs a single device I/O. 
  */ 
-  int vec_size;               /* size of vector */
-  int io_in;                  /* true if input */
+  整数 vec_size;               /* size of vector */
+  整数 io_in;                  /* true if input */
   size_t bytes;               /* # bytes to be copied */
   port_t port;
-  int i, j, io_size, nr_io_range;
-  int io_dir, io_type;
+  整数 i, j, io_size, nr_io_range;
+  整数 io_dir, io_type;
   struct priv *privp;
   struct io_range *iorp;
-  int r;
+  整数 r;
     
   /* Get the request, size of the request vector, and check the values. */
   io_dir = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_DIRMASK;
   io_type = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_TYPEMASK;
-  if (io_dir == _DIO_INPUT) io_in = TRUE;
-  else if (io_dir == _DIO_OUTPUT) io_in = FALSE;
-  else return(EINVAL);
-  if ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) return(EINVAL);
+  如果 (io_dir == _DIO_INPUT) io_in = TRUE;
+  否则 如果 (io_dir == _DIO_OUTPUT) io_in = FALSE;
+  否则 返回(EINVAL);
+  如果 ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) 返回(EINVAL);
   switch (io_type) {
       case _DIO_BYTE:
 	bytes = vec_size * sizeof(pvb_pair_t);
@@ -60,41 +60,41 @@ int do_vdevio(struct proc * caller, message * m_ptr)
 	bytes = vec_size * sizeof(pvl_pair_t);
 	io_size= sizeof(u32_t);
 	break;
-      default:  return(EINVAL);   /* check type once and for all */
+      default:  返回(EINVAL);   /* check type once and for all */
   }
-  if (bytes > sizeof(vdevio_buf))  return(E2BIG);
+  如果 (bytes > sizeof(vdevio_buf))  返回(E2BIG);
 
   /* Copy (port,value)-pairs from user. */
-  if((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
+  如果((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
     KERNEL, (vir_bytes) vdevio_buf, bytes)) != OK)
-	return r;
+	返回 r;
 
   privp= priv(caller);
-  if (privp && (privp->s_flags & CHECK_IO_PORT))
+  如果 (privp && (privp->s_flags & CHECK_IO_PORT))
   {
 	/* Check whether the I/O is allowed */
 	nr_io_range= privp->s_nr_io_range;
-	for (i=0; i<vec_size; i++)
+	为 (i=0; i<vec_size; i++)
 	{
 		switch (io_type) {
 		case _DIO_BYTE: port= pvb[i].port; break;
 		case _DIO_WORD: port= pvw[i].port; break;
 		default:	port= pvl[i].port; break;
 		}
-		for (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
+		为 (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
 		{
-			if (port >= iorp->ior_base &&
+			如果 (port >= iorp->ior_base &&
 				port+io_size-1 <= iorp->ior_limit)
 			{
 				break;
 			}
 		}
-		if (j >= nr_io_range)
+		如果 (j >= nr_io_range)
 		{
 			printf(
 		"do_vdevio: I/O port check failed for proc %d, port 0x%x\n",
 				caller->p_endpoint, port);
-			return EPERM;
+			返回 EPERM;
 		}
 	}
   }
@@ -102,63 +102,63 @@ int do_vdevio(struct proc * caller, message * m_ptr)
   /* Perform actual device I/O for byte, word, and long values */
   switch (io_type) {
   case _DIO_BYTE: 					 /* byte values */
-      if (io_in) for (i=0; i<vec_size; i++) 
+      如果 (io_in) 为 (i=0; i<vec_size; i++) 
 		pvb[i].value = inb( pvb[i].port); 
-      else      for (i=0; i<vec_size; i++)
+      否则      为 (i=0; i<vec_size; i++)
 		outb( pvb[i].port, pvb[i].value); 
       break; 
   case _DIO_WORD:					  /* word values */
-      if (io_in)
+      如果 (io_in)
       {
-	for (i=0; i<vec_size; i++)  
+	为 (i=0; i<vec_size; i++)  
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
+		如果 (port & 1) goto bad;
 		pvw[i].value = inw( pvw[i].port);  
 	}
       }
-      else
+      否则
       {
-	for (i=0; i<vec_size; i++) 
+	为 (i=0; i<vec_size; i++) 
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
+		如果 (port & 1) goto bad;
 		outw( pvw[i].port, pvw[i].value); 
 	}
       }
       break; 
   default:            					  /* long values */
-      if (io_in)
+      如果 (io_in)
       {
-	for (i=0; i<vec_size; i++)
+	为 (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
+		如果 (port & 3) goto bad;
 		pvl[i].value = inl(pvl[i].port);  
 	}
       }
-      else
+      否则
       {
-	for (i=0; i<vec_size; i++)
+	为 (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
+		如果 (port & 3) goto bad;
 		outl( pvb[i].port, pvl[i].value); 
 	}
       }
   }
     
   /* Almost done, copy back results for input requests. */
-  if (io_in) 
-	if((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
+  如果 (io_in) 
+	如果((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
 	  caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
 	  (phys_bytes) bytes)) != OK)
-		return r;
-  return(OK);
+		返回 r;
+  返回(OK);
 
 bad:
 	panic("do_vdevio: unaligned port: %d", port);
-	return EPERM;
+	返回 EPERM;
 }
 
 #endif /* USE_VDEVIO */

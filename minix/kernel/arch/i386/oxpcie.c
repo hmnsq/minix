@@ -1,7 +1,7 @@
 
 #include "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#如果 CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
@@ -47,20 +47,20 @@ static void oxpcie_init(void)
 
 void oxpcie_putc(char c)
 {
-	static int inuse = 0;
+	static 整数 inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	如果(vm_running && oxpcie_vaddr && !inuse) {
+        	整数 i;
+		static 整数 init_done;
 		inuse = 1;
 
-		if(!init_done) {
+		如果(!init_done) {
 			oxpcie_init();
 			init_done = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
+        	为 (i= 0; i<100000; i++) {
+			如果(OXPCIE_LSR & LSR_THRE)
                        		break;
 		}
 		OXPCIE_THR = c;
@@ -68,16 +68,16 @@ void oxpcie_putc(char c)
 	}
 }
 
-int oxpcie_in(void)
+整数 oxpcie_in(void)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	如果(vm_running && oxpcie_vaddr) {
+		整数 lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		如果(lsr & LSR_DR)
+			返回 (整数) OXPCIE_RBR;
 	}
 
-	return -1;
+	返回 -1;
 }
 
 #endif

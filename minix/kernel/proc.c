@@ -48,14 +48,14 @@ static void idle(void);
 static int mini_send(struct proc *caller_ptr, endpoint_t dst_e, message
 	*m_ptr, int flags);
 */
-static int mini_receive(struct proc *caller_ptr, endpoint_t src,
-	message *m_buff_usr, int flags);
-static int mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+static 整数 mini_receive(struct proc *caller_ptr, endpoint_t src,
+	message *m_buff_usr, 整数 flags);
+static 整数 mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
 	size);
-static int deadlock(int function, register struct proc *caller,
+static 整数 deadlock(整数 function, register struct proc *caller,
 	endpoint_t src_dst_e);
-static int try_async(struct proc *caller_ptr);
-static int try_one(endpoint_t receive_e, struct proc *src_ptr,
+static 整数 try_async(struct proc *caller_ptr);
+static 整数 try_one(endpoint_t receive_e, struct proc *src_ptr,
 	struct proc *dst_ptr);
 static struct proc * pick_proc(void);
 static void enqueue_head(struct proc *rp);
@@ -63,12 +63,12 @@ static void enqueue_head(struct proc *rp);
 /* all idles share the same idle_priv structure */
 static struct priv idle_priv;
 
-static void set_idle_name(char * name, int n)
+static void set_idle_name(char * name, 整数 n)
 {
-        int i, c;
-        int p_z = 0;
+        整数 i, c;
+        整数 p_z = 0;
 
-        if (n > 999) 
+        如果 (n > 999) 
                 n = 999; 
 
         name[0] = 'i'; 
@@ -76,13 +76,13 @@ static void set_idle_name(char * name, int n)
         name[2] = 'l'; 
         name[3] = 'e'; 
 
-        for (i = 4, c = 100; c > 0; c /= 10) {
-                int digit;
+        为 (i = 4, c = 100; c > 0; c /= 10) {
+                整数 digit;
 
                 digit = n / c;  
                 n -= digit * c;  
 
-                if (p_z || digit != 0 || c == 1) {
+                如果 (p_z || digit != 0 || c == 1) {
                         p_z = 1;
                         name[i++] = '0' + digit;
                 }   
@@ -120,13 +120,13 @@ void proc_init(void)
 {
 	struct proc * rp;
 	struct priv *sp;
-	int i;
+	整数 i;
 
 	/* Clear the process table. Announce each slot as empty and set up
 	 * mappings for proc_addr() and proc_nr() macros. Do the same for the
 	 * table with privilege structures for the system processes. 
 	 */
-	for (rp = BEG_PROC_ADDR, i = -NR_TASKS; rp < END_PROC_ADDR; ++rp, ++i) {
+	为 (rp = BEG_PROC_ADDR, i = -NR_TASKS; rp < END_PROC_ADDR; ++rp, ++i) {
 		rp->p_rts_flags = RTS_SLOT_FREE;/* initialize free slot */
 		rp->p_magic = PMAGIC;
 		rp->p_nr = i;			/* proc number from ptr */
@@ -138,7 +138,7 @@ void proc_init(void)
 		/* arch-specific initialization */
 		arch_proc_reset(rp);
 	}
-	for (sp = BEG_PRIV_ADDR, i = 0; sp < END_PRIV_ADDR; ++sp, ++i) {
+	为 (sp = BEG_PRIV_ADDR, i = 0; sp < END_PRIV_ADDR; ++sp, ++i) {
 		sp->s_proc_nr = NONE;		/* initialize as free */
 		sp->s_id = (sys_id_t) i;	/* priv structure index */
 		ppriv_addr[i] = sp;		/* priv ptr from number */
@@ -148,7 +148,7 @@ void proc_init(void)
 
 	idle_priv.s_flags = IDL_F;
 	/* initialize IDLE structures for every CPU */
-	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
+	为 (i = 0; i < CONFIG_MAX_CPUS; i++) {
 		struct proc * ip = get_cpu_var_ptr(i, idle_proc);
 		ip->p_endpoint = IDLE;
 		ip->p_priv = &idle_priv;
@@ -184,7 +184,7 @@ static void idle(void)
 	 */
 
 	p = get_cpulocal_var(proc_ptr) = get_cpulocal_var_ptr(idle_proc);
-	if (priv(p)->s_flags & BILLABLE)
+	如果 (priv(p)->s_flags & BILLABLE)
 		get_cpulocal_var(bill_ptr) = p;
 
 	switch_address_space_idle();
@@ -192,9 +192,9 @@ static void idle(void)
 #ifdef CONFIG_SMP
 	get_cpulocal_var(cpu_is_idle) = 1;
 	/* we don't need to keep time on APs as it is handled on the BSP */
-	if (cpuid != bsp_cpu_id)
+	如果 (cpuid != bsp_cpu_id)
 		stop_local_timer();
-	else
+	否则
 #endif
 	{
 		/*
@@ -206,17 +206,17 @@ static void idle(void)
 
 	/* start accounting for the idle time */
 	context_stop(proc_addr(KERNEL));
-#if !SPROFILE
+#如果 !SPROFILE
 	halt_cpu();
-#else
-	if (!sprofiling)
+#否则
+	如果 (!sprofiling)
 		halt_cpu();
-	else {
-		volatile int * v;
+	否则 {
+		volatile 整数 * v;
 
 		v = get_cpulocal_var_ptr(idle_interrupted);
 		interrupts_enable();
-		while (!*v)
+		当 (!*v)
 			arch_pause();
 		interrupts_disable();
 		*v = 0;
@@ -232,8 +232,8 @@ static void idle(void)
  *                              vm_suspend                                *
  *===========================================================================*/
 void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag)
+        const vir_bytes linaddr, const vir_bytes len, const 整数 type,
+        const 整数 writeflag)
 {
         /* This range is not OK for this process. Set parameters
          * of the request and notify VM about the pending request.
@@ -251,8 +251,8 @@ void vm_suspend(struct proc *caller, const struct proc *target,
         caller->p_vmrequest.type = type;
 
         /* Connect caller on vmrequest wait queue. */
-        if(!(caller->p_vmrequest.nextrequestor = vmrequest))
-                if(OK != send_sig(VM_PROC_NR, SIGKMEM))
+        如果(!(caller->p_vmrequest.nextrequestor = vmrequest))
+                如果(OK != send_sig(VM_PROC_NR, SIGKMEM))
                         panic("send_sig failed");
         vmrequest = caller;
 }
@@ -266,9 +266,9 @@ static void delivermsg(struct proc *rp)
         assert(rp->p_misc_flags & MF_DELIVERMSG);
         assert(rp->p_delivermsg.m_source != NONE);
 
-        if (copy_msg_to_user(&rp->p_delivermsg,
+        如果 (copy_msg_to_user(&rp->p_delivermsg,
                                 (message *) rp->p_delivermsg_vir)) {
-                if(rp->p_misc_flags & MF_MSGFAILED) {
+                如果(rp->p_misc_flags & MF_MSGFAILED) {
                         /* 2nd consecutive failure means this won't succeed */
                         printf("WARNING wrong user pointer 0x%08lx from "
                                 "process %s / %d\n",
@@ -276,18 +276,18 @@ static void delivermsg(struct proc *rp)
                                 rp->p_name,
                                 rp->p_endpoint);
                         cause_sig(rp->p_nr, SIGSEGV);
-                } else {
+                } 否则 {
                         /* 1st failure means we have to ask VM to handle it */
                         vm_suspend(rp, rp, rp->p_delivermsg_vir,
                                 sizeof(message), VMSTYPE_DELIVERMSG, 1);
                         rp->p_misc_flags |= MF_MSGFAILED;
                 }
-        } else {
+        } 否则 {
                 /* Indicate message has been delivered; address is 'used'. */
                 rp->p_delivermsg.m_source = NONE;
                 rp->p_misc_flags &= ~(MF_DELIVERMSG|MF_MSGFAILED);
 
-                if(!(rp->p_misc_flags & MF_CONTEXT_SET)) {
+                如果(!(rp->p_misc_flags & MF_CONTEXT_SET)) {
                         rp->p_reg.retreg = OK;
                 }
         }
@@ -303,7 +303,7 @@ void switch_to_user(void)
 	 */
 	struct proc * p;
 #ifdef CONFIG_SMP
-	int tlb_must_refresh = 0;
+	整数 tlb_must_refresh = 0;
 #endif
 
 	p = get_cpulocal_var(proc_ptr);
@@ -311,7 +311,7 @@ void switch_to_user(void)
 	 * if the current process is still runnable check the misc flags and let
 	 * it run unless it becomes not runnable in the meantime
 	 */
-	if (proc_is_runnable(p))
+	如果 (proc_is_runnable(p))
 		goto check_misc_flags;
 	/*
 	 * if a process becomes not runnable while handling the misc flags, we
@@ -319,12 +319,12 @@ void switch_to_user(void)
 	 * current process wasn't runnable, we pick a new one here
 	 */
 not_runnable_pick_new:
-	if (proc_is_preempted(p)) {
+	如果 (proc_is_preempted(p)) {
 		p->p_rts_flags &= ~RTS_PREEMPTED;
-		if (proc_is_runnable(p)) {
-			if (p->p_cpu_time_left)
+		如果 (proc_is_runnable(p)) {
+			如果 (p->p_cpu_time_left)
 				enqueue_head(p);
-			else
+			否则
 				enqueue(p);
 		}
 	}
@@ -335,7 +335,7 @@ not_runnable_pick_new:
 	 * timer interrupt the execution resumes here and we can pick another
 	 * process. If there is still nothing runnable we "schedule" IDLE again
 	 */
-	while (!(p = pick_proc())) {
+	当 (!(p = pick_proc())) {
 		idle();
 	}
 
@@ -343,7 +343,7 @@ not_runnable_pick_new:
 	get_cpulocal_var(proc_ptr) = p;
 
 #ifdef CONFIG_SMP
-	if (p->p_misc_flags & MF_FLUSH_TLB && get_cpulocal_var(ptproc) == p)
+	如果 (p->p_misc_flags & MF_FLUSH_TLB && get_cpulocal_var(ptproc) == p)
 		tlb_must_refresh = 1;
 #endif
 	switch_address_space(p);
@@ -352,20 +352,20 @@ check_misc_flags:
 
 	assert(p);
 	assert(proc_is_runnable(p));
-	while (p->p_misc_flags &
+	当 (p->p_misc_flags &
 		(MF_KCALL_RESUME | MF_DELIVERMSG |
 		 MF_SC_DEFER | MF_SC_TRACE | MF_SC_ACTIVE)) {
 
 		assert(proc_is_runnable(p));
-		if (p->p_misc_flags & MF_KCALL_RESUME) {
+		如果 (p->p_misc_flags & MF_KCALL_RESUME) {
 			kernel_call_resume(p);
 		}
-		else if (p->p_misc_flags & MF_DELIVERMSG) {
+		否则 如果 (p->p_misc_flags & MF_DELIVERMSG) {
 			TRACE(VF_SCHEDULING, printf("delivering to %s / %d\n",
 				p->p_name, p->p_endpoint););
 			delivermsg(p);
 		}
-		else if (p->p_misc_flags & MF_SC_DEFER) {
+		否则 如果 (p->p_misc_flags & MF_SC_DEFER) {
 			/* Perform the system call that we deferred earlier. */
 
 			assert (!(p->p_misc_flags & MF_SC_ACTIVE));
@@ -376,17 +376,17 @@ check_misc_flags:
 			 * not blocked sending a message after the system call,
 			 * inform PM.
 			 */
-			if ((p->p_misc_flags & MF_SIG_DELAY) &&
+			如果 ((p->p_misc_flags & MF_SIG_DELAY) &&
 					!RTS_ISSET(p, RTS_SENDING))
 				sig_delay_done(p);
 		}
-		else if (p->p_misc_flags & MF_SC_TRACE) {
+		否则 如果 (p->p_misc_flags & MF_SC_TRACE) {
 			/* Trigger a system call leave event if this was a
 			 * system call. We must do this after processing the
 			 * other flags above, both for tracing correctness and
 			 * to be able to use 'break'.
 			 */
-			if (!(p->p_misc_flags & MF_SC_ACTIVE))
+			如果 (!(p->p_misc_flags & MF_SC_ACTIVE))
 				break;
 
 			p->p_misc_flags &=
@@ -397,7 +397,7 @@ check_misc_flags:
 			 */
 			cause_sig(proc_nr(p), SIGTRAP);
 		}
-		else if (p->p_misc_flags & MF_SC_ACTIVE) {
+		否则 如果 (p->p_misc_flags & MF_SC_ACTIVE) {
 			/* If MF_SC_ACTIVE was set, remove it now:
 			 * we're leaving the system call.
 			 */
@@ -410,7 +410,7 @@ check_misc_flags:
 		 * the selected process might not be runnable anymore. We have
 		 * to checkit and schedule another one
 		 */
-		if (!proc_is_runnable(p))
+		如果 (!proc_is_runnable(p))
 			goto not_runnable_pick_new;
 	}
 	/*
@@ -418,19 +418,19 @@ check_misc_flags:
 	 * as we are sure that a possible out-of-quantum message to the
 	 * scheduler will not collide with the regular ipc
 	 */
-	if (!p->p_cpu_time_left)
+	如果 (!p->p_cpu_time_left)
 		proc_no_time(p);
 	/*
 	 * After handling the misc flags the selected process might not be
 	 * runnable anymore. We have to checkit and schedule another one
 	 */
-	if (!proc_is_runnable(p))
+	如果 (!proc_is_runnable(p))
 		goto not_runnable_pick_new;
 
 	TRACE(VF_SCHEDULING, printf("cpu %d starting %s / %d "
 				"pc 0x%08x\n",
 		cpuid, p->p_name, p->p_endpoint, p->p_reg.pc););
-#if DEBUG_TRACE
+#如果 DEBUG_TRACE
 	p->p_schedules++;
 #endif
 
@@ -440,9 +440,9 @@ check_misc_flags:
 	context_stop(proc_addr(KERNEL));
 
 	/* If the process isn't the owner of FPU, enable the FPU exception */
-	if (get_cpulocal_var(fpu_owner) != p)
+	如果 (get_cpulocal_var(fpu_owner) != p)
 		enable_fpu_exception();
-	else
+	否则
 		disable_fpu_exception();
 
 	/* If MF_CONTEXT_SET is set, don't clobber process state within
@@ -450,14 +450,14 @@ check_misc_flags:
 	 */
 	p->p_misc_flags &= ~MF_CONTEXT_SET;
 
-#if defined(__i386__)
+#如果 defined(__i386__)
   	assert(p->p_seg.p_cr3 != 0);
 #elif defined(__arm__)
 	assert(p->p_seg.p_ttbr != 0);
 #endif
 #ifdef CONFIG_SMP
-	if (p->p_misc_flags & MF_FLUSH_TLB) {
-		if (tlb_must_refresh)
+	如果 (p->p_misc_flags & MF_FLUSH_TLB) {
+		如果 (tlb_must_refresh)
 			refresh_tlb();
 		p->p_misc_flags &= ~MF_FLUSH_TLB;
 	}
@@ -476,13 +476,13 @@ check_misc_flags:
 /*
  * handler for all synchronous IPC calls
  */
-static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
-			int call_nr,	/* system call number and flags */
+static 整数 do_sync_ipc(struct proc * caller_ptr, /* who made the call */
+			整数 call_nr,	/* system call number and flags */
 			endpoint_t src_dst_e,	/* src or dst of the call */
 			message *m_ptr)	/* users pointer to a message */
 {
-  int result;					/* the system call's result */
-  int src_dst_p;				/* Process slot number */
+  整数 result;					/* the system call's result */
+  整数 src_dst_p;				/* Process slot number */
   char *callname;
 
   /* Check destination. RECEIVE is the only call that accepts ANY (in addition
@@ -493,54 +493,54 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
   assert(call_nr != SENDA);
 
   /* Only allow non-negative call_nr values less than 32 */
-  if (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
+  如果 (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
       || !(callname = ipc_call_names[call_nr])) {
-#if DEBUG_ENABLE_IPC_WARNINGS
+#如果 DEBUG_ENABLE_IPC_WARNINGS
       printf("sys_call: trap %d not allowed, caller %d, src_dst %d\n", 
           call_nr, proc_nr(caller_ptr), src_dst_e);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	返回(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
-  if (src_dst_e == ANY)
+  如果 (src_dst_e == ANY)
   {
-	if (call_nr != RECEIVE)
+	如果 (call_nr != RECEIVE)
 	{
-#if 0
+#如果 0
 		printf("sys_call: %s by %d with bad endpoint %d\n", 
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-		return EINVAL;
+		返回 EINVAL;
 	}
-	src_dst_p = (int) src_dst_e;
+	src_dst_p = (整数) src_dst_e;
   }
-  else
+  否则
   {
 	/* Require a valid source and/or destination process. */
-	if(!isokendpt(src_dst_e, &src_dst_p)) {
-#if 0
+	如果(!isokendpt(src_dst_e, &src_dst_p)) {
+#如果 0
 		printf("sys_call: %s by %d with bad endpoint %d\n", 
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-		return EDEADSRCDST;
+		返回 EDEADSRCDST;
 	}
 
 	/* If the call is to send to a process, i.e., for SEND, SENDNB,
 	 * SENDREC or NOTIFY, verify that the caller is allowed to send to
 	 * the given destination. 
 	 */
-	if (call_nr != RECEIVE)
+	如果 (call_nr != RECEIVE)
 	{
-		if (!may_send_to(caller_ptr, src_dst_p)) {
-#if DEBUG_ENABLE_IPC_WARNINGS
+		如果 (!may_send_to(caller_ptr, src_dst_p)) {
+#如果 DEBUG_ENABLE_IPC_WARNINGS
 			printf(
 			"sys_call: ipc mask denied %s from %d to %d\n",
 				callname,
 				caller_ptr->p_endpoint, src_dst_e);
 #endif
-			return(ECALLDENIED);	/* call denied by ipc mask */
+			返回(ECALLDENIED);	/* call denied by ipc mask */
 		}
 	}
   }
@@ -549,20 +549,20 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
    * kernel may only be SENDREC, because tasks always reply and may not block 
    * if the caller doesn't do receive(). 
    */
-  if (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
-#if DEBUG_ENABLE_IPC_WARNINGS
+  如果 (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
+#如果 DEBUG_ENABLE_IPC_WARNINGS
       printf("sys_call: %s not allowed, caller %d, src_dst %d\n", 
           callname, proc_nr(caller_ptr), src_dst_p);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	返回(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
-  if (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
-#if DEBUG_ENABLE_IPC_WARNINGS
+  如果 (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
+#如果 DEBUG_ENABLE_IPC_WARNINGS
       printf("sys_call: trap %s not allowed, caller %d, src_dst %d\n",
            callname, proc_nr(caller_ptr), src_dst_e);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	返回(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
   switch(call_nr) {
@@ -572,11 +572,11 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 	/* fall through */
   case SEND:			
 	result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
-	if (call_nr == SEND || result != OK)
+	如果 (call_nr == SEND || result != OK)
 		break;				/* done, or SEND failed */
 	/* fall through for SENDREC */
   case RECEIVE:			
-	if (call_nr == RECEIVE) {
+	如果 (call_nr == RECEIVE) {
 		caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
 		IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
 	}
@@ -593,13 +593,13 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
   }
 
   /* Now, return the result of the system call to the caller. */
-  return(result);
+  返回(result);
 }
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3)
+整数 do_ipc(reg_t r1, reg_t r2, reg_t r3)
 {
   struct proc *const caller_ptr = get_cpulocal_var(proc_ptr);	/* get pointer to caller */
-  int call_nr = (int) r1;
+  整数 call_nr = (整数) r1;
 
   assert(!RTS_ISSET(caller_ptr, RTS_SLOT_FREE));
 
@@ -607,9 +607,9 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   kbill_ipc = caller_ptr;
 
   /* If this process is subject to system call tracing, handle that first. */
-  if (caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) {
+  如果 (caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) {
 	/* Are we tracing this process, and is it the first sys_call entry? */
-	if ((caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) ==
+	如果 ((caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) ==
 							MF_SC_TRACE) {
 		/* We must notify the tracer before processing the actual
 		 * system call. If we don't, the tracer could not obtain the
@@ -626,7 +626,7 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
 		cause_sig(proc_nr(caller_ptr), SIGTRAP);
 
 		/* Preserve the return register's value. */
-		return caller_ptr->p_reg.retreg;
+		返回 caller_ptr->p_reg.retreg;
 	}
 
 	/* If the MF_SC_DEFER flag is set, the syscall is now being resumed. */
@@ -638,7 +638,7 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
 	caller_ptr->p_misc_flags |= MF_SC_ACTIVE;
   }
 
-  if(caller_ptr->p_misc_flags & MF_DELIVERMSG) {
+  如果(caller_ptr->p_misc_flags & MF_DELIVERMSG) {
 	panic("sys_call: MF_DELIVERMSG on for %s / %d\n",
 		caller_ptr->p_name, caller_ptr->p_endpoint);
   }
@@ -661,7 +661,7 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   	    /* Process accounting for scheduling */
 	    caller_ptr->p_accounting.ipc_sync++;
 
-  	    return do_sync_ipc(caller_ptr, call_nr, (endpoint_t) r2,
+  	    返回 do_sync_ipc(caller_ptr, call_nr, (endpoint_t) r2,
 			    (message *) r3);
   	}
   	case SENDA:
@@ -678,30 +678,30 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   	    /* Limit size to something reasonable. An arbitrary choice is 16
   	     * times the number of process table entries.
   	     */
-  	    if (msg_size > 16*(NR_TASKS + NR_PROCS))
-	        return EDOM;
-  	    return mini_senda(caller_ptr, (asynmsg_t *) r3, msg_size);
+  	    如果 (msg_size > 16*(NR_TASKS + NR_PROCS))
+	        返回 EDOM;
+  	    返回 mini_senda(caller_ptr, (asynmsg_t *) r3, msg_size);
   	}
   	case MINIX_KERNINFO:
 	{
 		/* It might not be initialized yet. */
-	  	if(!minix_kerninfo_user) {
-			return EBADCALL;
+	  	如果(!minix_kerninfo_user) {
+			返回 EBADCALL;
 		}
 
   		arch_set_secondary_ipc_return(caller_ptr, minix_kerninfo_user);
-  		return OK;
+  		返回 OK;
 	}
   	default:
-	return EBADCALL;		/* illegal system call */
+	返回 EBADCALL;		/* illegal system call */
   }
 }
 
 /*===========================================================================*
  *				deadlock				     * 
  *===========================================================================*/
-static int deadlock(
-  int function,				/* trap number */
+static 整数 deadlock(
+  整数 function,				/* trap number */
   register struct proc *cp,		/* pointer to caller */
   endpoint_t src_dst_e			/* src or dst process */
 )
@@ -713,19 +713,19 @@ static int deadlock(
  * returned. Otherwise zero is returned. 
  */
   register struct proc *xp;			/* process pointer */
-  int group_size = 1;				/* start with only caller */
-#if DEBUG_ENABLE_IPC_WARNINGS
+  整数 group_size = 1;				/* start with only caller */
+#如果 DEBUG_ENABLE_IPC_WARNINGS
   static struct proc *processes[NR_PROCS + NR_TASKS];
   processes[0] = cp;
 #endif
 
-  while (src_dst_e != ANY) { 			/* check while process nr */
-      int src_dst_slot;
+  当 (src_dst_e != ANY) { 			/* check while process nr */
+      整数 src_dst_slot;
       okendpt(src_dst_e, &src_dst_slot);
       xp = proc_addr(src_dst_slot);		/* follow chain of processes */
       assert(proc_ptr_ok(xp));
       assert(!RTS_ISSET(xp, RTS_SLOT_FREE));
-#if DEBUG_ENABLE_IPC_WARNINGS
+#如果 DEBUG_ENABLE_IPC_WARNINGS
       processes[group_size] = xp;
 #endif
       group_size ++;				/* extra process in group */
@@ -733,50 +733,50 @@ static int deadlock(
       /* Check whether the last process in the chain has a dependency. If it 
        * has not, the cycle cannot be closed and we are done.
        */
-      if((src_dst_e = P_BLOCKEDON(xp)) == NONE)
-	return 0;
+      如果((src_dst_e = P_BLOCKEDON(xp)) == NONE)
+	返回 0;
 
       /* Now check if there is a cyclic dependency. For group sizes of two,  
        * a combination of SEND(REC) and RECEIVE is not fatal. Larger groups
        * or other combinations indicate a deadlock.  
        */
-      if (src_dst_e == cp->p_endpoint) {	/* possible deadlock */
-	  if (group_size == 2) {		/* caller and src_dst */
+      如果 (src_dst_e == cp->p_endpoint) {	/* possible deadlock */
+	  如果 (group_size == 2) {		/* caller and src_dst */
 	      /* The function number is magically converted to flags. */
-	      if ((xp->p_rts_flags ^ (function << 2)) & RTS_SENDING) { 
-	          return(0);			/* not a deadlock */
+	      如果 ((xp->p_rts_flags ^ (function << 2)) & RTS_SENDING) { 
+	          返回(0);			/* not a deadlock */
 	      }
 	  }
-#if DEBUG_ENABLE_IPC_WARNINGS
+#如果 DEBUG_ENABLE_IPC_WARNINGS
 	  {
-		int i;
+		整数 i;
 		printf("deadlock between these processes:\n");
-		for(i = 0; i < group_size; i++) {
+		为(i = 0; i < group_size; i++) {
 			printf(" %10s ", processes[i]->p_name);
 		}
 		printf("\n\n");
-		for(i = 0; i < group_size; i++) {
+		为(i = 0; i < group_size; i++) {
 			print_proc(processes[i]);
 			proc_stacktrace(processes[i]);
 		}
 	  }
 #endif
-          return(group_size);			/* deadlock found */
+          返回(group_size);			/* deadlock found */
       }
   }
-  return(0);					/* not a deadlock */
+  返回(0);					/* not a deadlock */
 }
 
 /*===========================================================================*
  *				has_pending				     * 
  *===========================================================================*/
-static int has_pending(sys_map_t *map, int src_p, int asynm)
+static 整数 has_pending(sys_map_t *map, 整数 src_p, 整数 asynm)
 {
 /* Check to see if there is a pending message from the desired source
  * available.
  */
 
-  int src_id;
+  整数 src_id;
   sys_id_t id = NULL_PRIV_ID;
 #ifdef CONFIG_SMP
   struct proc * p;
@@ -786,25 +786,25 @@ static int has_pending(sys_map_t *map, int src_p, int asynm)
    * it (if any), depending on whether the receive was called on a specific
    * source endpoint.
    */
-  if (src_p != ANY) {
+  如果 (src_p != ANY) {
 	src_id = nr_to_id(src_p);
-	if (get_sys_bit(*map, src_id)) {
+	如果 (get_sys_bit(*map, src_id)) {
 #ifdef CONFIG_SMP
 		p = proc_addr(id_to_nr(src_id));
-		if (asynm && RTS_ISSET(p, RTS_VMINHIBIT))
+		如果 (asynm && RTS_ISSET(p, RTS_VMINHIBIT))
 			p->p_misc_flags |= MF_SENDA_VM_MISS;
-		else
+		否则
 #endif
 			id = src_id;
 	}
-  } else {
+  } 否则 {
 	/* Find a source with a pending message */
-	for (src_id = 0; src_id < NR_SYS_PROCS; src_id += BITCHUNK_BITS) {
-		if (get_sys_bits(*map, src_id) != 0) {
+	为 (src_id = 0; src_id < NR_SYS_PROCS; src_id += BITCHUNK_BITS) {
+		如果 (get_sys_bits(*map, src_id) != 0) {
 #ifdef CONFIG_SMP
-			while (src_id < NR_SYS_PROCS) {
-				while (!get_sys_bit(*map, src_id)) {
-					if (src_id == NR_SYS_PROCS)
+			当 (src_id < NR_SYS_PROCS) {
+				当 (!get_sys_bit(*map, src_id)) {
+					如果 (src_id == NR_SYS_PROCS)
 						goto quit_search;
 					src_id++;
 				}
@@ -816,49 +816,49 @@ static int has_pending(sys_map_t *map, int src_p, int asynm)
 				 * process as having pending async messages.
 				 * Skip it.
 				 */
-				if (asynm && RTS_ISSET(p, RTS_VMINHIBIT)) {
+				如果 (asynm && RTS_ISSET(p, RTS_VMINHIBIT)) {
 					p->p_misc_flags |= MF_SENDA_VM_MISS;
 					src_id++;
-				} else
+				} 否则
 					goto quit_search;
 			}
-#else
-			while (!get_sys_bit(*map, src_id)) src_id++;
+#否则
+			当 (!get_sys_bit(*map, src_id)) src_id++;
 			goto quit_search;
 #endif
 		}
 	}
 
 quit_search:
-	if (src_id < NR_SYS_PROCS)	/* Found one */
+	如果 (src_id < NR_SYS_PROCS)	/* Found one */
 		id = src_id;
   }
 
-  return(id);
+  返回(id);
 }
 
 /*===========================================================================*
  *				has_pending_notify			     *
  *===========================================================================*/
-int has_pending_notify(struct proc * caller, int src_p)
+整数 has_pending_notify(struct proc * caller, 整数 src_p)
 {
 	sys_map_t * map = &priv(caller)->s_notify_pending;
-	return has_pending(map, src_p, 0);
+	返回 has_pending(map, src_p, 0);
 }
 
 /*===========================================================================*
  *				has_pending_asend			     *
  *===========================================================================*/
-int has_pending_asend(struct proc * caller, int src_p)
+整数 has_pending_asend(struct proc * caller, 整数 src_p)
 {
 	sys_map_t * map = &priv(caller)->s_asyn_pending;
-	return has_pending(map, src_p, 1);
+	返回 has_pending(map, src_p, 1);
 }
 
 /*===========================================================================*
  *				unset_notify_pending			     *
  *===========================================================================*/
-void unset_notify_pending(struct proc * caller, int src_p)
+void unset_notify_pending(struct proc * caller, 整数 src_p)
 {
 	sys_map_t * map = &priv(caller)->s_notify_pending;
 	unset_sys_bit(*map, src_p);
@@ -867,11 +867,11 @@ void unset_notify_pending(struct proc * caller, int src_p)
 /*===========================================================================*
  *				mini_send				     * 
  *===========================================================================*/
-int mini_send(
+整数 mini_send(
   register struct proc *caller_ptr,	/* who is trying to send a message? */
   endpoint_t dst_e,			/* to whom is message being sent? */
   message *m_ptr,			/* pointer to message buffer */
-  const int flags
+  const 整数 flags
 )
 {
 /* Send a message from 'caller_ptr' to 'dst'. If 'dst' is blocked waiting
@@ -880,27 +880,27 @@ int mini_send(
  */
   register struct proc *dst_ptr;
   register struct proc **xpp;
-  int dst_p;
+  整数 dst_p;
   dst_p = _ENDPOINT_P(dst_e);
   dst_ptr = proc_addr(dst_p);
 
-  if (RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT))
+  如果 (RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT))
   {
-	return EDEADSRCDST;
+	返回 EDEADSRCDST;
   }
 
   /* Check if 'dst' is blocked waiting for this message. The destination's 
    * RTS_SENDING flag may be set when its SENDREC call blocked while sending.  
    */
-  if (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, (vir_bytes)m_ptr, NULL)) {
-	int call;
+  如果 (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, (vir_bytes)m_ptr, NULL)) {
+	整数 call;
 	/* Destination is indeed waiting for this message. */
 	assert(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));	
 
-	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &dst_ptr->p_delivermsg))
-			return EFAULT;
-	} else {
+	如果 (!(flags & FROM_KERNEL)) {
+		如果(copy_msg_from_user(m_ptr, &dst_ptr->p_delivermsg))
+			返回 EFAULT;
+	} 否则 {
 		dst_ptr->p_delivermsg = *m_ptr;
 		IPC_STATUS_ADD_FLAGS(dst_ptr, IPC_FLG_MSG_FROM_KERNEL);
 	}
@@ -912,30 +912,30 @@ int mini_send(
 		: (flags & NON_BLOCKING ? SENDNB : SEND));
 	IPC_STATUS_ADD_CALL(dst_ptr, call);
 
-	if (dst_ptr->p_misc_flags & MF_REPLY_PEND)
+	如果 (dst_ptr->p_misc_flags & MF_REPLY_PEND)
 		dst_ptr->p_misc_flags &= ~MF_REPLY_PEND;
 
 	RTS_UNSET(dst_ptr, RTS_RECEIVING);
 
-#if DEBUG_IPC_HOOK
+#如果 DEBUG_IPC_HOOK
 	hook_ipc_msgsend(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 	hook_ipc_msgrecv(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 #endif
-  } else {
-	if(flags & NON_BLOCKING) {
-		return(ENOTREADY);
+  } 否则 {
+	如果(flags & NON_BLOCKING) {
+		返回(ENOTREADY);
 	}
 
 	/* Check for a possible deadlock before actually blocking. */
-	if (deadlock(SEND, caller_ptr, dst_e)) {
-		return(ELOCKED);
+	如果 (deadlock(SEND, caller_ptr, dst_e)) {
+		返回(ELOCKED);
 	}
 
 	/* Destination is not waiting.  Block and dequeue caller. */
-	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &caller_ptr->p_sendmsg))
-			return EFAULT;
-	} else {
+	如果 (!(flags & FROM_KERNEL)) {
+		如果(copy_msg_from_user(m_ptr, &caller_ptr->p_sendmsg))
+			返回 EFAULT;
+	} 否则 {
 		caller_ptr->p_sendmsg = *m_ptr;
 		/*
 		 * we need to remember that this message is from kernel so we
@@ -951,30 +951,30 @@ int mini_send(
 	/* Process is now blocked.  Put in on the destination's queue. */
 	assert(caller_ptr->p_q_link == NULL);
 	xpp = &dst_ptr->p_caller_q;		/* find end of list */
-	while (*xpp) xpp = &(*xpp)->p_q_link;	
+	当 (*xpp) xpp = &(*xpp)->p_q_link;	
 	*xpp = caller_ptr;			/* add caller to end */
 
-#if DEBUG_IPC_HOOK
+#如果 DEBUG_IPC_HOOK
 	hook_ipc_msgsend(&caller_ptr->p_sendmsg, caller_ptr, dst_ptr);
 #endif
   }
-  return(OK);
+  返回(OK);
 }
 
 /*===========================================================================*
  *				mini_receive				     * 
  *===========================================================================*/
-static int mini_receive(struct proc * caller_ptr,
+static 整数 mini_receive(struct proc * caller_ptr,
 			endpoint_t src_e, /* which message source is wanted */
 			message * m_buff_usr, /* pointer to message buffer */
-			const int flags)
+			const 整数 flags)
 {
 /* A process or task wants to get a message.  If a message is already queued,
  * acquire it and deblock the sender.  If no message from the desired source
  * is available block the caller.
  */
   register struct proc **xpp;
-  int r, src_id, found, src_proc_nr, src_p;
+  整数 r, src_id, found, src_proc_nr, src_p;
   endpoint_t sender_e;
 
   assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
@@ -982,13 +982,13 @@ static int mini_receive(struct proc * caller_ptr,
   /* This is where we want our message. */
   caller_ptr->p_delivermsg_vir = (vir_bytes) m_buff_usr;
 
-  if(src_e == ANY) src_p = ANY;
-  else
+  如果(src_e == ANY) src_p = ANY;
+  否则
   {
 	okendpt(src_e, &src_p);
-	if (RTS_ISSET(proc_addr(src_p), RTS_NO_ENDPOINT))
+	如果 (RTS_ISSET(proc_addr(src_p), RTS_NO_ENDPOINT))
 	{
-		return EDEADSRCDST;
+		返回 EDEADSRCDST;
 	}
   }
 
@@ -997,24 +997,24 @@ static int mini_receive(struct proc * caller_ptr,
    * caller's RTS_SENDING flag may be set if SENDREC couldn't send. If it is
    * set, the process should be blocked.
    */
-  if (!RTS_ISSET(caller_ptr, RTS_SENDING)) {
+  如果 (!RTS_ISSET(caller_ptr, RTS_SENDING)) {
 
     /* Check if there are pending notifications, except for SENDREC. */
-    if (! (caller_ptr->p_misc_flags & MF_REPLY_PEND)) {
+    如果 (! (caller_ptr->p_misc_flags & MF_REPLY_PEND)) {
 
 	/* Check for pending notifications */
         src_id = has_pending_notify(caller_ptr, src_p);
         found = src_id != NULL_PRIV_ID;
-        if(found) {
+        如果(found) {
             src_proc_nr = id_to_nr(src_id);		/* get source proc */
             sender_e = proc_addr(src_proc_nr)->p_endpoint;
         }
 
-        if (found && CANRECEIVE(src_e, sender_e, caller_ptr, 0,
+        如果 (found && CANRECEIVE(src_e, sender_e, caller_ptr, 0,
           &m_notify_buff)) {
 
-#if DEBUG_ENABLE_IPC_WARNINGS
-	    if(src_proc_nr == NONE) {
+#如果 DEBUG_ENABLE_IPC_WARNINGS
+	    如果(src_proc_nr == NONE) {
 		printf("mini_receive: sending notify from NONE\n");
 	    }
 #endif
@@ -1037,13 +1037,13 @@ static int mini_receive(struct proc * caller_ptr,
     }
 
     /* Check for pending asynchronous messages */
-    if (has_pending_asend(caller_ptr, src_p) != NULL_PRIV_ID) {
-        if (src_p != ANY)
+    如果 (has_pending_asend(caller_ptr, src_p) != NULL_PRIV_ID) {
+        如果 (src_p != ANY)
 		r = try_one(src_e, proc_addr(src_p), caller_ptr);
-        else
+        否则
         	r = try_async(caller_ptr);
 
-	if (r == OK) {
+	如果 (r == OK) {
             IPC_STATUS_ADD_CALL(caller_ptr, SENDA);
             goto receive_done;
         }
@@ -1051,12 +1051,12 @@ static int mini_receive(struct proc * caller_ptr,
 
     /* Check caller queue. Use pointer pointers to keep code simple. */
     xpp = &caller_ptr->p_caller_q;
-    while (*xpp) {
+    当 (*xpp) {
 	struct proc * sender = *xpp;
 	endpoint_t sender_e = sender->p_endpoint;
 
-        if (CANRECEIVE(src_e, sender_e, caller_ptr, 0, &sender->p_sendmsg)) {
-            int call;
+        如果 (CANRECEIVE(src_e, sender_e, caller_ptr, 0, &sender->p_sendmsg)) {
+            整数 call;
 	    assert(!RTS_ISSET(sender, RTS_SLOT_FREE));
 	    assert(!RTS_ISSET(sender, RTS_NO_ENDPOINT));
 
@@ -1074,15 +1074,15 @@ static int mini_receive(struct proc * caller_ptr,
 	     * if the message is originally from the kernel on behalf of this
 	     * process, we must send the status flags accordingly
 	     */
-	    if (sender->p_misc_flags & MF_SENDING_FROM_KERNEL) {
+	    如果 (sender->p_misc_flags & MF_SENDING_FROM_KERNEL) {
 		IPC_STATUS_ADD_FLAGS(caller_ptr, IPC_FLG_MSG_FROM_KERNEL);
 		/* we can clean the flag now, not need anymore */
 		sender->p_misc_flags &= ~MF_SENDING_FROM_KERNEL;
 	    }
-	    if (sender->p_misc_flags & MF_SIG_DELAY)
+	    如果 (sender->p_misc_flags & MF_SIG_DELAY)
 		sig_delay_done(sender);
 
-#if DEBUG_IPC_HOOK
+#如果 DEBUG_IPC_HOOK
             hook_ipc_msgrecv(&caller_ptr->p_delivermsg, *xpp, caller_ptr);
 #endif
 		
@@ -1097,41 +1097,41 @@ static int mini_receive(struct proc * caller_ptr,
   /* No suitable message is available or the caller couldn't send in SENDREC. 
    * Block the process trying to receive, unless the flags tell otherwise.
    */
-  if ( ! (flags & NON_BLOCKING)) {
+  如果 ( ! (flags & NON_BLOCKING)) {
       /* Check for a possible deadlock before actually blocking. */
-      if (deadlock(RECEIVE, caller_ptr, src_e)) {
-          return(ELOCKED);
+      如果 (deadlock(RECEIVE, caller_ptr, src_e)) {
+          返回(ELOCKED);
       }
 
       caller_ptr->p_getfrom_e = src_e;		
       RTS_SET(caller_ptr, RTS_RECEIVING);
-      return(OK);
-  } else {
-	return(ENOTREADY);
+      返回(OK);
+  } 否则 {
+	返回(ENOTREADY);
   }
 
 receive_done:
-  if (caller_ptr->p_misc_flags & MF_REPLY_PEND)
+  如果 (caller_ptr->p_misc_flags & MF_REPLY_PEND)
 	  caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
-  return OK;
+  返回 OK;
 }
 
 /*===========================================================================*
  *				mini_notify				     * 
  *===========================================================================*/
-int mini_notify(
+整数 mini_notify(
   const struct proc *caller_ptr,	/* sender of the notification */
   endpoint_t dst_e			/* which process to notify */
 )
 {
   register struct proc *dst_ptr;
-  int src_id;				/* source id for late delivery */
-  int dst_p;
+  整数 src_id;				/* source id for late delivery */
+  整数 dst_p;
 
-  if (!isokendpt(dst_e, &dst_p)) {
+  如果 (!isokendpt(dst_e, &dst_p)) {
 	util_stacktrace();
 	printf("mini_notify: bogus endpoint %d\n", dst_e);
-	return EDEADSRCDST;
+	返回 EDEADSRCDST;
   }
 
   dst_ptr = proc_addr(dst_p);
@@ -1139,7 +1139,7 @@ int mini_notify(
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
    */
-  if (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, 0, &m_notify_buff) &&
+  如果 (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, 0, &m_notify_buff) &&
     !(dst_ptr->p_misc_flags & MF_REPLY_PEND)) {
       /* Destination is indeed waiting for a message. Assemble a notification 
        * message and deliver it. Copy from pseudo-source HARDWARE, since the
@@ -1154,7 +1154,7 @@ int mini_notify(
       IPC_STATUS_ADD_CALL(dst_ptr, NOTIFY);
       RTS_UNSET(dst_ptr, RTS_RECEIVING);
 
-      return(OK);
+      返回(OK);
   } 
 
   /* Destination is not ready to receive the notification. Add it to the 
@@ -1163,7 +1163,7 @@ int mini_notify(
    */ 
   src_id = priv(caller_ptr)->s_id;
   set_sys_bit(priv(dst_ptr)->s_notify_pending, src_id); 
-  return(OK);
+  返回(OK);
 }
 
 #define ASCOMPLAIN(caller, entry, field)	\
@@ -1172,7 +1172,7 @@ int mini_notify(
 field, caller->p_name, entry, priv(caller)->s_asynsize, priv(caller)->s_asyntab)
 
 #define A_RETR(entry) do {			\
-  if (data_copy(				\
+  如果 (data_copy(				\
   		caller_ptr->p_endpoint, table_v + (entry)*sizeof(asynmsg_t),\
   		KERNEL, (vir_bytes) &tabent,	\
   		sizeof(tabent)) != OK) {	\
@@ -1180,29 +1180,29 @@ field, caller->p_name, entry, priv(caller)->s_asynsize, priv(caller)->s_asyntab)
   			r = EFAULT;		\
 	                goto asyn_error; \
   }						\
-  else if(tabent.dst == SELF) { \
+  否则 如果(tabent.dst == SELF) { \
       tabent.dst = caller_ptr->p_endpoint; \
   } \
-  			 } while(0)
+  			 } 当(0)
 
 #define A_INSRT(entry) do {			\
-  if (data_copy(KERNEL, (vir_bytes) &tabent,	\
+  如果 (data_copy(KERNEL, (vir_bytes) &tabent,	\
   		caller_ptr->p_endpoint, table_v + (entry)*sizeof(asynmsg_t),\
   		sizeof(tabent)) != OK) {	\
   			ASCOMPLAIN(caller_ptr, entry, "message entry");	\
 			/* Do NOT set r or goto asyn_error here! */ \
   }						\
-  			  } while(0)	
+  			  } 当(0)	
 
 /*===========================================================================*
  *				try_deliver_senda			     *
  *===========================================================================*/
-int try_deliver_senda(struct proc *caller_ptr,
+整数 try_deliver_senda(struct proc *caller_ptr,
 				asynmsg_t *table,
 				size_t size)
 {
-  int r, dst_p, done, do_notify;
-  unsigned int i;
+  整数 r, dst_p, done, do_notify;
+  unsigned 整数 i;
   unsigned flags;
   endpoint_t dst;
   struct proc *dst_ptr;
@@ -1218,7 +1218,7 @@ int try_deliver_senda(struct proc *caller_ptr,
   privp->s_asynsize = 0;
   privp->s_asynendpoint = caller_ptr->p_endpoint;
 
-  if (size == 0) return(OK);  /* Nothing to do, just return */
+  如果 (size == 0) 返回(OK);  /* Nothing to do, just return */
 
   /* Scan the table */
   do_notify = FALSE;
@@ -1230,12 +1230,12 @@ int try_deliver_senda(struct proc *caller_ptr,
    * (this check has been duplicated in sys_call but is left here
    * as a sanity check)
    */
-  if (size > 16*(NR_TASKS + NR_PROCS)) {
+  如果 (size > 16*(NR_TASKS + NR_PROCS)) {
     r = EDOM;
-    return r;
+    返回 r;
   }
 
-  for (i = 0; i < size; i++) {
+  为 (i = 0; i < size; i++) {
 	/* Process each entry in the table and store the result in the table.
 	 * If we're done handling a message, copy the result to the sender. */
 
@@ -1245,31 +1245,31 @@ int try_deliver_senda(struct proc *caller_ptr,
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue; /* Skip empty entries */
+	如果 (flags == 0) continue; /* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR)) {
+	如果(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR)) {
 		r = EINVAL;
 		goto asyn_error;
 	}
-	if (!(flags & AMF_VALID)) { /* Must contain message */
+	如果 (!(flags & AMF_VALID)) { /* Must contain message */
 		r = EINVAL;
 		goto asyn_error;
 	}
-	if (flags & AMF_DONE) continue;	/* Already done processing */
+	如果 (flags & AMF_DONE) continue;	/* Already done processing */
 
 	r = OK;
-	if (!isokendpt(tabent.dst, &dst_p)) 
+	如果 (!isokendpt(tabent.dst, &dst_p)) 
 		r = EDEADSRCDST; /* Bad destination, report the error */
-	else if (iskerneln(dst_p)) 
+	否则 如果 (iskerneln(dst_p)) 
 		r = ECALLDENIED; /* Asyn sends to the kernel are not allowed */
-	else if (!may_asynsend_to(caller_ptr, dst_p))
+	否则 如果 (!may_asynsend_to(caller_ptr, dst_p))
 		r = ECALLDENIED; /* Send denied by IPC mask */
-	else 	/* r == OK */
+	否则 	/* r == OK */
 		dst_ptr = proc_addr(dst_p);
 
 	/* XXX: RTS_NO_ENDPOINT should be removed */
-	if (r == OK && RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT)) {
+	如果 (r == OK && RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT)) {
 		r = EDEADSRCDST;
 	}
 
@@ -1277,7 +1277,7 @@ int try_deliver_senda(struct proc *caller_ptr,
 	 * If AMF_NOREPLY is set, do not satisfy the receiving part of
 	 * a SENDREC.
 	 */
-	if (r == OK && WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr,
+	如果 (r == OK && WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr,
 	    (vir_bytes)&table[i].msg, NULL) &&
 	    (!(flags&AMF_NOREPLY) || !(dst_ptr->p_misc_flags&MF_REPLY_PEND))) {
 		/* Destination is indeed waiting for this message. */
@@ -1286,10 +1286,10 @@ int try_deliver_senda(struct proc *caller_ptr,
 		dst_ptr->p_misc_flags |= MF_DELIVERMSG;
 		IPC_STATUS_ADD_CALL(dst_ptr, SENDA);
 		RTS_UNSET(dst_ptr, RTS_RECEIVING);
-#if DEBUG_IPC_HOOK
+#如果 DEBUG_IPC_HOOK
 		hook_ipc_msgrecv(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 #endif
-	} else if (r == OK) {
+	} 否则 如果 (r == OK) {
 		/* Inform receiver that something is pending */
 		set_sys_bit(priv(dst_ptr)->s_asyn_pending, 
 			    priv(caller_ptr)->s_id); 
@@ -1300,54 +1300,54 @@ int try_deliver_senda(struct proc *caller_ptr,
 	/* Store results */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY)
+	如果 (flags & AMF_NOTIFY)
 		do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR))
+	否则 如果 (r != OK && (flags & AMF_NOTIFY_ERR))
 		do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to caller; ignore errors */
 	continue;
 
 asyn_error:
-	if (dst != NONE)
+	如果 (dst != NONE)
 		printf("KERNEL senda error %d to %d\n", r, dst);
-	else
+	否则
 		printf("KERNEL senda error %d\n", r);
   }
 
-  if (do_notify) 
+  如果 (do_notify) 
 	mini_notify(proc_addr(ASYNCM), caller_ptr->p_endpoint);
 
-  if (!done) {
+  如果 (!done) {
 	privp->s_asyntab = (vir_bytes) table;
 	privp->s_asynsize = size;
   }
 
-  return(OK);
+  返回(OK);
 }
 
 /*===========================================================================*
  *				mini_senda				     *
  *===========================================================================*/
-static int mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t size)
+static 整数 mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t size)
 {
   struct priv *privp;
 
   privp = priv(caller_ptr);
-  if (!(privp->s_flags & SYS_PROC)) {
+  如果 (!(privp->s_flags & SYS_PROC)) {
 	printf( "mini_senda: warning caller has no privilege structure\n");
-	return(EPERM);
+	返回(EPERM);
   }
 
-  return try_deliver_senda(caller_ptr, table, size);
+  返回 try_deliver_senda(caller_ptr, table, size);
 }
 
 
 /*===========================================================================*
  *				try_async				     * 
  *===========================================================================*/
-static int try_async(struct proc * caller_ptr)
+static 整数 try_async(struct proc * caller_ptr)
 {
-  int r;
+  整数 r;
   struct priv *privp;
   struct proc *src_ptr;
   sys_map_t *map;
@@ -1355,11 +1355,11 @@ static int try_async(struct proc * caller_ptr)
   map = &priv(caller_ptr)->s_asyn_pending;
 
   /* Try all privilege structures */
-  for (privp = BEG_PRIV_ADDR; privp < END_PRIV_ADDR; ++privp)  {
-	if (privp->s_proc_nr == NONE)
+  为 (privp = BEG_PRIV_ADDR; privp < END_PRIV_ADDR; ++privp)  {
+	如果 (privp->s_proc_nr == NONE)
 		continue;
 
-	if (!get_sys_bit(*map, privp->s_id)) 
+	如果 (!get_sys_bit(*map, privp->s_id)) 
 		continue;
 
 	src_ptr = proc_addr(privp->s_proc_nr);
@@ -1369,30 +1369,30 @@ static int try_async(struct proc * caller_ptr)
 	 * Do not copy from a process which does not have a stable address space
 	 * due to VM fiddling with it
 	 */
-	if (RTS_ISSET(src_ptr, RTS_VMINHIBIT)) {
+	如果 (RTS_ISSET(src_ptr, RTS_VMINHIBIT)) {
 		src_ptr->p_misc_flags |= MF_SENDA_VM_MISS;
 		continue;
 	}
 #endif
 
 	assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
-	if ((r = try_one(ANY, src_ptr, caller_ptr)) == OK)
-		return(r);
+	如果 ((r = try_one(ANY, src_ptr, caller_ptr)) == OK)
+		返回(r);
   }
 
-  return(ESRCH);
+  返回(ESRCH);
 }
 
 
 /*===========================================================================*
  *				try_one					     *
  *===========================================================================*/
-static int try_one(endpoint_t receive_e, struct proc *src_ptr,
+static 整数 try_one(endpoint_t receive_e, struct proc *src_ptr,
     struct proc *dst_ptr)
 {
 /* Try to receive an asynchronous message from 'src_ptr' */
-  int r = EAGAIN, done, do_notify;
-  unsigned int flags, i;
+  整数 r = EAGAIN, done, do_notify;
+  unsigned 整数 flags, i;
   size_t size;
   endpoint_t dst, src_e;
   struct proc *caller_ptr;
@@ -1401,16 +1401,16 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
   vir_bytes table_v;
 
   privp = priv(src_ptr);
-  if (!(privp->s_flags & SYS_PROC)) return(EPERM);
+  如果 (!(privp->s_flags & SYS_PROC)) 返回(EPERM);
   size = privp->s_asynsize;
   table_v = privp->s_asyntab;
 
   /* Clear table pending message flag. We're done unless we're not. */
   unset_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
 
-  if (size == 0) return(EAGAIN);
-  if (privp->s_asynendpoint != src_ptr->p_endpoint) return EAGAIN;
-  if (!may_asynsend_to(src_ptr, proc_nr(dst_ptr))) return (ECALLDENIED);
+  如果 (size == 0) 返回(EAGAIN);
+  如果 (privp->s_asynendpoint != src_ptr->p_endpoint) 返回 EAGAIN;
+  如果 (!may_asynsend_to(src_ptr, proc_nr(dst_ptr))) 返回 (ECALLDENIED);
 
   caller_ptr = src_ptr;	/* Needed for A_ macros later on */
   src_e = src_ptr->p_endpoint;
@@ -1419,7 +1419,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
   do_notify = FALSE;
   done = TRUE;
 
-  for (i = 0; i < size; i++) {
+  为 (i = 0; i < size; i++) {
   	/* Process each entry in the table and store the result in the table.
   	 * If we're done handling a message, copy the result to the sender.
   	 * Some checks done in mini_senda are duplicated here, as the sender
@@ -1431,14 +1431,14 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue;	/* Skip empty entries */
+	如果 (flags == 0) continue;	/* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
+	如果(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
 		r = EINVAL;
-	else if (!(flags & AMF_VALID)) /* Must contain message */
+	否则 如果 (!(flags & AMF_VALID)) /* Must contain message */
 		r = EINVAL; 
-	else if (flags & AMF_DONE) continue; /* Already done processing */
+	否则 如果 (flags & AMF_DONE) continue; /* Already done processing */
 
 	/* Clear done flag. The sender is done sending when all messages in the
 	 * table are marked done or empty. However, we will know that only
@@ -1448,13 +1448,13 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	 */
 	done = FALSE;
 
-	if (r == EINVAL)
+	如果 (r == EINVAL)
 		goto store_result;
 
 	/* Message must be directed at receiving end */
-	if (dst != dst_ptr->p_endpoint) continue;
+	如果 (dst != dst_ptr->p_endpoint) continue;
 
-	if (!CANRECEIVE(receive_e, src_e, dst_ptr,
+	如果 (!CANRECEIVE(receive_e, src_e, dst_ptr,
 		table_v + i*sizeof(asynmsg_t) + offsetof(struct asynmsg,msg),
 		NULL)) {
 		continue;
@@ -1464,7 +1464,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	 * SENDREC and thus should not satisfy the receiving part of the
 	 * SENDREC. This message is to be delivered later.
 	 */
-	if ((flags & AMF_NOREPLY) && (dst_ptr->p_misc_flags & MF_REPLY_PEND)) 
+	如果 ((flags & AMF_NOREPLY) && (dst_ptr->p_misc_flags & MF_REPLY_PEND)) 
 		continue;
 
 	/* Destination is ready to receive the message; deliver it */
@@ -1472,7 +1472,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	dst_ptr->p_delivermsg = tabent.msg;
 	dst_ptr->p_delivermsg.m_source = src_ptr->p_endpoint;
 	dst_ptr->p_misc_flags |= MF_DELIVERMSG;
-#if DEBUG_IPC_HOOK
+#如果 DEBUG_IPC_HOOK
 	hook_ipc_msgrecv(&dst_ptr->p_delivermsg, src_ptr, dst_ptr);
 #endif
 
@@ -1483,36 +1483,36 @@ store_result:
 	 */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY) do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
+	如果 (flags & AMF_NOTIFY) do_notify = TRUE;
+	否则 如果 (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to sender; ignore errors */
 
 	break;
   }
 
-  if (do_notify) 
+  如果 (do_notify) 
 	mini_notify(proc_addr(ASYNCM), src_ptr->p_endpoint);
 
-  if (done) {
+  如果 (done) {
 	privp->s_asyntab = -1;
 	privp->s_asynsize = 0;
-  } else {
+  } 否则 {
 	set_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
   }
 
 asyn_error:
-  return(r);
+  返回(r);
 }
 
 /*===========================================================================*
  *				cancel_async				     *
  *===========================================================================*/
-int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
+整数 cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
 {
 /* Cancel asynchronous messages from src to dst, because dst is not interested
  * in them (e.g., dst has been restarted) */
-  int done, do_notify;
-  unsigned int flags, i;
+  整数 done, do_notify;
+  unsigned 整数 flags, i;
   size_t size;
   endpoint_t dst;
   struct proc *caller_ptr;
@@ -1521,7 +1521,7 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   vir_bytes table_v;
 
   privp = priv(src_ptr);
-  if (!(privp->s_flags & SYS_PROC)) return(EPERM);
+  如果 (!(privp->s_flags & SYS_PROC)) 返回(EPERM);
   size = privp->s_asynsize;
   table_v = privp->s_asyntab;
 
@@ -1530,8 +1530,8 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   privp->s_asynsize = 0;
   unset_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
 
-  if (size == 0) return(EAGAIN);
-  if (!may_send_to(src_ptr, proc_nr(dst_ptr))) return(ECALLDENIED);
+  如果 (size == 0) 返回(EAGAIN);
+  如果 (!may_send_to(src_ptr, proc_nr(dst_ptr))) 返回(ECALLDENIED);
 
   caller_ptr = src_ptr;	/* Needed for A_ macros later on */
 
@@ -1540,31 +1540,31 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   done = TRUE;
 
 
-  for (i = 0; i < size; i++) {
+  为 (i = 0; i < size; i++) {
   	/* Process each entry in the table and store the result in the table.
   	 * If we're done handling a message, copy the result to the sender.
   	 * Some checks done in mini_senda are duplicated here, as the sender
   	 * could've altered the contents of the table in the mean time.
   	 */
 
-  	int r = EDEADSRCDST;	/* Cancel delivery due to dead dst */
+  	整数 r = EDEADSRCDST;	/* Cancel delivery due to dead dst */
 
 	/* Copy message to kernel */
 	A_RETR(i);
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue;	/* Skip empty entries */
+	如果 (flags == 0) continue;	/* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
+	如果(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
 		r = EINVAL;
-	else if (!(flags & AMF_VALID)) /* Must contain message */
+	否则 如果 (!(flags & AMF_VALID)) /* Must contain message */
 		r = EINVAL; 
-	else if (flags & AMF_DONE) continue; /* Already done processing */
+	否则 如果 (flags & AMF_DONE) continue; /* Already done processing */
 
 	/* Message must be directed at receiving end */
-	if (dst != dst_ptr->p_endpoint) {
+	如果 (dst != dst_ptr->p_endpoint) {
 		done = FALSE;
 		continue;
 	}
@@ -1572,21 +1572,21 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
 	/* Store results for sender */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY) do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
+	如果 (flags & AMF_NOTIFY) do_notify = TRUE;
+	否则 如果 (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to sender; ignore errors */
   }
 
-  if (do_notify) 
+  如果 (do_notify) 
 	mini_notify(proc_addr(ASYNCM), src_ptr->p_endpoint);
 
-  if (!done) {
+  如果 (!done) {
 	privp->s_asyntab = table_v;
 	privp->s_asynsize = size;
   }
 
 asyn_error:
-  return(OK);
+  返回(OK);
 }
 
 /*===========================================================================*
@@ -1604,7 +1604,7 @@ void enqueue(
  * This function can be used x-cpu as it always uses the queues of the cpu the
  * process is assigned to.
  */
-  int q = rp->p_priority;	 		/* scheduling queue to use */
+  整数 q = rp->p_priority;	 		/* scheduling queue to use */
   struct proc **rdy_head, **rdy_tail;
   
   assert(proc_is_runnable(rp));
@@ -1615,17 +1615,17 @@ void enqueue(
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
   /* Now add the process to the queue. */
-  if (!rdy_head[q]) {		/* add to empty queue */
+  如果 (!rdy_head[q]) {		/* add to empty queue */
       rdy_head[q] = rdy_tail[q] = rp; 		/* create a new queue */
       rp->p_nextready = NULL;		/* mark new end */
   } 
-  else {					/* add to tail of queue */
+  否则 {					/* add to tail of queue */
       rdy_tail[q]->p_nextready = rp;		/* chain tail of queue */	
       rdy_tail[q] = rp;				/* set new queue tail */
       rp->p_nextready = NULL;		/* mark new end */
   }
 
-  if (cpuid == rp->p_cpu) {
+  如果 (cpuid == rp->p_cpu) {
 	  /*
 	   * enqueueing a process with a higher priority than the current one,
 	   * it gets preempted. The current process must be preemptible. Testing
@@ -1634,7 +1634,7 @@ void enqueue(
 	  struct proc * p;
 	  p = get_cpulocal_var(proc_ptr);
 	  assert(p);
-	  if((p->p_priority > rp->p_priority) &&
+	  如果((p->p_priority > rp->p_priority) &&
 			  (priv(p)->s_flags & PREEMPTIBLE))
 		  RTS_SET(p, RTS_PREEMPTED); /* calls dequeue() */
   }
@@ -1644,7 +1644,7 @@ void enqueue(
    * the time is off, we need to wake up that cpu and let it schedule this new
    * process
    */
-  else if (get_cpu_var(rp->p_cpu, cpu_is_idle)) {
+  否则 如果 (get_cpu_var(rp->p_cpu, cpu_is_idle)) {
 	  smp_schedule(rp->p_cpu);
   }
 #endif
@@ -1653,7 +1653,7 @@ void enqueue(
   read_tsc_64(&(get_cpulocal_var(proc_ptr)->p_accounting.enter_queue));
 
 
-#if DEBUG_SANITYCHECKS
+#如果 DEBUG_SANITYCHECKS
   assert(runqueues_ok_local());
 #endif
 }
@@ -1669,7 +1669,7 @@ void enqueue(
  */
 static void enqueue_head(struct proc *rp)
 {
-  const int q = rp->p_priority;	 		/* scheduling queue to use */
+  const 整数 q = rp->p_priority;	 		/* scheduling queue to use */
 
   struct proc **rdy_head, **rdy_tail;
 
@@ -1689,10 +1689,10 @@ static void enqueue_head(struct proc *rp)
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
   /* Now add the process to the queue. */
-  if (!rdy_head[q]) {		/* add to empty queue */
+  如果 (!rdy_head[q]) {		/* add to empty queue */
 	rdy_head[q] = rdy_tail[q] = rp; 	/* create a new queue */
 	rp->p_nextready = NULL;			/* mark new end */
-  } else {					/* add to head of queue */
+  } 否则 {					/* add to head of queue */
 	rp->p_nextready = rdy_head[q];		/* chain head of queue */
 	rdy_head[q] = rp;			/* set new queue head */
   }
@@ -1705,7 +1705,7 @@ static void enqueue_head(struct proc *rp)
   rp->p_accounting.dequeues--;
   rp->p_accounting.preempted++;
 
-#if DEBUG_SANITYCHECKS
+#如果 DEBUG_SANITYCHECKS
   assert(runqueues_ok_local());
 #endif
 }
@@ -1723,7 +1723,7 @@ void dequeue(struct proc *rp)
  * This function can operate x-cpu as it always removes the process from the
  * queue of the cpu the process is currently assigned to.
  */
-  int q = rp->p_priority;		/* queue to use */
+  整数 q = rp->p_priority;		/* queue to use */
   struct proc **xpp;			/* iterate over queue */
   struct proc *prev_xp;
   u64_t tsc, tsc_delta;
@@ -1743,11 +1743,11 @@ void dequeue(struct proc *rp)
    * running by being sent a signal that kills it.
    */
   prev_xp = NULL;				
-  for (xpp = get_cpu_var_ptr(rp->p_cpu, run_q_head[q]); *xpp;
+  为 (xpp = get_cpu_var_ptr(rp->p_cpu, run_q_head[q]); *xpp;
 		  xpp = &(*xpp)->p_nextready) {
-      if (*xpp == rp) {				/* found process to remove */
+      如果 (*xpp == rp) {				/* found process to remove */
           *xpp = (*xpp)->p_nextready;		/* replace with next chain */
-          if (rp == rdy_tail[q]) {		/* queue tail removed */
+          如果 (rp == rdy_tail[q]) {		/* queue tail removed */
               rdy_tail[q] = prev_xp;		/* set new tail */
 	  }
 
@@ -1763,7 +1763,7 @@ void dequeue(struct proc *rp)
   /* this is not all that accurate on virtual machines, especially with
      IO bound processes that only spend a short amount of time in the queue
      at a time. */
-  if (rp->p_accounting.enter_queue) {
+  如果 (rp->p_accounting.enter_queue) {
 	read_tsc_64(&tsc);
 	tsc_delta = tsc - rp->p_accounting.enter_queue;
 	rp->p_accounting.time_in_queue = rp->p_accounting.time_in_queue +
@@ -1774,7 +1774,7 @@ void dequeue(struct proc *rp)
   /* For ps(1), remember when the process was last dequeued. */
   rp->p_dequeued = get_monotonic();
 
-#if DEBUG_SANITYCHECKS
+#如果 DEBUG_SANITYCHECKS
   assert(runqueues_ok_local());
 #endif
 }
@@ -1792,24 +1792,24 @@ static struct proc * pick_proc(void)
  */
   register struct proc *rp;			/* process to run */
   struct proc **rdy_head;
-  int q;				/* iterate over queues */
+  整数 q;				/* iterate over queues */
 
   /* Check each of the scheduling queues for ready processes. The number of
    * queues is defined in proc.h, and priorities are set in the task table.
    * If there are no processes ready to run, return NULL.
    */
   rdy_head = get_cpulocal_var(run_q_head);
-  for (q=0; q < NR_SCHED_QUEUES; q++) {	
-	if(!(rp = rdy_head[q])) {
+  为 (q=0; q < NR_SCHED_QUEUES; q++) {	
+	如果(!(rp = rdy_head[q])) {
 		TRACE(VF_PICKPROC, printf("cpu %d queue %d empty\n", cpuid, q););
 		continue;
 	}
 	assert(proc_is_runnable(rp));
-	if (priv(rp)->s_flags & BILLABLE)	 	
+	如果 (priv(rp)->s_flags & BILLABLE)	 	
 		get_cpulocal_var(bill_ptr) = rp; /* bill for system time */
-	return rp;
+	返回 rp;
   }
-  return NULL;
+  返回 NULL;
 }
 
 /*===========================================================================*
@@ -1817,24 +1817,24 @@ static struct proc * pick_proc(void)
  *===========================================================================*/
 struct proc *endpoint_lookup(endpoint_t e)
 {
-	int n;
+	整数 n;
 
-	if(!isokendpt(e, &n)) return NULL;
+	如果(!isokendpt(e, &n)) 返回 NULL;
 
-	return proc_addr(n);
+	返回 proc_addr(n);
 }
 
 /*===========================================================================*
  *				isokendpt_f				     *
  *===========================================================================*/
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char * file, int line, endpoint_t e, int * p,
-	const int fatalflag)
-#else
-int isokendpt_f(endpoint_t e, int * p, const int fatalflag)
+#如果 DEBUG_ENABLE_IPC_WARNINGS
+整数 isokendpt_f(const char * file, 整数 line, endpoint_t e, 整数 * p,
+	const 整数 fatalflag)
+#否则
+整数 isokendpt_f(endpoint_t e, 整数 * p, const 整数 fatalflag)
 #endif
 {
-	int ok = 0;
+	整数 ok = 0;
 	/* Convert an endpoint number into a process number.
 	 * Return nonzero if the process is alive with the corresponding
 	 * generation number, zero otherwise.
@@ -1850,17 +1850,17 @@ int isokendpt_f(endpoint_t e, int * p, const int fatalflag)
 	 */
 	*p = _ENDPOINT_P(e);
 	ok = 0;
-	if(isokprocn(*p) && !isemptyn(*p) && proc_addr(*p)->p_endpoint == e)
+	如果(isokprocn(*p) && !isemptyn(*p) && proc_addr(*p)->p_endpoint == e)
 		ok = 1;
-	if(!ok && fatalflag)
+	如果(!ok && fatalflag)
 		panic("invalid endpoint: %d",  e);
-	return ok;
+	返回 ok;
 }
 
 static void notify_scheduler(struct proc *p)
 {
 	message m_no_quantum;
-	int err;
+	整数 err;
 
 	assert(!proc_kernel_scheduler(p));
 
@@ -1884,7 +1884,7 @@ static void notify_scheduler(struct proc *p)
 	/* Reset accounting */
 	reset_proc_accounting(p);
 
-	if ((err = mini_send(p, p->p_scheduler->p_endpoint,
+	如果 ((err = mini_send(p, p->p_scheduler->p_endpoint,
 					&m_no_quantum, FROM_KERNEL))) {
 		panic("WARNING: Scheduling: mini_send returned %d\n", err);
 	}
@@ -1892,17 +1892,17 @@ static void notify_scheduler(struct proc *p)
 
 void proc_no_time(struct proc * p)
 {
-	if (!proc_kernel_scheduler(p) && priv(p)->s_flags & PREEMPTIBLE) {
+	如果 (!proc_kernel_scheduler(p) && priv(p)->s_flags & PREEMPTIBLE) {
 		/* this dequeues the process */
 		notify_scheduler(p);
 	}
-	else {
+	否则 {
 		/*
 		 * non-preemptible processes only need their quantum to
 		 * be renewed. In fact, they by pass scheduling
 		 */
 		p->p_cpu_time_left = ms_2_cpu_time(p->p_quantum_size_ms);
-#if DEBUG_RACE
+#如果 DEBUG_RACE
 		RTS_SET(p, RTS_PREEMPTED);
 		RTS_UNSET(p, RTS_PREEMPTED);
 #endif
@@ -1934,7 +1934,7 @@ void copr_not_available_handler(void)
 
 	/* if FPU is not owned by anyone, do not store anything */
 	local_fpu_owner = get_cpulocal_var_ptr(fpu_owner);
-	if (*local_fpu_owner != NULL) {
+	如果 (*local_fpu_owner != NULL) {
 		assert(*local_fpu_owner != p);
 		save_local_fpu(*local_fpu_owner, FALSE /*retain*/);
 	}
@@ -1943,13 +1943,13 @@ void copr_not_available_handler(void)
 	 * restore the current process' state and let it run again, do not
 	 * schedule!
 	 */
-	if (restore_fpu(p) != OK) {
+	如果 (restore_fpu(p) != OK) {
 		/* Restoring FPU state failed. This is always the process's own
 		 * fault. Send a signal, and schedule another process instead.
 		 */
 		*local_fpu_owner = NULL;		/* release FPU */
 		cause_sig(proc_nr(p), SIGFPE);
-		return;
+		返回;
 	}
 
 	*local_fpu_owner = p;
@@ -1963,7 +1963,7 @@ void release_fpu(struct proc * p) {
 
 	fpu_owner_ptr = get_cpu_var_ptr(p->p_cpu, fpu_owner);
 
-	if (*fpu_owner_ptr == p)
+	如果 (*fpu_owner_ptr == p)
 		*fpu_owner_ptr = NULL;
 }
 
@@ -1971,9 +1971,9 @@ void ser_dump_proc(void)
 {
         struct proc *pp;
 
-        for (pp= BEG_PROC_ADDR; pp < END_PROC_ADDR; pp++)
+        为 (pp= BEG_PROC_ADDR; pp < END_PROC_ADDR; pp++)
         {
-                if (isemptyp(pp))
+                如果 (isemptyp(pp))
                         continue;
                 print_proc_recursive(pp);
         }
