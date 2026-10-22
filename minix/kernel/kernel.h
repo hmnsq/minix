@@ -23,28 +23,28 @@
 #ifndef __ASSEMBLY__
 
 /* The following are so basic, all the *.c files get them automatically. */
-#include <minix/config.h>	/* global configuration, MUST be first */
-#include <sys/types.h>		/* general system types */
-#include <minix/const.h>	/* MINIX specific constants */
-#include <minix/type.h>		/* MINIX specific types, e.g. message */
-#include <minix/ipc.h>		/* MINIX run-time system */
-#include <minix/sysutil.h>	/* MINIX utility library functions */
-#include <minix/timers.h>		/* watchdog timer management */
-#include <errno.h>		/* return codes and error numbers */
-#include <sys/param.h>
-#include <minix/param.h>
+#ضمن <minix/config.h>	/* global configuration, MUST be first */
+#ضمن <sys/types.h>		/* general system types */
+#ضمن <minix/const.h>	/* MINIX specific constants */
+#ضمن <minix/type.h>		/* MINIX specific types, e.g. message */
+#ضمن <minix/ipc.h>		/* MINIX run-time system */
+#ضمن <minix/sysutil.h>	/* MINIX utility library functions */
+#ضمن <minix/timers.h>		/* watchdog timer management */
+#ضمن <errno.h>		/* return codes and error numbers */
+#ضمن <sys/param.h>
+#ضمن <minix/param.h>
 
 /* Important kernel header files. */
-#include "kernel/config.h"		/* configuration, MUST be first */
-#include "kernel/const.h"		/* constants, MUST be second */
-#include "kernel/type.h"		/* type definitions, MUST be third */
-#include "kernel/proto.h"		/* function prototypes */
-#include "kernel/glo.h"		/* global variables */
-#include "kernel/ipc.h"		/* IPC constants */
-#include "kernel/profile.h"		/* system profiling */
-#include "kernel/proc.h"		/* process table */
-#include "kernel/cpulocals.h"		/* CPU-local variables */
-#include "kernel/debug.h"		/* debugging, MUST be last kernel header */
+#ضمن "kernel/config.h"		/* configuration, MUST be first */
+#ضمن "kernel/const.h"		/* constants, MUST be second */
+#ضمن "kernel/type.h"		/* type definitions, MUST be third */
+#ضمن "kernel/proto.h"		/* function prototypes */
+#ضمن "kernel/glo.h"		/* global variables */
+#ضمن "kernel/ipc.h"		/* IPC constants */
+#ضمن "kernel/profile.h"		/* system profiling */
+#ضمن "kernel/proc.h"		/* process table */
+#ضمن "kernel/cpulocals.h"		/* CPU-local variables */
+#ضمن "kernel/debug.h"		/* debugging, MUST be last kernel header */
 
 #ifndef CONFIG_SMP
 /* We only support 1 cpu now */
@@ -53,9 +53,9 @@
 /* this is always true on an uniprocessor */
 #define cpu_is_bsp(x) 1
 
-#else
+#ܐܚܪܢܐ
 
-#include "kernel/smp.h"
+#ضمن "kernel/smp.h"
 
 #endif
 

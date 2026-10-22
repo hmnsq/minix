@@ -30,180 +30,180 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
-#define do_exec NULL
+صحيح do_exec(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_EXEC
+#define do_exec عدم
 #endif
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
-#define do_fork NULL
+صحيح do_fork(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_FORK
+#define do_fork عدم
 #endif
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
-#define do_clear NULL
+صحيح do_clear(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_CLEAR
+#define do_clear عدم
 #endif
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
-#define do_trace NULL
+صحيح do_trace(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_TRACE
+#define do_trace عدم
 #endif
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
-#define do_runctl NULL
+صحيح do_runctl(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_RUNCTL
+#define do_runctl عدم
 #endif
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
-#define do_update NULL
+صحيح do_update(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_UPDATE
+#define do_update عدم
 #endif
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
-#define do_exit NULL
+صحيح do_exit(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_EXIT
+#define do_exit عدم
 #endif
 
-int do_copy(struct proc * caller, message *m_ptr);
+صحيح do_copy(بنية proc * caller, message *m_ptr);
 #define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
-#define do_copy NULL
+#ܐܢ ! (USE_VIRCOPY || USE_PHYSCOPY)
+#define do_copy عدم
 #endif
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
-#define do_umap NULL
+صحيح do_umap(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_UMAP
+#define do_umap عدم
 #endif
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
-#define do_umap_remote NULL
+صحيح do_umap_remote(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_UMAP_REMOTE
+#define do_umap_remote عدم
 #endif
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
-#define do_vumap NULL
+صحيح do_vumap(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_VUMAP
+#define do_vumap عدم
 #endif
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
-#define do_memset NULL
+صحيح do_memset(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_MEMSET
+#define do_memset عدم
 #endif
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
-#define do_abort NULL
+صحيح do_abort(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_ABORT
+#define do_abort عدم
 #endif
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
-#define do_getinfo NULL
+صحيح do_getinfo(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_GETINFO
+#define do_getinfo عدم
 #endif
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
-#define do_privctl NULL
+صحيح do_privctl(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_PRIVCTL
+#define do_privctl عدم
 #endif
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
-#define do_irqctl NULL
+صحيح do_irqctl(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_IRQCTL
+#define do_irqctl عدم
 #endif
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
-#define do_devio NULL
+صحيح do_devio(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_DEVIO
+#define do_devio عدم
 #endif
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
-#define do_vdevio NULL
+صحيح do_vdevio(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_VDEVIO
+#define do_vdevio عدم
 #endif
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
-#define do_sdevio NULL
+صحيح do_sdevio(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_SDEVIO
+#define do_sdevio عدم
 #endif
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
-#define do_kill NULL
+صحيح do_kill(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_KILL
+#define do_kill عدم
 #endif
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
-#define do_getksig NULL
+صحيح do_getksig(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_GETKSIG
+#define do_getksig عدم
 #endif
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
-#define do_endksig NULL
+صحيح do_endksig(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_ENDKSIG
+#define do_endksig عدم
 #endif
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
-#define do_sigsend NULL
+صحيح do_sigsend(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_SIGSEND
+#define do_sigsend عدم
 #endif
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
-#define do_sigreturn NULL
+صحيح do_sigreturn(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_SIGRETURN
+#define do_sigreturn عدم
 #endif
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
-#define do_times NULL
+صحيح do_times(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_TIMES
+#define do_times عدم
 #endif
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
-#define do_setalarm NULL
+صحيح do_setalarm(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_SETALARM
+#define do_setalarm عدم
 #endif
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+صحيح do_stime(بنية proc * caller, message *m_ptr);
+صحيح do_settime(بنية proc * caller, message *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
-#define do_vtimer NULL
+صحيح do_vtimer(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_VTIMER
+#define do_vtimer عدم
 #endif
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+صحيح do_safecopy_to(بنية proc * caller, message *m_ptr);
+صحيح do_safecopy_from(بنية proc * caller, message *m_ptr);
+صحيح do_vsafecopy(بنية proc * caller, message *m_ptr);
+صحيح do_iopenable(بنية proc * caller, message *m_ptr);
+صحيح do_vmctl(بنية proc * caller, message *m_ptr);
+صحيح do_setgrant(بنية proc * caller, message *m_ptr);
+صحيح do_readbios(بنية proc * caller, message *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+صحيح do_safememset(بنية proc * caller, message *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
-#define do_sprofile NULL
+صحيح do_sprofile(بنية proc * caller, message *m_ptr);
+#ܐܢ ! SPROFILE
+#define do_sprofile عدم
 #endif
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
-#define do_getmcontext NULL
-#define do_setmcontext NULL
+صحيح do_getmcontext(بنية proc * caller, message *m_ptr);
+صحيح do_setmcontext(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_MCONTEXT
+#define do_getmcontext عدم
+#define do_setmcontext عدم
 #endif
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+صحيح do_schedule(بنية proc * caller, message *m_ptr);
+صحيح do_schedctl(بنية proc * caller, message *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
-#define do_statectl NULL
+صحيح do_statectl(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_STATECTL
+#define do_statectl عدم
 #endif
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
-#define do_padconf NULL
+صحيح do_padconf(بنية proc * caller, message *m_ptr);
+#ܐܢ ! USE_PADCONF
+#define do_padconf عدم
 #endif
 
 #endif	/* SYSTEM_H */

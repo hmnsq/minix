@@ -7,15 +7,15 @@
  *    m1_i3:	RC_FLAGS	request flags
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#ضمن "kernel/system.h"
+#ضمن <assert.h>
 
-#if USE_RUNCTL
+#ܐܢ USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+صحيح do_runctl(بنية proc * caller, message * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
-  register struct proc *rp;
+  صحيح proc_nr, action, flags;
+  سجل بنية proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ܐܢ (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) ܦܢܐ(EINVAL);
+  ܐܢ (iskerneln(proc_nr)) ܦܢܐ(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,35 +41,35 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  ܐܢ (action == RC_STOP && (flags & RC_DELAY)) {
+	ܐܢ (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	ܐܢ (rp->p_misc_flags & MF_SIG_DELAY)
+		ܦܢܐ (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
-  switch (action) {
-  case RC_STOP:
-#if CONFIG_SMP
+  بدل (action) {
+  حالة RC_STOP:
+#ܐܢ CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
+	  ܐܢ (rp->p_cpu != cpuid) {
 		  smp_schedule_stop_proc(rp);
-		  break;
+		  اكسر;
 	  }
 #endif
 	  RTS_SET(rp, RTS_PROC_STOP);
-	break;
-  case RC_RESUME:
-	assert(RTS_ISSET(rp, RTS_PROC_STOP));
+	اكسر;
+  حالة RC_RESUME:
+	أكد(RTS_ISSET(rp, RTS_PROC_STOP));
 	RTS_UNSET(rp, RTS_PROC_STOP);
-	break;
-  default:
-	return(EINVAL);
+	اكسر;
+  افتراضي:
+	ܦܢܐ(EINVAL);
   }
 
-  return(OK);
+  ܦܢܐ(OK);
 }
 
 #endif /* USE_RUNCTL */
