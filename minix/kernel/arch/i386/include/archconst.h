@@ -146,7 +146,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define X86_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define X86_STACK_TOP_RESERVED	(2 * parimaa_na(reg_t))
 
 #define PG_ALLOCATEME ((phys_bytes)-1)
 

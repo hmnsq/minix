@@ -31,14 +31,14 @@ void smp_init(void);
 #define CPU_IS_BSP	1
 #define CPU_IS_READY	2
 
-struct cpu {
+sa_nracanaa cpu {
 	u32_t flags;
 };
 
-EXTERN struct cpu cpus[CONFIG_MAX_CPUS];
+EXTERN sa_nracanaa cpu cpus[CONFIG_MAX_CPUS];
 
-#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } while(0)
-#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } while(0)
+#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } ᮞᮨᮓᮨᮜ(0)
+#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } ᮞᮨᮓᮨᮜ(0)
 #define cpu_test_flag(cpu, flag) (cpus[cpu].flags & (flag))
 #define cpu_is_ready(cpu) cpu_test_flag(cpu, CPU_IS_READY)
 
@@ -61,13 +61,13 @@ void smp_ipi_sched_handler(void);
 
 void smp_schedule(unsigned cpu);
 /* stop a processes on a different cpu */
-void smp_schedule_stop_proc(struct proc * p);
+void smp_schedule_stop_proc(sa_nracanaa proc * p);
 /* stop a process on a different cpu because its address space is being changed */
-void smp_schedule_vminhibit(struct proc * p);
+void smp_schedule_vminhibit(sa_nracanaa proc * p);
 /* stop the process and for saving its full context */
-void smp_schedule_stop_proc_save_ctx(struct proc * p);
+void smp_schedule_stop_proc_save_ctx(sa_nracanaa proc * p);
 /* migrate the full context of a process to the destination CPU */
-void smp_schedule_migrate_proc(struct proc * p, unsigned dest_cpu);
+void smp_schedule_migrate_proc(sa_nracanaa proc * p, unsigned dest_cpu);
 
 void arch_send_smp_schedule_ipi(unsigned cpu);
 void arch_smp_halt_cpu(void);

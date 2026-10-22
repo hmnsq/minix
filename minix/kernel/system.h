@@ -32,177 +32,177 @@
 
 #include "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
+puur_naa_nka do_exec(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_EXEC
 #define do_exec NULL
 #endif
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
+puur_naa_nka do_fork(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_FORK
 #define do_fork NULL
 #endif
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
+puur_naa_nka do_clear(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_CLEAR
 #define do_clear NULL
 #endif
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
+puur_naa_nka do_trace(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_TRACE
 #define do_trace NULL
 #endif
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
+puur_naa_nka do_runctl(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_RUNCTL
 #define do_runctl NULL
 #endif
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
+puur_naa_nka do_update(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_UPDATE
 #define do_update NULL
 #endif
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
+puur_naa_nka do_exit(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_EXIT
 #define do_exit NULL
 #endif
 
-int do_copy(struct proc * caller, message *m_ptr);
+puur_naa_nka do_copy(sa_nracanaa proc * caller, message *m_ptr);
 #define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
+#ᮚᮦᮔ᮪ ! (USE_VIRCOPY || USE_PHYSCOPY)
 #define do_copy NULL
 #endif
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
+puur_naa_nka do_umap(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_UMAP
 #define do_umap NULL
 #endif
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
+puur_naa_nka do_umap_remote(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_UMAP_REMOTE
 #define do_umap_remote NULL
 #endif
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
+puur_naa_nka do_vumap(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_VUMAP
 #define do_vumap NULL
 #endif
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
+puur_naa_nka do_memset(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_MEMSET
 #define do_memset NULL
 #endif
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
+puur_naa_nka do_abort(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_ABORT
 #define do_abort NULL
 #endif
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
+puur_naa_nka do_getinfo(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_GETINFO
 #define do_getinfo NULL
 #endif
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
+puur_naa_nka do_privctl(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_PRIVCTL
 #define do_privctl NULL
 #endif
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
+puur_naa_nka do_irqctl(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_IRQCTL
 #define do_irqctl NULL
 #endif
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
+puur_naa_nka do_devio(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_DEVIO
 #define do_devio NULL
 #endif
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
+puur_naa_nka do_vdevio(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_VDEVIO
 #define do_vdevio NULL
 #endif
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
+puur_naa_nka do_sdevio(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_SDEVIO
 #define do_sdevio NULL
 #endif
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
+puur_naa_nka do_kill(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_KILL
 #define do_kill NULL
 #endif
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
+puur_naa_nka do_getksig(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_GETKSIG
 #define do_getksig NULL
 #endif
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
+puur_naa_nka do_endksig(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_ENDKSIG
 #define do_endksig NULL
 #endif
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
+puur_naa_nka do_sigsend(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_SIGSEND
 #define do_sigsend NULL
 #endif
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
+puur_naa_nka do_sigreturn(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_SIGRETURN
 #define do_sigreturn NULL
 #endif
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
+puur_naa_nka do_times(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_TIMES
 #define do_times NULL
 #endif
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
+puur_naa_nka do_setalarm(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_SETALARM
 #define do_setalarm NULL
 #endif
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+puur_naa_nka do_stime(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_settime(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
+puur_naa_nka do_vtimer(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_VTIMER
 #define do_vtimer NULL
 #endif
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+puur_naa_nka do_safecopy_to(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_safecopy_from(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_vsafecopy(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_iopenable(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_vmctl(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_setgrant(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_readbios(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+puur_naa_nka do_safememset(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
+puur_naa_nka do_sprofile(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! SPROFILE
 #define do_sprofile NULL
 #endif
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
+puur_naa_nka do_getmcontext(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_setmcontext(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_MCONTEXT
 #define do_getmcontext NULL
 #define do_setmcontext NULL
 #endif
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+puur_naa_nka do_schedule(sa_nracanaa proc * caller, message *m_ptr);
+puur_naa_nka do_schedctl(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
+puur_naa_nka do_statectl(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_STATECTL
 #define do_statectl NULL
 #endif
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
+puur_naa_nka do_padconf(sa_nracanaa proc * caller, message *m_ptr);
+#ᮚᮦᮔ᮪ ! USE_PADCONF
 #define do_padconf NULL
 #endif
 

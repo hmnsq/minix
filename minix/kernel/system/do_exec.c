@@ -12,34 +12,34 @@
 #include <string.h>
 #include <minix/endpoint.h>
 
-#if USE_EXEC
+#ᮚᮦᮔ᮪ USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+puur_naa_nka do_exec(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
-  register struct proc *rp;
-  int proc_nr;
-  char name[PROC_NAME_LEN];
+  pa_njikaa sa_nracanaa proc *rp;
+  puur_naa_nka proc_nr;
+  var_na name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  ᮚᮦᮔ᮪(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	ᮝᮜᮤ EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  ᮚᮦᮔ᮪(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+  ᮚᮦᮔ᮪(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
 	KERNEL, (vir_bytes) name,
-	(phys_bytes) sizeof(name) - 1) != OK)
+	(phys_bytes) parimaa_na(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
 
-  name[sizeof(name)-1] = '\0';
+  name[parimaa_na(name)-1] = '\0';
 
   /* Set process state. */
   arch_proc_init(rp,
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  ᮝᮜᮤ(OK);
 }
 #endif /* USE_EXEC */

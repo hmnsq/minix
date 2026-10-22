@@ -21,7 +21,7 @@
 #include "kernel/system.h"
 
 
-#if USE_GETINFO
+#ᮚᮦᮔ᮪ USE_GETINFO
 
 #include <minix/u64.h>
 #include <sys/resource.h>
@@ -31,8 +31,8 @@
  *===========================================================================*/
 static void update_idle_time(void)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	puur_naa_nka i;
+	sa_nracanaa proc * idl = proc_addr(IDLE);
 
 	idl->p_cycles = make64(0, 0);
 
@@ -44,184 +44,184 @@ static void update_idle_time(void)
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+puur_naa_nka do_getinfo(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
   size_t length;
   vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  puur_naa_nka nr_e, nr, r;
+  puur_naa_nka wipe_rnd_bin = -1;
+  sa_nracanaa proc *p;
+  sa_nracanaa rusage r_usage;
 
   /* Set source address and length based on request type. */
   switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
+    pak_sa GET_MACHINE: {
+        length = parimaa_na(sa_nracanaa machine);
         src_vir = (vir_bytes) &machine;
-        break;
+        bha_nga;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
+    pak_sa GET_KINFO: {
+        length = parimaa_na(sa_nracanaa kinfo);
         src_vir = (vir_bytes) &kinfo;
-        break;
+        bha_nga;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
+    pak_sa GET_LOADINFO: {
+        length = parimaa_na(sa_nracanaa loadinfo);
         src_vir = (vir_bytes) &kloadinfo;
-        break;
+        bha_nga;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
+    pak_sa GET_CPUINFO: {
+        length = parimaa_na(cpu_info);
         src_vir = (vir_bytes) &cpu_info;
-        break;
+        bha_nga;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
+    pak_sa GET_HZ: {
+        length = parimaa_na(system_hz);
         src_vir = (vir_bytes) &system_hz;
-        break;
+        bha_nga;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
+    pak_sa GET_IMAGE: {
+        length = parimaa_na(sa_nracanaa boot_image) * NR_BOOT_PROCS;
         src_vir = (vir_bytes) image;
-        break;
+        bha_nga;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
+    pak_sa GET_IRQHOOKS: {
+        length = parimaa_na(sa_nracanaa irq_hook) * NR_IRQ_HOOKS;
         src_vir = (vir_bytes) irq_hooks;
-        break;
+        bha_nga;
     }
-    case GET_PROCTAB: {
+    pak_sa GET_PROCTAB: {
 	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
+        length = parimaa_na(sa_nracanaa proc) * (NR_PROCS + NR_TASKS);
         src_vir = (vir_bytes) proc;
-        break;
+        bha_nga;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
+    pak_sa GET_PRIVTAB: {
+        length = parimaa_na(sa_nracanaa priv) * (NR_SYS_PROCS);
         src_vir = (vir_bytes) priv;
-        break;
+        bha_nga;
     }
-    case GET_PROC: {
+    pak_sa GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
+	ᮚᮦᮔ᮪(!isokendpt(nr_e, &nr)) ᮝᮜᮤ EINVAL; /* validate request */
+        length = parimaa_na(sa_nracanaa proc);
         src_vir = (vir_bytes) proc_addr(nr);
-        break;
+        bha_nga;
     }
-    case GET_PRIV: {
+    pak_sa GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
+        ᮚᮦᮔ᮪(!isokendpt(nr_e, &nr)) ᮝᮜᮤ EINVAL; /* validate request */
+        length = parimaa_na(sa_nracanaa priv);
         src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        bha_nga;
     }
-    case GET_REGS: {
+    pak_sa GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        ᮚᮦᮔ᮪(!isokendpt(nr_e, &nr)) ᮝᮜᮤ EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
+        length = parimaa_na(p->p_reg);
         src_vir = (vir_bytes) &p->p_reg;
-        break;
+        bha_nga;
     }
-    case GET_WHOAMI: {
-	int len;
+    pak_sa GET_WHOAMI: {
+	puur_naa_nka len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(parimaa_na(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		parimaa_na(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	ᮝᮜᮤ OK;
     }
-    case GET_MONPARAMS: {
+    pak_sa GET_MONPARAMS: {
         src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+	length = parimaa_na(kinfo.param_buf);
+        bha_nga;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    pak_sa GET_RANDOMNESS: {		
+        static sa_nracanaa k_randomness copy;	/* copy to keep counters */
+	puur_naa_nka i;
 
         copy = krandom;
         for (i= 0; i<RANDOM_SOURCES; i++) {
   		krandom.bin[i].r_size = 0;	/* invalidate random data */
   		krandom.bin[i].r_next = 0;
 	}
-    	length = sizeof(copy);
+    	length = parimaa_na(copy);
     	src_vir = (vir_bytes) &copy;
-    	break;
+    	bha_nga;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    pak_sa GET_RANDOMNESS_BIN: {		
+	puur_naa_nka bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
+	ᮚᮦᮔ᮪(bin < 0 || bin >= RANDOM_SOURCES) {
 		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+		ᮝᮜᮤ EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	ᮚᮦᮔ᮪(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
+		ᮝᮜᮤ ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
+    	length = parimaa_na(krandom.bin[bin]);
     	src_vir = (vir_bytes) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	bha_nga;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
+    pak_sa GET_IRQACTIDS: {
+        length = parimaa_na(irq_actids);
         src_vir = (vir_bytes) irq_actids;
-        break;
+        bha_nga;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
+    pak_sa GET_IDLETSC: {
+	sa_nracanaa proc * idl;
 	update_idle_time();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
+        length = parimaa_na(idl->p_cycles);
         src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        bha_nga;
     }
-    case GET_CPUTICKS: {
+    pak_sa GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	unsigned puur_naa_nka cpu;
+	cpu = (unsigned puur_naa_nka)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	ᮚᮦᮔ᮪ (cpu >= CONFIG_MAX_CPUS)
+		ᮝᮜᮤ EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
+	length = parimaa_na(ticks);
 	src_vir = (vir_bytes)ticks;
-	break;
+	bha_nga;
     }
     default:
 	printf("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        ᮝᮜᮤ(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+  ᮚᮦᮔ᮪ (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
 	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+	ᮝᮜᮤ (E2BIG);
 
   r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
 	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
 
-  if(r != OK) return r;
+  ᮚᮦᮔ᮪(r != OK) ᮝᮜᮤ r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+	ᮚᮦᮔ᮪(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
 		krandom.bin[wipe_rnd_bin].r_size = 0;
 		krandom.bin[wipe_rnd_bin].r_next = 0;
 	}
 
-  return(OK);
+  ᮝᮜᮤ(OK);
 }
 
 #endif /* USE_GETINFO */

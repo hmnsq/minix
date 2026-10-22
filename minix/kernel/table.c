@@ -41,7 +41,7 @@
  * to prioritize ping messages periodically delivered to system processes.
  */
 
-struct boot_image image[NR_BOOT_PROCS] = {
+sa_nracanaa boot_image image[NR_BOOT_PROCS] = {
 /* process nr, name */
 {ASYNCM,        "asyncm"},
 {IDLE,          "idle"  },
