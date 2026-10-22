@@ -13,21 +13,21 @@
 
 #include <minix/endpoint.h>
 
-#if USE_IRQCTL
+#якщо USE_IRQCTL
 
-static int generic_handler(irq_hook_t *hook);
+static ціле generic_handler(irq_hook_t *hook);
 
 /*===========================================================================*
  *				do_irqctl				     *
  *===========================================================================*/
-int do_irqctl(struct proc * caller, message * m_ptr)
+ціле do_irqctl(struct proc * caller, message * m_ptr)
 {
   /* Dismember the request message. */
-  int irq_vec;
-  int irq_hook_id;
-  int notify_id;
-  int r = OK;
-  int i;
+  ціле irq_vec;
+  ціле irq_hook_id;
+  ціле notify_id;
+  ціле r = OK;
+  ціле i;
   irq_hook_t *hook_ptr;
   struct priv *privp;
 
@@ -41,13 +41,13 @@ int do_irqctl(struct proc * caller, message * m_ptr)
   /* Enable or disable IRQs. This is straightforward. */
   case IRQ_ENABLE:           
   case IRQ_DISABLE: 
-      if (irq_hook_id >= NR_IRQ_HOOKS || irq_hook_id < 0 ||
-          irq_hooks[irq_hook_id].proc_nr_e == NONE) return(EINVAL);
-      if (irq_hooks[irq_hook_id].proc_nr_e != caller->p_endpoint) return(EPERM);
-      if (m_ptr->m_lsys_krn_sys_irqctl.request == IRQ_ENABLE) {
+      якщо (irq_hook_id >= NR_IRQ_HOOKS || irq_hook_id < 0 ||
+          irq_hooks[irq_hook_id].proc_nr_e == NONE) повернути(EINVAL);
+      якщо (irq_hooks[irq_hook_id].proc_nr_e != caller->p_endpoint) повернути(EPERM);
+      якщо (m_ptr->m_lsys_krn_sys_irqctl.request == IRQ_ENABLE) {
           enable_irq(&irq_hooks[irq_hook_id]);	
       }
-      else 
+      інакше 
           disable_irq(&irq_hooks[irq_hook_id]);	
       break;
 
@@ -57,27 +57,27 @@ int do_irqctl(struct proc * caller, message * m_ptr)
   case IRQ_SETPOLICY:  
 
       /* Check if IRQ line is acceptable. */
-      if (irq_vec < 0 || irq_vec >= NR_IRQ_VECTORS) return(EINVAL);
+      якщо (irq_vec < 0 || irq_vec >= NR_IRQ_VECTORS) повернути(EINVAL);
 
       privp= priv(caller);
-      if (!privp)
+      якщо (!privp)
       {
 	printf("do_irqctl: no priv structure!\n");
-	return EPERM;
+	повернути EPERM;
       }
-      if (privp->s_flags & CHECK_IRQ)
+      якщо (privp->s_flags & CHECK_IRQ)
       {
-	for (i= 0; i<privp->s_nr_irq; i++)
+	для (i= 0; i<privp->s_nr_irq; i++)
 	{
-		if (irq_vec == privp->s_irq_tab[i])
+		якщо (irq_vec == privp->s_irq_tab[i])
 			break;
 	}
-	if (i >= privp->s_nr_irq)
+	якщо (i >= privp->s_nr_irq)
 	{
 		printf(
 		"do_irqctl: IRQ check failed for proc %d, IRQ %d\n",
 			caller->p_endpoint, irq_vec);
-		return EPERM;
+		повернути EPERM;
 	}
     }
 
@@ -85,12 +85,12 @@ int do_irqctl(struct proc * caller, message * m_ptr)
        * is returned on the notification message if a interrupt occurs.
        */
       notify_id = m_ptr->m_lsys_krn_sys_irqctl.hook_id;
-      if (notify_id > CHAR_BIT * sizeof(irq_id_t) - 1) return(EINVAL);
+      якщо (notify_id > CHAR_BIT * sizeof(irq_id_t) - 1) повернути(EINVAL);
 
       /* Try to find an existing mapping to override. */
       hook_ptr = NULL;
-      for (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
-          if (irq_hooks[i].proc_nr_e == caller->p_endpoint
+      для (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
+          якщо (irq_hooks[i].proc_nr_e == caller->p_endpoint
               && irq_hooks[i].notify_id == notify_id) {
               irq_hook_id = i;
               hook_ptr = &irq_hooks[irq_hook_id];	/* existing hook */
@@ -99,13 +99,13 @@ int do_irqctl(struct proc * caller, message * m_ptr)
       }
 
       /* If there is nothing to override, find a free hook for this mapping. */
-      for (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
-          if (irq_hooks[i].proc_nr_e == NONE) {
+      для (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
+          якщо (irq_hooks[i].proc_nr_e == NONE) {
               irq_hook_id = i;
               hook_ptr = &irq_hooks[irq_hook_id];	/* free hook */
           }
       }
-      if (hook_ptr == NULL) return(ENOSPC);
+      якщо (hook_ptr == NULL) повернути(ENOSPC);
 
       /* Install the handler. */
       hook_ptr->proc_nr_e = caller->p_endpoint;	/* process to notify */
@@ -120,11 +120,11 @@ int do_irqctl(struct proc * caller, message * m_ptr)
       break;
 
   case IRQ_RMPOLICY:
-      if (irq_hook_id < 0 || irq_hook_id >= NR_IRQ_HOOKS ||
+      якщо (irq_hook_id < 0 || irq_hook_id >= NR_IRQ_HOOKS ||
                irq_hooks[irq_hook_id].proc_nr_e == NONE) {
-           return(EINVAL);
-      } else if (caller->p_endpoint != irq_hooks[irq_hook_id].proc_nr_e) {
-           return(EPERM);
+           повернути(EINVAL);
+      } інакше якщо (caller->p_endpoint != irq_hooks[irq_hook_id].proc_nr_e) {
+           повернути(EPERM);
       }
       /* Remove the handler and return. */
       rm_irq_handler(&irq_hooks[irq_hook_id]);
@@ -134,19 +134,19 @@ int do_irqctl(struct proc * caller, message * m_ptr)
   default:
       r = EINVAL;				/* invalid IRQ REQUEST */
   }
-  return(r);
+  повернути(r);
 }
 
 /*===========================================================================*
  *			       generic_handler				     *
  *===========================================================================*/
-static int generic_handler(irq_hook_t * hook)
+static ціле generic_handler(irq_hook_t * hook)
 {
 /* This function handles hardware interrupt in a simple and generic way. All
  * interrupts are transformed into messages to a driver. The IRQ line will be
  * reenabled if the policy says so.
  */
-  int proc_nr;
+  ціле proc_nr;
 
   /* As a side-effect, the interrupt handler gathers random information by 
    * timestamping the interrupt events. This is used for /dev/random.
@@ -157,7 +157,7 @@ static int generic_handler(irq_hook_t * hook)
    * If it's dead, this should never happen, as processes that die 
    * automatically get their interrupt hooks unhooked.
    */
-  if(!isokendpt(hook->proc_nr_e, &proc_nr))
+  якщо(!isokendpt(hook->proc_nr_e, &proc_nr))
      panic("invalid interrupt handler: %d", hook->proc_nr_e);
 
   /* Add a bit for this interrupt to the process' pending interrupts. When 
@@ -168,7 +168,7 @@ static int generic_handler(irq_hook_t * hook)
 
   /* Build notification message and return. */
   mini_notify(proc_addr(HARDWARE), hook->proc_nr_e);
-  return(hook->policy & IRQ_REENABLE);
+  повернути(hook->policy & IRQ_REENABLE);
 }
 
 #endif /* USE_IRQCTL */

@@ -46,39 +46,39 @@ EXTERN struct proc *kbill_ipc; /* process that invoked ipc */
 
 /* Interrupt related variables. */
 EXTERN irq_hook_t irq_hooks[NR_IRQ_HOOKS];	/* hooks for general use */
-EXTERN int irq_actids[NR_IRQ_VECTORS];		/* IRQ ID bits active */
-EXTERN int irq_use;				/* map of all in-use irq's */
+EXTERN ціле irq_actids[NR_IRQ_VECTORS];		/* IRQ ID bits active */
+EXTERN ціле irq_use;				/* map of all in-use irq's */
 
 /* Miscellaneous. */
-EXTERN int verboseboot;			/* verbose boot, init'ed in cstart */
+EXTERN ціле verboseboot;			/* verbose boot, init'ed in cstart */
 
-#if DEBUG_TRACE
-EXTERN int verboseflags;
+#якщо DEBUG_TRACE
+EXTERN ціле verboseflags;
 #endif
 
 #ifdef USE_APIC
-EXTERN int config_no_apic; /* optionally turn off apic */
-EXTERN int config_apic_timer_x; /* apic timer slowdown factor */
+EXTERN ціле config_no_apic; /* optionally turn off apic */
+EXTERN ціле config_apic_timer_x; /* apic timer slowdown factor */
 #endif
 
 EXTERN u64_t cpu_hz[CONFIG_MAX_CPUS];
 
-#define cpu_set_freq(cpu, freq)	do {cpu_hz[cpu] = freq;} while (0)
+#define cpu_set_freq(cpu, freq)	do {cpu_hz[cpu] = freq;} поки (0)
 #define cpu_get_freq(cpu)	cpu_hz[cpu]
 
 #ifdef CONFIG_SMP
-EXTERN int config_no_smp; /* optionally turn off SMP */
+EXTERN ціле config_no_smp; /* optionally turn off SMP */
 #endif
 
 /* VM */
-EXTERN int vm_running;
-EXTERN int catch_pagefaults;
-EXTERN int kernel_may_alloc;
+EXTERN ціле vm_running;
+EXTERN ціле catch_pagefaults;
+EXTERN ціле kernel_may_alloc;
 
 /* Variables that are initialized elsewhere are just extern here. */
 extern struct boot_image image[NR_BOOT_PROCS]; 	/* system image processes */
 
-EXTERN volatile int serial_debug_active;
+EXTERN volatile ціле serial_debug_active;
 
 EXTERN struct cpu_info cpu_info[CONFIG_MAX_CPUS];
 
@@ -89,6 +89,6 @@ EXTERN unsigned bkl_tries[CONFIG_MAX_CPUS];
 EXTERN unsigned bkl_succ[CONFIG_MAX_CPUS];
 
 /* Feature flags */
-EXTERN int minix_feature_flags;
+EXTERN ціле minix_feature_flags;
 
 #endif /* GLO_H */

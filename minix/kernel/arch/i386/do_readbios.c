@@ -12,7 +12,7 @@
 /*===========================================================================*
  *				do_readbios				     *
  *===========================================================================*/
-int do_readbios(struct proc * caller, message * m_ptr)
+ціле do_readbios(struct proc * caller, message * m_ptr)
 {
   struct vir_addr src, dst;
   size_t len = m_ptr->m_lsys_krn_readbios.size;
@@ -29,9 +29,9 @@ int do_readbios(struct proc * caller, message * m_ptr)
 #define SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
 #define USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
 
-  if(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
+  якщо(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
      !USERRANGE(BASE_MEM_TOP, UPPER_MEM_END))
-  	return EPERM;
+  	повернути EPERM;
 
-  return virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
+  повернути virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
 }

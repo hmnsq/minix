@@ -3,8 +3,8 @@
 
 #ifndef __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
+void bsp_irq_unmask(ціле irq);
+void bsp_irq_mask(ціле irq);
 void bsp_irq_handle(void);
 
 #endif /* __ASSEMBLY__ */

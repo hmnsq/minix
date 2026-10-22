@@ -13,64 +13,64 @@
 #include <signal.h>
 #include <minix/endpoint.h>
 
-#if USE_VTIMER
+#якщо USE_VTIMER
 
 /*===========================================================================*
  *				do_vtimer				     *
  *===========================================================================*/
-int do_vtimer(struct proc * caller, message * m_ptr)
+ціле do_vtimer(struct proc * caller, message * m_ptr)
 {
 /* Set and/or retrieve the value of one of a process' virtual timers. */
   struct proc *rp;		/* pointer to process the timer belongs to */
-  register int pt_flag;		/* the misc on/off flag for the req.d timer */
+  register ціле pt_flag;		/* the misc on/off flag for the req.d timer */
   register clock_t *pt_left;	/* pointer to the process' ticks-left field */ 
   clock_t old_value;		/* the previous number of ticks left */
-  int proc_nr, proc_nr_e;
+  ціле proc_nr, proc_nr_e;
 
   /* The requesting process must be privileged. */
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
+  якщо (! (priv(caller)->s_flags & SYS_PROC)) повернути(EPERM);
 
-  if (m_ptr->VT_WHICH != VT_VIRTUAL && m_ptr->VT_WHICH != VT_PROF)
-      return(EINVAL);
+  якщо (m_ptr->VT_WHICH != VT_VIRTUAL && m_ptr->VT_WHICH != VT_PROF)
+      повернути(EINVAL);
 
   /* The target process must be valid. */
   proc_nr_e = (m_ptr->VT_ENDPT == SELF) ? caller->p_endpoint : m_ptr->VT_ENDPT;
-  if (!isokendpt(proc_nr_e, &proc_nr)) return(EINVAL);
+  якщо (!isokendpt(proc_nr_e, &proc_nr)) повернути(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Determine which flag and which field in the proc structure we want to
    * retrieve and/or modify. This saves us having to differentiate between
    * VT_VIRTUAL and VT_PROF multiple times below.
    */
-  if (m_ptr->VT_WHICH == VT_VIRTUAL) {
+  якщо (m_ptr->VT_WHICH == VT_VIRTUAL) {
       pt_flag = MF_VIRT_TIMER;
       pt_left = &rp->p_virt_left;
-  } else { /* VT_PROF */
+  } інакше { /* VT_PROF */
       pt_flag = MF_PROF_TIMER;
       pt_left = &rp->p_prof_left;
   }
 
   /* Retrieve the old value. */
-  if (rp->p_misc_flags & pt_flag) {
+  якщо (rp->p_misc_flags & pt_flag) {
       old_value = *pt_left;
-  } else {
+  } інакше {
       old_value = 0;
   }
 
-  if (m_ptr->VT_SET) {
+  якщо (m_ptr->VT_SET) {
       rp->p_misc_flags &= ~pt_flag;	/* disable virtual timer */
 
-      if (m_ptr->VT_VALUE > 0) {
+      якщо (m_ptr->VT_VALUE > 0) {
           *pt_left = m_ptr->VT_VALUE;	/* set new timer value */
           rp->p_misc_flags |= pt_flag;	/* (re)enable virtual timer */
-      } else {
+      } інакше {
           *pt_left = 0;			/* clear timer value */
       }
   }
 
   m_ptr->VT_VALUE = old_value;
 
-  return(OK);
+  повернути(OK);
 }
 
 #endif /* USE_VTIMER */
@@ -88,14 +88,14 @@ void vtimer_check(struct proc * rp)
    */
 
   /* Check if the virtual timer expired. If so, send a SIGVTALRM signal. */
-  if ((rp->p_misc_flags & MF_VIRT_TIMER) && rp->p_virt_left == 0) {
+  якщо ((rp->p_misc_flags & MF_VIRT_TIMER) && rp->p_virt_left == 0) {
       rp->p_misc_flags &= ~MF_VIRT_TIMER;
       rp->p_virt_left = 0;
       cause_sig(rp->p_nr, SIGVTALRM);
   }
 
   /* Check if the profile timer expired. If so, send a SIGPROF signal. */
-  if ((rp->p_misc_flags & MF_PROF_TIMER) && rp->p_prof_left == 0) {
+  якщо ((rp->p_misc_flags & MF_PROF_TIMER) && rp->p_prof_left == 0) {
       rp->p_misc_flags &= ~MF_PROF_TIMER;
       rp->p_prof_left = 0;
       cause_sig(rp->p_nr, SIGPROF);
