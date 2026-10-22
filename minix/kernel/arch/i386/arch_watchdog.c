@@ -1,9 +1,9 @@
-#include "kernel/watchdog.h"
-#include "glo.h"
-#include <minix/minlib.h>
-#include <minix/u64.h>
+#अन्तर्भाव "kernel/watchdog.h"
+#अन्तर्भाव "glo.h"
+#अन्तर्भाव <minix/minlib.h>
+#अन्तर्भाव <minix/u64.h>
 
-#include "apic.h"
+#अन्तर्भाव "apic.h"
 
 #define CPUID_UNHALTED_CORE_CYCLES_AVAILABLE	0
 
@@ -11,10 +11,10 @@
  * Intel architecture performance counters watchdog
  */
 
-static struct arch_watchdog intel_arch_watchdog;
-static struct arch_watchdog amd_watchdog;
+स्थिर संरचना arch_watchdog intel_arch_watchdog;
+स्थिर संरचना arch_watchdog amd_watchdog;
 
-static void intel_arch_watchdog_init(const unsigned cpu)
+स्थिर शून्य intel_arch_watchdog_init(ध्रुव unsigned cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -30,7 +30,7 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	 * lowest 31 bits writable :(
 	 */
 	cpuf = cpu_get_freq(cpu);
-	while (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
+	याव (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
 		cpuf /= 2;
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
@@ -44,23 +44,23 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void intel_arch_watchdog_reinit(const unsigned cpu)
+स्थिर शून्य intel_arch_watchdog_reinit(ध्रुव unsigned cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(watchdog->resetval));
 }
 
-int arch_watchdog_init(void)
+पूर्णाङ्क arch_watchdog_init(शून्य)
 {
 	u32_t eax, ebx, ecx, edx;
 	unsigned cpu = cpuid;
 
-	if (!lapic_addr) {
+	सचे (!lapic_addr) {
 		printf("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
-		return -1;
+		पटिनिवत्त -1;
 	}
 
-	if (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
+	सचे (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
 		eax = 0xA;
 
 		_cpuid(&eax, &ebx, &ecx, &edx);
@@ -69,40 +69,40 @@ int arch_watchdog_init(void)
 		 * architectural performance counters. Some Intel CPUs don't have this
 		 * feature
 		 */
-		if (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
-			return -1;
-		if (!((((eax >> 8)) & 0xff) > 0))
-			return -1;
+		सचे (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
+			पटिनिवत्त -1;
+		सचे (!((((eax >> 8)) & 0xff) > 0))
+			पटिनिवत्त -1;
 
 		watchdog = &intel_arch_watchdog;
-	} else if (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
-		if (cpu_info[cpu].family != 6 &&
+	} अञ्ञथा सचे (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
+		सचे (cpu_info[cpu].family != 6 &&
 				cpu_info[cpu].family != 15 &&
 				cpu_info[cpu].family != 16 &&
 				cpu_info[cpu].family != 17)
-			return -1;
-		else
+			पटिनिवत्त -1;
+		अञ्ञथा
 			watchdog = &amd_watchdog;
-	} else
-		return -1;
+	} अञ्ञथा
+		पटिनिवत्त -1;
 
 	/* Setup PC overflow as NMI for watchdog, it is masked for now */
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_MASK | APIC_ICR_DM_NMI);
-	(void) lapic_read(LAPIC_LVTPCR);
+	(शून्य) lapic_read(LAPIC_LVTPCR);
 
 	/* double check if LAPIC is enabled */
-	if (lapic_addr && watchdog->init) {
+	सचे (lapic_addr && watchdog->init) {
 		watchdog->init(cpuid);
 	}
 
-	return 0;
+	पटिनिवत्त 0;
 }
 
-void arch_watchdog_stop(void)
+शून्य arch_watchdog_stop(शून्य)
 {
 }
 
-void arch_watchdog_lockup(const struct nmi_frame * frame)
+शून्य arch_watchdog_lockup(ध्रुव संरचना nmi_frame * frame)
 {
 	printf("KERNEL LOCK UP\n"
 			"eax    0x%08x\n"
@@ -137,21 +137,21 @@ void arch_watchdog_lockup(const struct nmi_frame * frame)
 	panic("Kernel lockup");
 }
 
-int i386_watchdog_start(void)
+पूर्णाङ्क i386_watchdog_start(शून्य)
 {
-	if (arch_watchdog_init()) {
+	सचे (arch_watchdog_init()) {
 		printf("WARNING watchdog initialization "
 				"failed! Disabled\n");
 		watchdog_enabled = 0;
-		return -1;
+		पटिनिवत्त -1;
 	}
-	else
+	अञ्ञथा
 		BOOT_VERBOSE(printf("Watchdog enabled\n"););
 
-	return 0;
+	पटिनिवत्त 0;
 }
 
-static int intel_arch_watchdog_profile_init(const unsigned freq)
+स्थिर पूर्णाङ्क intel_arch_watchdog_profile_init(ध्रुव unsigned freq)
 {
 	u64_t cpuf;
 
@@ -163,18 +163,18 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 	 * if freq is too low and the cpu freq too high we may get in a range of
 	 * insane value which cannot be handled by the 31bit CPU perf counter
 	 */
-	if (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
+	सचे (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
 		printf("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
-		return EINVAL;
+		पटिनिवत्त EINVAL;
 	}
 
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	पटिनिवत्त OK;
 }
 
-static struct arch_watchdog intel_arch_watchdog = {
+स्थिर संरचना arch_watchdog intel_arch_watchdog = {
 	/*.init = */		intel_arch_watchdog_init,
 	/*.reinit = */		intel_arch_watchdog_reinit,
 	/*.profile_init = */	intel_arch_watchdog_profile_init
@@ -184,7 +184,7 @@ static struct arch_watchdog intel_arch_watchdog = {
 #define AMD_MSR_EVENT_CTR0		0xc0010004
 #define AMD_MSR_EVENT_SEL0_ENABLE	(1 << 22)
 
-static void amd_watchdog_init(const unsigned cpu)
+स्थिर शून्य amd_watchdog_init(ध्रुव unsigned cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -208,14 +208,14 @@ static void amd_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void amd_watchdog_reinit(const unsigned cpu)
+स्थिर शून्य amd_watchdog_reinit(ध्रुव unsigned cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
 		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
 }
 
-static int amd_watchdog_profile_init(const unsigned freq)
+स्थिर पूर्णाङ्क amd_watchdog_profile_init(ध्रुव unsigned freq)
 {
 	u64_t cpuf;
 
@@ -225,10 +225,10 @@ static int amd_watchdog_profile_init(const unsigned freq)
 
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	पटिनिवत्त OK;
 }
 
-static struct arch_watchdog amd_watchdog = {
+स्थिर संरचना arch_watchdog amd_watchdog = {
 	/*.init = */		amd_watchdog_init,
 	/*.reinit = */		amd_watchdog_reinit,
 	/*.profile_init = */	amd_watchdog_profile_init

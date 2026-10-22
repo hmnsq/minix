@@ -7,15 +7,15 @@
  *    m1_i3:	RC_FLAGS	request flags
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव <assert.h>
 
-#if USE_RUNCTL
+#सचे USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_runctl(संरचना proc * caller, message * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
-  register struct proc *rp;
+  पूर्णाङ्क proc_nr, action, flags;
+  पञ्जिका संरचना proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  सचे (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) पटिनिवत्त(EINVAL);
+  सचे (iskerneln(proc_nr)) पटिनिवत्त(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,35 +41,35 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  सचे (action == RC_STOP && (flags & RC_DELAY)) {
+	सचे (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	सचे (rp->p_misc_flags & MF_SIG_DELAY)
+		पटिनिवत्त (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
-  switch (action) {
-  case RC_STOP:
-#if CONFIG_SMP
+  विकल्प (action) {
+  पक्ष RC_STOP:
+#सचे CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
+	  सचे (rp->p_cpu != cpuid) {
 		  smp_schedule_stop_proc(rp);
-		  break;
+		  भङ्ग;
 	  }
 #endif
 	  RTS_SET(rp, RTS_PROC_STOP);
-	break;
-  case RC_RESUME:
-	assert(RTS_ISSET(rp, RTS_PROC_STOP));
+	भङ्ग;
+  पक्ष RC_RESUME:
+	प्रतिज्ञा(RTS_ISSET(rp, RTS_PROC_STOP));
 	RTS_UNSET(rp, RTS_PROC_STOP);
-	break;
-  default:
-	return(EINVAL);
+	भङ्ग;
+  स्वभाव:
+	पटिनिवत्त(EINVAL);
   }
 
-  return(OK);
+  पटिनिवत्त(OK);
 }
 
 #endif /* USE_RUNCTL */

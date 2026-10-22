@@ -12,26 +12,26 @@
  *   m_krn_lsys_sys_vumap.pcount	(upon return: number of elements filled)
  */
 
-#include "kernel/system.h"
+#अन्तर्भाव "kernel/system.h"
 
-#include <assert.h>
+#अन्तर्भाव <assert.h>
 
 /*===========================================================================*
  *				do_vumap				     *
  *===========================================================================*/
-int do_vumap(struct proc *caller, message *m_ptr)
+पूर्णाङ्क do_vumap(संरचना proc *caller, message *m_ptr)
 {
 /* Map a vector of grants or local virtual addresses to physical addresses.
  * Designed to be used by drivers to perform an efficient lookup of physical
  * addresses for the purpose of direct DMA from/to a remote process.
  */
   endpoint_t endpt, source, granter;
-  struct proc *procp;
-  struct vumap_vir vvec[MAPVEC_NR];
-  struct vumap_phys pvec[MAPVEC_NR];
+  संरचना proc *procp;
+  संरचना vumap_vir vvec[MAPVEC_NR];
+  संरचना vumap_phys pvec[MAPVEC_NR];
   vir_bytes vaddr, paddr, vir_addr;
   phys_bytes phys_addr;
-  int i, r, proc_nr, vcount, pcount, pmax, access;
+  पूर्णाङ्क i, r, proc_nr, vcount, pcount, pmax, access;
   size_t size, chunk, offset;
 
   endpt = caller->p_endpoint;
@@ -45,43 +45,43 @@ int do_vumap(struct proc *caller, message *m_ptr)
   paddr = m_ptr->m_lsys_krn_sys_vumap.paddr;
   pmax = m_ptr->m_lsys_krn_sys_vumap.pmax;
 
-  if (vcount <= 0 || pmax <= 0)
-	return EINVAL;
+  सचे (vcount <= 0 || pmax <= 0)
+	पटिनिवत्त EINVAL;
 
-  if (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
-  if (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
+  सचे (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
+  सचे (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
 
   /* Convert access to safecopy access flags. */
-  switch (access) {
-  case VUA_READ:		access = CPF_READ; break;
-  case VUA_WRITE:		access = CPF_WRITE; break;
-  case VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; break;
-  default:			return EINVAL;
+  विकल्प (access) {
+  पक्ष VUA_READ:		access = CPF_READ; भङ्ग;
+  पक्ष VUA_WRITE:		access = CPF_WRITE; भङ्ग;
+  पक्ष VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; भङ्ग;
+  स्वभाव:			पटिनिवत्त EINVAL;
   }
 
   /* Copy in the vector of virtual addresses. */
-  size = vcount * sizeof(vvec[0]);
+  size = vcount * परिमाण(vvec[0]);
 
-  if (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
-	return EFAULT;
+  सचे (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
+	पटिनिवत्त EFAULT;
 
   pcount = 0;
 
   /* Go through the input entries, one at a time. Stop early in case the output
    * vector has filled up.
    */
-  for (i = 0; i < vcount && pcount < pmax; i++) {
+  अत्थाय (i = 0; i < vcount && pcount < pmax; i++) {
 	size = vvec[i].vv_size;
-	if (size <= offset)
-		return EINVAL;
+	सचे (size <= offset)
+		पटिनिवत्त EINVAL;
 	size -= offset;
 
-	if (source != SELF) {
+	सचे (source != SELF) {
 		r = verify_grant(source, endpt, vvec[i].vv_grant, size, access,
-			offset, &vir_addr, &granter, NULL);
-		if (r != OK)
-			return r;
-	} else {
+			offset, &vir_addr, &granter, रिक्त);
+		सचे (r != OK)
+			पटिनिवत्त r;
+	} अञ्ञथा {
 		vir_addr = vvec[i].vv_addr + offset;
 		granter = endpt;
 	}
@@ -90,20 +90,20 @@ int do_vumap(struct proc *caller, message *m_ptr)
 	procp = proc_addr(proc_nr);
 
 	/* Each virtual range is made up of one or more physical ranges. */
-	while (size > 0 && pcount < pmax) {
+	याव (size > 0 && pcount < pmax) {
 		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, size);
 
-		if (!chunk) {
+		सचे (!chunk) {
 			/* Try to get the memory allocated, unless the memory
 			 * is supposed to be there to be read from.
 			 */
-			if (access & CPF_READ)
-				return EFAULT;
+			सचे (access & CPF_READ)
+				पटिनिवत्त EFAULT;
 
 			/* This call may suspend the current call, or return an
 			 * error for a previous invocation.
 			 */
-			return vm_check_range(caller, procp, vir_addr, size, 1);
+			पटिनिवत्त vm_check_range(caller, procp, vir_addr, size, 1);
 		}
 
 		pvec[pcount].vp_addr = phys_addr;
@@ -118,14 +118,14 @@ int do_vumap(struct proc *caller, message *m_ptr)
   }
 
   /* Copy out the resulting vector of physical addresses. */
-  assert(pcount > 0);
+  प्रतिज्ञा(pcount > 0);
 
-  size = pcount * sizeof(pvec[0]);
+  size = pcount * परिमाण(pvec[0]);
 
   r = data_copy_vmcheck(caller, KERNEL, (vir_bytes) pvec, endpt, paddr, size);
 
-  if (r == OK)
+  सचे (r == OK)
 	m_ptr->m_krn_lsys_sys_vumap.pcount = pcount;
 
-  return r;
+  पटिनिवत्त r;
 }
