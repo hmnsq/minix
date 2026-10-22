@@ -16,32 +16,32 @@
 
 #include "arch_proto.h"
 
-#if USE_SDEVIO
+#もし USE_SDEVIO
 
 /*===========================================================================*
  *			        do_sdevio                                    *
  *===========================================================================*/
-int do_sdevio(struct proc * caller, message *m_ptr)
+整数 do_sdevio(struct proc * caller, message *m_ptr)
 {
   vir_bytes newoffset;
   endpoint_t newep;
-  int proc_nr;
+  整数 proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
   vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
   long port = m_ptr->m_lsys_krn_sys_sdevio.port;
   phys_bytes vir_buf;
-  int i, r, req_type, req_dir, size, nr_io_range;
+  整数 i, r, req_type, req_dir, size, nr_io_range;
   struct priv *privp;
   struct io_range *iorp;
   struct proc *destproc;
-  int retval;
+  整数 retval;
 
   /* Allow safe copies and accesses to SELF */
-  if ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
+  もし ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
 	proc_nr_e != SELF)
   {
-	static int first= 1;
-	if (first)
+	static 整数 first= 1;
+	もし (first)
 	{
 		first= 0;
 		printf("do_sdevio: for %d, req %d\n",
@@ -53,39 +53,39 @@ int do_sdevio(struct proc * caller, message *m_ptr)
    * A driver may directly provide a pointer to a buffer at the user-process
    * that initiated the device I/O. Kernel processes, of course, are denied.
    */
-  if (proc_nr_e == SELF)
+  もし (proc_nr_e == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if(!isokendpt(proc_nr_e, &proc_nr))
-		return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  否则
+	もし(!isokendpt(proc_nr_e, &proc_nr))
+		戻る(EINVAL);
+  もし (iskerneln(proc_nr)) 戻る(EPERM);
 
   /* Extract direction (in or out) and type (size). */
   req_dir = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_DIRMASK;
   req_type = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_TYPEMASK;
 
   /* Check for 'safe' variants. */
-  if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
+  もし((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
      /* Map grant address to physical address. */
-     if((r=verify_grant(proc_nr_e, caller->p_endpoint,
+     もし((r=verify_grant(proc_nr_e, caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
 		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
 		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
 		NULL)) != OK) {
-	if(r == ENOTREADY) return r;
+	もし(r == ENOTREADY) 戻る r;
 	printf("do_sdevio: verify_grant failed\n");
-	return EPERM;
+	戻る EPERM;
     }
-	if(!isokendpt(newep, &proc_nr))
-		return(EINVAL);
+	もし(!isokendpt(newep, &proc_nr))
+		戻る(EINVAL);
      destproc = proc_addr(proc_nr);
      vir_buf = newoffset;
-  } else {
-     if(proc_nr != _ENDPOINT_P(caller->p_endpoint))
+  } 否则 {
+     もし(proc_nr != _ENDPOINT_P(caller->p_endpoint))
      {
 	printf("do_sdevio: unsafe sdevio by %d in %d denied\n",
 		caller->p_endpoint, proc_nr_e);
-	return EPERM;
+	戻る EPERM;
      }
      /* Get and check physical address. */
      vir_buf = m_ptr->m_lsys_krn_sys_sdevio.vec_addr;
@@ -104,16 +104,16 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
 
   privp= priv(caller);
-  if (privp && privp->s_flags & CHECK_IO_PORT)
+  もし (privp && privp->s_flags & CHECK_IO_PORT)
   {
 	port= m_ptr->m_lsys_krn_sys_sdevio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	ために (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
+		もし (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
 			break;
 	}
-	if (i >= nr_io_range)
+	もし (i >= nr_io_range)
 	{
 		printf(
 		"do_sdevio: I/O port check failed for proc %d, port 0x%x\n",
@@ -123,7 +123,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
 	}
   }
 
-  if (port & (size-1))
+  もし (port & (size-1))
   {
 	printf("do_devio: unaligned port 0x%x (size %d)\n", port, size);
 	retval = EPERM;
@@ -131,7 +131,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
+  もし (req_dir == _DIO_INPUT) { 
       switch (req_type) {
       case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
       case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
@@ -139,7 +139,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   		retval = EINVAL;
 		goto return_error;
       } 
-  } else if (req_dir == _DIO_OUTPUT) { 
+  } 否则 もし (req_dir == _DIO_OUTPUT) { 
       switch (req_type) {
       case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
       case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
@@ -148,7 +148,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
 		goto return_error;
       } 
   }
-  else {
+  否则 {
 	  retval = EINVAL;
 	  goto return_error;
   }
@@ -157,7 +157,7 @@ int do_sdevio(struct proc * caller, message *m_ptr)
 return_error:
   /* switch back to the address of the process which made the call */
   switch_address_space(caller);
-  return retval;
+  戻る retval;
 }
 
 #endif /* USE_SDEVIO */

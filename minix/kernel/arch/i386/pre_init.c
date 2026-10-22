@@ -12,7 +12,7 @@
 #include "serial.h"
 #include "glo.h"
 
-#if USE_SYSDEBUG
+#もし USE_SYSDEBUG
 #define MULTIBOOT_VERBOSE 1
 #endif
 
@@ -21,7 +21,7 @@ kinfo_t kinfo;
 struct kmessages kmessages;
 
 /* pg_utils.c uses this; in this phase, there is a 1:1 mapping. */
-phys_bytes vir2phys(void *addr) { return (phys_bytes) addr; } 
+phys_bytes vir2phys(void *addr) { 戻る (phys_bytes) addr; } 
 
 /* mb_utils.c uses this; we can reach it directly */
 char *video_mem = (char *) MULTIBOOT_VIDEO_BUFFER;
@@ -30,72 +30,72 @@ char *video_mem = (char *) MULTIBOOT_VIDEO_BUFFER;
 #define ITOA_BUFFER_SIZE 20
 
 /* Kernel may use memory */
-int kernel_may_alloc = 1;
+整数 kernel_may_alloc = 1;
 
-static int mb_set_param(char *bigbuf, char *name, char *value, kinfo_t *cbi) 
+static 整数 mb_set_param(char *bigbuf, char *name, char *value, kinfo_t *cbi) 
 {
 	char *p = bigbuf;
 	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
 	char *q;
-	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	整数 namelen = strlen(name);
+	整数 valuelen = strlen(value);
 
 	/* Some variables we recognize */
-	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	もし(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
+	もし(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
 
 	/* Delete the item if already exists */
-	while (*p) {
-		if (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
+	ながら (*p) {
+		もし (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
 			q = p;
-			while (*q) q++;
-			for (q++; q < bufend; q++, p++)
+			ながら (*q) q++;
+			ために (q++; q < bufend; q++, p++)
 				*p = *q;
 			break;
 		}
-		while (*p++)
+		ながら (*p++)
 			;
 		p++;
 	}
 	
-	for (p = bigbuf; p < bufend && (*p || *(p + 1)); p++)
+	ために (p = bigbuf; p < bufend && (*p || *(p + 1)); p++)
 		;
-	if (p > bigbuf) p++;
+	もし (p > bigbuf) p++;
 	
 	/* Make sure there's enough space for the new parameter */
-	if (p + namelen + valuelen + 3 > bufend)
-		return -1;
+	もし (p + namelen + valuelen + 3 > bufend)
+		戻る -1;
 	
 	strcpy(p, name);
 	p[namelen] = '=';
 	strcpy(p + namelen + 1, value);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0;
-	return 0;
+	戻る 0;
 }
 
-int overlaps(multiboot_module_t *mod, int n, int cmp_mod)
+整数 overlaps(multiboot_module_t *mod, 整数 n, 整数 cmp_mod)
 {
 	multiboot_module_t *cmp = &mod[cmp_mod];
-	int m;
+	整数 m;
 
 #define INRANGE(mod, v) ((v) >= mod->mod_start && (v) < mod->mod_end)
 #define OVERLAP(mod1, mod2) (INRANGE(mod1, mod2->mod_start) || \
 			INRANGE(mod1, mod2->mod_end-1))
-	for(m = 0; m < n; m++) {
+	ために(m = 0; m < n; m++) {
 		multiboot_module_t *thismod = &mod[m];
-		if(m == cmp_mod) continue;
-		if(OVERLAP(thismod, cmp))
-			return 1;
+		もし(m == cmp_mod) continue;
+		もし(OVERLAP(thismod, cmp))
+			戻る 1;
 	}
-	return 0;
+	戻る 0;
 }
 
 void get_parameters(u32_t ebx, kinfo_t *cbi) 
 {
 	multiboot_memory_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
+	整数 var_i,value_i, m, k;
 	char *p;
 	extern char _kern_phys_base, _kern_vir_base, _kern_size,
 		_kern_unpaged_start, _kern_unpaged_end;
@@ -121,23 +121,23 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	cbi->serial_debug_baud = 115200;
 
 	/* parse boot command line */
-	if (mbi->mi_flags & MULTIBOOT_INFO_HAS_CMDLINE) {
+	もし (mbi->mi_flags & MULTIBOOT_INFO_HAS_CMDLINE) {
 		static char var[BUF];
 		static char value[BUF];
 
 		/* Override values with cmdline argument */
 		memcpy(cmdline, (void *) mbi->mi_cmdline, BUF);
 		p = cmdline;
-		while (*p) {
+		ながら (*p) {
 			var_i = 0;
 			value_i = 0;
-			while (*p == ' ') p++;
-			if (!*p) break;
-			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1) 
+			ながら (*p == ' ') p++;
+			もし (!*p) break;
+			ながら (*p && *p != '=' && *p != ' ' && var_i < BUF - 1) 
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
-			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) 
+			もし (*p++ != '=') continue; /* skip if not name=value */
+			ながら (*p && *p != ' ' && value_i < BUF - 1) 
 				value[value_i++] = *p++ ;
 			value[value_i] = 0;
 			
@@ -172,16 +172,16 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	
 	memset(cbi->memmap, 0, sizeof(cbi->memmap));
 	/* mem_map has a variable layout */
-	if(mbi->mi_flags & MULTIBOOT_INFO_HAS_MMAP) {
+	もし(mbi->mi_flags & MULTIBOOT_INFO_HAS_MMAP) {
 		cbi->mmap_size = 0;
-	        for (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
+	        ために (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
        	     (unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;
        	       mmap = (multiboot_memory_map_t *) 
 		      	((unsigned long) mmap + mmap->mm_size + sizeof(mmap->mm_size))) {
-			if(mmap->mm_type != MULTIBOOT_MEMORY_AVAILABLE) continue;
+			もし(mmap->mm_type != MULTIBOOT_MEMORY_AVAILABLE) continue;
 			add_memmap(cbi, mmap->mm_base_addr, mmap->mm_length);
 		}
-	} else {
+	} 否则 {
 		assert(mbi->mi_flags & MULTIBOOT_INFO_HAS_MEMORY);
 		add_memmap(cbi, 0, mbi->mi_mem_lower*1024);
 		add_memmap(cbi, 0x100000, mbi->mi_mem_upper*1024);
@@ -198,12 +198,12 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	cbi->mods_with_kernel = mbi->mi_mods_count+1;
 	cbi->kern_mod = k;
 
-	for(m = 0; m < cbi->mods_with_kernel; m++) {
-#if 0
+	ために(m = 0; m < cbi->mods_with_kernel; m++) {
+#もし 0
 		printf("checking overlap of module %08lx-%08lx\n",
 		  cbi->module_list[m].mod_start, cbi->module_list[m].mod_end);
 #endif
-		if(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
+		もし(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
 			panic("overlapping boot modules/kernel");
 		/* We cut out the bits of memory that we know are
 		 * occupied by the kernel and boot modules.
@@ -234,10 +234,10 @@ kinfo_t *pre_init(u32_t magic, u32_t ebx)
 	vm_enable_paging();
 
 	/* Done, return boot info so it can be passed to kmain(). */
-	return &kinfo;
+	戻る &kinfo;
 }
 
 void send_diag_sig(void) { }
-void minix_shutdown(int how) { arch_shutdown(how); }
-void busy_delay_ms(int x) { }
-int raise(int sig) { panic("raise(%d)\n", sig); }
+void minix_shutdown(整数 how) { arch_shutdown(how); }
+void busy_delay_ms(整数 x) { }
+整数 raise(整数 sig) { panic("raise(%d)\n", sig); }

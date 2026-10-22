@@ -14,17 +14,17 @@
 /*===========================================================================*
  *				do_vmctl				     *
  *===========================================================================*/
-int do_vmctl(struct proc * caller, message * m_ptr)
+整数 do_vmctl(struct proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  整数 proc_nr;
   endpoint_t ep = m_ptr->SVMCTL_WHO;
   struct proc *p, *rp, **rpp, *target;
 
-  if(ep == SELF) { ep = caller->p_endpoint; }
+  もし(ep == SELF) { ep = caller->p_endpoint; }
 
-  if(!isokendpt(ep, &proc_nr)) {
+  もし(!isokendpt(ep, &proc_nr)) {
 	printf("do_vmctl: unexpected endpoint %d from VM\n", ep);
-	return EINVAL;
+	戻る EINVAL;
   }
 
   p = proc_addr(proc_nr);
@@ -33,14 +33,14 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 	case VMCTL_CLEAR_PAGEFAULT:
 		assert(RTS_ISSET(p,RTS_PAGEFAULT));
 		RTS_UNSET(p, RTS_PAGEFAULT);
-		return OK;
+		戻る OK;
 	case VMCTL_MEMREQ_GET:
 		/* Send VM the information about the memory request. We can
 		 * not simply send the first request on the list, because IPC
 		 * filters may forbid VM from getting requests for particular
 		 * sources. However, IPC filters are used only in rare cases.
 		 */
-		for (rpp = &vmrequest; *rpp != NULL;
+		ために (rpp = &vmrequest; *rpp != NULL;
 		    rpp = &(*rpp)->p_vmrequest.nextrequestor) {
 			rp = *rpp;
 
@@ -50,11 +50,11 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 			target = proc_addr(proc_nr);
 
 			/* Check against IPC filters. */
-			if (!allow_ipc_filtered_memreq(rp, target))
+			もし (!allow_ipc_filtered_memreq(rp, target))
 				continue;
 
 			/* Reply with request fields. */
-			if (rp->p_vmrequest.req_type != VMPTYPE_CHECK)
+			もし (rp->p_vmrequest.req_type != VMPTYPE_CHECK)
 				panic("VMREQUEST wrong type");
 
 			m_ptr->SVMCTL_MRG_TARGET	=
@@ -73,10 +73,10 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 			/* Remove from request chain. */
 			*rpp = rp->p_vmrequest.nextrequestor;
 
-			return rp->p_vmrequest.req_type;
+			戻る rp->p_vmrequest.req_type;
 		}
 
-		return ENOENT;
+		戻る ENOENT;
 
 	case VMCTL_MEMREQ_REPLY:
 		assert(RTS_ISSET(p, RTS_VMREQUEST));
@@ -107,33 +107,33 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 		}
 
 		RTS_UNSET(p, RTS_VMREQUEST);
-		return OK;
+		戻る OK;
 
 	case VMCTL_KERN_PHYSMAP:
 	{
-		int i = m_ptr->SVMCTL_VALUE;
-		return arch_phys_map(i,
+		整数 i = m_ptr->SVMCTL_VALUE;
+		戻る arch_phys_map(i,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_ADDR,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_LEN,
 			&m_ptr->SVMCTL_MAP_FLAGS);
 	}
 	case VMCTL_KERN_MAP_REPLY:
 	{
-		return arch_phys_map_reply(m_ptr->SVMCTL_VALUE,
+		戻る arch_phys_map_reply(m_ptr->SVMCTL_VALUE,
 			(vir_bytes) m_ptr->SVMCTL_MAP_VIR_ADDR);
 	}
 	case VMCTL_VMINHIBIT_SET:
 		/* check if we must stop a process on a different CPU */
-#if CONFIG_SMP
-		if (p->p_cpu != cpuid) {
+#もし CONFIG_SMP
+		もし (p->p_cpu != cpuid) {
 			smp_schedule_vminhibit(p);
-		} else
+		} 否则
 #endif
 			RTS_SET(p, RTS_VMINHIBIT);
-#if CONFIG_SMP
+#もし CONFIG_SMP
 		p->p_misc_flags |= MF_FLUSH_TLB;
 #endif
-		return OK;
+		戻る OK;
 	case VMCTL_VMINHIBIT_CLEAR:
 		assert(RTS_ISSET(p, RTS_VMINHIBIT));
 		/*
@@ -142,7 +142,7 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 		 */
 		RTS_UNSET(p, RTS_VMINHIBIT);
 #ifdef CONFIG_SMP
-		if (p->p_misc_flags & MF_SENDA_VM_MISS) {
+		もし (p->p_misc_flags & MF_SENDA_VM_MISS) {
 			struct priv *privp;
 			p->p_misc_flags &= ~MF_SENDA_VM_MISS;
 			privp = priv(p);
@@ -158,16 +158,16 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 		 */
 		bits_fill(p->p_stale_tlb, CONFIG_MAX_CPUS);
 #endif
-		return OK;
+		戻る OK;
 	case VMCTL_CLEARMAPCACHE:
 		/* VM says: forget about old mappings we have cached. */
 		mem_clear_mapcache();
-		return OK;
+		戻る OK;
 	case VMCTL_BOOTINHIBIT_CLEAR:
 		RTS_UNSET(p, RTS_BOOTINHIBIT);
-		return OK;
+		戻る OK;
   }
 
   /* Try architecture-specific vmctls. */
-  return arch_do_vmctl(m_ptr, p);
+  戻る arch_do_vmctl(m_ptr, p);
 }

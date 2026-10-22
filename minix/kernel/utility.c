@@ -23,11 +23,11 @@ void panic(const char *fmt, ...)
 {
   va_list arg;
   /* The system has run aground of a fatal kernel error. Terminate execution. */
-  if (kinfo.minix_panicing == ARE_PANICING) {
+  もし (kinfo.minix_panicing == ARE_PANICING) {
   	reset();
   }
   kinfo.minix_panicing = ARE_PANICING;
-  if (fmt != NULL) {
+  もし (fmt != NULL) {
 	printf("kernel panic: ");
   	va_start(arg, fmt);
 	vprintf(fmt, arg);
@@ -38,8 +38,8 @@ void panic(const char *fmt, ...)
   printf("kernel on CPU %d: ", cpuid);
   util_stacktrace();
 
-#if 0
-  if(get_cpulocal_var(proc_ptr)) {
+#もし 0
+  もし(get_cpulocal_var(proc_ptr)) {
 	  printf("current process : ");
 	  proc_stacktrace(get_cpulocal_var(proc_ptr));
   }
@@ -53,31 +53,31 @@ void panic(const char *fmt, ...)
  *				kputc				     	     *
  *===========================================================================*/
 void kputc(
-  int c					/* character to append */
+  整数 c					/* character to append */
 )
 {
 /* Accumulate a single character for a kernel message. Send a notification
  * to the output drivers if an END_OF_KMESS is encountered.
  */
-  if (c != END_OF_KMESS) {
-      int maxblpos = sizeof(kmess.kmess_buf) - 2;
+  もし (c != END_OF_KMESS) {
+      整数 maxblpos = sizeof(kmess.kmess_buf) - 2;
 #ifdef DEBUG_SERIAL
-      if (kinfo.do_serial_debug) {
-	if(c == '\n')
+      もし (kinfo.do_serial_debug) {
+	もし(c == '\n')
       		ser_putc('\r');
       	ser_putc(c);
       }
 #endif
       kmess.km_buf[kmess.km_next] = c;	/* put normal char in buffer */
       kmess.kmess_buf[kmess.blpos] = c;
-      if (kmess.km_size < sizeof(kmess.km_buf))
+      もし (kmess.km_size < sizeof(kmess.km_buf))
           kmess.km_size += 1;
       kmess.km_next = (kmess.km_next + 1) % _KMESS_BUF_SIZE;
-      if(kmess.blpos == maxblpos) {
+      もし(kmess.blpos == maxblpos) {
       	memmove(kmess.kmess_buf,
 		kmess.kmess_buf+1, sizeof(kmess.kmess_buf)-1);
-      } else kmess.blpos++;
-  } else if (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
+      } 否则 kmess.blpos++;
+  } 否则 もし (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
 	send_diag_sig();
   }
 }
@@ -86,7 +86,7 @@ void kputc(
  *				_exit				     	     *
  *===========================================================================*/
 void _exit(
-  int e					/* error code */
+  整数 e					/* error code */
 )
 {
   panic("_exit called from within the kernel, should not happen. (err %i)", e);

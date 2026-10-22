@@ -11,18 +11,18 @@
 #include <minix/devio.h>
 #include <minix/endpoint.h>
 
-#if USE_DEVIO
+#もし USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+整数 do_devio(struct proc * caller, message * m_ptr)
 {
     struct priv *privp;
     port_t port;
     struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    整数 i, size, nr_io_range;
+    整数 io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
@@ -36,38 +36,38 @@ int do_devio(struct proc * caller, message * m_ptr)
     }
 
     privp= priv(caller);
-    if (!privp)
+    もし (!privp)
     {
 	printf("no priv structure!\n");
 	goto doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    もし (privp->s_flags & CHECK_IO_PORT)
     {
 	port= m_ptr->m_lsys_krn_sys_devio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	ために (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
+		もし (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
 			break;
 	}
-	if (i >= nr_io_range)
+	もし (i >= nr_io_range)
 	{
 			printf("do_devio: port 0x%x (size %d) not allowed\n",
 				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+		戻る EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    もし (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
     {
 		printf("do_devio: unaligned port 0x%x (size %d)\n",
 			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+	戻る EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
+    もし (io_dir == _DIO_INPUT) { 
       switch (io_type) {
 	/* maybe "it" should not be called ports */
         case _DIO_BYTE:
@@ -82,9 +82,9 @@ doit:
 		m_ptr->m_krn_lsys_sys_devio.value =
 			inl(m_ptr->m_lsys_krn_sys_devio.port);
 		break;
-    	default: return(EINVAL);
+    	default: 戻る(EINVAL);
       } 
-    } else { 
+    } 否则 { 
       switch (io_type) {
 	case _DIO_BYTE:
 		outb(m_ptr->m_lsys_krn_sys_devio.port,
@@ -98,10 +98,10 @@ doit:
 		outl(m_ptr->m_lsys_krn_sys_devio.port,
 			m_ptr->m_lsys_krn_sys_devio.value);
 		break;
-    	default: return(EINVAL);
+    	default: 戻る(EINVAL);
       } 
     }
-    return(OK);
+    戻る(OK);
 }
 
 #endif /* USE_DEVIO */

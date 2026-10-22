@@ -15,19 +15,19 @@
 static struct omap_intr
 {
 	vir_bytes base;
-	int size;
+	整数 size;
 } omap_intr;
 
 static kern_phys_map intr_phys_map;
 
-int
-intr_init(const int auto_eoi)
+整数
+intr_init(const 整数 auto_eoi)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	もし (BOARD_IS_BBXM(machine.board_id)) {
 		omap_intr.base = OMAP3_DM37XX_INTR_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} 否则 もし (BOARD_IS_BB(machine.board_id)) {
 		omap_intr.base = OMAP3_AM335X_INTR_BASE;
-	} else {
+	} 否则 {
 		panic
 		    ("Can not do the interrupt setup. machine (0x%08x) is unknown\n",
 		    machine.board_id);
@@ -37,7 +37,7 @@ intr_init(const int auto_eoi)
 	kern_phys_map_ptr(omap_intr.base, omap_intr.size,
 	    VMMF_UNCACHED | VMMF_WRITE,
 	    &intr_phys_map, (vir_bytes) & omap_intr.base);
-	return 0;
+	戻る 0;
 }
 
 void
@@ -46,7 +46,7 @@ bsp_irq_handle(void)
 	/* Function called from assembly to handle interrupts */
 
 	/* get irq */
-	int irq =
+	整数 irq =
 	    mmio_read(omap_intr.base +
 	    OMAP3_INTCPS_SIR_IRQ) & OMAP3_INTR_ACTIVEIRQ_MASK;
 	/* handle irq */
@@ -58,14 +58,14 @@ bsp_irq_handle(void)
 }
 
 void
-bsp_irq_unmask(int irq)
+bsp_irq_unmask(整数 irq)
 {
 	mmio_write(OMAP3_INTR_MIR_CLEAR(omap_intr.base, irq >> 5),
 	    1 << (irq & 0x1f));
 }
 
 void
-bsp_irq_mask(const int irq)
+bsp_irq_mask(const 整数 irq)
 {
 	mmio_write(OMAP3_INTR_MIR_SET(omap_intr.base, irq >> 5),
 	    1 << (irq & 0x1f));
