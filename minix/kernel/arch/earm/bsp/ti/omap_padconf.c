@@ -20,8 +20,8 @@ struct omap_padconf
 	vir_bytes base;
 	vir_bytes offset;
 	vir_bytes size;
-	unsigned int board_filter_value;
-	unsigned int board_filter_mask;
+	unsigned số_nguyên board_filter_value;
+	unsigned số_nguyên board_filter_mask;
 };
 
 static struct omap_padconf omap_padconfs[] = {
@@ -46,28 +46,28 @@ static struct omap_padconf *omap_padconf;
 
 static kern_phys_map padconf_phys_map;
 
-int
+số_nguyên
 bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value)
 {
 	/* check that the value will be inside the padconf memory range */
-	if (padconf >= (omap_padconf->size - omap_padconf->offset)) {
-		return EINVAL;	/* outside of valid range */
+	nếu (padconf >= (omap_padconf->size - omap_padconf->offset)) {
+		trả_về EINVAL;	/* outside of valid range */
 	}
 
 	set32(padconf + omap_padconf->base + omap_padconf->offset, mask,
 	    value);
 
-	return OK;
+	trả_về OK;
 }
 
 void
 bsp_padconf_init(void)
 {
-	int x;
+	số_nguyên x;
 	omap_padconf = NULL;
 	/* find the correct padconf */
-	for (x = 0; x < sizeof(omap_padconfs) / sizeof(omap_padconfs[0]); x++) {
-		if ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
+	cho (x = 0; x < sizeof(omap_padconfs) / sizeof(omap_padconfs[0]); x++) {
+		nếu ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
 		    omap_padconfs[x].board_filter_value) {
 			omap_padconf = &omap_padconfs[x];
 			break;
@@ -79,5 +79,5 @@ bsp_padconf_init(void)
 	    VMMF_UNCACHED | VMMF_WRITE,
 	    &padconf_phys_map, (vir_bytes) & omap_padconf->base);
 
-	return;
+	trả_về;
 }

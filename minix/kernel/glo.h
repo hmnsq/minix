@@ -46,39 +46,39 @@ EXTERN struct proc *kbill_ipc; /* process that invoked ipc */
 
 /* Interrupt related variables. */
 EXTERN irq_hook_t irq_hooks[NR_IRQ_HOOKS];	/* hooks for general use */
-EXTERN int irq_actids[NR_IRQ_VECTORS];		/* IRQ ID bits active */
-EXTERN int irq_use;				/* map of all in-use irq's */
+EXTERN số_nguyên irq_actids[NR_IRQ_VECTORS];		/* IRQ ID bits active */
+EXTERN số_nguyên irq_use;				/* map of all in-use irq's */
 
 /* Miscellaneous. */
-EXTERN int verboseboot;			/* verbose boot, init'ed in cstart */
+EXTERN số_nguyên verboseboot;			/* verbose boot, init'ed in cstart */
 
-#if DEBUG_TRACE
-EXTERN int verboseflags;
+#nếu DEBUG_TRACE
+EXTERN số_nguyên verboseflags;
 #endif
 
 #ifdef USE_APIC
-EXTERN int config_no_apic; /* optionally turn off apic */
-EXTERN int config_apic_timer_x; /* apic timer slowdown factor */
+EXTERN số_nguyên config_no_apic; /* optionally turn off apic */
+EXTERN số_nguyên config_apic_timer_x; /* apic timer slowdown factor */
 #endif
 
 EXTERN u64_t cpu_hz[CONFIG_MAX_CPUS];
 
-#define cpu_set_freq(cpu, freq)	do {cpu_hz[cpu] = freq;} while (0)
+#define cpu_set_freq(cpu, freq)	do {cpu_hz[cpu] = freq;} trong_khi (0)
 #define cpu_get_freq(cpu)	cpu_hz[cpu]
 
 #ifdef CONFIG_SMP
-EXTERN int config_no_smp; /* optionally turn off SMP */
+EXTERN số_nguyên config_no_smp; /* optionally turn off SMP */
 #endif
 
 /* VM */
-EXTERN int vm_running;
-EXTERN int catch_pagefaults;
-EXTERN int kernel_may_alloc;
+EXTERN số_nguyên vm_running;
+EXTERN số_nguyên catch_pagefaults;
+EXTERN số_nguyên kernel_may_alloc;
 
 /* Variables that are initialized elsewhere are just extern here. */
 extern struct boot_image image[NR_BOOT_PROCS]; 	/* system image processes */
 
-EXTERN volatile int serial_debug_active;
+EXTERN volatile số_nguyên serial_debug_active;
 
 EXTERN struct cpu_info cpu_info[CONFIG_MAX_CPUS];
 
@@ -89,6 +89,6 @@ EXTERN unsigned bkl_tries[CONFIG_MAX_CPUS];
 EXTERN unsigned bkl_succ[CONFIG_MAX_CPUS];
 
 /* Feature flags */
-EXTERN int minix_feature_flags;
+EXTERN số_nguyên minix_feature_flags;
 
 #endif /* GLO_H */

@@ -37,7 +37,7 @@ reset(void)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	trong_khi (1);
 }
 
 void
@@ -46,22 +46,22 @@ poweroff(void)
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	trong_khi (1);
 }
 
 __dead void
-arch_shutdown(int how)
+arch_shutdown(số_nguyên how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	nếu((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	nếu(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		cho (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,7 +69,7 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	trong_khi (1);
 }
 
 #ifdef DEBUG_SERIAL

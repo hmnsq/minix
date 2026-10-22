@@ -31,7 +31,7 @@ void fpu_init(void)
 {
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+void save_local_fpu(struct proc *pr, số_nguyên retain)
 {
 }
 
@@ -45,18 +45,18 @@ void arch_proc_reset(struct proc *pr)
 
 	/* Clear process state. */
 	memset(&pr->p_reg, 0, sizeof(pr->p_reg));
-	if(iskerneln(pr->p_nr)) {
+	nếu(iskerneln(pr->p_nr)) {
 		pr->p_reg.psr = INIT_TASK_PSR;
-	} else {
+	} không_thì {
 		pr->p_reg.psr = INIT_PSR;
 	}
 }
 
 void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trapstyle)
+	số_nguyên isuser, số_nguyên trapstyle)
 {
         assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
+	nếu(state != &p->p_reg) {
 	        memcpy(&p->p_reg, state, sizeof(*state));
 	}
 
@@ -65,7 +65,7 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
          */
         p->p_misc_flags |= MF_CONTEXT_SET;
 
-        if(!(p->p_rts_flags)) {
+        nếu(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
                 print_proc(p);
                 util_stacktrace();
@@ -77,9 +77,9 @@ void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
 	p->p_reg.r1 = val;
 }
 
-int restore_fpu(struct proc *pr)
+số_nguyên restore_fpu(struct proc *pr)
 {
-	return 0;
+	trả_về 0;
 }
 
 void cpu_identify(void)
@@ -156,7 +156,7 @@ struct proc * arch_finish_switch_to_user(void)
 
 #ifdef CONFIG_SMP
 	stk = (char *)tss[cpuid].sp0;
-#else
+#không_thì
 	stk = (char *)tss[0].sp0;
 #endif
 	svc_stack = (reg_t)stk;
@@ -167,16 +167,16 @@ struct proc * arch_finish_switch_to_user(void)
 	/* turn interrupts on */
         p->p_reg.psr &= ~(PSR_I|PSR_F);
 
-	return p;
+	trả_về p;
 }
 
 void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
 {
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(struct proc *p) { trả_về p->p_reg.sp; }
 
-void get_randomness(struct k_randomness *rand, int source)
+void get_randomness(struct k_randomness *rand, số_nguyên source)
 {
 }
 
@@ -198,8 +198,8 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	reg_t orig_ttbr, new_ttbr;
 
 	new_ttbr = p->p_seg.p_ttbr;
-	if (new_ttbr == 0)
-	    return;
+	nếu (new_ttbr == 0)
+	    trả_về;
 
 	orig_ttbr = read_ttbr0();
 
@@ -207,12 +207,12 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	 * test if ttbr is loaded with the current value to avoid unnecessary
 	 * TLB flushes
 	 */
-	if (new_ttbr == orig_ttbr)
-	    return;
+	nếu (new_ttbr == orig_ttbr)
+	    trả_về;
 
 	write_ttbr0(new_ttbr);
 
 	*__ptproc = p;
 
-	return;
+	trả_về;
 }

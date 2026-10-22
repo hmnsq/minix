@@ -17,26 +17,26 @@
 #include "kernel/system.h"
 #include "kernel/watchdog.h"
 
-#if SPROFILE
+#nếu SPROFILE
 
 /* user address to write info struct */
 static vir_bytes sprof_info_addr_vir;
 
 static void clean_seen_flag(void)
 {
-	int i;
+	số_nguyên i;
 
-	for (i = 0; i < NR_TASKS + NR_PROCS; i++)
+	cho (i = 0; i < NR_TASKS + NR_PROCS; i++)
 		proc[i].p_misc_flags &= ~MF_SPROF_SEEN;
 }
 
 /*===========================================================================*
  *				do_sprofile				     *
  *===========================================================================*/
-int do_sprofile(struct proc * caller, message * m_ptr)
+số_nguyên do_sprofile(struct proc * caller, message * m_ptr)
 {
-  int proc_nr;
-  int err;
+  số_nguyên proc_nr;
+  số_nguyên err;
 
   switch(m_ptr->m_lsys_krn_sys_sprof.action) {
 
@@ -47,14 +47,14 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 	 * addresses of user pointers.  Reset counters.  Start CMOS timer.
 	 * Turn on profiling.
 	 */
-	if (sprofiling) {
+	nếu (sprofiling) {
 		printf("SYSTEM: start s-profiling: already started\n");
-		return EBUSY;
+		trả_về EBUSY;
 	}
 
 	/* Test endpoint number. */
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
-		return EINVAL;
+	nếu(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
+		trả_về EINVAL;
 
 	/* Set parameters for statistical profiler. */
 	sprof_ep = m_ptr->m_lsys_krn_sys_sprof.endpt;
@@ -78,19 +78,19 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 		case PROF_NMI:
 			err = nmi_watchdog_start_profiling(
 				m_ptr->m_lsys_krn_sys_sprof.freq);
-			if (err)
-				return err;
+			nếu (err)
+				trả_về err;
 			break;
 		default:
 			printf("ERROR : unknown profiling interrupt type\n");
-			return EINVAL;
+			trả_về EINVAL;
 	}
 	
 	sprofiling = 1;
 
 	clean_seen_flag();
 
-  	return OK;
+  	trả_về OK;
 
   case PROF_STOP:
 	/* Stopping profiling.
@@ -98,9 +98,9 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 	 * Check if profiling is indeed running.  Turn off profiling.
 	 * Stop CMOS timer.  Copy info struct to user process.
 	 */
-	if (!sprofiling) {
+	nếu (!sprofiling) {
 		printf("SYSTEM: stop s-profiling: not started\n");
-		return EBUSY;
+		trả_về EBUSY;
 	}
 
 	sprofiling = 0;
@@ -121,10 +121,10 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 
 	clean_seen_flag();
 
-  	return OK;
+  	trả_về OK;
 
   default:
-	return EINVAL;
+	trả_về EINVAL;
   }
 }
 

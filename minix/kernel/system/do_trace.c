@@ -12,12 +12,12 @@
 #include "kernel/system.h"
 #include <sys/ptrace.h>
 
-#if USE_TRACE
+#nếu USE_TRACE
 
 /*==========================================================================*
  *				do_trace				    *
  *==========================================================================*/
-int do_trace(struct proc * caller, message * m_ptr)
+số_nguyên do_trace(struct proc * caller, message * m_ptr)
 {
 /* Handle the debugging commands supported by the ptrace system call
  * The commands are:
@@ -47,50 +47,50 @@ int do_trace(struct proc * caller, message * m_ptr)
   register struct proc *rp;
   vir_bytes tr_addr = m_ptr->m_lsys_krn_sys_trace.address;
   long tr_data = m_ptr->m_lsys_krn_sys_trace.data;
-  int tr_request = m_ptr->m_lsys_krn_sys_trace.request;
-  int tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
+  số_nguyên tr_request = m_ptr->m_lsys_krn_sys_trace.request;
+  số_nguyên tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
   unsigned char ub;
-  int i;
+  số_nguyên i;
 
 #define COPYTOPROC(addr, myaddr, length) {		\
 	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	số_nguyên r;	\
 	fromaddr.proc_nr_e = KERNEL;			\
 	toaddr.proc_nr_e = tr_proc_nr_e;		\
 	fromaddr.offset = (myaddr);			\
 	toaddr.offset = (addr);				\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	nếu((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		trả_về r;\
 	}  \
 }
 
 #define COPYFROMPROC(addr, myaddr, length) {	\
 	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	số_nguyên r;	\
 	fromaddr.proc_nr_e = tr_proc_nr_e;		\
 	toaddr.proc_nr_e = KERNEL;			\
 	fromaddr.offset = (addr);			\
 	toaddr.offset = (myaddr);			\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	nếu((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		trả_về r;\
 	}  \
 }
 
-  if(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) return(EINVAL);
-  if (iskerneln(tr_proc_nr)) return(EPERM);
+  nếu(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) trả_về(EINVAL);
+  nếu (iskerneln(tr_proc_nr)) trả_về(EPERM);
 
   rp = proc_addr(tr_proc_nr);
-  if (isemptyp(rp)) return(EINVAL);
+  nếu (isemptyp(rp)) trả_về(EINVAL);
   switch (tr_request) {
   case T_STOP:			/* stop process */
 	RTS_SET(rp, RTS_P_STOP);
 	/* clear syscall trace and single step flags */
 	rp->p_misc_flags &= ~(MF_SC_TRACE | MF_STEP);
-	return(OK);
+	trả_về(OK);
 
   case T_GETINS:		/* return value from instruction space */
 	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
@@ -103,11 +103,11 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   case T_GETUSER:		/* return value from process table */
-	if ((tr_addr & (sizeof(long) - 1)) != 0) return(EFAULT);
+	nếu ((tr_addr & (sizeof(long) - 1)) != 0) trả_về(EFAULT);
 
-	if (tr_addr <= sizeof(struct proc) - sizeof(long)) {
+	nếu (tr_addr <= sizeof(struct proc) - sizeof(long)) {
 		m_ptr->m_krn_lsys_sys_trace.data =
-		    *(long *) ((char *) rp + (int) tr_addr);
+		    *(long *) ((char *) rp + (số_nguyên) tr_addr);
 		break;
 	}
 
@@ -117,10 +117,10 @@ int do_trace(struct proc * caller, message * m_ptr)
 	i = sizeof(long) - 1;
 	tr_addr -= (sizeof(struct proc) + i) & ~i;
 
-	if (tr_addr > sizeof(struct priv) - sizeof(long)) return(EFAULT);
+	nếu (tr_addr > sizeof(struct priv) - sizeof(long)) trả_về(EFAULT);
 
 	m_ptr->m_krn_lsys_sys_trace.data =
-	    *(long *) ((char *) rp->p_priv + (int) tr_addr);
+	    *(long *) ((char *) rp->p_priv + (số_nguyên) tr_addr);
 	break;
 
   case T_SETINS:		/* set value in instruction space */
@@ -134,33 +134,33 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   case T_SETUSER:			/* set value in process table */
-	if ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
+	nếu ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
 	     tr_addr > sizeof(struct stackframe_s) - sizeof(reg_t))
-		return(EFAULT);
-	i = (int) tr_addr;
-#if defined(__i386__)
+		trả_về(EFAULT);
+	i = (số_nguyên) tr_addr;
+#nếu defined(__i386__)
 	/* Altering segment registers might crash the kernel when it
 	 * tries to load them prior to restarting a process, so do
 	 * not allow it.
 	 */
-	if (i == (int) &((struct proc *) 0)->p_reg.cs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ds ||
-	    i == (int) &((struct proc *) 0)->p_reg.es ||
-	    i == (int) &((struct proc *) 0)->p_reg.gs ||
-	    i == (int) &((struct proc *) 0)->p_reg.fs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ss)
-		return(EFAULT);
+	nếu (i == (số_nguyên) &((struct proc *) 0)->p_reg.cs ||
+	    i == (số_nguyên) &((struct proc *) 0)->p_reg.ds ||
+	    i == (số_nguyên) &((struct proc *) 0)->p_reg.es ||
+	    i == (số_nguyên) &((struct proc *) 0)->p_reg.gs ||
+	    i == (số_nguyên) &((struct proc *) 0)->p_reg.fs ||
+	    i == (số_nguyên) &((struct proc *) 0)->p_reg.ss)
+		trả_về(EFAULT);
 
-	if (i == (int) &((struct proc *) 0)->p_reg.psw)
+	nếu (i == (số_nguyên) &((struct proc *) 0)->p_reg.psw)
 		/* only selected bits are changeable */
 		SETPSW(rp, tr_data);
-	else
+	không_thì
 		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
 #elif defined(__arm__)
-	if (i == (int) &((struct proc *) 0)->p_reg.psr) {
+	nếu (i == (số_nguyên) &((struct proc *) 0)->p_reg.psr) {
 		/* only selected bits are changeable */
 		SET_USR_PSR(rp, tr_data);
-	} else {
+	} không_thì {
 		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
 	}
 #endif
@@ -200,9 +200,9 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   default:
-	return(EINVAL);
+	trả_về(EINVAL);
   }
-  return(OK);
+  trả_về(OK);
 }
 
 #endif /* USE_TRACE */

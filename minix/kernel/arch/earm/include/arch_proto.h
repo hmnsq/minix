@@ -31,7 +31,7 @@ void multiboot_init(void);
 struct tss_s {
   reg_t sp0;                    /* stack pointer to use during interrupt */
 } __attribute__((packed));
-int tss_init(unsigned cpu, void * kernel_stack);
+số_nguyên tss_init(unsigned cpu, void * kernel_stack);
 
 void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
 phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
@@ -43,7 +43,7 @@ void pg_clear(void);
 void pg_identity(kinfo_t *);
 phys_bytes pg_load(void);
 void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
+số_nguyên pg_mapkernel(void);
 void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
 
 EXTERN void * k_stacks_start;
@@ -56,7 +56,7 @@ extern void * k_stacks;
 /*
  * Definition of a callback used when a memory map changed it's base address
  */
-typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
+typedef số_nguyên (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
 
 /*
  * struct used internally by memory.c to keep a list of
@@ -69,10 +69,10 @@ typedef struct kern_phys_map{
 	phys_bytes addr; /* The physical address to map */
 	vir_bytes size;  /* The size of the mapping */
 	vir_bytes id;	 /* an id passed to the callback */
-	int vm_flags;	 /* flags to be passed to vm map */
+	số_nguyên vm_flags;	 /* flags to be passed to vm map */
 	kern_phys_map_mapped cb; /* the callback itself */
 	phys_bytes vir; /* The virtual address once remapped */
-	int index; 	/* index */
+	số_nguyên index; 	/* index */
 	struct kern_phys_map *next; /* pointer to the next */
 } kern_phys_map ; 
 
@@ -103,16 +103,16 @@ typedef struct kern_phys_map{
  * mapping in the callback. It also is not possible to use printf for
  * the same reason.
  */
-int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
-		   int vm_flags, kern_phys_map * priv,
+số_nguyên kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
+		   số_nguyên vm_flags, kern_phys_map * priv,
 		   kern_phys_map_mapped cb, vir_bytes id);
 
 /*
  * Request a physical mapping and put the result in the given prt
  * Note that ptr will only be valid once the callback happened.
  */
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
-		       int vm_flags, kern_phys_map * priv, 
+số_nguyên kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
+		       số_nguyên vm_flags, kern_phys_map * priv, 
 		       vir_bytes ptr);
 
 void arch_ser_init(void);

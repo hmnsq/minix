@@ -37,8 +37,8 @@ struct cpu {
 
 EXTERN struct cpu cpus[CONFIG_MAX_CPUS];
 
-#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } while(0)
-#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } while(0)
+#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } trong_khi(0)
+#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } trong_khi(0)
 #define cpu_test_flag(cpu, flag) (cpus[cpu].flags & (flag))
 #define cpu_is_ready(cpu) cpu_test_flag(cpu, CPU_IS_READY)
 

@@ -10,12 +10,12 @@
 #include "kernel/system.h"
 #include <assert.h>
 
-#if USE_RUNCTL
+#nếu USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+số_nguyên do_runctl(struct proc * caller, message * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
+  số_nguyên proc_nr, action, flags;
   register struct proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  nếu (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) trả_về(EINVAL);
+  nếu (iskerneln(proc_nr)) trả_về(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,20 +41,20 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  nếu (action == RC_STOP && (flags & RC_DELAY)) {
+	nếu (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	nếu (rp->p_misc_flags & MF_SIG_DELAY)
+		trả_về (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
   switch (action) {
   case RC_STOP:
-#if CONFIG_SMP
+#nếu CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
+	  nếu (rp->p_cpu != cpuid) {
 		  smp_schedule_stop_proc(rp);
 		  break;
 	  }
@@ -66,10 +66,10 @@ int do_runctl(struct proc * caller, message * m_ptr)
 	RTS_UNSET(rp, RTS_PROC_STOP);
 	break;
   default:
-	return(EINVAL);
+	trả_về(EINVAL);
   }
 
-  return(OK);
+  trả_về(OK);
 }
 
 #endif /* USE_RUNCTL */

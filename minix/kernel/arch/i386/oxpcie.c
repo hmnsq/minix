@@ -1,7 +1,7 @@
 
 #include "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#nếu CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
@@ -47,20 +47,20 @@ static void oxpcie_init(void)
 
 void oxpcie_putc(char c)
 {
-	static int inuse = 0;
+	static số_nguyên inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	nếu(vm_running && oxpcie_vaddr && !inuse) {
+        	số_nguyên i;
+		static số_nguyên init_done;
 		inuse = 1;
 
-		if(!init_done) {
+		nếu(!init_done) {
 			oxpcie_init();
 			init_done = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
+        	cho (i= 0; i<100000; i++) {
+			nếu(OXPCIE_LSR & LSR_THRE)
                        		break;
 		}
 		OXPCIE_THR = c;
@@ -68,16 +68,16 @@ void oxpcie_putc(char c)
 	}
 }
 
-int oxpcie_in(void)
+số_nguyên oxpcie_in(void)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	nếu(vm_running && oxpcie_vaddr) {
+		số_nguyên lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		nếu(lsr & LSR_DR)
+			trả_về (số_nguyên) OXPCIE_RBR;
 	}
 
-	return -1;
+	trả_về -1;
 }
 
 #endif

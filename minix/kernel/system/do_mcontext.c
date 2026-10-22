@@ -16,38 +16,38 @@
 #include <assert.h>
 #include <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#nếu USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+số_nguyên do_getmcontext(struct proc * caller, message * m_ptr)
 {
 /* Retrieve machine context of a process */
 
   register struct proc *rp;
-  int proc_nr, r;
+  số_nguyên proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  nếu (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	trả_về(EINVAL);
+  nếu (iskerneln(proc_nr)) trả_về(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
+#nếu defined(__i386__)
+  nếu (!proc_used_fpu(rp))
+	trả_về(OK);	/* No state to copy */
 #endif
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  nếu ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
 		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	trả_về(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#nếu defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  nếu (proc_used_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
@@ -58,49 +58,49 @@ int do_getmcontext(struct proc * caller, message * m_ptr)
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  nếu ((r = data_copy(KERNEL, (vir_bytes) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
 	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	trả_về(r);
 
-  return(OK);
+  trả_về(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+số_nguyên do_setmcontext(struct proc * caller, message * m_ptr)
 {
 /* Set machine context of a process */
 
   register struct proc *rp;
-  int proc_nr, r;
+  số_nguyên proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  nếu (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) trả_về(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  nếu ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
 		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	trả_về(r);
 
-#if defined(__i386__)
+#nếu defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  nếu (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
 	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
 	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+  } không_thì
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
 #endif
 
-  return(OK);
+  trả_về(OK);
 }
 
 #endif

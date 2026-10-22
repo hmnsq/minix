@@ -109,11 +109,11 @@ void fninit(void);
 void clts(void);
 void fxsave(void *);
 void fnsave(void *);
-int fxrstor(void *);
-int __fxrstor_end(void *);
-int frstor(void *);
-int __frstor_end(void *);
-int __frstor_failure(void *);
+số_nguyên fxrstor(void *);
+số_nguyên __fxrstor_end(void *);
+số_nguyên frstor(void *);
+số_nguyên __frstor_end(void *);
+số_nguyên __frstor_failure(void *);
 unsigned short fnstsw(void);
 void fnstcw(unsigned short* cw);
 void x86_lgdt(void *);
@@ -128,29 +128,29 @@ void x86_load_fs(u32_t);
 void x86_load_gs(u32_t);
 
 /* ipc functions in usermapped_ipc.S */
-int usermapped_send_softint(endpoint_t dest, message *m_ptr);
-int usermapped_receive_softint(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
-int usermapped_notify_softint(endpoint_t dest);
-int usermapped_do_kernel_call_softint(message *m_ptr);
-int usermapped_senda_softint(asynmsg_t *table, size_t count);
+số_nguyên usermapped_send_softint(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_receive_softint(endpoint_t src, message *m_ptr, số_nguyên *status_ptr);
+số_nguyên usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
+số_nguyên usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_notify_softint(endpoint_t dest);
+số_nguyên usermapped_do_kernel_call_softint(message *m_ptr);
+số_nguyên usermapped_senda_softint(asynmsg_t *table, size_t count);
 
-int usermapped_send_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_receive_syscall(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_notify_syscall(endpoint_t dest);
-int usermapped_do_kernel_call_syscall(message *m_ptr);
-int usermapped_senda_syscall(asynmsg_t *table, size_t count);
+số_nguyên usermapped_send_syscall(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_receive_syscall(endpoint_t src, message *m_ptr, số_nguyên *status_ptr);
+số_nguyên usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
+số_nguyên usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_notify_syscall(endpoint_t dest);
+số_nguyên usermapped_do_kernel_call_syscall(message *m_ptr);
+số_nguyên usermapped_senda_syscall(asynmsg_t *table, size_t count);
 
-int usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_receive_sysenter(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_notify_sysenter(endpoint_t dest);
-int usermapped_do_kernel_call_sysenter(message *m_ptr);
-int usermapped_senda_sysenter(asynmsg_t *table, size_t count);
+số_nguyên usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_receive_sysenter(endpoint_t src, message *m_ptr, số_nguyên *status_ptr);
+số_nguyên usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
+số_nguyên usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
+số_nguyên usermapped_notify_sysenter(endpoint_t dest);
+số_nguyên usermapped_do_kernel_call_sysenter(message *m_ptr);
+số_nguyên usermapped_senda_sysenter(asynmsg_t *table, size_t count);
 
 void switch_k_stack(void * esp, void (* continuation)(void));
 
@@ -210,7 +210,7 @@ void pg_clear(void);
 void pg_identity(kinfo_t *);
 phys_bytes pg_load(void);
 void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
+số_nguyên pg_mapkernel(void);
 void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
 
 /* prototype of an interrupt vector table entry */
@@ -232,14 +232,14 @@ extern void * k_stacks;
 					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
 
 void mfence(void);
-#define barrier()	do { mfence(); } while(0)
+#define barrier()	do { mfence(); } trong_khi(0)
 
 
 #ifndef __GNUC__
 /* call a function to read the stack fram pointer (%ebp) */
 reg_t read_ebp(void);
 #define get_stack_frame(__X)	((reg_t)read_ebp())
-#else
+#không_thì
 /* read %ebp directly */
 #define get_stack_frame(__X)	((reg_t)__builtin_frame_address(0))
 #endif
@@ -247,7 +247,7 @@ reg_t read_ebp(void);
 /*
  * sets up TSS for a cpu and assigns kernel stack and cpu id
  */
-int tss_init(unsigned cpu, void * kernel_stack);
+số_nguyên tss_init(unsigned cpu, void * kernel_stack);
 
 void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type);
 
@@ -255,13 +255,13 @@ void __copy_msg_from_user_end(void);
 void __copy_msg_to_user_end(void);
 void __user_copy_msg_pointer_failure(void);
 
-int platform_tbl_checksum_ok(void *ptr, unsigned int length);
-int platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
-	increment, void * buff, unsigned size, phys_bytes * phys_addr, int ((*
+số_nguyên platform_tbl_checksum_ok(void *ptr, unsigned số_nguyên length);
+số_nguyên platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
+	increment, void * buff, unsigned size, phys_bytes * phys_addr, số_nguyên ((*
 	cmp_f)(void *)));
 
 /* breakpoints.c */
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags);
+số_nguyên breakpoint_set(phys_bytes linaddr, số_nguyên bp, const số_nguyên flags);
 #define BREAKPOINT_COUNT		4
 #define BREAKPOINT_FLAG_RW_MASK		(3 << 0)
 #define BREAKPOINT_FLAG_RW_EXEC		(0 << 0)

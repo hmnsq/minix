@@ -1,18 +1,18 @@
 #ifndef _ARM_CPUFUNC_H
 #define _ARM_CPUFUNC_H
 
-#if 0
+#nếu 0
 /* check interrupt state */
-static inline void check_int(unsigned int state, int line)
+static inline void check_int(unsigned số_nguyên state, số_nguyên line)
 {
-	unsigned int cpsr = 0;
+	unsigned số_nguyên cpsr = 0;
 
 	asm volatile("mrs %0, cpsr" : "=r" (cpsr));
 
-	if ((cpsr & PSR_F) != (state & PSR_F))
+	nếu ((cpsr & PSR_F) != (state & PSR_F))
 	    printf("%d: FIQs are unexpectedly %s\n", line, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
 
-	if ((cpsr & PSR_I) != (state & PSR_I))
+	nếu ((cpsr & PSR_I) != (state & PSR_I))
 	    printf("%d: IRQs are unexpectedly %s\n", line, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
 
 }
@@ -48,7 +48,7 @@ static inline u32_t read_clidr(void){
 	u32_t clidr;
 	asm volatile("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
 				: [clidr] "=r" (clidr));
-	return clidr;
+	trả_về clidr;
 }
 
 
@@ -57,7 +57,7 @@ static inline u32_t read_csselr(void){
 	u32_t csselr;
 	asm volatile("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
 				: [csselr] "=r" (csselr));
-	return csselr;
+	trả_về csselr;
 }
 
 /* Write CSSELR, Cache Size Selection Register */
@@ -72,7 +72,7 @@ static inline u32_t read_ccsidr(void)
 	u32_t ccsidr;
 	asm volatile("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
 			: [ccsidr] "=r" (ccsidr));
-	return ccsidr;
+	trả_về ccsidr;
 }
 
 /* Read TLBTR, TLB Type Register */
@@ -81,28 +81,28 @@ static inline u32_t read_tlbtr(void)
 	u32_t tlbtr;
 	asm volatile("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
 			: [tlbtr] "=r" (tlbtr));
-	return tlbtr;
+	trả_về tlbtr;
 }
 
 /* keesj:move these out */
 static inline u32_t ilog2(u32_t t)
 {
 	u32_t counter =0;
-	while( (t = t >> 1) ) counter ++;
-	return counter;
+	trong_khi( (t = t >> 1) ) counter ++;
+	trả_về counter;
 }
 
 /* keesj:move these out */
 static inline u32_t ipow2(u32_t t)
 {
-	return 1 << t;
+	trả_về 1 << t;
 }
 
 /*
  * type = 1 == CLEAN
  * type = 2 == INVALIDATE
  */
-static inline void dcache_maint(int type){
+static inline void dcache_maint(số_nguyên type){
 	u32_t cache_level ;
 	u32_t clidr;
 	u32_t ctype;
@@ -115,7 +115,7 @@ static inline void dcache_maint(int type){
 	u32_t loc =  ( clidr >> 24) & 0x7;
 	u32_t louu =  ( clidr >> 27) & 0x7;
 	u32_t louis =  ( clidr >> 21) & 0x7;
-	for (cache_level =0 ; cache_level < loc; cache_level++){
+	cho (cache_level =0 ; cache_level < loc; cache_level++){
 		/* get current cache type */
 		ctype = ( clidr >> cache_level*3) & 0x7;
 		/* select data or unified or cache level */
@@ -128,19 +128,19 @@ static inline void dcache_maint(int type){
 		number_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
 
 		u32_t way_bits = ilog2(number_of_ways);
-		if(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
+		nếu(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
 			way_bits++;
 		}
 
 		u32_t l = ilog2(line_length);
-		for (way =0 ; way < number_of_ways; way++) {
-			for (set =0 ; set < number_of_sets; set++) {
+		cho (way =0 ; way < number_of_ways; way++) {
+			cho (set =0 ; set < number_of_sets; set++) {
 				u32_t val = ( way << (32 - way_bits) ) |  (set << l) | (cache_level << 1 );
-				if (type == 1) {
+				nếu (type == 1) {
 					/* DCCISW, Data Cache Clean and Invalidate by Set/Way */
 					asm volatile("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
 							: : [set] "r" (val));
-				} else if (type ==2 ){
+				} không_thì nếu (type ==2 ){
 					/* DCISW, Data Cache Invalidate by Set/Way */
 					asm volatile("mcr p15, 0, %[set], c7, c6, 2" 
 							: : [set] "r" (val)); 
@@ -166,7 +166,7 @@ static inline void refresh_tlb(void)
 	/* Invalidate entire unified TLB */
 	asm volatile("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
 
-#if 0
+#nếu 0
 	/* Invalidate entire data TLB */
 	asm volatile("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
 
@@ -196,7 +196,7 @@ static inline u32_t read_sctlr(void)
 	asm volatile("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	trả_về ctl;
 }
 
 /* Write System Control Register */
@@ -215,7 +215,7 @@ static inline u32_t read_ttbr0(void)
 	asm volatile("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
 			: [bar] "=r" (bar));
 
-	return bar & ARM_TTBR_ADDR_MASK;
+	trả_về bar & ARM_TTBR_ADDR_MASK;
 }
 
 /* Write Translation Table Base Register 0 */
@@ -248,7 +248,7 @@ static inline u32_t read_ttbr1(void)
 	asm volatile("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
 			: [bar] "=r" (bar));
 
-	return bar;
+	trả_về bar;
 }
 
 /* Write Translation Table Base Register 1 */
@@ -278,7 +278,7 @@ static inline u32_t read_ttbcr(void)
 	asm volatile("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
 			: [bcr] "=r" (bcr));
 
-	return bcr;
+	trả_về bcr;
 }
 
 /* Write Translation Table Base Control Register */
@@ -298,7 +298,7 @@ static inline u32_t read_dacr(void)
 	asm volatile("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
 			: [dacr] "=r" (dacr));
 
-	return dacr;
+	trả_về dacr;
 }
 
 /* Write Domain Access Control Register */
@@ -318,7 +318,7 @@ static inline u32_t read_dfsr(void)
 	asm volatile("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	trả_về fsr;
 }
 
 /* Write Data Fault Status Register */
@@ -338,7 +338,7 @@ static inline u32_t read_ifsr(void)
 	asm volatile("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	trả_về fsr;
 }
 
 /* Write Instruction Fault Status Register */
@@ -358,7 +358,7 @@ static inline u32_t read_dfar(void)
 	asm volatile("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	trả_về far;
 }
 
 /* Write Data Fault Address Register */
@@ -378,7 +378,7 @@ static inline u32_t read_ifar(void)
 	asm volatile("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	trả_về far;
 }
 
 /* Write Instruction Fault Address Register */
@@ -398,7 +398,7 @@ static inline u32_t read_vbar(void)
 	asm volatile("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
 			: [vbar] "=r" (vbar));
 
-	return vbar;
+	trả_về vbar;
 }
 
 /* Write Vector Base Address Register */
@@ -418,7 +418,7 @@ static inline u32_t read_midr(void)
 	asm volatile("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
 			: [id] "=r" (id));
 
-	return id;
+	trả_về id;
 }
 
 /* Read Auxiliary Control Register */
@@ -429,7 +429,7 @@ static inline u32_t read_actlr(void)
 	asm volatile("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	trả_về ctl;
 }
 
 /* Write Auxiliary Control Register */
@@ -450,7 +450,7 @@ static inline u32_t read_cpsr(void)
 	asm volatile("mrs %[status], cpsr @ read CPSR"
 			: [status] "=r" (status));
 
-	return status;
+	trả_về status;
 }
 
 /* Write Current Program Status Register */
