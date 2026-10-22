@@ -10,69 +10,69 @@
  *   m_lsys_krn_sys_umap.nr_bytes	(size of datastructure)
  */
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
-#include <minix/endpoint.h>
+#ضمن <minix/endpoint.h>
 
-#if USE_UMAP || USE_UMAP_REMOTE
+#إذا USE_UMAP || USE_UMAP_REMOTE
 
-#if ! USE_UMAP_REMOTE
+#إذا ! USE_UMAP_REMOTE
 #undef do_umap_remote
 #endif
 
 /*==========================================================================*
  *				do_umap_remote				    *
  *==========================================================================*/
-int do_umap_remote(struct proc * caller, message * m_ptr)
+صحيح do_umap_remote(بنية proc * caller, message * m_ptr)
 {
 /* Map virtual address to physical, for non-kernel processes. */
-  int seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
-  int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
+  صحيح seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
+  صحيح seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
   vir_bytes offset = m_ptr->m_lsys_krn_sys_umap.src_addr;
-  int count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
+  صحيح عدد = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
   endpoint_t endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
   endpoint_t grantee = m_ptr->m_lsys_krn_sys_umap.dst_endpt;
-  int proc_nr, proc_nr_grantee;
+  صحيح proc_nr, proc_nr_grantee;
   phys_bytes phys_addr = 0, lin_addr = 0;
-  struct proc *targetpr;
+  بنية proc *targetpr;
 
   /* Verify process number. */
-  if (endpt == SELF)
+  إذا (endpt == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if (! isokendpt(endpt, &proc_nr))
-		return(EINVAL);
+  وإلا
+	إذا (! isokendpt(endpt, &proc_nr))
+		أرجع(EINVAL);
   targetpr = proc_addr(proc_nr);
 
   /* Verify grantee endpoint */
-  if (grantee == SELF) {
+  إذا (grantee == SELF) {
 	grantee = caller->p_endpoint;
-  } else if (grantee == NONE ||
+  } وإلا إذا (grantee == NONE ||
 	grantee == ANY ||
 	seg_index != MEM_GRANT ||
 	!isokendpt(grantee, &proc_nr_grantee)) {
-	return EINVAL;
+	أرجع EINVAL;
   }
 
   /* See which mapping should be made. */
-  switch(seg_type) {
-  case LOCAL_VM_SEG:
-    if(seg_index == MEM_GRANT) {
+  بدل(seg_type) {
+  حالة LOCAL_VM_SEG:
+    إذا(seg_index == MEM_GRANT) {
 	vir_bytes newoffset;
 	endpoint_t newep;
-	int new_proc_nr;
+	صحيح new_proc_nr;
 	cp_grant_id_t grant = (cp_grant_id_t) offset;
 
-        if(verify_grant(targetpr->p_endpoint, grantee, grant, count,
-                0, 0, &newoffset, &newep, NULL) != OK) {
-                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, count, caller->p_name);
+        إذا(verify_grant(targetpr->p_endpoint, grantee, grant, عدد,
+                0, 0, &newoffset, &newep, عدم) != OK) {
+                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, عدد, caller->p_name);
 		proc_stacktrace(caller);
-                return EFAULT;
+                أرجع EFAULT;
         }
 
-        if(!isokendpt(newep, &new_proc_nr)) {
+        إذا(!isokendpt(newep, &new_proc_nr)) {
                 printf("SYSTEM: do_umap: isokendpt failed\n");
-                return EFAULT;
+                أرجع EFAULT;
         }
 
 	/* New lookup. */
@@ -81,42 +81,42 @@ int do_umap_remote(struct proc * caller, message * m_ptr)
 	seg_index = VIR_ADDR;
       }
 
-      if(seg_index == VIR_ADDR) {
+      إذا(seg_index == VIR_ADDR) {
         phys_addr = lin_addr = offset;
-      } else {
+      } وإلا {
 	printf("SYSTEM: bogus seg type 0x%lx\n", seg_index);
-	return EFAULT;
+	أرجع EFAULT;
       }
-      if(!lin_addr) {
+      إذا(!lin_addr) {
 	printf("SYSTEM:do_umap: umap_local failed\n");
-	return EFAULT;
+	أرجع EFAULT;
       }
-      if(vm_lookup(targetpr, lin_addr, &phys_addr, NULL) != OK) {
+      إذا(vm_lookup(targetpr, lin_addr, &phys_addr, عدم) != OK) {
 	printf("SYSTEM:do_umap: vm_lookup failed\n");
-	return EFAULT;
+	أرجع EFAULT;
       }
-      if(phys_addr == 0)
+      إذا(phys_addr == 0)
 	panic("vm_lookup returned zero physical address");
-      break;
-  default:
+      اكسر;
+  افتراضي:
   	printf("umap: peculiar type\n");
-  	return EINVAL;
+  	أرجع EINVAL;
   }
 
-  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
+  إذا(vm_running && vm_lookup_range(targetpr, lin_addr, عدم, عدد) != عدد) {
 	printf("SYSTEM:do_umap: not contiguous\n");
-	return EFAULT;
+	أرجع EFAULT;
   }
 
   m_ptr->m_krn_lsys_sys_umap.dst_addr = phys_addr;
-  if(phys_addr == 0) {
+  إذا(phys_addr == 0) {
 	  printf("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
 		seg_type, caller->p_endpoint, caller->p_name,
 		caller->p_reg.pc, offset, phys_addr);
 	printf("caller stack: ");
 	proc_stacktrace(caller);
   }
-  return (phys_addr == 0) ? EFAULT: OK;
+  أرجع (phys_addr == 0) ? EFAULT: OK;
 }
 
 #endif /* USE_UMAP || USE_UMAP_REMOTE */

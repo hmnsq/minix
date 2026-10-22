@@ -1,9 +1,9 @@
 #ifndef __I386_WATCHDOG_H__
 #define __I386_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-struct nmi_frame {
+بنية nmi_frame {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,7 +21,7 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+صحيح i386_watchdog_start(فراغ);
 
 #define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
