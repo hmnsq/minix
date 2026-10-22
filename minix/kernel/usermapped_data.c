@@ -1,15 +1,15 @@
-#include "kernel/kernel.h"
+#अन्तर्भाव "kernel/kernel.h"
 
 /* This is the user-visible struct that has pointers to other bits of data. */
-struct minix_kerninfo minix_kerninfo __section(".usermapped");
+संरचना minix_kerninfo minix_kerninfo __section(".usermapped");
 
 /* Kernel information structures. */
-struct kinfo kinfo __section(".usermapped");		/* kernel information for services */
-struct machine machine __section(".usermapped");	/* machine information for services */
-struct kmessages kmessages __section(".usermapped");	/* diagnostic messages in kernel */
-struct loadinfo loadinfo __section(".usermapped");	/* status of load average */
-struct kuserinfo kuserinfo __section(".usermapped");
+संरचना kinfo kinfo __section(".usermapped");		/* kernel information for services */
+संरचना machine machine __section(".usermapped");	/* machine information for services */
+संरचना kmessages kmessages __section(".usermapped");	/* diagnostic messages in kernel */
+संरचना loadinfo loadinfo __section(".usermapped");	/* status of load average */
+संरचना kuserinfo kuserinfo __section(".usermapped");
 	/* kernel information for users */
-struct arm_frclock arm_frclock __section(".usermapped");
+संरचना arm_frclock arm_frclock __section(".usermapped");
 	/* ARM free running timer information */
-struct kclockinfo kclockinfo __section(".usermapped");	/* clock information */
+संरचना kclockinfo kclockinfo __section(".usermapped");	/* clock information */
