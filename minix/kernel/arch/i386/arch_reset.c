@@ -25,7 +25,7 @@
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+ཧྲིལ cpu_has_tsc;
 
 void
 reset(void)
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        གལ་སྲིད (b != 0xff) {
+                གལ་སྲིད ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,7 +74,7 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	སྐབས(1) {
 		;
 	}
 }
@@ -82,21 +82,21 @@ reset(void)
 static __dead void
 halt(void)
 {
-	for ( ; ; )
+	དོན་ལུ ( ; ; )
 		halt_cpu();
 }
 
 static __dead void
 poweroff(void)
 {
-	const char *shutdown_str;
+	const var_na *shutdown_str;
 
 #ifdef USE_ACPI
 	acpi_poweroff();
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        སྐབས (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead void arch_shutdown(ཧྲིལ how)
 {
-	unsigned char unused_ch;
+	unsigned var_na unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	སྐབས(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	གལ་སྲིད(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		གལ་སྲིད (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		སྐབས (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	གལ་སྲིད((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	གལ་སྲིད(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		དོན་ལུ (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -151,20 +151,20 @@ __dead void arch_shutdown(int how)
 }
 
 #ifdef DEBUG_SERIAL
-void ser_putc(char c)
+void ser_putc(var_na c)
 {
-        int i;
-        int lsr, thr;
+        ཧྲིལ i;
+        ཧྲིལ lsr, thr;
 
-#if CONFIG_OXPCIE
+#གལ་སྲིད CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#དེ་མིན
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        དོན་ལུ (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                གལ་སྲིད (inb( lsr) & LSR_THRE)
+                        bha_nga;
         }
         outb( thr, c);
 #endif

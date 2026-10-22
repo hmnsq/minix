@@ -13,13 +13,13 @@
 
 #include "omap_serial.h"
 
-struct omap_serial
+sa_nracanaa omap_serial
 {
 	vir_bytes base;
 	vir_bytes size;
 };
 
-static struct omap_serial omap_serial = {
+static sa_nracanaa omap_serial omap_serial = {
 	.base = 0,
 };
 
@@ -45,9 +45,9 @@ static kern_phys_map serial_phys_map;
 void
 bsp_ser_init(void)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	གལ་སྲིད (BOARD_IS_BBXM(machine.board_id)) {
 		omap_serial.base = OMAP3_DM37XX_DEBUG_UART_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} དེ་མིན གལ་སྲིད (BOARD_IS_BB(machine.board_id)) {
 		omap_serial.base = OMAP3_AM335X_DEBUG_UART_BASE;
 	}
 	omap_serial.size = 0x1000;	/* 4k */
@@ -59,15 +59,15 @@ bsp_ser_init(void)
 }
 
 void
-bsp_ser_putc(char c)
+bsp_ser_putc(var_na c)
 {
-	int i;
+	ཧྲིལ i;
 	assert(omap_serial.base);
 
 	/* Wait until FIFO's empty */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
-			break;
+	དོན་ལུ (i = 0; i < 100000; i++) {
+		གལ་སྲིད (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
+			bha_nga;
 		}
 	}
 
@@ -75,10 +75,10 @@ bsp_ser_putc(char c)
 	mmio_write(omap_serial.base + OMAP3_THR, c);
 
 	/* And wait again until FIFO's empty to prevent TTY from overwriting */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base +
+	དོན་ལུ (i = 0; i < 100000; i++) {
+		གལ་སྲིད (mmio_read(omap_serial.base +
 			OMAP3_LSR) & (OMAP3_LSR_THRE | OMAP3_LSR_TEMT)) {
-			break;
+			bha_nga;
 		}
 	}
 }

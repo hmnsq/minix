@@ -13,17 +13,17 @@
 
 #include "arch_proto.h"
 
-static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
+static void set_ttbr(sa_nracanaa proc *p, u32_t ttbr, u32_t *v)
 {
 	/* Set process TTBR. */
 	p->p_seg.p_ttbr = ttbr;
 	assert(p->p_seg.p_ttbr);
 	p->p_seg.p_ttbr_v = v;
-	if(p == get_cpulocal_var(ptproc)) {
+	གལ་སྲིད(p == get_cpulocal_var(ptproc)) {
 		write_ttbr0(p->p_seg.p_ttbr);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	གལ་སྲིད(p->p_nr == VM_PROC_NR) {
+		གལ་སྲིད (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -32,26 +32,26 @@ static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+ཧྲིལ arch_do_vmctl(
+  pa_njikaa message *m_ptr,	/* pointer to request message */
+  sa_nracanaa proc *p
 )
 {
   switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+	pak_sa VMCTL_GET_PDBR:
 		/* Get process page directory base reg (TTBR). */
 		m_ptr->SVMCTL_VALUE = p->p_seg.p_ttbr;
-		return OK;
-	case VMCTL_SETADDRSPACE:
+		ལོག OK;
+	pak_sa VMCTL_SETADDRSPACE:
 		set_ttbr(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		ལོག OK;
+	pak_sa VMCTL_FLUSHTLB:
 	{
 		reload_ttbr0();
-		return OK;
+		ལོག OK;
 	}
   }
 
   printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  ལོག EINVAL;
 }
