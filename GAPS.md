@@ -1,0 +1,533 @@
+# What is still missing
+
+76 languages. Each line says in how many languages it is missing.
+
+## Files in languages BURP cannot read yet
+
+- `.sh`: 3 files
+
+## Keywords with no word in a language's table
+
+- yantra:ENTRY: 75
+- yantra:LABEL: 75
+- yantra:EIP: 75
+- yantra:RET: 75
+- guru:__FILE__: 75
+- yantra:INC: 75
+- yantra:OUT: 75
+- yantra:EVEN: 75
+- yantra:ECX: 75
+- yantra:EDI: 75
+- yantra:CS: 75
+- yantra:EAX: 75
+- yantra:EBX: 75
+- yantra:EDX: 75
+- guru:_exit: 75
+- guru:size_t: 71
+- guru:asm: 71
+- guru:clock_t: 71
+- guru:SIGSEGV: 71
+- guru:atoi: 71
+- guru:SIGFPE: 71
+- guru:time_t: 71
+- guru:SIGILL: 71
+- guru:EDOM: 71
+- guru:offsetof: 71
+- guru:memmove: 71
+- guru:strncpy: 71
+- guru:memcmp: 71
+- guru:strtoul: 71
+- guru:CHAR_BIT: 71
+- guru:LONG_MIN: 71
+- guru:LONG_MAX: 71
+- guru:va_list: 71
+- guru:va_start: 71
+- guru:vprintf: 71
+- guru:va_end: 71
+- guru:memset: 70
+- guru:strcpy: 70
+- guru:strcmp: 70
+- guru:strcat: 70
+- guru:rand: 70
+- guru:#define: 66
+- guru:#endif: 66
+- guru:#ifdef: 66
+- guru:#ifndef: 66
+- guru:#undef: 66
+- guru:#error: 66
+- guru:printf: 62
+- guru:unsigned: 62
+- guru:long: 62
+- guru:memcpy: 62
+- guru:short: 62
+- guru:exit: 62
+- guru:strlen: 62
+- guru:strncmp: 62
+- guru:INT_MAX: 62
+- yantra:global: 45
+- guru:virtual: 40
+- yantra:call: 26
+- guru:void: 25
+- guru:static: 25
+- guru:assert: 25
+- guru:NULL: 25
+- guru:const: 25
+- guru:extern: 25
+- guru:continue: 25
+- guru:switch: 25
+- guru:default: 25
+- guru:goto: 25
+- guru:do: 25
+- yantra:PUBLIC: 25
+- yantra:OR: 25
+- guru:typedef: 25
+- yantra:THIS: 25
+- yantra:END: 25
+- guru:#elif: 25
+- guru:raise: 25
+- guru:for: 9
+- guru:struct: 9
+- guru:sizeof: 9
+- guru:char: 9
+- guru:case: 9
+- guru:break: 9
+- guru:volatile: 9
+- guru:register: 9
+- guru:inline: 9
+- guru:union: 9
+- yantra:AND: 8
+- yantra:IN: 8
+- yantra:NOT: 8
+- guru:if: 1
+- guru:int: 1
+- guru:return: 1
+- guru:else: 1
+- guru:#if: 1
+- guru:while: 1
+- guru:#else: 1
+
+## Names with no dictionary entry (the most common first)
+
+- `proc`: 76
+- `rp`: 76
+- `p`: 76
+- `i`: 76
+- `m_ptr`: 76
+- `u32_t`: 76
+- `priv`: 76
+- `caller`: 76
+- `cpu`: 76
+- `OK`: 76
+- `r`: 76
+- `irq`: 76
+- `cbi`: 76
+- `p_endpoint`: 76
+- `p_reg`: 76
+- `proc_nr`: 76
+- `flags`: 76
+- `addr`: 76
+- `caller_ptr`: 76
+- `reg_t`: 76
+- `p_misc_flags`: 76
+- `INTR_PRIVILEGE`: 76
+- `EINVAL`: 76
+- `pr`: 76
+- `m`: 76
+- `endpoint_t`: 76
+- `name`: 76
+- `len`: 76
+- `val`: 76
+- `proc_addr`: 76
+- `n`: 76
+- `vir_addr`: 76
+- `kinfo`: 76
+- `map`: 76
+- `get_cpulocal_var`: 76
+- `privp`: 76
+- `dst`: 76
+- `p_seg`: 76
+- `RTS_ISSET`: 76
+- `dst_ptr`: 76
+- `panic`: 76
+- `q`: 76
+- `CONFIG_SMP`: 76
+- `src`: 76
+- `proc_nr_e`: 76
+- `src_rp`: 76
+- `c`: 76
+- `u64_t`: 76
+- `cpuid`: 76
+- `fr`: 76
+- `id`: 76
+- `outb`: 76
+- `dst_rp`: 76
+- `phys`: 76
+- `EXTERN`: 76
+- `EPERM`: 76
+- `NONE`: 76
+- `u8_t`: 76
+- `sp`: 76
+- `pde`: 76
+- `ptr`: 76
+- `mbi`: 76
+- `pp`: 76
+- `hook`: 76
+- `p_name`: 76
+- `chunk`: 76
+- `rc`: 76
+- `freq`: 76
+- `machine`: 76
+- `v`: 76
+- `lapic_addr`: 76
+- `ptproc`: 76
+- `isokendpt`: 76
+- `execi`: 76
+- `t`: 76
+- `vaddr`: 76
+- `endpt`: 76
+- `p_vmrequest`: 76
+- `ioa`: 76
+- `bp`: 76
+- `FLAG`: 76
+- `CONFIG_MAX_CPUS`: 76
+- `p_nr`: 76
+- `sc`: 76
+- `s_flags`: 76
+- `sf_sc`: 76
+- `lapic_write`: 76
+- `lapic_read`: 76
+- `xp`: 76
+- `rpp`: 76
+- `ep`: 76
+- `mmap`: 76
+- `KERNEL`: 76
+- `ipcf`: 76
+- `rpc`: 76
+- `pc`: 76
+- `xpp`: 76
+- `kinfo_t`: 76
+- `g`: 76
+- `is_nested`: 76
+- `tsc_delta`: 76
+- `x`: 76
+- `type`: 76
+- `memmap`: 76
+- `timer`: 76
+- `saved_proc`: 76
+- `RTS_UNSET`: 76
+- `cpu_info`: 76
+- `fr_timer`: 76
+- `phys_maps`: 76
+- `minix_kerninfo`: 76
+- `mod`: 76
+- `j`: 76
+- `ip`: 76
+- `defined`: 76
+- `watchdog`: 76
+- `call_nr`: 76
+- `src_id`: 76
+- `tsc`: 76
+- `state`: 76
+- `p_rts_flags`: 76
+- `src_e`: 76
+- `board_id`: 76
+- `kclockinfo`: 76
+- `str`: 76
+- `u16_t`: 76
+- `proc_ptr`: 76
+- `irq_hook_t`: 76
+- `regs`: 76
+- `hdr`: 76
+- `lo`: 76
+- `ncpus`: 76
+- `cpuf`: 76
+- `granter`: 76
+- `system_hz`: 76
+- `saved_lr`: 76
+- `EFAULT`: 76
+- `s`: 76
+- `io_apic_irq`: 76
+- `e`: 76
+- `access`: 76
+- `TRUE`: 76
+- `kmess`: 76
+- `p_accounting`: 76
+- `tabent`: 76
+- `whichproc`: 76
+- `b`: 76
+- `pte`: 76
+- `pde_v`: 76
+- `p_cpu`: 76
+- `proc_is_runnable`: 76
+- `MF_DELIVERMSG`: 76
+- `src_p`: 76
+- `sprof_info`: 76
+- `get_cpu_var`: 76
+- `handler`: 76
+- `linaddr`: 76
+- `srcproc`: 76
+- `dstproc`: 76
+- `phys_addr`: 76
+- `NR_TASKS`: 76
+- `ioapic_enabled`: 76
+- `eax`: 76
+- `SELF`: 76
+- `eip`: 76
+- `p_delivermsg`: 76
+- `grantee`: 76
+- `how`: 76
+- `io_apic`: 76
+- `s_proc_nr`: 76
+- `VM_PROC_NR`: 76
+- `kern_phys_map`: 76
+- `mmio_write`: 76
+- `proc_stacktrace`: 76
+- `lvtt`: 76
+- `irq_hooks`: 76
+- `src_ptr`: 76
+- `src_vir`: 76
+- `irq_hook_id`: 76
+- `RTS_VMINHIBIT`: 76
+- `catch_pagefaults`: 76
+- `pagedir`: 76
+- `namelen`: 76
+- `module_list`: 76
+- `f`: 76
+- `oxpcie_vaddr`: 76
+- `pptr`: 76
+- `RTS_NO_PRIV`: 76
+- `ANY`: 76
+- `src_dst_e`: 76
+- `cp_u`: 76
+- `NOT_REACHABLE`: 76
+- `vir2phys`: 76
+- `ph`: 76
+- `a`: 76
+- `writeflag`: 76
+- `_SRC_`: 76
+- `_DST_`: 76
+- `ia32_msr_write`: 76
+- `request`: 76
+- `NR_SYS_PROCS`: 76
+- `dst_p`: 76
+- `read_tsc_64`: 76
+- `get_cpulocal_var_ptr`: 76
+- `err`: 76
+- `cause_sig`: 76
+- `ret`: 76
+- `pin`: 76
+- `USE_APIC`: 76
+- `gdt`: 76
+- `RTS_PROC_STOP`: 76
+- `RTS_VMREQUEST`: 76
+- `params`: 76
+- `s_id`: 76
+- `s_asyntab`: 76
+- `s_asynsize`: 76
+- `uptime`: 76
+- `ticks`: 76
+- `NR_PROCS`: 76
+- `nfreepdes`: 76
+- `pt`: 76
+- `o`: 76
+- `vec`: 76
+- `psw`: 76
+- `ebx`: 76
+- `asynmsg_t`: 76
+- `minix_ipcvecs`: 76
+- `movl`: 76
+- `E`: 76
+- `SYS_PROC`: 76
+- `priv_id`: 76
+- `sender`: 76
+- `sig_nr`: 76
+- `sfinfo`: 76
+- `tr_addr`: 76
+- `iskerneln`: 76
+- `retreg`: 76
+- `FALSE`: 76
+- `pte_v`: 76
+- `isemptyp`: 76
+- `USER_PRIVILEGE`: 76
+- `p_cr3`: 76
+- `inb`: 76
+- `iorp`: 76
+- `RTS_SENDING`: 76
+- `dst_e`: 76
+- `do_notify`: 76
+- `m_lsys_krn_sys_devio`: 76
+- `bin`: 76
+- `get_cpu_var_ptr`: 76
+- `p_ttbr_v`: 76
+- `VMMF_UNCACHED`: 76
+- `omap_padconf`: 76
+- `omap_serial`: 76
+- `isb`: 76
+- `ctl`: 76
+- `bar`: 76
+- `fsr`: 76
+- `far`: 76
+- `srcptr`: 76
+- `dstptr`: 76
+- `kernel_may_alloc`: 76
+- `subend`: 76
+- `iter`: 76
+- `multiboot_module_t`: 76
+- `BUF`: 76
+- `psp`: 76
+- `acpi_rsdp`: 76
+- `BKL_UNLOCK`: 76
+- `msr_lo`: 76
+- `errstatus`: 76
+- `p_cr3_v`: 76
+- `s_nr_io_range`: 76
+- `mov`: 76
+- `tp`: 76
+- `sig_mgr`: 76
+- `callname`: 76
+- `nr`: 76
+- `m_lsys_krn_sys_privctl`: 76
+- `sprofiling`: 76
+- `ex64lo`: 76
+- `p_ttbr`: 76
+- `reset`: 76
+- `VMMF_WRITE`: 76
+- `mmio_read`: 76
+- `TCLR`: 76
+- `m_type`: 76
+- `VMSUSPEND`: 76
+- `freeidx`: 76
+- `idx`: 76
+- `DEBUGBASIC`: 76
+- `tmp`: 76
+- `fpu_state`: 76
+- `p_nextready`: 76
+- `winners`: 76
+- `w`: 76
+- `DEBUG_ENABLE_IPC_WARNINGS`: 76
+- `irq_actids`: 76
+- `sys_map_t`: 76
+- `s_nr_irq`: 76
+
+## Comments with no translation
+
+- ===========================================================================*
+ *                     : 76
+- __ASSEMBLY__: 76
+- UNDEF: 76
+- USE_SYSDEBUG: 76
+- Stop timer: 76
+- CONFIG_SMP: 76
+- clear error state register.: 76
+- SPROFILE: 76
+- allowed kernel calls: 76
+- Process accounting for scheduling: 76
+- The kernel call implemented in this file:
+ *   m_type:	SYS_VMCTL
+ *
+ * The parameters for this kerne: 76
+- IP revision code: 76
+- (PWM Subsystem)  epwm_intr_intr_pend: 76
+- virtual source and destination address: 76
+- just in case we are in an SMP single cpu fallback mode: 76
+- retain: 76
+- allowed targets: 76
+- trap denied by mask or kernel: 76
+- Scan the table: 76
+- Copy message to kernel: 76
+- Skip empty entries: 76
+- 'flags' field must contain only valid bits: 76
+- Must contain message: 76
+- Already done processing: 76
+- mark new end: 76
+- validate request: 76
+- Verify actual grantee.: 76
+- ===========================================================================*
+ *			     inherit_priv_: 76
+- for CP_*, CPUSTATES: 76
+- If this breaks, the code in this file may have to be adapted accordingly.: 76
+- * Perform CPU average accounting here, rather than in the generic
+	 * clock handler.  Doing it here : 76
+- * The process has spent roughly a whole clock tick worth of
+		 * CPU cycles.  Update its per-process: 76
+- * deduct the just consumed cpu cycles from the cpu time left for this
+	 * process during its current: 76
+- On MINIX3, the "system" counter covers system processes.: 76
+- On MINIX3, the "interrupts" counter covers the kernel.: 76
+- ptr to idle proc: 76
+- calculate load since last cpu_load invocation: 76
+- * Return the number of clock ticks spent in each of a predefined number of
+ * CPU states.: 76
+- TODO: make this inter-CPU safe!: 76
+- ===========================================================================*
+ *				arch_do_vmctl				: 76
+- pointer to request message: 76
+- fallback option: hang: 76
+- Power off if possible, hang otherwise: 76
+- Hang: 76
+- system dependent functions for use inside the whole kernel.: 76
+- Clear process state.: 76
+- * use stack 0 and cpu id 0 on a single processor machine, SMP
+	 * configuration does this in smp_ini: 76
+- Enable PMCCNTR cycle counter: 76
+- ===========================================================================*
+ *				do_ser_debug				 : 76
+- do_ipc assumes that it's running because of the current process: 76
+- Make the system call, for real this time.: 76
+- set pointer to the process to run on the stack: 76
+- Interrupt controller memory map: 76
+- INTCPS physical address: 76
+- (PWM Subsystem)  eqep_intr_intr_pend: 76
+- interrupt handler hook: 76
+- free running timer: 76
+- the timer is also mapped in user space hence the this: 76
+- second mapping and callback to set kerninfo frclock_tcrr: 76
+- enable the module and wait for the module to be ready: 76
+- Set up overflow interrupt: 76
+- Clear interrupt status: 76
+- Start timer: 76
+- Controls params for GP timer L4 interface: 76
+- Controls optional features: 76
+- Internal counter value: 76
+- Timer load value: 76
+- Triggers counter reload: 76
+- Indicates if Write-Posted pending: 76
+- Value to be compared with counter: 76
+- First captured value of counter register: 76
+- Control posted mode and functional SW reset: 76
+- Second captured value of counter register: 76
+- Select CLK_M_OSC clock: 76
+- Select CLK_32KHZ clock: 76
+- Select TCLKIN clock: 76
+- initial value for counter: 76
+- This file contains a simple exception handler.  Exceptions in user
+ * processes are converted to sig: 76
+- VM can't handle page faults.: 76
+- Page fault we can't / don't want to
+		 * handle.: 76
+- Don't schedule this process until pagefault is handled.: 76
+- tell Vm about the pagefault: 76
+- in an early stage of boot process we don't have processes yet: 76
+- An exception or unexpected interrupt has occurred.: 76
+- * handle special cases for nested problems as they might be tricky or filter
+   * them out quickly i: 76
+- these error are expected: 76
+- If an exception occurs while running a process, the is_nested variable
+   * will be zero. Exceptions: 76
+- Exception in system code. This is not supposed to happen.: 76
+- ===========================================================================*
+ *				proc_stacktrace_e: 76
+- multiboot.c: 76
+- protect.c: 76
+- stack pointer to use during interrupt: 76
+- * Request a physical mapping and put the result in the given prt
+ * Note that ptr will only be valid: 76
+- functions defined in architecture-independent kernel source.: 76
+- Program stack words and masks.: 76
+- * defines how many bytes are reserved at the top of the kernel stack for global
+ * information like : 76
+- keesj:move these out: 76
+- This function sets up a mapping from within the kernel's address
+ * space to any other area of memor: 76
+- Requested process, NULL for physical.: 76
+- Address after segment translation.: 76
