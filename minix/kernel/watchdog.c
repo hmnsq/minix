@@ -4,109 +4,109 @@
  * low level code that triggers periodic checks
  */
 
-#include "watchdog.h"
-#include "arch/i386/glo.h"
+#ضمن "watchdog.h"
+#ضمن "arch/i386/glo.h"
 
 unsigned watchdog_local_timer_ticks = 0U;
-struct arch_watchdog *watchdog;
-int watchdog_enabled;
+بنية arch_watchdog *watchdog;
+صحيح watchdog_enabled;
 
-static void lockup_check(struct nmi_frame * frame)
+ساكن فراغ lockup_check(بنية nmi_frame * frame)
 {
 	/* FIXME this should be CPU local */
-	static unsigned no_ticks;
-	static unsigned last_tick_count = (unsigned) -1;
+	ساكن unsigned no_ticks;
+	ساكن unsigned last_tick_count = (unsigned) -1;
 
 	/*
 	 * when debugging on serial console, printing takes a lot of time some
 	 * times while the kernel is certainly not locked up. We don't want to
 	 * report a lockup in such situation
 	 */
-	if (serial_debug_active)
-		return;
+	אם (serial_debug_active)
+		החזר;
 
-	if (last_tick_count != watchdog_local_timer_ticks) {
-		if (no_ticks == 1) {
+	אם (last_tick_count != watchdog_local_timer_ticks) {
+		אם (no_ticks == 1) {
 			printf("watchdog : kernel unlocked\n");
 			no_ticks = 0;
 		}
 		/* we are still ticking, everything seems good */
 		last_tick_count = watchdog_local_timer_ticks;
-		return;
+		החזר;
 	}
 
 	/*
 	 * if watchdog_local_timer_ticks didn't changed since last time, give it
 	 * some more time and only if it still dead, trigger the watchdog alarm
 	 */
-	if (++no_ticks < 10) {
-		if (no_ticks == 1)
+	אם (++no_ticks < 10) {
+		אם (no_ticks == 1)
 			printf("WARNING watchdog : possible kernel lockup\n");
-		return;
+		החזר;
 	}
 
 	/* if we get this far, the kernel is locked up */
 	arch_watchdog_lockup(frame);
 }
 
-void nmi_watchdog_handler(struct nmi_frame * frame)
+فراغ nmi_watchdog_handler(بنية nmi_frame * frame)
 {
-#if SPROFILE
+#אם SPROFILE
 	/*
 	 * Do not check for lockups while profiling, it is extremely likely that
 	 * a false positive is detected if the frequency is high
 	 */
-	if (watchdog_enabled && !sprofiling)
+	אם (watchdog_enabled && !sprofiling)
 		lockup_check(frame);
-	if (sprofiling)
+	אם (sprofiling)
 		nmi_sprofile_handler(frame);
 	
-	if ((watchdog_enabled || sprofiling) && watchdog->reinit)
+	אם ((watchdog_enabled || sprofiling) && watchdog->reinit)
 		watchdog->reinit(cpuid);
-#else
-	if (watchdog_enabled) {
+#אחרת
+	אם (watchdog_enabled) {
 		lockup_check(frame);
-		if (watchdog->reinit)
+		אם (watchdog->reinit)
 			watchdog->reinit(cpuid);
 	}
 #endif
 }
 
-int nmi_watchdog_start_profiling(const unsigned freq)
+صحيح nmi_watchdog_start_profiling(ثابت unsigned freq)
 {
-	int err;
+	صحيح err;
 	
 	/* if watchdog hasn't been enabled, we must enable it now */
-	if (!watchdog_enabled) {
-		if (arch_watchdog_init())
-			return ENODEV;
+	אם (!watchdog_enabled) {
+		אם (arch_watchdog_init())
+			החזר ENODEV;
 	}
 
-	if (!watchdog->profile_init) {
+	אם (!watchdog->profile_init) {
 		printf("WARNING NMI watchdog profiling not supported\n");
 		nmi_watchdog_stop_profiling();
-		return ENODEV;
+		החזר ENODEV;
 	}
 
 	err = watchdog->profile_init(freq);
-	if (err != OK)
-		return err;
+	אם (err != OK)
+		החזר err;
 
 	watchdog->resetval = watchdog->profile_resetval;
 
-	return OK;
+	החזר OK;
 }
 
-void nmi_watchdog_stop_profiling(void)
+فراغ nmi_watchdog_stop_profiling(فراغ)
 {
 	/*
 	 * if we do not rearm the NMI source, we are done, if we want to keep
 	 * the watchdog running, we reset is to its normal value
 	 */
 
-	if (watchdog)
+	אם (watchdog)
 		watchdog->resetval = watchdog->watchdog_resetval;
 
-	if (!watchdog_enabled)
+	אם (!watchdog_enabled)
 		arch_watchdog_stop();
 }

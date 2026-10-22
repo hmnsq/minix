@@ -3,37 +3,37 @@
  * for local descriptors in the process table.
  */
 
-#include <assert.h>
-#include <string.h>
+#ضمن <assert.h>
+#ضمن <string.h>
 
-#include <machine/multiboot.h>
+#ضمن <machine/multiboot.h>
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-#include "archconst.h"
-#include "arch_proto.h"
+#ضمن "archconst.h"
+#ضمن "arch_proto.h"
 
-#include <sys/exec.h>
-#include <libexec.h>
+#ضمن <sys/exec.h>
+#ضمن <libexec.h>
 
-struct tss_s tss[CONFIG_MAX_CPUS];
-extern int exc_vector_table;
+بنية tss_s tss[CONFIG_MAX_CPUS];
+خارجي صحيح exc_vector_table;
 
-int prot_init_done = 0;
+صحيح prot_init_done = 0;
 
-phys_bytes vir2phys(void *vir)
+phys_bytes vir2phys(فراغ *vir)
 {
 	/* defined in kernel.lds */
-	extern char _kern_vir_base, _kern_phys_base;
+	خارجي حرف _kern_vir_base, _kern_phys_base;
 	u32_t offset = (vir_bytes) &_kern_vir_base -
 	    (vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	החזר (phys_bytes)vir - offset;
 }
 
-int tss_init(unsigned cpu, void * kernel_stack)
+صحيح tss_init(unsigned cpu, فراغ * kernel_stack)
 {
 
-	struct tss_s * t = &tss[cpu];
+	بنية tss_s * t = &tss[cpu];
 
 	/*
 	 * make space for process pointer and cpu id and point to the first
@@ -44,37 +44,37 @@ int tss_init(unsigned cpu, void * kernel_stack)
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
 	 */
-	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
+	*((reg_t *)(t->sp0 + 1 * حجم(reg_t))) = cpu;
 
-	return 0;
+	החזר 0;
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(صحيح pnr)
 {
-	int i;
+	صحيح i;
 
-	assert(pnr >= 0);
+	أكد(pnr >= 0);
 
 	/* Search for desired process in boot process
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	עבור(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		صحيح p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
-			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+		אם(image[i].proc_nr == pnr) {
+			أكد(p < MULTIBOOT_MAX_MODS);
+			أكد(p < kinfo.mbi.mi_mods_count);
+			החזר &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+صحيح booting_cpu = 0;
 
-void prot_init(void)
+فراغ prot_init(فراغ)
 {
 	/* tell the HW where we stored our vector table */
 	write_vbar((reg_t)&exc_vector_table);
@@ -92,33 +92,33 @@ void prot_init(void)
 	prot_init_done = 1;
 }
 
-static int alloc_for_vm = 0;
+ساكن صحيح alloc_for_vm = 0;
 
-void arch_post_init(void)
+فراغ arch_post_init(فراغ)
 {
 	/* Let memory mapping code know what's going on at bootstrap time */
-	struct proc *vm;
+	بنية proc *vm;
 	vm = proc_addr(VM_PROC_NR);
 	get_cpulocal_var(ptproc) = vm;
 	pg_info(&vm->p_seg.p_ttbr, &vm->p_seg.p_ttbr_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+ساكن صحيح libexec_pg_alloc(بنية exec_info *execi, vir_bytes vaddr, size_t len)
 {
 	pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
 	pg_load();
-	memset((char *) vaddr, 0, len);
+	memset((حرف *) vaddr, 0, len);
 	alloc_for_vm += len;
-	return OK;
+	החזר OK;
 }
 
-void arch_boot_proc(struct boot_image *ip, struct proc *rp)
+فراغ arch_boot_proc(بنية boot_image *ip, بنية proc *rp)
 {
 	multiboot_module_t *mod;
-	struct ps_strings *psp;
-	char *sp;
+	بنية ps_strings *psp;
+	حرف *sp;
 
-	if(rp->p_nr < 0) return;
+	אם(rp->p_nr < 0) החזר;
 
 	mod = bootmod(rp->p_nr);
 
@@ -126,18 +126,18 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
-		struct exec_info execi;
+	אם(rp->p_nr == VM_PROC_NR) {
+		بنية exec_info execi;
 
-		memset(&execi, 0, sizeof(execi));
+		memset(&execi, 0, حجم(execi));
 
 		/* exec parameters */
 		execi.stack_high = kinfo.user_sp;
 		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
-		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
+		execi.hdr = (حرف *) mod->mod_start; /* phys mem direct */
 		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
-		strlcpy(execi.progname, ip->proc_name, sizeof(execi.progname));
+		strlcpy(execi.progname, ip->proc_name, حجم(execi.progname));
 		execi.frame_len = 0;
 
 		/* callbacks for use in the kernel */
@@ -146,31 +146,31 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.allocmem_prealloc_junk = libexec_pg_alloc;
 		execi.allocmem_prealloc_cleared = libexec_pg_alloc;
 		execi.allocmem_ondemand = libexec_pg_alloc;
-		execi.clearproc = NULL;
+		execi.clearproc = عدم;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		אם(libexec_load_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
-		sp -= sizeof(struct ps_strings);
-		psp = (struct ps_strings *) sp;
+		sp = (حرف *)execi.stack_high;
+		sp -= حجم(بنية ps_strings);
+		psp = (بنية ps_strings *) sp;
 
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (حجم(فراغ *) + حجم(فراغ *) + حجم(صحيح));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (حرف **)(sp + حجم(صحيح));
 		psp->ps_nargvstr = 0;
-		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
+		psp->ps_envstr = psp->ps_argvstr + حجم(فراغ *);
 		psp->ps_nenvstr = 0;
 
 		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+			execi.stack_high - حجم(بنية ps_strings),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */
