@@ -16,19 +16,19 @@
 /*===========================================================================*
  *			        do_iopenable				     *
  *===========================================================================*/
-int do_iopenable(struct proc * caller, message * m_ptr)
+ကိန်းပြည့် do_iopenable(sa_nracanaa proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  ကိန်းပြည့် proc_nr;
 
-#if 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
-  if (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
+#အကယ်၍ 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
+  အကယ်၍ (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
 	okendpt(caller->p_endpoint, &proc_nr);
-  } else if(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
-	return(EINVAL);
+  } မဟုတ်ပါက အကယ်၍(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
+	ပြန်ပေး(EINVAL);
   enable_iop(proc_addr(proc_nr));
-  return(OK);
-#else
-  return(EPERM);
+  ပြန်ပေး(OK);
+#မဟုတ်ပါက
+  ပြန်ပေး(EPERM);
 #endif
 }
 

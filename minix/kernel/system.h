@@ -32,177 +32,177 @@
 
 #include "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
+ကိန်းပြည့် do_exec(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_EXEC
 #define do_exec NULL
 #endif
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
+ကိန်းပြည့် do_fork(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_FORK
 #define do_fork NULL
 #endif
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
+ကိန်းပြည့် do_clear(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_CLEAR
 #define do_clear NULL
 #endif
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
+ကိန်းပြည့် do_trace(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_TRACE
 #define do_trace NULL
 #endif
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
+ကိန်းပြည့် do_runctl(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_RUNCTL
 #define do_runctl NULL
 #endif
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
+ကိန်းပြည့် do_update(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_UPDATE
 #define do_update NULL
 #endif
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
+ကိန်းပြည့် do_exit(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_EXIT
 #define do_exit NULL
 #endif
 
-int do_copy(struct proc * caller, message *m_ptr);
+ကိန်းပြည့် do_copy(sa_nracanaa proc * caller, message *m_ptr);
 #define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
+#အကယ်၍ ! (USE_VIRCOPY || USE_PHYSCOPY)
 #define do_copy NULL
 #endif
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
+ကိန်းပြည့် do_umap(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_UMAP
 #define do_umap NULL
 #endif
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
+ကိန်းပြည့် do_umap_remote(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_UMAP_REMOTE
 #define do_umap_remote NULL
 #endif
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
+ကိန်းပြည့် do_vumap(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_VUMAP
 #define do_vumap NULL
 #endif
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
+ကိန်းပြည့် do_memset(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_MEMSET
 #define do_memset NULL
 #endif
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
+ကိန်းပြည့် do_abort(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_ABORT
 #define do_abort NULL
 #endif
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
+ကိန်းပြည့် do_getinfo(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_GETINFO
 #define do_getinfo NULL
 #endif
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
+ကိန်းပြည့် do_privctl(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_PRIVCTL
 #define do_privctl NULL
 #endif
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
+ကိန်းပြည့် do_irqctl(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_IRQCTL
 #define do_irqctl NULL
 #endif
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
+ကိန်းပြည့် do_devio(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_DEVIO
 #define do_devio NULL
 #endif
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
+ကိန်းပြည့် do_vdevio(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_VDEVIO
 #define do_vdevio NULL
 #endif
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
+ကိန်းပြည့် do_sdevio(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_SDEVIO
 #define do_sdevio NULL
 #endif
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
+ကိန်းပြည့် do_kill(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_KILL
 #define do_kill NULL
 #endif
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
+ကိန်းပြည့် do_getksig(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_GETKSIG
 #define do_getksig NULL
 #endif
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
+ကိန်းပြည့် do_endksig(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_ENDKSIG
 #define do_endksig NULL
 #endif
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
+ကိန်းပြည့် do_sigsend(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_SIGSEND
 #define do_sigsend NULL
 #endif
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
+ကိန်းပြည့် do_sigreturn(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_SIGRETURN
 #define do_sigreturn NULL
 #endif
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
+ကိန်းပြည့် do_times(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_TIMES
 #define do_times NULL
 #endif
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
+ကိန်းပြည့် do_setalarm(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_SETALARM
 #define do_setalarm NULL
 #endif
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+ကိန်းပြည့် do_stime(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_settime(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
+ကိန်းပြည့် do_vtimer(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_VTIMER
 #define do_vtimer NULL
 #endif
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+ကိန်းပြည့် do_safecopy_to(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_safecopy_from(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_vsafecopy(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_iopenable(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_vmctl(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_setgrant(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_readbios(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+ကိန်းပြည့် do_safememset(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
+ကိန်းပြည့် do_sprofile(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! SPROFILE
 #define do_sprofile NULL
 #endif
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
+ကိန်းပြည့် do_getmcontext(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_setmcontext(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_MCONTEXT
 #define do_getmcontext NULL
 #define do_setmcontext NULL
 #endif
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+ကိန်းပြည့် do_schedule(sa_nracanaa proc * caller, message *m_ptr);
+ကိန်းပြည့် do_schedctl(sa_nracanaa proc * caller, message *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
+ကိန်းပြည့် do_statectl(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_STATECTL
 #define do_statectl NULL
 #endif
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
+ကိန်းပြည့် do_padconf(sa_nracanaa proc * caller, message *m_ptr);
+#အကယ်၍ ! USE_PADCONF
 #define do_padconf NULL
 #endif
 

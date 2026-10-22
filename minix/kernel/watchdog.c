@@ -8,10 +8,10 @@
 #include "arch/i386/glo.h"
 
 unsigned watchdog_local_timer_ticks = 0U;
-struct arch_watchdog *watchdog;
-int watchdog_enabled;
+sa_nracanaa arch_watchdog *watchdog;
+ကိန်းပြည့် watchdog_enabled;
 
-static void lockup_check(struct nmi_frame * frame)
+static void lockup_check(sa_nracanaa nmi_frame * frame)
 {
 	/* FIXME this should be CPU local */
 	static unsigned no_ticks;
@@ -22,79 +22,79 @@ static void lockup_check(struct nmi_frame * frame)
 	 * times while the kernel is certainly not locked up. We don't want to
 	 * report a lockup in such situation
 	 */
-	if (serial_debug_active)
-		return;
+	အကယ်၍ (serial_debug_active)
+		ပြန်ပေး;
 
-	if (last_tick_count != watchdog_local_timer_ticks) {
-		if (no_ticks == 1) {
+	အကယ်၍ (last_tick_count != watchdog_local_timer_ticks) {
+		အကယ်၍ (no_ticks == 1) {
 			printf("watchdog : kernel unlocked\n");
 			no_ticks = 0;
 		}
 		/* we are still ticking, everything seems good */
 		last_tick_count = watchdog_local_timer_ticks;
-		return;
+		ပြန်ပေး;
 	}
 
 	/*
 	 * if watchdog_local_timer_ticks didn't changed since last time, give it
 	 * some more time and only if it still dead, trigger the watchdog alarm
 	 */
-	if (++no_ticks < 10) {
-		if (no_ticks == 1)
+	အကယ်၍ (++no_ticks < 10) {
+		အကယ်၍ (no_ticks == 1)
 			printf("WARNING watchdog : possible kernel lockup\n");
-		return;
+		ပြန်ပေး;
 	}
 
 	/* if we get this far, the kernel is locked up */
 	arch_watchdog_lockup(frame);
 }
 
-void nmi_watchdog_handler(struct nmi_frame * frame)
+void nmi_watchdog_handler(sa_nracanaa nmi_frame * frame)
 {
-#if SPROFILE
+#အကယ်၍ SPROFILE
 	/*
 	 * Do not check for lockups while profiling, it is extremely likely that
 	 * a false positive is detected if the frequency is high
 	 */
-	if (watchdog_enabled && !sprofiling)
+	အကယ်၍ (watchdog_enabled && !sprofiling)
 		lockup_check(frame);
-	if (sprofiling)
+	အကယ်၍ (sprofiling)
 		nmi_sprofile_handler(frame);
 	
-	if ((watchdog_enabled || sprofiling) && watchdog->reinit)
+	အကယ်၍ ((watchdog_enabled || sprofiling) && watchdog->reinit)
 		watchdog->reinit(cpuid);
-#else
-	if (watchdog_enabled) {
+#မဟုတ်ပါက
+	အကယ်၍ (watchdog_enabled) {
 		lockup_check(frame);
-		if (watchdog->reinit)
+		အကယ်၍ (watchdog->reinit)
 			watchdog->reinit(cpuid);
 	}
 #endif
 }
 
-int nmi_watchdog_start_profiling(const unsigned freq)
+ကိန်းပြည့် nmi_watchdog_start_profiling(const unsigned freq)
 {
-	int err;
+	ကိန်းပြည့် err;
 	
 	/* if watchdog hasn't been enabled, we must enable it now */
-	if (!watchdog_enabled) {
-		if (arch_watchdog_init())
-			return ENODEV;
+	အကယ်၍ (!watchdog_enabled) {
+		အကယ်၍ (arch_watchdog_init())
+			ပြန်ပေး ENODEV;
 	}
 
-	if (!watchdog->profile_init) {
+	အကယ်၍ (!watchdog->profile_init) {
 		printf("WARNING NMI watchdog profiling not supported\n");
 		nmi_watchdog_stop_profiling();
-		return ENODEV;
+		ပြန်ပေး ENODEV;
 	}
 
 	err = watchdog->profile_init(freq);
-	if (err != OK)
-		return err;
+	အကယ်၍ (err != OK)
+		ပြန်ပေး err;
 
 	watchdog->resetval = watchdog->profile_resetval;
 
-	return OK;
+	ပြန်ပေး OK;
 }
 
 void nmi_watchdog_stop_profiling(void)
@@ -104,9 +104,9 @@ void nmi_watchdog_stop_profiling(void)
 	 * the watchdog running, we reset is to its normal value
 	 */
 
-	if (watchdog)
+	အကယ်၍ (watchdog)
 		watchdog->resetval = watchdog->watchdog_resetval;
 
-	if (!watchdog_enabled)
+	အကယ်၍ (!watchdog_enabled)
 		arch_watchdog_stop();
 }

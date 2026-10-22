@@ -12,8 +12,8 @@
 /*===========================================================================*
  *				do_stime				     *
  *===========================================================================*/
-int do_stime(struct proc * caller, message * m_ptr)
+ကိန်းပြည့် do_stime(sa_nracanaa proc * caller, message * m_ptr)
 {
   set_boottime(m_ptr->m_lsys_krn_sys_stime.boot_time);
-  return(OK);
+  ပြန်ပေး(OK);
 }

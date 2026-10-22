@@ -18,11 +18,11 @@
 #include "kernel/type.h"
 #include "kernel/ipc_filter.h"
 
-struct priv {
+sa_nracanaa priv {
   proc_nr_t s_proc_nr;		/* number of associated process */
   sys_id_t s_id;		/* index of this system structure */
   short s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
-  int s_init_flags;             /* initialization flags given to the process. */
+  ကိန်းပြည့် s_init_flags;             /* initialization flags given to the process. */
 
   /* Asynchronous sends */
   vir_bytes s_asyntab;		/* addr. of table in process' address space */
@@ -48,25 +48,25 @@ struct priv {
   minix_timer_t s_alarm_timer;	/* synchronous alarm timer */
   reg_t *s_stack_guard;		/* stack guard word for kernel tasks */
 
-  char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
+  var_na s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
-  int s_nr_io_range;		/* allowed I/O ports */
-  struct io_range s_io_tab[NR_IO_RANGE];
+  ကိန်းပြည့် s_nr_io_range;		/* allowed I/O ports */
+  sa_nracanaa io_range s_io_tab[NR_IO_RANGE];
 
-  int s_nr_mem_range;		/* allowed memory ranges */
-  struct minix_mem_range s_mem_tab[NR_MEM_RANGE];
+  ကိန်းပြည့် s_nr_mem_range;		/* allowed memory ranges */
+  sa_nracanaa minix_mem_range s_mem_tab[NR_MEM_RANGE];
 
-  int s_nr_irq;			/* allowed IRQ lines */
-  int s_irq_tab[NR_IRQ];
+  ကိန်းပြည့် s_nr_irq;			/* allowed IRQ lines */
+  ကိန်းပြည့် s_irq_tab[NR_IRQ];
   vir_bytes s_grant_table;	/* grant table address of process, or 0 */
-  int s_grant_entries;		/* no. of entries, or 0 */
+  ကိန်းပြည့် s_grant_entries;		/* no. of entries, or 0 */
   endpoint_t s_grant_endpoint;  /* the endpoint the grant table belongs to */
   vir_bytes s_state_table;	/* state table address of process, or 0 */
-  int s_state_entries;		/* no. of entries, or 0 */
+  ကိန်းပြည့် s_state_entries;		/* no. of entries, or 0 */
 };
 
 /* Guard word for task stacks. */
-#define STACK_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
+#define STACK_GUARD	((reg_t) (parimaa_na(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
 
 /* Magic system structure table addresses. */
 #define BEG_PRIV_ADDR              (&priv[0])
@@ -91,14 +91,14 @@ struct priv {
  * indexing the psys_addr array, while accessing an element i requires a 
  * multiplication with sizeof(struct sys) to determine the address. 
  */
-EXTERN struct priv priv[NR_SYS_PROCS];		/* system properties table */
-EXTERN struct priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
+EXTERN sa_nracanaa priv priv[NR_SYS_PROCS];		/* system properties table */
+EXTERN sa_nracanaa priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
 
 /* Make sure the system can boot. The following sanity check verifies that
  * the system privileges table is large enough for the number of processes
  * in the boot image. 
  */
-#if (NR_BOOT_PROCS > NR_SYS_PROCS)
+#အကယ်၍ (NR_BOOT_PROCS > NR_SYS_PROCS)
 #error NR_SYS_PROCS must be larger than NR_BOOT_PROCS
 #endif
 
