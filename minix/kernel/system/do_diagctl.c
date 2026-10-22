@@ -9,60 +9,60 @@
  *	m_lsys_krn_sys_diagctl.endpt
  */
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
 
 /*===========================================================================*
  *			        do_diagctl				     *
  *===========================================================================*/
-int do_diagctl(struct proc * caller, message * m_ptr)
+صحيح do_diagctl(بنية proc * caller, message * m_ptr)
 {
   vir_bytes len, buf;
-  static char mybuf[DIAG_BUFSIZE];
-  int s, i, proc_nr;
+  ساكن حرف mybuf[DIAG_BUFSIZE];
+  صحيح s, i, proc_nr;
 
-  switch (m_ptr->m_lsys_krn_sys_diagctl.code) {
-    case DIAGCTL_CODE_DIAG:
+  بدل (m_ptr->m_lsys_krn_sys_diagctl.code) {
+    حالة DIAGCTL_CODE_DIAG:
         buf = m_ptr->m_lsys_krn_sys_diagctl.buf;
         len = m_ptr->m_lsys_krn_sys_diagctl.len;
-	if(len < 1 || len > DIAG_BUFSIZE) {
+	𐡄𐡍(len < 1 || len > DIAG_BUFSIZE) {
 		printf("do_diagctl: diag for %d: len %d out of range\n",
 			caller->p_endpoint, len);
-		return EINVAL;
+		أرجع EINVAL;
 	}
-	if((s=data_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
+	𐡄𐡍((s=data_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
 					(vir_bytes) mybuf, len)) != OK) {
 		printf("do_diagctl: diag for %d: len %d: copy failed: %d\n",
 			caller->p_endpoint, len, s);
-		return s;
+		أرجع s;
 	}
-	for(i = 0; i < len; i++)
+	لكل(i = 0; i < len; i++)
 		kputc(mybuf[i]);
 	kputc(END_OF_KMESS);
-	return OK;
-    case DIAGCTL_CODE_STACKTRACE:
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
-		return EINVAL;
+	أرجع OK;
+    حالة DIAGCTL_CODE_STACKTRACE:
+	𐡄𐡍(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
+		أرجع EINVAL;
 	proc_stacktrace(proc_addr(proc_nr));
-	return OK;
-    case DIAGCTL_CODE_REGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	أرجع OK;
+    حالة DIAGCTL_CODE_REGISTER:
+	𐡄𐡍 (!(priv(caller)->s_flags & SYS_PROC))
+		أرجع EPERM;
 	priv(caller)->s_diag_sig = TRUE;
 	/* If the message log is not empty, send a first notification
 	 * immediately. After bootup the log is basically never empty.
 	 */
-	if (kmess.km_size > 0 && !kinfo.do_serial_debug)
+	𐡄𐡍 (kmess.km_size > 0 && !kinfo.do_serial_debug)
 		send_sig(caller->p_endpoint, SIGKMESS);
-	return OK;
-    case DIAGCTL_CODE_UNREGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	أرجع OK;
+    حالة DIAGCTL_CODE_UNREGISTER:
+	𐡄𐡍 (!(priv(caller)->s_flags & SYS_PROC))
+		أرجع EPERM;
 	priv(caller)->s_diag_sig = FALSE;
-	return OK;
-    default:
+	أرجع OK;
+    افتراضي:
 	printf("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.code);
-        return(EINVAL);
+        أرجع(EINVAL);
   }
 }
 

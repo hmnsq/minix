@@ -46,7 +46,7 @@
 #define USE_STATECTL       1	/* let a process control its state */
 #define USE_MCONTEXT       1	/* enable getting/setting of machine context */
 
-#if defined(__arm__)
+#𐡄𐡍 defined(__arm__)
 #define USE_PADCONF        1	/* configure pinmux */
 #endif /* __arm__ */
 
@@ -57,7 +57,7 @@
  */
 #ifndef USE_APIC
 #define NR_IRQ_HOOKS	  16		/* number of interrupt hooks */
-#else
+#وإلا
 #define NR_IRQ_HOOKS	  64		/* number of interrupt hooks */
 #endif
 #define VDEVIO_BUF_SIZE   64		/* max elements per VDEVIO request */
