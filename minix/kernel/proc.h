@@ -1,8 +1,8 @@
 #ifndef PROC_H
 #define PROC_H
 
-#include <minix/const.h>
-#include <sys/cdefs.h>
+#ضمن <minix/const.h>
+#ضمن <sys/cdefs.h>
 
 #ifndef __ASSEMBLY__
 
@@ -14,24 +14,24 @@
  * fields are defined in the assembler include file sconst.h.  When changing
  * struct proc, be sure to change sconst.h to match.
  */
-#include <minix/com.h>
-#include <minix/portio.h>
-#include "const.h"
-#include "priv.h"
+#ضمن <minix/com.h>
+#ضمن <minix/portio.h>
+#ضمن "const.h"
+#ضمن "priv.h"
 
-struct proc {
-  struct stackframe_s p_reg;	/* process' registers saved in stack frame */
-  struct segframe p_seg;	/* segment descriptors */
+بنية proc {
+  بنية stackframe_s p_reg;	/* process' registers saved in stack frame */
+  بنية segframe p_seg;	/* segment descriptors */
   proc_nr_t p_nr;		/* number of this process (for fast access) */
-  struct priv *p_priv;		/* system privileges structure */
-  volatile u32_t p_rts_flags;	/* process is runnable only if zero */
-  volatile u32_t p_misc_flags;	/* flags that do not suspend the process */
+  بنية priv *p_priv;		/* system privileges structure */
+  متطاير u32_t p_rts_flags;	/* process is runnable only if zero */
+  متطاير u32_t p_misc_flags;	/* flags that do not suspend the process */
 
-  char p_priority;		/* current process priority */
-  u64_t p_cpu_time_left;	/* time left to use the cpu */
+  حرف p_priority;		/* current process priority */
+  u64_t p_cpu_time_بایاں;	/* time left to use the cpu */
   unsigned p_quantum_size_ms;	/* assigned time quantum in ms
 				   FIXME remove this */
-  struct proc *p_scheduler;	/* who should get out of quantum msg */
+  بنية proc *p_scheduler;	/* who should get out of quantum msg */
   unsigned p_cpu;		/* what CPU is the process running on */
 #ifdef CONFIG_SMP
   bitchunk_t p_cpu_mask[BITMAP_CHUNKS(CONFIG_MAX_CPUS)]; /* what CPUs is the
@@ -45,7 +45,7 @@ struct proc {
 #endif
 
   /* Accounting statistics that get passed to the process' scheduler */
-  struct {
+  بنية {
 	u64_t enter_queue;	/* time when enqueued (cycles) */
 	u64_t time_in_queue;	/* time spent in queue */
 	unsigned long dequeues;
@@ -59,25 +59,25 @@ struct proc {
   clock_t p_user_time;		/* user time in ticks */
   clock_t p_sys_time;		/* sys time in ticks */
 
-  clock_t p_virt_left;		/* number of ticks left on virtual timer */
-  clock_t p_prof_left;		/* number of ticks left on profile timer */
+  clock_t p_virt_بایاں;		/* number of ticks left on virtual timer */
+  clock_t p_prof_بایاں;		/* number of ticks left on profile timer */
 
   u64_t p_cycles;		/* how many cycles did the process use */
   u64_t p_kcall_cycles;		/* kernel cycles caused by this proc (kcall) */
   u64_t p_kipc_cycles;		/* cycles caused by this proc (ipc) */
 
   u64_t p_tick_cycles;		/* cycles accumulated for up to a clock tick */
-  struct cpuavg p_cpuavg;	/* running CPU average, for ps(1) */
+  بنية cpuavg p_cpuavg;	/* running CPU average, for ps(1) */
 
-  struct proc *p_nextready;	/* pointer to next ready process */
-  struct proc *p_caller_q;	/* head of list of procs wishing to send */
-  struct proc *p_q_link;	/* link to next proc wishing to send */
+  بنية proc *p_nextready;	/* pointer to next ready process */
+  بنية proc *p_caller_q;	/* head of list of procs wishing to send */
+  بنية proc *p_q_link;	/* link to next proc wishing to send */
   endpoint_t p_getfrom_e;	/* from whom does process want to receive? */
   endpoint_t p_sendto_e;	/* to whom does process want to send? */
 
   sigset_t p_pending;		/* bit map for pending kernel signals */
 
-  char p_name[PROC_NAME_LEN];	/* name of the process, including \0 */
+  حرف p_name[PROC_NAME_LEN];	/* name of the process, including \0 */
 
   endpoint_t p_endpoint;	/* endpoint number, generation-aware */
 
@@ -92,47 +92,47 @@ struct proc {
    * The requester gets a copy of its request message in reqmsg and gets
    * VMREQUEST set.
    */
-  struct {
-	struct proc	*nextrestart;	/* next in vmrestart chain */
-	struct proc	*nextrequestor;	/* next in vmrequest chain */
+  بنية {
+	بنية proc	*nextrestart;	/* next in vmrestart chain */
+	بنية proc	*nextrequestor;	/* next in vmrequest chain */
 #define VMSTYPE_SYS_NONE	0
 #define VMSTYPE_KERNELCALL	1
 #define VMSTYPE_DELIVERMSG	2
 #define VMSTYPE_MAP		3
 
-	int		type;		/* suspended operation */
-	union ixfer_saved{
+	صحيح		type;		/* suspended operation */
+	اتحاد ixfer_saved{
 		/* VMSTYPE_SYS_MESSAGE */
 		message		reqmsg;	/* suspended request message */
 	} saved;
 
 	/* Parameters of request to VM */
-	int		req_type;
+	صحيح		req_type;
 	endpoint_t	target;
-	union ixfer_params{
-		struct {
+	اتحاد ixfer_params{
+		بنية {
 			vir_bytes 	start, length;	/* memory range */
 			u8_t		writeflag;	/* nonzero for write access */
 		} check;
 	} params;
 	/* VM result when available */
-	int		vmresult;
+	صحيح		vmresult;
 
 	/* If the suspended operation is a sys_call, its details are
 	 * stored here.
 	 */
   } p_vmrequest;
 
-  int p_found;	/* consistency checking variables */
-  int p_magic;		/* check validity of proc pointers */
+  صحيح p_found;	/* consistency checking variables */
+  صحيح p_magic;		/* check validity of proc pointers */
 
   /* if MF_SC_DEFER is set, this struct is valid and contains the
    * do_ipc() arguments that are still to be executed
    */
-  struct { reg_t r1, r2, r3; } p_defer;
+  بنية { reg_t r1, r2, r3; } p_defer;
 
-#if DEBUG_TRACE
-  int p_schedules;
+#إذا DEBUG_TRACE
+  صحيح p_schedules;
 #endif
 };
 
@@ -175,7 +175,7 @@ struct proc {
 #define proc_used_fpu(p)	((p)->p_misc_flags & (MF_FPU_INITIALIZED))
 
 /* test whether the process is scheduled by the kernel's default policy  */
-#define proc_kernel_scheduler(p)	((p)->p_scheduler == NULL || \
+#define proc_kernel_scheduler(p)	((p)->p_scheduler == عدم || \
 					(p)->p_scheduler == (p))
 
 /* Macro to return: on which process is a certain process blocked?
@@ -204,31 +204,31 @@ struct proc {
 
 /* Set flag and dequeue if the process was runnable. */
 #define RTS_SET(rp, f)							\
-	do {								\
-		const int rts = (rp)->p_rts_flags;			\
+	افعل {								\
+		ثابت صحيح rts = (rp)->p_rts_flags;			\
 		(rp)->p_rts_flags |= (f);				\
-		if(rts_f_is_runnable(rts) && !proc_is_runnable(rp)) {	\
+		إذا(rts_f_is_runnable(rts) && !proc_is_runnable(rp)) {	\
 			dequeue(rp);					\
 		}							\
-	} while(0)
+	} طالما(0)
 
 /* Clear flag and enqueue if the process was not runnable but is now. */
 #define RTS_UNSET(rp, f) 						\
-	do {								\
-		int rts;						\
+	افعل {								\
+		صحيح rts;						\
 		rts = (rp)->p_rts_flags;				\
 		(rp)->p_rts_flags &= ~(f);				\
-		if(!rts_f_is_runnable(rts) && proc_is_runnable(rp)) {	\
+		إذا(!rts_f_is_runnable(rts) && proc_is_runnable(rp)) {	\
 			enqueue(rp);					\
 		}							\
-	} while(0)
+	} طالما(0)
 
 /* Set flags to this value. */
 #define RTS_SETFLAGS(rp, f)					\
-	do {								\
-		if(proc_is_runnable(rp) && (f)) { dequeue(rp); }		\
+	افعل {								\
+		إذا(proc_is_runnable(rp) && (f)) { dequeue(rp); }		\
 		(rp)->p_rts_flags = (f);				\
-	} while(0)
+	} طالما(0)
 
 /* Misc flags */
 #define MF_REPLY_PEND	0x001	/* reply to IPC_REQUEST is pending */
@@ -276,14 +276,14 @@ struct proc {
 #define iskerneln(n)	  ((n) < 0)
 #define isuserp(p)        isusern((p) >= BEG_USER_ADDR)
 #define isusern(n)        ((n) >= 0)
-#define isrootsysn(n)	  ((n) == ROOT_SYS_PROC_NR)
+#define isrootsysn(n)	  ((n) == جڑ_SYS_PROC_NR)
 
 #ifndef __ASSEMBLY__
 
-EXTERN struct proc proc[NR_TASKS + NR_PROCS];	/* process table */
+EXTERN بنية proc proc[NR_TASKS + NR_PROCS];	/* process table */
 
-int mini_send(struct proc *caller_ptr, endpoint_t dst_e, message *m_ptr,
-	int flags);
+صحيح mini_send(بنية proc *caller_ptr, endpoint_t dst_e, message *m_ptr,
+	صحيح flags);
 
 #endif /* __ASSEMBLY__ */
 
