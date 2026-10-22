@@ -7,42 +7,42 @@
  *    m_lsys_krn_sys_setalarm.time_left		(return seconds left of previous)
  */
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
-#include <minix/endpoint.h>
-#include <assert.h>
+#ضمن <minix/endpoint.h>
+#ضمن <assert.h>
 
-#if USE_SETALARM
+#إذا USE_SETALARM
 
-static void cause_alarm(int proc_nr_e);
+ساكن فراغ cause_alarm(صحيح proc_nr_e);
 
 /*===========================================================================*
  *				do_setalarm				     *
  *===========================================================================*/
-int do_setalarm(struct proc * caller, message * m_ptr)
+صحيح do_setalarm(بنية proc * caller, message * m_ptr)
 {
 /* A process requests a synchronous alarm, or wants to cancel its alarm. */
   long exp_time;		/* expiration time for this alarm */
-  int use_abs_time;		/* use absolute or relative time */
+  صحيح use_abs_time;		/* use absolute or relative time */
   minix_timer_t *tp;		/* the process' timer structure */
   clock_t uptime;		/* placeholder for current uptime */
 
   /* Extract shared parameters from the request message. */
   exp_time = m_ptr->m_lsys_krn_sys_setalarm.exp_time;
   use_abs_time = m_ptr->m_lsys_krn_sys_setalarm.abs_time;
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
+  إذا (! (priv(caller)->s_flags & SYS_PROC)) أرجع(EPERM);
 
   /* Get the timer structure and set the parameters for this alarm. */
   tp = &(priv(caller)->s_alarm_timer);
 
   /* Return the ticks left on the previous alarm. */
   uptime = get_monotonic(); 
-  if (!tmr_is_set(tp)) {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = TMR_NEVER;
-  } else if (tmr_is_first(uptime, tp->tmr_exp_time)) {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = tp->tmr_exp_time - uptime;
-  } else {
-	m_ptr->m_lsys_krn_sys_setalarm.time_left = 0;
+  إذا (!tmr_is_set(tp)) {
+	m_ptr->m_lsys_krn_sys_setalarm.time_بایاں = TMR_NEVER;
+  } وإلا إذا (tmr_is_first(uptime, tp->tmr_exp_time)) {
+	m_ptr->m_lsys_krn_sys_setalarm.time_بایاں = tp->tmr_exp_time - uptime;
+  } وإلا {
+	m_ptr->m_lsys_krn_sys_setalarm.time_بایاں = 0;
   }
 
   /* For the caller's convenience, also return the current time. */
@@ -53,20 +53,20 @@ int do_setalarm(struct proc * caller, message * m_ptr)
    * an absolute time of zero is as valid as any other absolute value, so only
    * a relative time value of zero resets the timer.
    */
-  if (!use_abs_time && exp_time == 0) {
+  إذا (!use_abs_time && exp_time == 0) {
 	reset_kernel_timer(tp);
-  } else {
-	if (!use_abs_time)
+  } وإلا {
+	إذا (!use_abs_time)
 		exp_time += uptime;
 	set_kernel_timer(tp, exp_time, cause_alarm, caller->p_endpoint);
   }
-  return(OK);
+  أرجع(OK);
 }
 
 /*===========================================================================*
  *				cause_alarm				     *
  *===========================================================================*/
-static void cause_alarm(int proc_nr_e)
+ساكن فراغ cause_alarm(صحيح proc_nr_e)
 {
 /* Routine called if a timer goes off and the process requested a synchronous
  * alarm. The process number is stored as the timer argument. Notify that

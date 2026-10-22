@@ -12,17 +12,17 @@
  *   Nov 22, 2009  rewrite of privilege management (Cristiano Giuffrida)
  *   Jul 01, 2005  Created.  (Jorrit N. Herder)	
  */
-#include <minix/const.h>
-#include <minix/priv.h>
-#include "kernel/const.h"
-#include "kernel/type.h"
-#include "kernel/ipc_filter.h"
+#ضمن <minix/const.h>
+#ضمن <minix/priv.h>
+#ضمن "kernel/const.h"
+#ضمن "kernel/type.h"
+#ضمن "kernel/ipc_filter.h"
 
-struct priv {
+بنية priv {
   proc_nr_t s_proc_nr;		/* number of associated process */
   sys_id_t s_id;		/* index of this system structure */
   short s_flags;		/* PREEMTIBLE, BILLABLE, etc. */
-  int s_init_flags;             /* initialization flags given to the process. */
+  صحيح s_init_flags;             /* initialization flags given to the process. */
 
   /* Asynchronous sends */
   vir_bytes s_asyntab;		/* addr. of table in process' address space */
@@ -46,27 +46,27 @@ struct priv {
   ipc_filter_t *s_ipcf;         /* ipc filter (NULL when no filter is set) */
 
   minix_timer_t s_alarm_timer;	/* synchronous alarm timer */
-  reg_t *s_stack_guard;		/* stack guard word for kernel tasks */
+  reg_t *s_ڈھیر_guard;		/* stack guard word for kernel tasks */
 
-  char s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
+  حرف s_diag_sig;		/* send a SIGKMESS when diagnostics arrive? */
 
-  int s_nr_io_range;		/* allowed I/O ports */
-  struct io_range s_io_tab[NR_IO_RANGE];
+  صحيح s_nr_io_range;		/* allowed I/O ports */
+  بنية io_range s_io_tab[NR_IO_RANGE];
 
-  int s_nr_mem_range;		/* allowed memory ranges */
-  struct minix_mem_range s_mem_tab[NR_MEM_RANGE];
+  صحيح s_nr_mem_range;		/* allowed memory ranges */
+  بنية minix_mem_range s_mem_tab[NR_MEM_RANGE];
 
-  int s_nr_irq;			/* allowed IRQ lines */
-  int s_irq_tab[NR_IRQ];
+  صحيح s_nr_irq;			/* allowed IRQ lines */
+  صحيح s_irq_tab[NR_IRQ];
   vir_bytes s_grant_table;	/* grant table address of process, or 0 */
-  int s_grant_entries;		/* no. of entries, or 0 */
+  صحيح s_grant_entries;		/* no. of entries, or 0 */
   endpoint_t s_grant_endpoint;  /* the endpoint the grant table belongs to */
   vir_bytes s_state_table;	/* state table address of process, or 0 */
-  int s_state_entries;		/* no. of entries, or 0 */
+  صحيح s_state_entries;		/* no. of entries, or 0 */
 };
 
 /* Guard word for task stacks. */
-#define STACK_GUARD	((reg_t) (sizeof(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
+#define ڈھیر_GUARD	((reg_t) (حجم(reg_t) == 2 ? 0xBEEF : 0xDEADBEEF))
 
 /* Magic system structure table addresses. */
 #define BEG_PRIV_ADDR              (&priv[0])
@@ -91,14 +91,14 @@ struct priv {
  * indexing the psys_addr array, while accessing an element i requires a 
  * multiplication with sizeof(struct sys) to determine the address. 
  */
-EXTERN struct priv priv[NR_SYS_PROCS];		/* system properties table */
-EXTERN struct priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
+EXTERN بنية priv priv[NR_SYS_PROCS];		/* system properties table */
+EXTERN بنية priv *ppriv_addr[NR_SYS_PROCS];	/* direct slot pointers */
 
 /* Make sure the system can boot. The following sanity check verifies that
  * the system privileges table is large enough for the number of processes
  * in the boot image. 
  */
-#if (NR_BOOT_PROCS > NR_SYS_PROCS)
+#إذا (NR_BOOT_PROCS > NR_SYS_PROCS)
 #error NR_SYS_PROCS must be larger than NR_BOOT_PROCS
 #endif
 

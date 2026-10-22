@@ -3,77 +3,77 @@
 
 
 #ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+فراغ apic_hwint0(فراغ);
+فراغ apic_hwint1(فراغ);
+فراغ apic_hwint2(فراغ);
+فراغ apic_hwint3(فراغ);
+فراغ apic_hwint4(فراغ);
+فراغ apic_hwint5(فراغ);
+فراغ apic_hwint6(فراغ);
+فراغ apic_hwint7(فراغ);
+فراغ apic_hwint8(فراغ);
+فراغ apic_hwint9(فراغ);
+فراغ apic_hwint10(فراغ);
+فراغ apic_hwint11(فراغ);
+فراغ apic_hwint12(فراغ);
+فراغ apic_hwint13(فراغ);
+فراغ apic_hwint14(فراغ);
+فراغ apic_hwint15(فراغ);
+فراغ apic_hwint16(فراغ);
+فراغ apic_hwint17(فراغ);
+فراغ apic_hwint18(فراغ);
+فراغ apic_hwint19(فراغ);
+فراغ apic_hwint20(فراغ);
+فراغ apic_hwint21(فراغ);
+فراغ apic_hwint22(فراغ);
+فراغ apic_hwint23(فراغ);
+فراغ apic_hwint24(فراغ);
+فراغ apic_hwint25(فراغ);
+فراغ apic_hwint26(فراغ);
+فراغ apic_hwint27(فراغ);
+فراغ apic_hwint28(فراغ);
+فراغ apic_hwint29(فراغ);
+فراغ apic_hwint30(فراغ);
+فراغ apic_hwint31(فراغ);
+فراغ apic_hwint32(فراغ);
+فراغ apic_hwint33(فراغ);
+فراغ apic_hwint34(فراغ);
+فراغ apic_hwint35(فراغ);
+فراغ apic_hwint36(فراغ);
+فراغ apic_hwint37(فراغ);
+فراغ apic_hwint38(فراغ);
+فراغ apic_hwint39(فراغ);
+فراغ apic_hwint40(فراغ);
+فراغ apic_hwint41(فراغ);
+فراغ apic_hwint42(فراغ);
+فراغ apic_hwint43(فراغ);
+فراغ apic_hwint44(فراغ);
+فراغ apic_hwint45(فراغ);
+فراغ apic_hwint46(فراغ);
+فراغ apic_hwint47(فراغ);
+فراغ apic_hwint48(فراغ);
+فراغ apic_hwint49(فراغ);
+فراغ apic_hwint50(فراغ);
+فراغ apic_hwint51(فراغ);
+فراغ apic_hwint52(فراغ);
+فراغ apic_hwint53(فراغ);
+فراغ apic_hwint54(فراغ);
+فراغ apic_hwint55(فراغ);
+فراغ apic_hwint56(فراغ);
+فراغ apic_hwint57(فراغ);
+فراغ apic_hwint58(فراغ);
+فراغ apic_hwint59(فراغ);
+فراغ apic_hwint60(فراغ);
+فراغ apic_hwint61(فراغ);
+فراغ apic_hwint62(فراغ);
+فراغ apic_hwint63(فراغ);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+فراغ lapic_timer_int_handler(فراغ);
+فراغ apic_spurios_intr(فراغ);
+فراغ apic_error_intr(فراغ);
 
 #endif
 
@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN حرف lapic_intr_dummy_handles_start;
+EXTERN حرف lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */
