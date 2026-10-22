@@ -16,27 +16,27 @@
  *
  */
 
-#include <string.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
 
-#if USE_GETINFO
+#ಯದಿ USE_GETINFO
 
-#include <minix/u64.h>
-#include <sys/resource.h>
+#ಅನ್ತರ್ಭಾವ <minix/u64.h>
+#ಅನ್ತರ್ಭಾವ <sys/resource.h>
 
 /*===========================================================================*
  *			        update_idle_time			     *
  *===========================================================================*/
-static void update_idle_time(void)
+ಸ್ಥಿರ ಶೂನ್ಯ update_idle_time(ಶೂನ್ಯ)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	ಪೂರ್ಣಾಙ್ಕ i;
+	ಸಂರಚನಾ proc * idl = proc_addr(IDLE);
 
 	idl->p_cycles = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+	ಪ್ರತಿ (i = 0; i < CONFIG_MAX_CPUS ; i++) {
 		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
 	}
 }
@@ -44,184 +44,184 @@ static void update_idle_time(void)
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಙ್ಕ do_getinfo(ಸಂರಚನಾ proc * caller, message * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
   size_t length;
   vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  ಪೂರ್ಣಾಙ್ಕ nr_e, nr, r;
+  ಪೂರ್ಣಾಙ್ಕ wipe_rnd_bin = -1;
+  ಸಂರಚನಾ proc *p;
+  ಸಂರಚನಾ rusage r_usage;
 
   /* Set source address and length based on request type. */
-  switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
+  ವಿಕಲ್ಪ (m_ptr->m_lsys_krn_sys_getinfo.request) {
+    ಪಕ್ಷ GET_MACHINE: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ machine);
         src_vir = (vir_bytes) &machine;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
+    ಪಕ್ಷ GET_KINFO: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ kinfo);
         src_vir = (vir_bytes) &kinfo;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
+    ಪಕ್ಷ GET_LOADINFO: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ loadinfo);
         src_vir = (vir_bytes) &kloadinfo;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
+    ಪಕ್ಷ GET_CPUINFO: {
+        length = ಪರಿಮಾಣ(cpu_info);
         src_vir = (vir_bytes) &cpu_info;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
+    ಪಕ್ಷ GET_HZ: {
+        length = ಪರಿಮಾಣ(system_hz);
         src_vir = (vir_bytes) &system_hz;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
+    ಪಕ್ಷ GET_IMAGE: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ boot_image) * NR_BOOT_PROCS;
         src_vir = (vir_bytes) image;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
+    ಪಕ್ಷ GET_IRQHOOKS: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ irq_hook) * NR_IRQ_HOOKS;
         src_vir = (vir_bytes) irq_hooks;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_PROCTAB: {
+    ಪಕ್ಷ GET_PROCTAB: {
 	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ proc) * (NR_PROCS + NR_TASKS);
         src_vir = (vir_bytes) proc;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
+    ಪಕ್ಷ GET_PRIVTAB: {
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ priv) * (NR_SYS_PROCS);
         src_vir = (vir_bytes) priv;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_PROC: {
+    ಪಕ್ಷ GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
+	ಯದಿ(!isokendpt(nr_e, &nr)) ಪ್ರತ್ಯಾಗಮ EINVAL; /* validate request */
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ proc);
         src_vir = (vir_bytes) proc_addr(nr);
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_PRIV: {
+    ಪಕ್ಷ GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
+        ಯದಿ(!isokendpt(nr_e, &nr)) ಪ್ರತ್ಯಾಗಮ EINVAL; /* validate request */
+        length = ಪರಿಮಾಣ(ಸಂರಚನಾ priv);
         src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_REGS: {
+    ಪಕ್ಷ GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        ಯದಿ(!isokendpt(nr_e, &nr)) ಪ್ರತ್ಯಾಗಮ EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
+        length = ಪರಿಮಾಣ(p->p_reg);
         src_vir = (vir_bytes) &p->p_reg;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_WHOAMI: {
-	int len;
+    ಪಕ್ಷ GET_WHOAMI: {
+	ಪೂರ್ಣಾಙ್ಕ len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(ಪರಿಮಾಣ(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		ಪರಿಮಾಣ(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	ಪ್ರತ್ಯಾಗಮ OK;
     }
-    case GET_MONPARAMS: {
+    ಪಕ್ಷ GET_MONPARAMS: {
         src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+	length = ಪರಿಮಾಣ(kinfo.param_buf);
+        ಭಙ್ಗ;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    ಪಕ್ಷ GET_RANDOMNESS: {		
+        ಸ್ಥಿರ ಸಂರಚನಾ k_randomness copy;	/* copy to keep counters */
+	ಪೂರ್ಣಾಙ್ಕ i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
+        ಪ್ರತಿ (i= 0; i<RANDOM_SOURCES; i++) {
   		krandom.bin[i].r_size = 0;	/* invalidate random data */
   		krandom.bin[i].r_next = 0;
 	}
-    	length = sizeof(copy);
+    	length = ಪರಿಮಾಣ(copy);
     	src_vir = (vir_bytes) &copy;
-    	break;
+    	ಭಙ್ಗ;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    ಪಕ್ಷ GET_RANDOMNESS_BIN: {		
+	ಪೂರ್ಣಾಙ್ಕ bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
+	ಯದಿ(bin < 0 || bin >= RANDOM_SOURCES) {
 		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+		ಪ್ರತ್ಯಾಗಮ EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	ಯದಿ(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
+		ಪ್ರತ್ಯಾಗಮ ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
+    	length = ಪರಿಮಾಣ(krandom.bin[bin]);
     	src_vir = (vir_bytes) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	ಭಙ್ಗ;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
+    ಪಕ್ಷ GET_IRQACTIDS: {
+        length = ಪರಿಮಾಣ(irq_actids);
         src_vir = (vir_bytes) irq_actids;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
+    ಪಕ್ಷ GET_IDLETSC: {
+	ಸಂರಚನಾ proc * idl;
 	update_idle_time();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
+        length = ಪರಿಮಾಣ(idl->p_cycles);
         src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        ಭಙ್ಗ;
     }
-    case GET_CPUTICKS: {
+    ಪಕ್ಷ GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	unsigned ಪೂರ್ಣಾಙ್ಕ cpu;
+	cpu = (unsigned ಪೂರ್ಣಾಙ್ಕ)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	ಯದಿ (cpu >= CONFIG_MAX_CPUS)
+		ಪ್ರತ್ಯಾಗಮ EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
+	length = ಪರಿಮಾಣ(ticks);
 	src_vir = (vir_bytes)ticks;
-	break;
+	ಭಙ್ಗ;
     }
-    default:
+    ಸ್ವಭಾವ:
 	printf("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        ಪ್ರತ್ಯಾಗಮ(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+  ಯದಿ (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
 	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+	ಪ್ರತ್ಯಾಗಮ (E2BIG);
 
   r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
 	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
 
-  if(r != OK) return r;
+  ಯದಿ(r != OK) ಪ್ರತ್ಯಾಗಮ r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+	ಯದಿ(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
 		krandom.bin[wipe_rnd_bin].r_size = 0;
 		krandom.bin[wipe_rnd_bin].r_next = 0;
 	}
 
-  return(OK);
+  ಪ್ರತ್ಯಾಗಮ(OK);
 }
 
 #endif /* USE_GETINFO */

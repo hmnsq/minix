@@ -1,7 +1,7 @@
 #ifndef __OMAP_RTC_H
 #define __OMAP_RTC_H
 
-void omap3_rtc_init(void);
-void omap3_rtc_run(void);
+ಶೂನ್ಯ omap3_rtc_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ omap3_rtc_run(ಶೂನ್ಯ);
 
 #endif /* __OMAP_RTC_H */

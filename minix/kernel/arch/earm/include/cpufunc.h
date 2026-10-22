@@ -1,42 +1,42 @@
 #ifndef _ARM_CPUFUNC_H
 #define _ARM_CPUFUNC_H
 
-#if 0
+#ಯದಿ 0
 /* check interrupt state */
-static inline void check_int(unsigned int state, int line)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ check_int(unsigned ಪೂರ್ಣಾಙ್ಕ state, ಪೂರ್ಣಾಙ್ಕ ಸಾಲು)
 {
-	unsigned int cpsr = 0;
+	unsigned ಪೂರ್ಣಾಙ್ಕ cpsr = 0;
 
-	asm volatile("mrs %0, cpsr" : "=r" (cpsr));
+	asm ಚಞ್ಚಲ("mrs %0, cpsr" : "=r" (cpsr));
 
-	if ((cpsr & PSR_F) != (state & PSR_F))
-	    printf("%d: FIQs are unexpectedly %s\n", line, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
+	ಯದಿ ((cpsr & PSR_F) != (state & PSR_F))
+	    printf("%d: FIQs are unexpectedly %s\n", ಸಾಲು, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
 
-	if ((cpsr & PSR_I) != (state & PSR_I))
-	    printf("%d: IRQs are unexpectedly %s\n", line, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
+	ಯದಿ ((cpsr & PSR_I) != (state & PSR_I))
+	    printf("%d: IRQs are unexpectedly %s\n", ಸಾಲು, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
 
 }
 #endif
 
 /* Data memory barrier */
-static inline void dmb(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ dmb(ಶೂನ್ಯ)
 {
-	asm volatile("dmb" : : : "memory");
+	asm ಚಞ್ಚಲ("dmb" : : : "memory");
 }
 
 /* Data synchronization barrier */
-static inline void dsb(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ dsb(ಶೂನ್ಯ)
 {
-	asm volatile("dsb" : : : "memory");
+	asm ಚಞ್ಚಲ("dsb" : : : "memory");
 }
 
 /* Instruction synchronization barrier */
-static inline void isb(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ isb(ಶೂನ್ಯ)
 {
-	asm volatile("isb" : : : "memory");
+	asm ಚಞ್ಚಲ("isb" : : : "memory");
 }
 
-static inline void barrier(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ barrier(ಶೂನ್ಯ)
 {
 	dsb();
 	isb();
@@ -44,105 +44,105 @@ static inline void barrier(void)
 
 
 /* Read CLIDR, Cache Level ID Register */
-static inline u32_t read_clidr(void){
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_clidr(ಶೂನ್ಯ){
 	u32_t clidr;
-	asm volatile("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
 				: [clidr] "=r" (clidr));
-	return clidr;
+	ಪ್ರತ್ಯಾಗಮ clidr;
 }
 
 
 /* Read CSSELR, Cache Size Selection Register */
-static inline u32_t read_csselr(void){
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_csselr(ಶೂನ್ಯ){
 	u32_t csselr;
-	asm volatile("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
 				: [csselr] "=r" (csselr));
-	return csselr;
+	ಪ್ರತ್ಯಾಗಮ csselr;
 }
 
 /* Write CSSELR, Cache Size Selection Register */
-static inline void write_csselr(u32_t csselr){
-	asm volatile("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_csselr(u32_t csselr){
+	asm ಚಞ್ಚಲ("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
 				: : [csselr] "r" (csselr));
 }
 
 /* Read Cache Size ID Register */
-static inline u32_t read_ccsidr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ccsidr(ಶೂನ್ಯ)
 {
 	u32_t ccsidr;
-	asm volatile("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
 			: [ccsidr] "=r" (ccsidr));
-	return ccsidr;
+	ಪ್ರತ್ಯಾಗಮ ccsidr;
 }
 
 /* Read TLBTR, TLB Type Register */
-static inline u32_t read_tlbtr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_tlbtr(ಶೂನ್ಯ)
 {
 	u32_t tlbtr;
-	asm volatile("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
 			: [tlbtr] "=r" (tlbtr));
-	return tlbtr;
+	ಪ್ರತ್ಯಾಗಮ tlbtr;
 }
 
 /* keesj:move these out */
-static inline u32_t ilog2(u32_t t)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t ilog2(u32_t t)
 {
 	u32_t counter =0;
-	while( (t = t >> 1) ) counter ++;
-	return counter;
+	ಯಾವತ್( (t = t >> 1) ) counter ++;
+	ಪ್ರತ್ಯಾಗಮ counter;
 }
 
 /* keesj:move these out */
-static inline u32_t ipow2(u32_t t)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t ipow2(u32_t t)
 {
-	return 1 << t;
+	ಪ್ರತ್ಯಾಗಮ 1 << t;
 }
 
 /*
  * type = 1 == CLEAN
  * type = 2 == INVALIDATE
  */
-static inline void dcache_maint(int type){
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ dcache_maint(ಪೂರ್ಣಾಙ್ಕ type){
 	u32_t cache_level ;
 	u32_t clidr;
 	u32_t ctype;
 	u32_t  ccsidr;
-	u32_t  line_size,line_length;
-	u32_t  number_of_sets,number_of_ways;
+	u32_t  ಸಾಲು_size,ಸಾಲು_length;
+	u32_t  ಸಂಖ್ಯೆ_of_sets,ಸಂಖ್ಯೆ_of_ways;
 	u32_t  set,way;
 
 	clidr = read_clidr();
 	u32_t loc =  ( clidr >> 24) & 0x7;
 	u32_t louu =  ( clidr >> 27) & 0x7;
 	u32_t louis =  ( clidr >> 21) & 0x7;
-	for (cache_level =0 ; cache_level < loc; cache_level++){
+	ಪ್ರತಿ (cache_level =0 ; cache_level < loc; cache_level++){
 		/* get current cache type */
 		ctype = ( clidr >> cache_level*3) & 0x7;
 		/* select data or unified or cache level */
 		write_csselr(cache_level << 1);
 		isb();
 		ccsidr = read_ccsidr();
-		line_size = ccsidr & 0x7;
-		line_length = 2 << (line_size + 1) ; /* 2**(line_size + 2) */
-		number_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
-		number_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
+		ಸಾಲು_size = ccsidr & 0x7;
+		ಸಾಲು_length = 2 << (ಸಾಲು_size + 1) ; /* 2**(line_size + 2) */
+		ಸಂಖ್ಯೆ_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
+		ಸಂಖ್ಯೆ_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
 
-		u32_t way_bits = ilog2(number_of_ways);
-		if(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
+		u32_t way_bits = ilog2(ಸಂಖ್ಯೆ_of_ways);
+		ಯದಿ(ipow2(ilog2(ಸಂಖ್ಯೆ_of_ways) < ಸಂಖ್ಯೆ_of_ways) ) {
 			way_bits++;
 		}
 
-		u32_t l = ilog2(line_length);
-		for (way =0 ; way < number_of_ways; way++) {
-			for (set =0 ; set < number_of_sets; set++) {
+		u32_t l = ilog2(ಸಾಲು_length);
+		ಪ್ರತಿ (way =0 ; way < ಸಂಖ್ಯೆ_of_ways; way++) {
+			ಪ್ರತಿ (set =0 ; set < ಸಂಖ್ಯೆ_of_sets; set++) {
 				u32_t val = ( way << (32 - way_bits) ) |  (set << l) | (cache_level << 1 );
-				if (type == 1) {
+				ಯದಿ (type == 1) {
 					/* DCCISW, Data Cache Clean and Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
+					asm ಚಞ್ಚಲ("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
 							: : [set] "r" (val));
-				} else if (type ==2 ){
+				} ಅನ್ಯಥಾ ಯದಿ (type ==2 ){
 					/* DCISW, Data Cache Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c6, 2" 
+					asm ಚಞ್ಚಲ("mcr p15, 0, %[set], c7, c6, 2" 
 							: : [set] "r" (val)); 
 				}
 			}
@@ -152,36 +152,36 @@ static inline void dcache_maint(int type){
 	isb();
 
 }
-static inline void dcache_clean(void){
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ dcache_clean(ಶೂನ್ಯ){
 	dcache_maint(1);
 }
-static inline void dcache_invalidate(void){
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ dcache_invalidate(ಶೂನ್ಯ){
 	dcache_maint(2);
 }
 
-static inline void refresh_tlb(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ refresh_tlb(ಶೂನ್ಯ)
 {
 	dsb();
 
 	/* Invalidate entire unified TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
 
-#if 0
+#ಯದಿ 0
 	/* Invalidate entire data TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire instruction TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
 #endif
 
 	/*
 	 * Invalidate all instruction caches to PoU.
 	 * Also flushes branch target cache.
 	 */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire branch predictor array */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
 
 	dsb();
 	isb();
@@ -189,37 +189,37 @@ static inline void refresh_tlb(void)
 
 
 /* Read System Control Register */
-static inline u32_t read_sctlr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_sctlr(ಶೂನ್ಯ)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	ಪ್ರತ್ಯಾಗಮ ctl;
 }
 
 /* Write System Control Register */
-static inline void write_sctlr(u32_t ctl)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_sctlr(u32_t ctl)
 {
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
 			: : [ctl] "r" (ctl));
 	isb();
 }
 
 /* Read Translation Table Base Register 0 */
-static inline u32_t read_ttbr0(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ttbr0(ಶೂನ್ಯ)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
 			: [bar] "=r" (bar));
 
-	return bar & ARM_TTBR_ADDR_MASK;
+	ಪ್ರತ್ಯಾಗಮ bar & ARM_TTBR_ADDR_MASK;
 }
 
 /* Write Translation Table Base Register 0 */
-static inline void write_ttbr0(u32_t bar)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_ttbr0(u32_t bar)
 {
 	barrier();
 	/* In our setup TTBR contains the base address *and* the flags
@@ -227,43 +227,43 @@ static inline void write_ttbr0(u32_t bar)
 	   base address of the l1 page table. We therefore add the
 	   flags here and remove them in the read_ttbr0 */
 	u32_t v  =  (bar  & ARM_TTBR_ADDR_MASK ) | ARM_TTBR_FLAGS_CACHED;
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
 			: : [bar] "r" (v));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 0 */
-static inline void reload_ttbr0(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ reload_ttbr0(ಶೂನ್ಯ)
 {
 	reg_t ttbr = read_ttbr0();
 	write_ttbr0(ttbr);
 }
 
 /* Read Translation Table Base Register 1 */
-static inline u32_t read_ttbr1(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ttbr1(ಶೂನ್ಯ)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
 			: [bar] "=r" (bar));
 
-	return bar;
+	ಪ್ರತ್ಯಾಗಮ bar;
 }
 
 /* Write Translation Table Base Register 1 */
-static inline void write_ttbr1(u32_t bar)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_ttbr1(u32_t bar)
 {
 	barrier();
 
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
 			: : [bar] "r" (bar));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 1 */
-static inline void reload_ttbr1(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ reload_ttbr1(ಶೂನ್ಯ)
 {
 	reg_t ttbr = read_ttbr1();
 
@@ -271,192 +271,192 @@ static inline void reload_ttbr1(void)
 }
 
 /* Read Translation Table Base Control Register */
-static inline u32_t read_ttbcr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ttbcr(ಶೂನ್ಯ)
 {
 	u32_t bcr;
 
-	asm volatile("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
 			: [bcr] "=r" (bcr));
 
-	return bcr;
+	ಪ್ರತ್ಯಾಗಮ bcr;
 }
 
 /* Write Translation Table Base Control Register */
-static inline void write_ttbcr(u32_t bcr)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_ttbcr(u32_t bcr)
 {
-	asm volatile("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
 			: : [bcr] "r" (bcr));
 
 	isb();
 }
 
 /* Read Domain Access Control Register */
-static inline u32_t read_dacr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_dacr(ಶೂನ್ಯ)
 {
 	u32_t dacr;
 
-	asm volatile("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
 			: [dacr] "=r" (dacr));
 
-	return dacr;
+	ಪ್ರತ್ಯಾಗಮ dacr;
 }
 
 /* Write Domain Access Control Register */
-static inline void write_dacr(u32_t dacr)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_dacr(u32_t dacr)
 {
-	asm volatile("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
 			: : [dacr] "r" (dacr));
 
 	isb();
 }
 
 /* Read Data Fault Status Register */
-static inline u32_t read_dfsr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_dfsr(ಶೂನ್ಯ)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	ಪ್ರತ್ಯಾಗಮ fsr;
 }
 
 /* Write Data Fault Status Register */
-static inline void write_dfsr(u32_t fsr)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_dfsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Instruction Fault Status Register */
-static inline u32_t read_ifsr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ifsr(ಶೂನ್ಯ)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	ಪ್ರತ್ಯಾಗಮ fsr;
 }
 
 /* Write Instruction Fault Status Register */
-static inline void write_ifsr(u32_t fsr)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_ifsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Data Fault Address Register */
-static inline u32_t read_dfar(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_dfar(ಶೂನ್ಯ)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	ಪ್ರತ್ಯಾಗಮ far;
 }
 
 /* Write Data Fault Address Register */
-static inline void write_dfar(u32_t far)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_dfar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Instruction Fault Address Register */
-static inline u32_t read_ifar(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_ifar(ಶೂನ್ಯ)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	ಪ್ರತ್ಯಾಗಮ far;
 }
 
 /* Write Instruction Fault Address Register */
-static inline void write_ifar(u32_t far)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_ifar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Vector Base Address Register */
-static inline u32_t read_vbar(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_vbar(ಶೂನ್ಯ)
 {
 	u32_t vbar;
 
-	asm volatile("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
 			: [vbar] "=r" (vbar));
 
-	return vbar;
+	ಪ್ರತ್ಯಾಗಮ vbar;
 }
 
 /* Write Vector Base Address Register */
-static inline void write_vbar(u32_t vbar)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_vbar(u32_t vbar)
 {
-	asm volatile("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
 			: : [vbar] "r" (vbar));
 
 	isb();
 }
 
 /* Read the Main ID Register  */
-static inline u32_t read_midr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_midr(ಶೂನ್ಯ)
 {
 	u32_t id;
 
-	asm volatile("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
 			: [id] "=r" (id));
 
-	return id;
+	ಪ್ರತ್ಯಾಗಮ id;
 }
 
 /* Read Auxiliary Control Register */
-static inline u32_t read_actlr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_actlr(ಶೂನ್ಯ)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
+	asm ಚಞ್ಚಲ("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	ಪ್ರತ್ಯಾಗಮ ctl;
 }
 
 /* Write Auxiliary Control Register */
-static inline void write_actlr(u32_t ctl)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_actlr(u32_t ctl)
 {
 //http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0344k/Babjbjbb.html
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
+	asm ಚಞ್ಚಲ("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
 			: : [ctl] "r" (ctl));
 
 	isb();
 }
 
 /* Read Current Program Status Register */
-static inline u32_t read_cpsr(void)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ u32_t read_cpsr(ಶೂನ್ಯ)
 {
 	u32_t status;
 
-	asm volatile("mrs %[status], cpsr @ read CPSR"
+	asm ಚಞ್ಚಲ("mrs %[status], cpsr @ read CPSR"
 			: [status] "=r" (status));
 
-	return status;
+	ಪ್ರತ್ಯಾಗಮ status;
 }
 
 /* Write Current Program Status Register */
-static inline void write_cpsr(u32_t status)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಶೂನ್ಯ write_cpsr(u32_t status)
 {
-	asm volatile("msr cpsr_c, %[status] @ write CPSR"
+	asm ಚಞ್ಚಲ("msr cpsr_c, %[status] @ write CPSR"
 			: : [status] "r" (status));
 }
 

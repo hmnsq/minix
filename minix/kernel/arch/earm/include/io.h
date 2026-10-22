@@ -3,11 +3,11 @@
 
 #ifndef __ASSEMBLY__
 
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
 /* Access memory-mapped I/O devices */
-#define mmio_read(a)    (*(volatile u32_t *)(a))
-#define mmio_write(a,v) (*(volatile u32_t *)(a) = (v))
+#define mmio_read(a)    (*(ಚಞ್ಚಲ u32_t *)(a))
+#define mmio_write(a,v) (*(ಚಞ್ಚಲ u32_t *)(a) = (v))
 #define mmio_set(a,v)   mmio_write((a), mmio_read((a)) | (v))
 #define mmio_clear(a,v) mmio_write((a), mmio_read((a)) & ~(v))
 

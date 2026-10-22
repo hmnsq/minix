@@ -95,19 +95,19 @@
 
 #ifndef __ASSEMBLY__
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
 EXTERN vir_bytes lapic_addr;
 EXTERN vir_bytes lapic_eoi_addr;
-EXTERN int ioapic_enabled;
-EXTERN int bsp_lapic_id;
+EXTERN ಪೂರ್ಣಾಙ್ಕ ioapic_enabled;
+EXTERN ಪೂರ್ಣಾಙ್ಕ bsp_lapic_id;
 
 #define MAX_NR_IOAPICS		32
 #define MAX_IOAPIC_IRQS		64
 
-EXTERN int ioapic_enabled;
+EXTERN ಪೂರ್ಣಾಙ್ಕ ioapic_enabled;
 
-struct io_apic {
+ಸಂರಚನಾ io_apic {
 	unsigned	id;
 	vir_bytes	addr; /* presently used address */
 	phys_bytes	paddr; /* where is it in phys space */
@@ -116,61 +116,61 @@ struct io_apic {
 	unsigned	gsi_base;
 };
 
-EXTERN struct io_apic io_apic[MAX_NR_IOAPICS];
+EXTERN ಸಂರಚನಾ io_apic io_apic[MAX_NR_IOAPICS];
 EXTERN unsigned nioapics;
 
 EXTERN u32_t lapic_addr_vaddr; /* we remember the virtual address here until we
 				  switch to paging */
 
-int lapic_enable(unsigned cpu);
-void ioapic_unmask_irq(unsigned irq);
-void ioapic_mask_irq(unsigned irq);
-void ioapic_reset_pic(void);
+ಪೂರ್ಣಾಙ್ಕ lapic_enable(unsigned cpu);
+ಶೂನ್ಯ ioapic_unmask_irq(unsigned irq);
+ಶೂನ್ಯ ioapic_mask_irq(unsigned irq);
+ಶೂನ್ಯ ioapic_reset_pic(ಶೂನ್ಯ);
 
-EXTERN int ioapic_enabled;
+EXTERN ಪೂರ್ಣಾಙ್ಕ ioapic_enabled;
 EXTERN unsigned nioapics;
 
-void lapic_microsec_sleep(unsigned count);
-void ioapic_disable_irqs(u32_t irqs);
-void ioapic_enable_irqs(u32_t irqs);
+ಶೂನ್ಯ lapic_microsec_sleep(unsigned ಎಣಿಕೆ);
+ಶೂನ್ಯ ioapic_disable_irqs(u32_t irqs);
+ಶೂನ್ಯ ioapic_enable_irqs(u32_t irqs);
 
-int lapic_enable(unsigned cpu);
-void lapic_disable(void);
+ಪೂರ್ಣಾಙ್ಕ lapic_enable(unsigned cpu);
+ಶೂನ್ಯ lapic_disable(ಶೂನ್ಯ);
 
-void ioapic_disable_all(void);
-int ioapic_enable_all(void);
+ಶೂನ್ಯ ioapic_disable_all(ಶೂನ್ಯ);
+ಪೂರ್ಣಾಙ್ಕ ioapic_enable_all(ಶೂನ್ಯ);
 
-int detect_ioapics(void);
-void apic_idt_init(int reset);
+ಪೂರ್ಣಾಙ್ಕ detect_ioapics(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_idt_init(ಪೂರ್ಣಾಙ್ಕ reset);
 
 #ifdef CONFIG_SMP
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
-unsigned int apicid(void);
-void ioapic_set_id(u32_t addr, unsigned int id);
-#else
-int apic_single_cpu_init(void);
+ಪೂರ್ಣಾಙ್ಕ apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
+ಪೂರ್ಣಾಙ್ಕ apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
+unsigned ಪೂರ್ಣಾಙ್ಕ apicid(ಶೂನ್ಯ);
+ಶೂನ್ಯ ioapic_set_id(u32_t addr, unsigned ಪೂರ್ಣಾಙ್ಕ id);
+#ಅನ್ಯಥಾ
+ಪೂರ್ಣಾಙ್ಕ apic_single_cpu_init(ಶೂನ್ಯ);
 #endif
 
-void lapic_set_timer_periodic(const unsigned freq);
-void lapic_set_timer_one_shot(const u32_t value);
-void lapic_stop_timer(void);
-void lapic_restart_timer(void);
+ಶೂನ್ಯ lapic_set_timer_periodic(ಧ್ರುವ unsigned freq);
+ಶೂನ್ಯ lapic_set_timer_one_shot(ಧ್ರುವ u32_t ಮೌಲ್ಯ);
+ಶೂನ್ಯ lapic_stop_timer(ಶೂನ್ಯ);
+ಶೂನ್ಯ lapic_restart_timer(ಶೂನ್ಯ);
 
-void ioapic_set_irq(unsigned irq);
-void ioapic_unset_irq(unsigned irq);
+ಶೂನ್ಯ ioapic_set_irq(unsigned irq);
+ಶೂನ್ಯ ioapic_unset_irq(unsigned irq);
 
 /* signal the end of interrupt handler to apic */
-#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } while(0)
+#define apic_eoi() ಕುರು { *((ಚಞ್ಚಲ u32_t *) lapic_eoi_addr) = 0; } ಯಾವತ್(0)
 
-void ioapic_eoi(int irq);
+ಶೂನ್ಯ ioapic_eoi(ಪೂರ್ಣಾಙ್ಕ irq);
 
-void dump_apic_irq_state(void);
+ಶೂನ್ಯ dump_apic_irq_state(ಶೂನ್ಯ);
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type);
+ಶೂನ್ಯ apic_send_ipi(unsigned vector, unsigned cpu, ಪೂರ್ಣಾಙ್ಕ type);
 
-void apic_ipi_sched_intr(void);
-void apic_ipi_halt_intr(void);
+ಶೂನ್ಯ apic_ipi_sched_intr(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_ipi_halt_intr(ಶೂನ್ಯ);
 
 #define APIC_IPI_DEST			0
 #define APIC_IPI_SELF			1
@@ -187,14 +187,14 @@ void apic_ipi_halt_intr(void);
 	apic_send_ipi (vector, 0, APIC_IPI_TO_ALL_BUT_SELF);
 
 
-#include <minix/cpufeature.h>
+#ಅನ್ತರ್ಭಾವ <minix/cpufeature.h>
 
 #define cpu_feature_apic_on_chip() _cpufeature(_CPUF_I386_APIC_ON_CHIP)
 
-#define lapic_read(what)	(*((volatile u32_t *)((what))))
-#define lapic_write(what, data)	do {			\
-	(*((volatile u32_t *)((what)))) = data;		\
-} while(0)
+#define lapic_read(what)	(*((ಚಞ್ಚಲ u32_t *)((what))))
+#define lapic_write(what, data)	ಕುರು {			\
+	(*((ಚಞ್ಚಲ u32_t *)((what)))) = data;		\
+} ಯಾವತ್(0)
 
 #endif /* __ASSEMBLY__ */
 

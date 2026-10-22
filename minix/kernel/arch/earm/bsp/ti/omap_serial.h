@@ -19,8 +19,8 @@
 
 #ifndef __ASSEMBLY__
 
-void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+ಶೂನ್ಯ omap3_ser_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ omap3_ser_putc(ವರ್ಣ c);
 
 #endif /* __ASSEMBLY__ */
 

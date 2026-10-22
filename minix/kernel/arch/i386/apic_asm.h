@@ -3,77 +3,77 @@
 
 
 #ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+ಶೂನ್ಯ apic_hwint0(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint1(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint2(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint3(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint4(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint5(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint6(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint7(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint8(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint9(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint10(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint11(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint12(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint13(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint14(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint15(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint16(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint17(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint18(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint19(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint20(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint21(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint22(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint23(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint24(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint25(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint26(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint27(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint28(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint29(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint30(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint31(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint32(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint33(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint34(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint35(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint36(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint37(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint38(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint39(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint40(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint41(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint42(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint43(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint44(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint45(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint46(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint47(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint48(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint49(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint50(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint51(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint52(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint53(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint54(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint55(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint56(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint57(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint58(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint59(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint60(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint61(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint62(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_hwint63(ಶೂನ್ಯ);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+ಶೂನ್ಯ lapic_timer_int_handler(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_spurios_intr(ಶೂನ್ಯ);
+ಶೂನ್ಯ apic_error_intr(ಶೂನ್ಯ);
 
 #endif
 
@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN ವರ್ಣ lapic_intr_dummy_handles_start;
+EXTERN ವರ್ಣ lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */

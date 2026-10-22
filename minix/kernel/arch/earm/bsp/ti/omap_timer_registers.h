@@ -152,6 +152,6 @@
 
 
 #define TIMER_FREQ  1000    /* clock frequency for OMAP timer (1ms) */
-#define TIMER_COUNT(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
+#define TIMER_ಎಣಿಕೆ(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
 
 #endif /* _OMAP_TIMER_REGISTERS_H */

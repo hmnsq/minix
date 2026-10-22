@@ -103,7 +103,7 @@ ENTRY(\exc_name\()_entry)
 	/*
 	 * push a pointer to the interrupt state pushed by the cpu and the
 	 * vector number pushed by the vector handler just before calling
-	 * exception_entry and call the exception handler.
+	 * exception_entry and ಆಹ್ವಾನ the exception handler.
 	 */
 	mov	r0, #0		/* it is not a nested exception. */
 	mov	r1, r4		/* saved lr. */
@@ -146,7 +146,7 @@ irq_entry_from_user:
 	mov	fp, #0				/* for stack trace. */
 	bl	_C_LABEL(context_stop)
 
-	/* call handler */
+	/* ಆಹ್ವಾನ handler */
 	bl	_C_LABEL(bsp_irq_handle)	/* bsp_irq_handle(void) */
 
 	add	sp, sp, #4
@@ -159,7 +159,7 @@ irq_entry_from_kernel:
 	push	{r0-r12, lr}
 	bl	_C_LABEL(context_stop_idle)
 
-	/* call handler */
+	/* ಆಹ್ವಾನ handler */
 	bl	_C_LABEL(bsp_irq_handle)	/* bsp_irq_handle(void). */
 
 	/* data synchronization barrier */ dsb 
@@ -168,7 +168,7 @@ irq_entry_from_kernel:
 
 
 /*
- * supervisor call (SVC) kernel entry point
+ * supervisor ಆಹ್ವಾನ (SVC) kernel entry point
  */
 ENTRY(svc_entry)
 	/*  Store the LR and the SPSR of the current mode onto the SVC stack */
@@ -189,7 +189,7 @@ ENTRY(svc_entry)
 	b	_C_LABEL(switch_to_user)
 
 /*
- * kernel call is only from a process to kernel
+ * kernel ಆಹ್ವಾನ is only from a process to kernel
  */
 ENTRY(kernel_call_entry)
 	/*

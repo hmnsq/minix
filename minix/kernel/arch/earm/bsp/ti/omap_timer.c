@@ -1,33 +1,33 @@
-#include "kernel/kernel.h"
-#include "kernel/clock.h"
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/board.h>
-#include <minix/mmio.h>
-#include <assert.h>
-#include <io.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include "arch_proto.h"
-#include "bsp_timer.h"
-#include "omap_timer_registers.h"
-#include "omap_intr_registers.h"
-#include "bsp_intr.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/clock.h"
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <machine/cpu.h>
+#ಅನ್ತರ್ಭಾವ <minix/board.h>
+#ಅನ್ತರ್ಭಾವ <minix/mmio.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <io.h>
+#ಅನ್ತರ್ಭಾವ <stdlib.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "bsp_timer.h"
+#ಅನ್ತರ್ಭಾವ "omap_timer_registers.h"
+#ಅನ್ತರ್ಭಾವ "omap_intr_registers.h"
+#ಅನ್ತರ್ಭಾವ "bsp_intr.h"
 
 /* interrupt handler hook */
-static irq_hook_t omap3_timer_hook;
-static u64_t high_frc;
+ಸ್ಥಿರ irq_hook_t omap3_timer_hook;
+ಸ್ಥಿರ u64_t ಮೇಲಿನ_frc;
 
-struct omap_timer_registers;
+ಸಂರಚನಾ omap_timer_registers;
 
-struct omap_timer
+ಸಂರಚನಾ omap_timer
 {
 	vir_bytes base;
-	int irq_nr;
-	struct omap_timer_registers *regs;
+	ಪೂರ್ಣಾಙ್ಕ irq_nr;
+	ಸಂರಚನಾ omap_timer_registers *regs;
 };
 
-struct omap_timer_registers
+ಸಂರಚನಾ omap_timer_registers
 {
 	vir_bytes TIDR;
 	vir_bytes TIOCP_CFG;
@@ -52,7 +52,7 @@ struct omap_timer_registers
 
 };
 
-static struct omap_timer_registers regs_v1 = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer_registers regs_v1 = {
 	.TIDR = OMAP3_TIMER_TIDR,
 	.TIOCP_CFG = OMAP3_TIMER_TIOCP_CFG,
 	.TISTAT = OMAP3_TIMER_TISTAT,
@@ -77,7 +77,7 @@ static struct omap_timer_registers regs_v1 = {
 
 /* AM335X has a different ip block for the non 
  1ms timers */
-static struct omap_timer_registers regs_v2 = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer_registers regs_v2 = {
 	.TIDR = AM335X_TIMER_TIDR,
 	.TIOCP_CFG = AM335X_TIMER_TIOCP_CFG,
 	.TISTAT = AM335X_TIMER_IRQSTATUS_RAW,
@@ -100,40 +100,40 @@ static struct omap_timer_registers regs_v2 = {
 	.TOWR = -1		/* UNDEF */
 };
 
-static struct omap_timer dm37xx_timer = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer dm37xx_timer = {
 	.base = OMAP3_GPTIMER1_BASE,
 	.irq_nr = OMAP3_GPT1_IRQ,
 	.regs = &regs_v1
 };
 
 /* free running timer */
-static struct omap_timer dm37xx_fr_timer = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer dm37xx_fr_timer = {
 	.base = OMAP3_GPTIMER10_BASE,
 	.irq_nr = OMAP3_GPT10_IRQ,
 	.regs = &regs_v1
 };
 
 /* normal timer */
-static struct omap_timer am335x_timer = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer am335x_timer = {
 	.base = AM335X_DMTIMER1_1MS_BASE,
 	.irq_nr = AM335X_INT_TINT1_1MS,
 	.regs = &regs_v1
 };
 
 /* free running timer */
-static struct omap_timer am335x_fr_timer = {
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer am335x_fr_timer = {
 	.base = AM335X_DMTIMER7_BASE,
 	.irq_nr = AM335X_INT_TINT7,
 	.regs = &regs_v2
 };
 
-static struct omap_timer *timer;
-static struct omap_timer *fr_timer;
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer *timer;
+ಸ್ಥಿರ ಸಂರಚನಾ omap_timer *fr_timer;
 
-static int done = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ done = 0;
 
-int
-bsp_register_timer_handler(const irq_handler_t handler)
+ಪೂರ್ಣಾಙ್ಕ
+bsp_register_timer_handler(ಧ್ರುವ irq_handler_t handler)
 {
 	/* Initialize the CLOCK's interrupt hook. */
 	omap3_timer_hook.proc_nr_e = NONE;
@@ -143,39 +143,39 @@ bsp_register_timer_handler(const irq_handler_t handler)
 	/* only unmask interrupts after registering */
 	bsp_irq_unmask(timer->irq_nr);
 
-	return 0;
+	ಪ್ರತ್ಯಾಗಮ 0;
 }
 
 /* meta data for remapping */
-static kern_phys_map timer_phys_map;
-static kern_phys_map fr_timer_phys_map;
-static kern_phys_map fr_timer_user_phys_map;	/* struct for when the free */
+ಸ್ಥಿರ kern_phys_map timer_phys_map;
+ಸ್ಥಿರ kern_phys_map fr_timer_phys_map;
+ಸ್ಥಿರ kern_phys_map fr_timer_user_phys_map;	/* struct for when the free */
 						/* running timer is mapped to */
 						/* userland */
 
 /* callback for when the free running clock gets mapped */
-int
+ಪೂರ್ಣಾಙ್ಕ
 kern_phys_fr_user_mapped(vir_bytes id, phys_bytes address)
 {
 	/* the only thing we need to do at this stage is to set the address */
 	/* in the kerninfo struct */
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	ಯದಿ (BOARD_IS_BBXM(machine.board_id)) {
 		arm_frclock.tcrr = address + OMAP3_TIMER_TCRR;
 		arm_frclock.hz = 1625000;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} ಅನ್ಯಥಾ ಯದಿ (BOARD_IS_BB(machine.board_id)) {
 		arm_frclock.tcrr = address + AM335X_TIMER_TCRR;
 		arm_frclock.hz = 1500000;
 	}
-	return 0;
+	ಪ್ರತ್ಯಾಗಮ 0;
 }
 
-void
-omap3_frclock_init(void)
+ಶೂನ್ಯ
+omap3_frclock_init(ಶೂನ್ಯ)
 {
 	u32_t tisr;
 
 	/* enable the clock */
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	ಯದಿ (BOARD_IS_BBXM(machine.board_id)) {
 		fr_timer = &dm37xx_fr_timer;
 
 		kern_phys_map_ptr(fr_timer->base, ARM_PAGE_SIZE,
@@ -201,7 +201,7 @@ omap3_frclock_init(void)
 		 * 2^3 = 8. */
 		mmio_set(fr_timer->base + fr_timer->regs->TCLR,
 		    (2 << OMAP3_TCLR_PTV));
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} ಅನ್ಯಥಾ ಯದಿ (BOARD_IS_BB(machine.board_id)) {
 		fr_timer = &am335x_fr_timer;
 		kern_phys_map_ptr(fr_timer->base, ARM_PAGE_SIZE,
 		    VMMF_UNCACHED | VMMF_WRITE,
@@ -215,18 +215,18 @@ omap3_frclock_init(void)
 		/* Disable the module and wait for the module to be disabled */
 		set32(CM_PER_TIMER7_CLKCTRL, CM_MODULEMODE_MASK,
 		    CM_MODULEMODE_DISABLED);
-		while ((mmio_read(CM_PER_TIMER7_CLKCTRL) & CM_CLKCTRL_IDLEST)
+		ಯಾವತ್ ((mmio_read(CM_PER_TIMER7_CLKCTRL) & CM_CLKCTRL_IDLEST)
 		    != CM_CLKCTRL_IDLEST_DISABLE);
 
 		set32(CLKSEL_TIMER7_CLK, CLKSEL_TIMER7_CLK_SEL_MASK,
 		    CLKSEL_TIMER7_CLK_SEL_SEL2);
-		while ((read32(CLKSEL_TIMER7_CLK) & CLKSEL_TIMER7_CLK_SEL_MASK)
+		ಯಾವತ್ ((read32(CLKSEL_TIMER7_CLK) & CLKSEL_TIMER7_CLK_SEL_MASK)
 		    != CLKSEL_TIMER7_CLK_SEL_SEL2);
 
 		/* enable the module and wait for the module to be ready */
 		set32(CM_PER_TIMER7_CLKCTRL, CM_MODULEMODE_MASK,
 		    CM_MODULEMODE_ENABLE);
-		while ((mmio_read(CM_PER_TIMER7_CLKCTRL) & CM_CLKCTRL_IDLEST)
+		ಯಾವತ್ ((mmio_read(CM_PER_TIMER7_CLKCTRL) & CM_CLKCTRL_IDLEST)
 		    != CM_CLKCTRL_IDLEST_FUNC);
 
 		/* Stop timer */
@@ -257,18 +257,18 @@ omap3_frclock_init(void)
 	done = 1;
 }
 
-void
-omap3_frclock_stop(void)
+ಶೂನ್ಯ
+omap3_frclock_stop(ಶೂನ್ಯ)
 {
 	mmio_clear(fr_timer->base + fr_timer->regs->TCLR, OMAP3_TCLR_ST);
 }
 
-void
+ಶೂನ್ಯ
 bsp_timer_init(unsigned freq)
 {
 	/* we only support 1ms resolution */
 	u32_t tisr;
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	ಯದಿ (BOARD_IS_BBXM(machine.board_id)) {
 		timer = &dm37xx_timer;
 		kern_phys_map_ptr(timer->base, ARM_PAGE_SIZE,
 		    VMMF_UNCACHED | VMMF_WRITE,
@@ -278,7 +278,7 @@ bsp_timer_init(unsigned freq)
 
 		/* Use 32 KHz clock source for GPTIMER1 */
 		mmio_clear(OMAP3_CM_CLKSEL_WKUP, OMAP3_CLKSEL_GPT1);
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} ಅನ್ಯಥಾ ಯದಿ (BOARD_IS_BB(machine.board_id)) {
 		timer = &am335x_timer;
 		kern_phys_map_ptr(timer->base, ARM_PAGE_SIZE,
 		    VMMF_UNCACHED | VMMF_WRITE,
@@ -286,19 +286,19 @@ bsp_timer_init(unsigned freq)
 		/* disable the module and wait for the module to be disabled */
 		set32(CM_WKUP_TIMER1_CLKCTRL, CM_MODULEMODE_MASK,
 		    CM_MODULEMODE_DISABLED);
-		while ((mmio_read(CM_WKUP_TIMER1_CLKCTRL) & CM_CLKCTRL_IDLEST)
+		ಯಾವತ್ ((mmio_read(CM_WKUP_TIMER1_CLKCTRL) & CM_CLKCTRL_IDLEST)
 		    != CM_CLKCTRL_IDLEST_DISABLE);
 
 		set32(CLKSEL_TIMER1MS_CLK, CLKSEL_TIMER1MS_CLK_SEL_MASK,
 		    CLKSEL_TIMER1MS_CLK_SEL_SEL2);
-		while ((read32(CLKSEL_TIMER1MS_CLK) &
+		ಯಾವತ್ ((read32(CLKSEL_TIMER1MS_CLK) &
 			CLKSEL_TIMER1MS_CLK_SEL_MASK) !=
 		    CLKSEL_TIMER1MS_CLK_SEL_SEL2);
 
 		/* enable the module and wait for the module to be ready */
 		set32(CM_WKUP_TIMER1_CLKCTRL, CM_MODULEMODE_MASK,
 		    CM_MODULEMODE_ENABLE);
-		while ((mmio_read(CM_WKUP_TIMER1_CLKCTRL) & CM_CLKCTRL_IDLEST)
+		ಯಾವತ್ ((mmio_read(CM_WKUP_TIMER1_CLKCTRL) & CM_CLKCTRL_IDLEST)
 		    != CM_CLKCTRL_IDLEST_FUNC);
 
 		/* Stop timer */
@@ -327,19 +327,19 @@ bsp_timer_init(unsigned freq)
 	omap3_frclock_init();
 }
 
-void
-bsp_timer_stop(void)
+ಶೂನ್ಯ
+bsp_timer_stop(ಶೂನ್ಯ)
 {
 	mmio_clear(timer->base + timer->regs->TCLR, OMAP3_TCLR_ST);
 }
 
-static u32_t
-read_frc(void)
+ಸ್ಥಿರ u32_t
+read_frc(ಶೂನ್ಯ)
 {
-	if (done == 0) {
-		return 0;
+	ಯದಿ (done == 0) {
+		ಪ್ರತ್ಯಾಗಮ 0;
 	}
-	return mmio_read(fr_timer->base + fr_timer->regs->TCRR);
+	ಪ್ರತ್ಯಾಗಮ mmio_read(fr_timer->base + fr_timer->regs->TCRR);
 }
 
 /*
@@ -356,20 +356,20 @@ read_frc(void)
  *  compose the 64 bits time based on the current timer value
  *   and high_frc.
  */
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 frc_overflow_check(u32_t cur_frc)
 {
-	static int prev_frc_valid;
-	static u32_t prev_frc;
-	if (prev_frc_valid && prev_frc > cur_frc) {
-		high_frc++;
+	ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ prev_frc_valid;
+	ಸ್ಥಿರ u32_t prev_frc;
+	ಯದಿ (prev_frc_valid && prev_frc > cur_frc) {
+		ಮೇಲಿನ_frc++;
 	}
 	prev_frc = cur_frc;
 	prev_frc_valid = 1;
 }
 
-void
-bsp_timer_int_handler(void)
+ಶೂನ್ಯ
+bsp_timer_int_handler(ಶೂನ್ಯ)
 {
 	/* Clear all interrupts */
 	u32_t tisr, now;
@@ -386,11 +386,11 @@ bsp_timer_int_handler(void)
 }
 
 /* Use the free running clock as TSC */
-void
+ಶೂನ್ಯ
 read_tsc_64(u64_t * t)
 {
 	u32_t now;
 	now = read_frc();
 	frc_overflow_check(now);
-	*t = (u64_t) now + (high_frc << 32);
+	*t = (u64_t) now + (ಮೇಲಿನ_frc << 32);
 }

@@ -1,11 +1,11 @@
 #ifndef MB_UTILS_H
 #define MB_UTILS_H
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+ಶೂನ್ಯ direct_cls(ಶೂನ್ಯ);
+ಶೂನ್ಯ direct_print(ಧ್ರುವ ವರ್ಣ*);
+ಶೂನ್ಯ direct_print_char(ವರ್ಣ);
+ಪೂರ್ಣಾಙ್ಕ direct_read_char(unsigned ವರ್ಣ*);
 
 #endif

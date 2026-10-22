@@ -8,16 +8,16 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
 
-#include <minix/safecopies.h>
+#ಅನ್ತರ್ಭಾವ <minix/safecopies.h>
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+ಪೂರ್ಣಾಙ್ಕ do_safememset(ಸಂರಚನಾ proc *caller, message *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
@@ -25,33 +25,33 @@ int do_safememset(struct proc *caller, message *m_ptr) {
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
 	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
+	ಪೂರ್ಣಾಙ್ಕ pattern = m_ptr->SMS_PATTERN;
 	size_t len = (size_t)m_ptr->SMS_BYTES;
 
-	struct proc *dst_p;
+	ಸಂರಚನಾ proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	ಸ್ಥಿರ vir_bytes v_offset;
+	ಪೂರ್ಣಾಙ್ಕ r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	ಯದಿ (dst_endpt == NONE || caller_endpt == NONE)
+		ಪ್ರತ್ಯಾಗಮ EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	ಯದಿ (!(dst_p = endpoint_lookup(dst_endpt)))
+		ಪ್ರತ್ಯಾಗಮ EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
+	ಯದಿ (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
 		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+		ಪ್ರತ್ಯಾಗಮ EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_offset, &v_offset, &new_granter, ರಿಕ್ತ);
 
-	if (r != OK) {
+	ಯದಿ (r != OK) {
 		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+		ಪ್ರತ್ಯಾಗಮ r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	ಪ್ರತ್ಯಾಗಮ vm_memset(caller, new_granter, v_offset, pattern, len);
 }

@@ -2,6 +2,6 @@
 #define _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+ಶೂನ್ಯ bsp_init(ಶೂನ್ಯ);
 
 #endif /* __BSP_INIT_H__ */
