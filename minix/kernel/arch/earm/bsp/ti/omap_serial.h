@@ -19,8 +19,8 @@
 
 #ifndef __ASSEMBLY__
 
-void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+فراغ omap3_ser_init(فراغ);
+فراغ omap3_ser_putc(حرف c);
 
 #endif /* __ASSEMBLY__ */
 
