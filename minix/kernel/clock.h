@@ -1,22 +1,22 @@
-#ifndef __CLOCK_H__
-#define __CLOCK_H__
+#اگر_غیر_تعریف_شدہ __CLOCK_H__
+#تعریف_کرو __CLOCK_H__
 
-#include "kernel/kernel.h"
-#include "arch_clock.h"
+#شامل "kernel/kernel.h"
+#شامل "arch_clock.h"
 
-int boot_cpu_init_timer(unsigned freq);
-int app_cpu_init_timer(unsigned freq);
+صحیح boot_cpu_init_timer(غیرعلامتی freq);
+صحیح app_cpu_init_timer(غیرعلامتی freq);
 
-int timer_int_handler(void);
+صحیح timer_int_handler(خالی);
 
-int init_local_timer(unsigned freq);
+صحیح init_local_timer(غیرعلامتی freq);
 /* stop the local timer ticking */
-void stop_local_timer(void);
+خالی stop_local_timer(خالی);
 /* let the time tick again with the original settings after it was stopped */
-void restart_local_timer(void);
-int register_local_timer_handler(irq_handler_t handler);
+خالی restart_local_timer(خالی);
+صحیح رجسٹر_local_timer_handler(irq_handler_t handler);
 
-u64_t ms_2_cpu_time(unsigned ms);
-unsigned cpu_time_2_ms(u64_t cpu_time);
+u64_t ms_2_cpu_وقت(غیرعلامتی ms);
+غیرعلامتی cpu_وقت_2_ms(u64_t cpu_وقت);
 
-#endif /* __CLOCK_H__ */
+#اگر_ختم /* __CLOCK_H__ */

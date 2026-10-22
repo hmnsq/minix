@@ -1,47 +1,47 @@
 
-#include "kernel/kernel.h"
-#include "kernel/vm.h"
+#شامل "kernel/kernel.h"
+#شامل "kernel/vm.h"
 
-#include <machine/vm.h>
+#شامل <machine/vm.h>
 
-#include <minix/syslib.h>
-#include <minix/cpufeature.h>
-#include <string.h>
-#include <assert.h>
-#include <signal.h>
-#include <stdlib.h>
+#شامل <minix/syslib.h>
+#شامل <minix/cpufeature.h>
+#شامل <string.h>
+#شامل <assert.h>
+#شامل <signal.h>
+#شامل <stdlib.h>
 
-#include <machine/vm.h>
+#شامل <machine/vm.h>
 
-#include "oxpcie.h"
-#include "arch_proto.h"
+#شامل "oxpcie.h"
+#شامل "arch_proto.h"
 
-#ifdef USE_APIC
-#include "apic.h"
-#ifdef USE_WATCHDOG
-#include "kernel/watchdog.h"
-#endif
-#endif
+#اگر_تعریف_شدہ USE_APIC
+#شامل "apic.h"
+#اگر_تعریف_شدہ USE_WATCHDOG
+#شامل "kernel/watchdog.h"
+#اگر_ختم
+#اگر_ختم
 
-phys_bytes video_mem_vaddr = 0;
+phys_بائٹیں video_mem_vaddr = 0;
 
-#define HASPT(procptr) ((procptr)->p_seg.p_cr3 != 0)
-static int nfreepdes = 0;
-#define MAXFREEPDES	2
-static int freepdes[MAXFREEPDES];
+#تعریف_کرو HASPT(procptr) ((procptr)->p_seg.p_cr3 != 0)
+ساکن صحیح nfreepdes = 0;
+#تعریف_کرو MAXFREEPDES	2
+ساکن صحیح freepdes[MAXFREEPDES];
 
-static u32_t phys_get32(phys_bytes v);
+ساکن u32_t phys_get32(phys_بائٹیں v);
 
-void mem_clear_mapcache(void)
+خالی mem_clear_mapcache(خالی)
 {
-	int i;
-	for(i = 0; i < nfreepdes; i++) {
-		struct proc *ptproc = get_cpulocal_var(ptproc);
-		int pde = freepdes[i];
+	صحیح i;
+	برائے(i = 0; i < nfreepdes; i++) {
+		ساخت proc *ptproc = get_cpulocal_var(ptproc);
+		صحیح pde = freepdes[i];
 		u32_t *ptv;
-		assert(ptproc);
+		أكد(ptproc);
 		ptv = ptproc->p_seg.p_cr3_v;
-		assert(ptv);
+		أكد(ptv);
 		ptv[pde] = 0;
 	}
 }
@@ -66,42 +66,42 @@ void mem_clear_mapcache(void)
  * pde number to be used, and a pointer to it (linear address) is returned
  * for actual use by phys_copy or memset.
  */
-static phys_bytes createpde(
-	const struct proc *pr,	/* Requested process, NULL for physical. */
-	const phys_bytes linaddr,/* Address after segment translation. */
-	phys_bytes *bytes,	/* Size of chunk, function may truncate it. */
-	int free_pde_idx,	/* index of the free slot to use */
-	int *changed		/* If mapping is made, this is set to 1. */
+ساکن phys_بائٹیں createpde(
+	ثابت ساخت proc *pr,	/* Requested process, NULL for physical. */
+	ثابت phys_بائٹیں linaddr,/* Address after segment translation. */
+	phys_بائٹیں *بائٹیں,	/* Size of chunk, function may truncate it. */
+	صحیح free_pde_idx,	/* index of the free slot to use */
+	صحیح *بدلا		/* If mapping is made, this is set to 1. */
 	)
 {
 	u32_t pdeval;
-	phys_bytes offset;
-	int pde;
+	phys_بائٹیں انحراف;
+	صحیح pde;
 
-	assert(free_pde_idx >= 0 && free_pde_idx < nfreepdes);
+	أكد(free_pde_idx >= 0 && free_pde_idx < nfreepdes);
 	pde = freepdes[free_pde_idx];
-	assert(pde >= 0 && pde < 1024);
+	أكد(pde >= 0 && pde < 1024);
 
-	if(pr && ((pr == get_cpulocal_var(ptproc)) || iskernelp(pr))) {
+	اگر(pr && ((pr == get_cpulocal_var(ptproc)) || iskernelp(pr))) {
 		/* Process memory is requested, and
 		 * it's a process that is already in current page table, or
 		 * the kernel, which is always there.
 		 * Therefore linaddr is valid directly, with the requested
 		 * size.
 		 */
-		return linaddr;
+		واپس linaddr;
 	}
 
-	if(pr) {
+	اگر(pr) {
 		/* Requested address is in a process that is not currently
 		 * accessible directly. Grab the PDE entry of that process'
 		 * page table that corresponds to the requested address.
 		 */
-		assert(pr->p_seg.p_cr3_v);
+		أكد(pr->p_seg.p_cr3_v);
 		pdeval = pr->p_seg.p_cr3_v[I386_VM_PDE(linaddr)];
-	} else {
+	} ورنہ {
 		/* Requested address is physical. Make up the PDE entry. */
-		pdeval = (linaddr & I386_VM_ADDR_MASK_4MB) | 
+		pdeval = (linaddr & I386_VM_ADDR_نقاب_4_MB) | 
 			I386_VM_BIGPAGE | I386_VM_PRESENT | 
 			I386_VM_WRITE | I386_VM_USER;
 	}
@@ -110,10 +110,10 @@ static phys_bytes createpde(
 	 * can access, into the currently loaded page table so it becomes
 	 * visible.
 	 */
-	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
-	if(get_cpulocal_var(ptproc)->p_seg.p_cr3_v[pde] != pdeval) {
+	أكد(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
+	اگر(get_cpulocal_var(ptproc)->p_seg.p_cr3_v[pde] != pdeval) {
 		get_cpulocal_var(ptproc)->p_seg.p_cr3_v[pde] = pdeval;
-		*changed = 1;
+		*بدلا = 1;
 	}
 
 	/* Memory is now available, but only the 4MB window of virtual
@@ -121,133 +121,133 @@ static phys_bytes createpde(
 	 * the requested range is visible and return that in *bytes,
 	 * if that is less than the requested range.
 	 */
-	offset = linaddr & I386_VM_OFFSET_MASK_4MB; /* Offset in 4MB window. */
-	*bytes = MIN(*bytes, I386_BIG_PAGE_SIZE - offset); 
+	انحراف = linaddr & I386_VM_انحراف_نقاب_4_MB; /* Offset in 4MB window. */
+	*بائٹیں = MIN(*بائٹیں, I386_BIG_صفحہ_سائز - انحراف); 
 
 	/* Return the linear address of the start of the new mapping. */
-	return I386_BIG_PAGE_SIZE*pde + offset;
+	واپس I386_BIG_صفحہ_سائز*pde + انحراف;
 }
 
 
 /*===========================================================================*
  *                           check_resumed_caller                            *
  *===========================================================================*/
-static int check_resumed_caller(struct proc *caller)
+ساکن صحیح check_resumed_caller(ساخت proc *caller)
 {
 	/* Returns the result from VM if caller was resumed, otherwise OK. */
-	if (caller && (caller->p_misc_flags & MF_KCALL_RESUME)) {
-		assert(caller->p_vmrequest.vmresult != VMSUSPEND);
-		return caller->p_vmrequest.vmresult;
+	اگر (caller && (caller->p_misc_flags & MF_KCALL_RESUME)) {
+		أكد(caller->p_vmrequest.vmresult != VMSUSPEND);
+		واپس caller->p_vmrequest.vmresult;
 	}
 
-	return OK;
+	واپس OK;
 }
   
 /*===========================================================================*
  *				lin_lin_copy				     *
  *===========================================================================*/
-static int lin_lin_copy(struct proc *srcproc, vir_bytes srclinaddr, 
-	struct proc *dstproc, vir_bytes dstlinaddr, vir_bytes bytes)
+ساکن صحیح lin_lin_copy(ساخت proc *srcproc, vir_بائٹیں srclinaddr, 
+	ساخت proc *dstproc, vir_بائٹیں dstlinaddr, vir_بائٹیں بائٹیں)
 {
 	u32_t addr;
 	proc_nr_t procslot;
 
-	assert(get_cpulocal_var(ptproc));
-	assert(get_cpulocal_var(proc_ptr));
-	assert(read_cr3() == get_cpulocal_var(ptproc)->p_seg.p_cr3);
+	أكد(get_cpulocal_var(ptproc));
+	أكد(get_cpulocal_var(proc_ptr));
+	أكد(read_cr3() == get_cpulocal_var(ptproc)->p_seg.p_cr3);
 
 	procslot = get_cpulocal_var(ptproc)->p_nr;
 
-	assert(procslot >= 0 && procslot < I386_VM_DIR_ENTRIES);
+	أكد(procslot >= 0 && procslot < I386_VM_DIR_ENTRIES);
 
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
-	assert(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
-	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_VMINHIBIT));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_VMINHIBIT));
+	اگر(srcproc) أكد(!RTS_ISSET(srcproc, RTS_خانہ_FREE));
+	اگر(dstproc) أكد(!RTS_ISSET(dstproc, RTS_خانہ_FREE));
+	أكد(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_خانہ_FREE));
+	أكد(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
+	اگر(srcproc) أكد(!RTS_ISSET(srcproc, RTS_VMINHIBIT));
+	اگر(dstproc) أكد(!RTS_ISSET(dstproc, RTS_VMINHIBIT));
 
-	while(bytes > 0) {
-		phys_bytes srcptr, dstptr;
-		vir_bytes chunk = bytes;
-		int changed = 0;
+	جب(بائٹیں > 0) {
+		phys_بائٹیں srcptr, dstptr;
+		vir_بائٹیں chunk = بائٹیں;
+		صحیح بدلا = 0;
 
-#ifdef CONFIG_SMP
-		unsigned cpu = cpuid;
+#اگر_تعریف_شدہ CONFIG_SMP
+		غیرعلامتی cpu = cpuid;
 
-		if (srcproc && GET_BIT(srcproc->p_stale_tlb, cpu)) {
-			changed = 1;
-			UNSET_BIT(srcproc->p_stale_tlb, cpu);
+		اگر (srcproc && GET_ثنائی_ہندسہ(srcproc->p_stale_tlb, cpu)) {
+			بدلا = 1;
+			UNSET_ثنائی_ہندسہ(srcproc->p_stale_tlb, cpu);
 		}
-		if (dstproc && GET_BIT(dstproc->p_stale_tlb, cpu)) {
-			changed = 1;
-			UNSET_BIT(dstproc->p_stale_tlb, cpu);
+		اگر (dstproc && GET_ثنائی_ہندسہ(dstproc->p_stale_tlb, cpu)) {
+			بدلا = 1;
+			UNSET_ثنائی_ہندسہ(dstproc->p_stale_tlb, cpu);
 		}
-#endif
+#اگر_ختم
 
 		/* Set up 4MB ranges. */
-		srcptr = createpde(srcproc, srclinaddr, &chunk, 0, &changed);
-		dstptr = createpde(dstproc, dstlinaddr, &chunk, 1, &changed);
-		if(changed)
+		srcptr = createpde(srcproc, srclinaddr, &chunk, 0, &بدلا);
+		dstptr = createpde(dstproc, dstlinaddr, &chunk, 1, &بدلا);
+		اگر(بدلا)
 			reload_cr3(); 
 
 		/* Check for overflow. */
-		if (srcptr + chunk < srcptr) return EFAULT_SRC;
-		if (dstptr + chunk < dstptr) return EFAULT_DST;
+		اگر (srcptr + chunk < srcptr) واپس EFAULT_SRC;
+		اگر (dstptr + chunk < dstptr) واپس EFAULT_DST;
 
 		/* Copy pages. */
 		PHYS_COPY_CATCH(srcptr, dstptr, chunk, addr);
 
-		if(addr) {
+		اگر(addr) {
 			/* If addr is nonzero, a page fault was caught. */
 
-			if(addr >= srcptr && addr < (srcptr + chunk)) {
-				return EFAULT_SRC;
+			اگر(addr >= srcptr && addr < (srcptr + chunk)) {
+				واپس EFAULT_SRC;
 			}
-			if(addr >= dstptr && addr < (dstptr + chunk)) {
-				return EFAULT_DST;
+			اگر(addr >= dstptr && addr < (dstptr + chunk)) {
+				واپس EFAULT_DST;
 			}
 
 			panic("lin_lin_copy fault out of range");
 
 			/* Not reached. */
-			return EFAULT;
+			واپس EFAULT;
 		}
 
 		/* Update counter and addresses for next iteration, if any. */
-		bytes -= chunk;
+		بائٹیں -= chunk;
 		srclinaddr += chunk;
 		dstlinaddr += chunk;
 	}
 
-	if(srcproc) assert(!RTS_ISSET(srcproc, RTS_SLOT_FREE));
-	if(dstproc) assert(!RTS_ISSET(dstproc, RTS_SLOT_FREE));
-	assert(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_SLOT_FREE));
-	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
+	اگر(srcproc) أكد(!RTS_ISSET(srcproc, RTS_خانہ_FREE));
+	اگر(dstproc) أكد(!RTS_ISSET(dstproc, RTS_خانہ_FREE));
+	أكد(!RTS_ISSET(get_cpulocal_var(ptproc), RTS_خانہ_FREE));
+	أكد(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
 
-	return OK;
+	واپس OK;
 }
 
 
-static u32_t phys_get32(phys_bytes addr)
+ساکن u32_t phys_get32(phys_بائٹیں addr)
 {
 	u32_t v;
-	int r;
+	صحیح r;
 
-	if((r=lin_lin_copy(NULL, addr, 
-		proc_addr(SYSTEM), (phys_bytes) &v, sizeof(v))) != OK) {
+	اگر((r=lin_lin_copy(تہی, addr, 
+		proc_addr(SYSTEM), (phys_بائٹیں) &v, حجم(v))) != OK) {
 		panic("lin_lin_copy for phys_get32 failed: %d",  r);
 	}
 
-	return v;
+	واپس v;
 }
 
-#if 0
-static char *cr0_str(u32_t e)
+#اگر 0
+ساکن حرف *cr0_str(u32_t e)
 {
-	static char str[80];
+	ساکن حرف str[80];
 	strcpy(str, "");
-#define FLAG(v) do { if(e & (v)) { strcat(str, #v " "); e &= ~v; } } while(0)
+#تعریف_کرو FLAG(v) کرو { اگر(e & (v)) { strcat(str, #v " "); e &= ~v; } } جب(0)
 	FLAG(I386_CR0_PE);
 	FLAG(I386_CR0_MP);
 	FLAG(I386_CR0_EM);
@@ -255,13 +255,13 @@ static char *cr0_str(u32_t e)
 	FLAG(I386_CR0_ET);
 	FLAG(I386_CR0_PG);
 	FLAG(I386_CR0_WP);
-	if(e) { strcat(str, " (++)"); }
-	return str;
+	اگر(e) { strcat(str, " (++)"); }
+	واپس str;
 }
 
-static char *cr4_str(u32_t e)
+ساکن حرف *cr4_str(u32_t e)
 {
-	static char str[80];
+	ساکن حرف str[80];
 	strcpy(str, "");
 	FLAG(I386_CR4_VME);
 	FLAG(I386_CR4_PVI);
@@ -271,111 +271,111 @@ static char *cr4_str(u32_t e)
 	FLAG(I386_CR4_PAE);
 	FLAG(I386_CR4_MCE);
 	FLAG(I386_CR4_PGE);
-	if(e) { strcat(str, " (++)"); }
-	return str;
+	اگر(e) { strcat(str, " (++)"); }
+	واپس str;
 }
-#endif
+#اگر_ختم
 
 /*===========================================================================*
  *                              umap_virtual                                 *
  *===========================================================================*/
-phys_bytes umap_virtual(
-  register struct proc *rp,		/* pointer to proc table entry for process */
-  int seg,				/* T, D, or S segment */
-  vir_bytes vir_addr,			/* virtual address in bytes within the seg */
-  vir_bytes bytes			/* # of bytes to be copied */
+phys_بائٹیں umap_virtual(
+  اندراج ساخت proc *rp,		/* pointer to proc table entry for process */
+  صحیح seg,				/* T, D, or S segment */
+  vir_بائٹیں vir_addr,			/* virtual address in bytes within the seg */
+  vir_بائٹیں بائٹیں			/* # of bytes to be copied */
 )
 {
-	phys_bytes phys = 0;
+	phys_بائٹیں phys = 0;
 
-	if(vm_lookup(rp, vir_addr, &phys, NULL) != OK) {
-		printf("SYSTEM:umap_virtual: vm_lookup of %s: seg 0x%x: 0x%lx failed\n", rp->p_name, seg, vir_addr);
+	اگر(vm_lookup(rp, vir_addr, &phys, تہی) != OK) {
+		لکھو("SYSTEM:umap_virtual: vm_lookup of %s: seg 0x%x: 0x%lx failed\n", rp->p_name, seg, vir_addr);
 		phys = 0;
-	} else {
-		if(phys == 0)
+	} ورنہ {
+		اگر(phys == 0)
 			panic("vm_lookup returned phys: 0x%lx",  phys);
 	}
 
-	if(phys == 0) {
-		printf("SYSTEM:umap_virtual: lookup failed\n");
-		return 0;
+	اگر(phys == 0) {
+		لکھو("SYSTEM:umap_virtual: lookup failed\n");
+		واپس 0;
 	}
 
 	/* Now make sure addresses are contiguous in physical memory
 	 * so that the umap makes sense.
 	 */
-	if(bytes > 0 && vm_lookup_range(rp, vir_addr, NULL, bytes) != bytes) {
-		printf("umap_virtual: %s: %lu at 0x%lx (vir 0x%lx) not contiguous\n",
-			rp->p_name, bytes, vir_addr, vir_addr);
-		return 0;
+	اگر(بائٹیں > 0 && vm_lookup_range(rp, vir_addr, تہی, بائٹیں) != بائٹیں) {
+		لکھو("umap_virtual: %s: %lu at 0x%lx (vir 0x%lx) not contiguous\n",
+			rp->p_name, بائٹیں, vir_addr, vir_addr);
+		واپس 0;
 	}
 
 	/* phys must be larger than 0 (or the caller will think the call
 	 * failed), and address must not cross a page boundary.
 	 */
-	assert(phys);
+	أكد(phys);
 
-	return phys;
+	واپس phys;
 }
 
 
 /*===========================================================================*
  *                              vm_lookup                                    *
  *===========================================================================*/
-int vm_lookup(const struct proc *proc, const vir_bytes virtual,
- phys_bytes *physical, u32_t *ptent)
+صحیح vm_lookup(ثابت ساخت proc *proc, ثابت vir_بائٹیں مجازی,
+ phys_بائٹیں *physical, u32_t *ptent)
 {
-	u32_t *root, *pt;
-	int pde, pte;
+	u32_t *جڑ, *pt;
+	صحیح pde, pte;
 	u32_t pde_v, pte_v;
 
-	assert(proc);
-	assert(physical);
-	assert(!isemptyp(proc));
-	assert(HASPT(proc));
+	أكد(proc);
+	أكد(physical);
+	أكد(!isemptyp(proc));
+	أكد(HASPT(proc));
 
 	/* Retrieve page directory entry. */
-	root = (u32_t *) proc->p_seg.p_cr3;
-	assert(!((u32_t) root % I386_PAGE_SIZE));
-	pde = I386_VM_PDE(virtual);
-	assert(pde >= 0 && pde < I386_VM_DIR_ENTRIES);
-	pde_v = phys_get32((u32_t) (root + pde));
+	جڑ = (u32_t *) proc->p_seg.p_cr3;
+	أكد(!((u32_t) جڑ % I386_صفحہ_سائز));
+	pde = I386_VM_PDE(مجازی);
+	أكد(pde >= 0 && pde < I386_VM_DIR_ENTRIES);
+	pde_v = phys_get32((u32_t) (جڑ + pde));
 
-	if(!(pde_v & I386_VM_PRESENT)) {
-		return EFAULT;
+	اگر(!(pde_v & I386_VM_PRESENT)) {
+		واپس EFAULT;
 	}
 
 	/* We don't expect to ever see this. */
-	if(pde_v & I386_VM_BIGPAGE) {
-		*physical = pde_v & I386_VM_ADDR_MASK_4MB;
-		if(ptent) *ptent = pde_v;
-		*physical += virtual & I386_VM_OFFSET_MASK_4MB;
-	} else {
+	اگر(pde_v & I386_VM_BIGPAGE) {
+		*physical = pde_v & I386_VM_ADDR_نقاب_4_MB;
+		اگر(ptent) *ptent = pde_v;
+		*physical += مجازی & I386_VM_انحراف_نقاب_4_MB;
+	} ورنہ {
 		/* Retrieve page table entry. */
 		pt = (u32_t *) I386_VM_PFA(pde_v);
-		assert(!((u32_t) pt % I386_PAGE_SIZE));
-		pte = I386_VM_PTE(virtual);
-		assert(pte >= 0 && pte < I386_VM_PT_ENTRIES);
+		أكد(!((u32_t) pt % I386_صفحہ_سائز));
+		pte = I386_VM_PTE(مجازی);
+		أكد(pte >= 0 && pte < I386_VM_PT_ENTRIES);
 		pte_v = phys_get32((u32_t) (pt + pte));
-		if(!(pte_v & I386_VM_PRESENT)) {
-			return EFAULT;
+		اگر(!(pte_v & I386_VM_PRESENT)) {
+			واپس EFAULT;
 		}
 
-		if(ptent) *ptent = pte_v;
+		اگر(ptent) *ptent = pte_v;
 
 		/* Actual address now known; retrieve it and add page offset. */
 		*physical = I386_VM_PFA(pte_v);
-		*physical += virtual % I386_PAGE_SIZE;
+		*physical += مجازی % I386_صفحہ_سائز;
 	}
 
-	return OK;
+	واپس OK;
 }
 
 /*===========================================================================*
  *				vm_lookup_range				     *
  *===========================================================================*/
-size_t vm_lookup_range(const struct proc *proc, vir_bytes vir_addr,
-	phys_bytes *phys_addr, size_t bytes)
+size_t vm_lookup_range(ثابت ساخت proc *proc, vir_بائٹیں vir_addr,
+	phys_بائٹیں *phys_addr, size_t بائٹیں)
 {
 	/* Look up the physical address corresponding to linear virtual address
 	 * 'vir_addr' for process 'proc'. Return the size of the range covered
@@ -386,46 +386,46 @@ size_t vm_lookup_range(const struct proc *proc, vir_bytes vir_addr,
 	 * be page-aligned, but the caller must have verified that the given
 	 * linear range is valid for the given process at all.
 	 */
-	phys_bytes phys, next_phys;
+	phys_بائٹیں phys, اگلا_phys;
 	size_t len;
 
-	assert(proc);
-	assert(bytes > 0);
-	assert(HASPT(proc));
+	أكد(proc);
+	أكد(بائٹیں > 0);
+	أكد(HASPT(proc));
 
 	/* Look up the first page. */
-	if (vm_lookup(proc, vir_addr, &phys, NULL) != OK)
-		return 0;
+	اگر (vm_lookup(proc, vir_addr, &phys, تہی) != OK)
+		واپس 0;
 
-	if (phys_addr != NULL)
+	اگر (phys_addr != تہی)
 		*phys_addr = phys;
 
-	len = I386_PAGE_SIZE - (vir_addr % I386_PAGE_SIZE);
+	len = I386_صفحہ_سائز - (vir_addr % I386_صفحہ_سائز);
 	vir_addr += len;
-	next_phys = phys + len;
+	اگلا_phys = phys + len;
 
 	/* Look up any next pages and test physical contiguity. */
-	while (len < bytes) {
-		if (vm_lookup(proc, vir_addr, &phys, NULL) != OK)
-			break;
+	جب (len < بائٹیں) {
+		اگر (vm_lookup(proc, vir_addr, &phys, تہی) != OK)
+			توڑو;
 
-		if (next_phys != phys)
-			break;
+		اگر (اگلا_phys != phys)
+			توڑو;
 
-		len += I386_PAGE_SIZE;
-		vir_addr += I386_PAGE_SIZE;
-		next_phys += I386_PAGE_SIZE;
+		len += I386_صفحہ_سائز;
+		vir_addr += I386_صفحہ_سائز;
+		اگلا_phys += I386_صفحہ_سائز;
 	}
 
 	/* We might now have overshot the requested length somewhat. */
-	return MIN(bytes, len);
+	واپس MIN(بائٹیں, len);
 }
 
 /*===========================================================================*
  *				vm_check_range				     *
  *===========================================================================*/
-int vm_check_range(struct proc *caller, struct proc *target,
-	vir_bytes vir_addr, size_t bytes, int writeflag)
+صحیح vm_check_range(ساخت proc *caller, ساخت proc *ہدف,
+	vir_بائٹیں vir_addr, size_t بائٹیں, صحیح writeflag)
 {
 	/* Public interface to vm_suspend(), for use by kernel calls. On behalf
 	 * of 'caller', call into VM to check linear virtual address range of
@@ -435,22 +435,22 @@ int vm_check_range(struct proc *caller, struct proc *target,
 	 * then return the error code resulting from the first call. Upon the
 	 * first call, a non-success error code is returned as well.
 	 */
-	int r;
+	صحیح r;
 
-	if ((caller->p_misc_flags & MF_KCALL_RESUME) &&
+	اگر ((caller->p_misc_flags & MF_KCALL_RESUME) &&
 			(r = caller->p_vmrequest.vmresult) != OK)
-		return r;
+		واپس r;
 
-	vm_suspend(caller, target, vir_addr, bytes, VMSTYPE_KERNELCALL,
+	vm_suspend(caller, ہدف, vir_addr, بائٹیں, VMSTYPE_KERNELCALL,
 		writeflag);
 
-	return VMSUSPEND;
+	واپس VMSUSPEND;
 }
 
-#if 0
-static char *flagstr(u32_t e, const int dir)
+#اگر 0
+ساکن حرف *flagstr(u32_t e, ثابت صحیح dir)
 {
-	static char str[80];
+	ساکن حرف str[80];
 	strcpy(str, "");
 	FLAG(I386_VM_PRESENT);
 	FLAG(I386_VM_WRITE);
@@ -458,116 +458,116 @@ static char *flagstr(u32_t e, const int dir)
 	FLAG(I386_VM_PWT);
 	FLAG(I386_VM_PCD);
 	FLAG(I386_VM_GLOBAL);
-	if(dir)
+	اگر(dir)
 		FLAG(I386_VM_BIGPAGE);	/* Page directory entry only */
-	else
+	ورنہ
 		FLAG(I386_VM_DIRTY);	/* Page table entry only */
-	return str;
+	واپس str;
 }
 
-static void vm_pt_print(u32_t *pagetable, const u32_t v)
+ساکن خالی vm_pt_print(u32_t *pagetable, ثابت u32_t v)
 {
-	int pte;
-	int col = 0;
+	صحیح pte;
+	صحیح ستون = 0;
 
-	assert(!((u32_t) pagetable % I386_PAGE_SIZE));
+	أكد(!((u32_t) pagetable % I386_صفحہ_سائز));
 
-	for(pte = 0; pte < I386_VM_PT_ENTRIES; pte++) {
+	برائے(pte = 0; pte < I386_VM_PT_ENTRIES; pte++) {
 		u32_t pte_v, pfa;
 		pte_v = phys_get32((u32_t) (pagetable + pte));
-		if(!(pte_v & I386_VM_PRESENT))
-			continue;
+		اگر(!(pte_v & I386_VM_PRESENT))
+			جاری;
 		pfa = I386_VM_PFA(pte_v);
-		printf("%4d:%08lx:%08lx %2s ",
-			pte, v + I386_PAGE_SIZE*pte, pfa,
+		لکھو("%4d:%08lx:%08lx %2s ",
+			pte, v + I386_صفحہ_سائز*pte, pfa,
 			(pte_v & I386_VM_WRITE) ? "rw":"RO");
-		col++;
-		if(col == 3) { printf("\n"); col = 0; }
+		ستون++;
+		اگر(ستون == 3) { لکھو("\n"); ستون = 0; }
 	}
-	if(col > 0) printf("\n");
+	اگر(ستون > 0) لکھو("\n");
 
-	return;
+	واپس;
 }
 
-static void vm_print(u32_t *root)
+ساکن خالی vm_print(u32_t *جڑ)
 {
-	int pde;
+	صحیح pde;
 
-	assert(!((u32_t) root % I386_PAGE_SIZE));
+	أكد(!((u32_t) جڑ % I386_صفحہ_سائز));
 
-	printf("page table 0x%lx:\n", root);
+	لکھو("page table 0x%lx:\n", جڑ);
 
-	for(pde = 0; pde < I386_VM_DIR_ENTRIES; pde++) {
+	برائے(pde = 0; pde < I386_VM_DIR_ENTRIES; pde++) {
 		u32_t pde_v;
 		u32_t *pte_a;
-		pde_v = phys_get32((u32_t) (root + pde));
-		if(!(pde_v & I386_VM_PRESENT))
-			continue;
-		if(pde_v & I386_VM_BIGPAGE) {
-			printf("%4d: 0x%lx, flags %s\n",
+		pde_v = phys_get32((u32_t) (جڑ + pde));
+		اگر(!(pde_v & I386_VM_PRESENT))
+			جاری;
+		اگر(pde_v & I386_VM_BIGPAGE) {
+			لکھو("%4d: 0x%lx, flags %s\n",
 				pde, I386_VM_PFA(pde_v), flagstr(pde_v, 1));
-		} else {
+		} ورنہ {
 			pte_a = (u32_t *) I386_VM_PFA(pde_v);
-			printf("%4d: pt %08lx %s\n",
+			لکھو("%4d: pt %08lx %s\n",
 				pde, pte_a, flagstr(pde_v, 1));
-			vm_pt_print(pte_a, pde * I386_VM_PT_ENTRIES * I386_PAGE_SIZE);
-			printf("\n");
+			vm_pt_print(pte_a, pde * I386_VM_PT_ENTRIES * I386_صفحہ_سائز);
+			لکھو("\n");
 		}
 	}
 
 
-	return;
+	واپس;
 }
-#endif
+#اگر_ختم
 
 /*===========================================================================*
  *                                 vmmemset                                  *
  *===========================================================================*/
-int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
-	phys_bytes count)
+صحیح vm_memset(ساخت proc* caller, endpoint_t who, phys_بائٹیں ph, صحیح c,
+	phys_بائٹیں گنتی)
 {
-	u32_t pattern;
-	struct proc *whoptr = NULL;
-	phys_bytes cur_ph = ph;
-	phys_bytes left = count;
-	phys_bytes ptr, chunk, pfa = 0;
-	int new_cr3, r = OK;
+	u32_t نمونہ;
+	ساخت proc *whoptr = تہی;
+	phys_بائٹیں cur_ph = ph;
+	phys_بائٹیں بایاں = گنتی;
+	phys_بائٹیں ptr, chunk, pfa = 0;
+	صحیح new_cr3, r = OK;
 
-	if ((r = check_resumed_caller(caller)) != OK)
-		return r;
+	اگر ((r = check_resumed_caller(caller)) != OK)
+		واپس r;
 
 	/* NONE for physical, otherwise virtual */
-	if (who != NONE && !(whoptr = endpoint_lookup(who)))
-		return ESRCH;
+	اگر (who != NONE && !(whoptr = endpoint_lookup(who)))
+		واپس ESRCH;
 
 	c &= 0xFF;
-	pattern = c | (c << 8) | (c << 16) | (c << 24);
+	نمونہ = c | (c << 8) | (c << 16) | (c << 24);
 
-	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
-	assert(!catch_pagefaults);
+	أكد(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
+	أكد(!catch_pagefaults);
 	catch_pagefaults = 1;
 
 	/* We can memset as many bytes as we have remaining,
 	 * or as many as remain in the 4MB chunk we mapped in.
 	 */
-	while (left > 0) {
+	جب (بایاں > 0) {
 		new_cr3 = 0;
-		chunk = left;
+		chunk = بایاں;
 		ptr = createpde(whoptr, cur_ph, &chunk, 0, &new_cr3);
 
-		if (new_cr3)
+		اگر (new_cr3)
 			reload_cr3();
 
 		/* If a page fault happens, pfa is non-null */
-		if ((pfa = phys_memset(ptr, pattern, chunk))) {
+		اگر ((pfa = phys_memset(ptr, نمونہ, chunk))) {
 
 			/* If a process pagefaults, VM may help out */
-			if (whoptr) {
-				vm_suspend(caller, whoptr, ph, count,
+			اگر (whoptr) {
+				vm_suspend(caller, whoptr, ph, گنتی,
 						   VMSTYPE_KERNELCALL, 1);
-				assert(catch_pagefaults);
+				أكد(catch_pagefaults);
 				catch_pagefaults = 0;
-				return VMSUSPEND;
+				واپس VMSUSPEND;
 			}
 
 			/* Pagefault when phys copying ?! */
@@ -576,52 +576,52 @@ int vm_memset(struct proc* caller, endpoint_t who, phys_bytes ph, int c,
 		}
 
 		cur_ph += chunk;
-		left -= chunk;
+		بایاں -= chunk;
 	}
 
-	assert(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
-	assert(catch_pagefaults);
+	أكد(get_cpulocal_var(ptproc)->p_seg.p_cr3_v);
+	أكد(catch_pagefaults);
 	catch_pagefaults = 0;
 
-	return OK;
+	واپس OK;
 }
 
 /*===========================================================================*
  *				virtual_copy_f				     *
  *===========================================================================*/
-int virtual_copy_f(
-  struct proc * caller,
-  struct vir_addr *src_addr,	/* source virtual address */
-  struct vir_addr *dst_addr,	/* destination virtual address */
-  vir_bytes bytes,		/* # of bytes to copy  */
-  int vmcheck			/* if nonzero, can return VMSUSPEND */
+صحیح virtual_copy_f(
+  ساخت proc * caller,
+  ساخت vir_addr *src_addr,	/* source virtual address */
+  ساخت vir_addr *dst_addr,	/* destination virtual address */
+  vir_بائٹیں بائٹیں,		/* # of bytes to copy  */
+  صحیح vmcheck			/* if nonzero, can return VMSUSPEND */
 )
 {
 /* Copy bytes from virtual address src_addr to virtual address dst_addr. */
-  struct vir_addr *vir_addr[2];	/* virtual source and destination address */
-  int i, r;
-  struct proc *procs[2];
+  ساخت vir_addr *vir_addr[2];	/* virtual source and destination address */
+  صحیح i, r;
+  ساخت proc *procs[2];
 
-  assert((vmcheck && caller) || (!vmcheck && !caller));
+  أكد((vmcheck && caller) || (!vmcheck && !caller));
 
   /* Check copy count. */
-  if (bytes <= 0) return(EDOM);
+  اگر (بائٹیں <= 0) واپس(EDOM);
 
   /* Do some more checks and map virtual addresses to physical addresses. */
   vir_addr[_SRC_] = src_addr;
   vir_addr[_DST_] = dst_addr;
 
-  for (i=_SRC_; i<=_DST_; i++) {
+  برائے (i=_SRC_; i<=_DST_; i++) {
   	endpoint_t proc_e = vir_addr[i]->proc_nr_e;
-	int proc_nr;
-	struct proc *p;
+	صحیح proc_nr;
+	ساخت proc *p;
 
-	if(proc_e == NONE) {
-		p = NULL;
-	} else {
-		if(!isokendpt(proc_e, &proc_nr)) {
-			printf("virtual_copy: no reasonable endpoint\n");
-			return ESRCH;
+	اگر(proc_e == NONE) {
+		p = تہی;
+	} ورنہ {
+		اگر(!isokendpt(proc_e, &proc_nr)) {
+			لکھو("virtual_copy: no reasonable endpoint\n");
+			واپس ESRCH;
 		}
 		p = proc_addr(proc_nr);
 	}
@@ -629,101 +629,101 @@ int virtual_copy_f(
 	procs[i] = p;
   }
 
-  if ((r = check_resumed_caller(caller)) != OK)
-	return r;
+  اگر ((r = check_resumed_caller(caller)) != OK)
+	واپس r;
 
-  if((r=lin_lin_copy(procs[_SRC_], vir_addr[_SRC_]->offset,
-  	procs[_DST_], vir_addr[_DST_]->offset, bytes)) != OK) {
-	int writeflag;
-  	struct proc *target = NULL;
-  	phys_bytes lin;
-  	if(r != EFAULT_SRC && r != EFAULT_DST)
+  اگر((r=lin_lin_copy(procs[_SRC_], vir_addr[_SRC_]->انحراف,
+  	procs[_DST_], vir_addr[_DST_]->انحراف, بائٹیں)) != OK) {
+	صحیح writeflag;
+  	ساخت proc *ہدف = تہی;
+  	phys_بائٹیں lin;
+  	اگر(r != EFAULT_SRC && r != EFAULT_DST)
   		panic("lin_lin_copy failed: %d",  r);
-  	if(!vmcheck || !caller) {
-    		return r;
+  	اگر(!vmcheck || !caller) {
+    		واپس r;
   	}
 
-  	if(r == EFAULT_SRC) {
-  		lin = vir_addr[_SRC_]->offset;
-  		target = procs[_SRC_];
+  	اگر(r == EFAULT_SRC) {
+  		lin = vir_addr[_SRC_]->انحراف;
+  		ہدف = procs[_SRC_];
 		writeflag = 0;
-  	} else if(r == EFAULT_DST) {
-  		lin = vir_addr[_DST_]->offset;
-  		target = procs[_DST_];
+  	} ورنہ اگر(r == EFAULT_DST) {
+  		lin = vir_addr[_DST_]->انحراف;
+  		ہدف = procs[_DST_];
 		writeflag = 1;
-  	} else {
+  	} ورنہ {
   		panic("r strange: %d",  r);
   	}
 
-	assert(caller);
-	assert(target);
+	أكد(caller);
+	أكد(ہدف);
 
-	vm_suspend(caller, target, lin, bytes, VMSTYPE_KERNELCALL, writeflag);
-	return VMSUSPEND;
+	vm_suspend(caller, ہدف, lin, بائٹیں, VMSTYPE_KERNELCALL, writeflag);
+	واپس VMSUSPEND;
   }
 
-  return OK;
+  واپس OK;
 }
 
 /*===========================================================================*
  *				data_copy				     *
  *===========================================================================*/
-int data_copy(const endpoint_t from_proc, const vir_bytes from_addr,
-	const endpoint_t to_proc, const vir_bytes to_addr,
-	size_t bytes)
+صحیح ڈیٹا_copy(ثابت endpoint_t from_proc, ثابت vir_بائٹیں from_addr,
+	ثابت endpoint_t مقصد_proc, ثابت vir_بائٹیں مقصد_addr,
+	size_t بائٹیں)
 {
-  struct vir_addr src, dst;
+  ساخت vir_addr src, dst;
 
-  src.offset = from_addr;
-  dst.offset = to_addr;
+  src.انحراف = from_addr;
+  dst.انحراف = مقصد_addr;
   src.proc_nr_e = from_proc;
-  dst.proc_nr_e = to_proc;
-  assert(src.proc_nr_e != NONE);
-  assert(dst.proc_nr_e != NONE);
+  dst.proc_nr_e = مقصد_proc;
+  أكد(src.proc_nr_e != NONE);
+  أكد(dst.proc_nr_e != NONE);
 
-  return virtual_copy(&src, &dst, bytes);
+  واپس virtual_copy(&src, &dst, بائٹیں);
 }
 
 /*===========================================================================*
  *				data_copy_vmcheck			     *
  *===========================================================================*/
-int data_copy_vmcheck(struct proc * caller,
-	const endpoint_t from_proc, const vir_bytes from_addr,
-	const endpoint_t to_proc, const vir_bytes to_addr,
-	size_t bytes)
+صحیح ڈیٹا_copy_vmcheck(ساخت proc * caller,
+	ثابت endpoint_t from_proc, ثابت vir_بائٹیں from_addr,
+	ثابت endpoint_t مقصد_proc, ثابت vir_بائٹیں مقصد_addr,
+	size_t بائٹیں)
 {
-  struct vir_addr src, dst;
+  ساخت vir_addr src, dst;
 
-  src.offset = from_addr;
-  dst.offset = to_addr;
+  src.انحراف = from_addr;
+  dst.انحراف = مقصد_addr;
   src.proc_nr_e = from_proc;
-  dst.proc_nr_e = to_proc;
-  assert(src.proc_nr_e != NONE);
-  assert(dst.proc_nr_e != NONE);
+  dst.proc_nr_e = مقصد_proc;
+  أكد(src.proc_nr_e != NONE);
+  أكد(dst.proc_nr_e != NONE);
 
-  return virtual_copy_vmcheck(caller, &src, &dst, bytes);
+  واپس virtual_copy_vmcheck(caller, &src, &dst, بائٹیں);
 }
 
-void memory_init(void)
+خالی حافظہ_init(خالی)
 {
-	assert(nfreepdes == 0);
+	أكد(nfreepdes == 0);
 
-	freepdes[nfreepdes++] = kinfo.freepde_start++;
-	freepdes[nfreepdes++] = kinfo.freepde_start++;
+	freepdes[nfreepdes++] = kinfo.freepde_آغاز++;
+	freepdes[nfreepdes++] = kinfo.freepde_آغاز++;
 
-	assert(kinfo.freepde_start < I386_VM_DIR_ENTRIES);
-	assert(nfreepdes == 2);
-	assert(nfreepdes <= MAXFREEPDES);
+	أكد(kinfo.freepde_آغاز < I386_VM_DIR_ENTRIES);
+	أكد(nfreepdes == 2);
+	أكد(nfreepdes <= MAXFREEPDES);
 }
 
 /*===========================================================================*
  *				arch_proc_init				     *
  *===========================================================================*/
-void arch_proc_init(struct proc *pr, const u32_t ip, const u32_t sp,
-	const u32_t ps_str, char *name)
+خالی arch_proc_init(ساخت proc *pr, ثابت u32_t ip, ثابت u32_t sp,
+	ثابت u32_t ps_str, حرف *name)
 {
 	arch_proc_reset(pr);
-	strlcpy(pr->p_name, name, sizeof(pr->p_name));
+	strlcpy(pr->p_name, name, حجم(pr->p_name));
 
 	/* set custom state we know */
 	pr->p_reg.pc = ip;
@@ -731,167 +731,167 @@ void arch_proc_init(struct proc *pr, const u32_t ip, const u32_t sp,
 	pr->p_reg.bx = ps_str;
 }
 
-static int oxpcie_mapping_index = -1,
-	lapic_mapping_index = -1,
-	ioapic_first_index = -1,
-	ioapic_last_index = -1,
-	video_mem_mapping_index = -1,
-	usermapped_glo_index = -1,
-	usermapped_index = -1, first_um_idx = -1;
+ساکن صحیح oxpcie_mapping_اشاریہ = -1,
+	lapic_mapping_اشاریہ = -1,
+	ioapic_پہلا_اشاریہ = -1,
+	ioapic_آخری_اشاریہ = -1,
+	video_mem_mapping_اشاریہ = -1,
+	usermapped_glo_اشاریہ = -1,
+	usermapped_اشاریہ = -1, پہلا_um_idx = -1;
 
-extern char *video_mem;
+خارجی حرف *video_mem;
 
-extern char usermapped_start, usermapped_end, usermapped_nonglo_start;
+خارجی حرف usermapped_آغاز, usermapped_انتہا, usermapped_nonglo_آغاز;
 
-int arch_phys_map(const int index,
-			phys_bytes *addr,
-			phys_bytes *len,
-			int *flags)
+صحیح arch_phys_map(ثابت صحیح اشاریہ,
+			phys_بائٹیں *addr,
+			phys_بائٹیں *len,
+			صحیح *flags)
 {
-	static int first = 1;
-	int freeidx = 0;
-	static char *ser_var = NULL;
-	u32_t glo_len = (u32_t) &usermapped_nonglo_start -
-			(u32_t) &usermapped_start;
+	ساکن صحیح پہلا = 1;
+	صحیح freeidx = 0;
+	ساکن حرف *ser_var = تہی;
+	u32_t glo_len = (u32_t) &usermapped_nonglo_آغاز -
+			(u32_t) &usermapped_آغاز;
 
-	if(first) {
-		memset(&minix_kerninfo, 0, sizeof(minix_kerninfo));
-		video_mem_mapping_index = freeidx++;
-		if(glo_len > 0) {
-			usermapped_glo_index = freeidx++;
+	اگر(پہلا) {
+		memset(&minix_kerninfo, 0, حجم(minix_kerninfo));
+		video_mem_mapping_اشاریہ = freeidx++;
+		اگر(glo_len > 0) {
+			usermapped_glo_اشاریہ = freeidx++;
 		}
 		
-		usermapped_index = freeidx++;
-		first_um_idx = usermapped_index;
-		if(usermapped_glo_index != -1)
-			first_um_idx = usermapped_glo_index;
+		usermapped_اشاریہ = freeidx++;
+		پہلا_um_idx = usermapped_اشاریہ;
+		اگر(usermapped_glo_اشاریہ != -1)
+			پہلا_um_idx = usermapped_glo_اشاریہ;
 
-#ifdef USE_APIC
-		if(lapic_addr)
-			lapic_mapping_index = freeidx++;
-		if (ioapic_enabled) {
-			ioapic_first_index = freeidx;
-			assert(nioapics > 0);
+#اگر_تعریف_شدہ USE_APIC
+		اگر(lapic_addr)
+			lapic_mapping_اشاریہ = freeidx++;
+		اگر (ioapic_enabled) {
+			ioapic_پہلا_اشاریہ = freeidx;
+			أكد(nioapics > 0);
 			freeidx += nioapics;
-			ioapic_last_index = freeidx-1;
+			ioapic_آخری_اشاریہ = freeidx-1;
 		}
-#endif
+#اگر_ختم
 
-#ifdef CONFIG_OXPCIE
-		if((ser_var = env_get("oxpcie"))) {
-			if(ser_var[0] != '0' || ser_var[1] != 'x') {
-				printf("oxpcie address in hex please\n");
-			} else {
-				printf("oxpcie address is %s\n", ser_var);
-				oxpcie_mapping_index = freeidx++;
+#اگر_تعریف_شدہ CONFIG_OXPCIE
+		اگر((ser_var = env_get("oxpcie"))) {
+			اگر(ser_var[0] != '0' || ser_var[1] != 'x') {
+				لکھو("oxpcie address in hex please\n");
+			} ورنہ {
+				لکھو("oxpcie address is %s\n", ser_var);
+				oxpcie_mapping_اشاریہ = freeidx++;
 			}
 		}
-#endif
+#اگر_ختم
 
-		first = 0;
+		پہلا = 0;
 	}
 
-	if(index == usermapped_glo_index) {
-		*addr = vir2phys(&usermapped_start);
+	اگر(اشاریہ == usermapped_glo_اشاریہ) {
+		*addr = vir2phys(&usermapped_آغاز);
 		*len = glo_len;
 		*flags = VMMF_USER | VMMF_GLO;
-		return OK;
+		واپس OK;
 	}
-	else if(index == usermapped_index) {
-		*addr = vir2phys(&usermapped_nonglo_start);
-		*len = (u32_t) &usermapped_end -
-			(u32_t) &usermapped_nonglo_start;
+	ورنہ اگر(اشاریہ == usermapped_اشاریہ) {
+		*addr = vir2phys(&usermapped_nonglo_آغاز);
+		*len = (u32_t) &usermapped_انتہا -
+			(u32_t) &usermapped_nonglo_آغاز;
 		*flags = VMMF_USER;
-		return OK;
+		واپس OK;
 	}
-	else if (index == video_mem_mapping_index) {
+	ورنہ اگر (اشاریہ == video_mem_mapping_اشاریہ) {
 		/* map video memory in so we can print panic messages */
-		*addr = MULTIBOOT_VIDEO_BUFFER;
-		*len = I386_PAGE_SIZE;
+		*addr = MULTIBOOT_VIDEO_بفر;
+		*len = I386_صفحہ_سائز;
 		*flags = VMMF_WRITE;
-		return OK;
+		واپس OK;
 	}
-#ifdef USE_APIC
-	else if (index == lapic_mapping_index) {
+#اگر_تعریف_شدہ USE_APIC
+	ورنہ اگر (اشاریہ == lapic_mapping_اشاریہ) {
 		/* map the local APIC if enabled */
-		if (!lapic_addr)
-			return EINVAL;
+		اگر (!lapic_addr)
+			واپس EINVAL;
 		*addr = lapic_addr;
 		*len = 4 << 10 /* 4kB */;
 		*flags = VMMF_UNCACHED | VMMF_WRITE;
-		return OK;
+		واپس OK;
 	}
-	else if (ioapic_enabled && index >= ioapic_first_index && index <= ioapic_last_index) {
-		int ioapic_idx = index - ioapic_first_index;
+	ورنہ اگر (ioapic_enabled && اشاریہ >= ioapic_پہلا_اشاریہ && اشاریہ <= ioapic_آخری_اشاریہ) {
+		صحیح ioapic_idx = اشاریہ - ioapic_پہلا_اشاریہ;
 		*addr = io_apic[ioapic_idx].paddr;
-		assert(*addr);
+		أكد(*addr);
 		*len = 4 << 10 /* 4kB */;
 		*flags = VMMF_UNCACHED | VMMF_WRITE;
-		printf("ioapic map: addr 0x%lx\n", *addr);
-		return OK;
+		لکھو("ioapic map: addr 0x%lx\n", *addr);
+		واپس OK;
 	}
-#endif
+#اگر_ختم
 
-#if CONFIG_OXPCIE
-	if(index == oxpcie_mapping_index) {
-		*addr = strtoul(ser_var+2, NULL, 16);
+#اگر CONFIG_OXPCIE
+	اگر(اشاریہ == oxpcie_mapping_اشاریہ) {
+		*addr = strtoul(ser_var+2, تہی, 16);
 		*len = 0x4000;
 		*flags = VMMF_UNCACHED | VMMF_WRITE;
-		return OK;
+		واپس OK;
 	}
-#endif
+#اگر_ختم
 
-	return EINVAL;
+	واپس EINVAL;
 }
 
-int arch_phys_map_reply(const int index, const vir_bytes addr)
+صحیح arch_phys_map_جواب(ثابت صحیح اشاریہ, ثابت vir_بائٹیں addr)
 {
-#ifdef USE_APIC
+#اگر_تعریف_شدہ USE_APIC
 	/* if local APIC is enabled */
-	if (index == lapic_mapping_index && lapic_addr) {
+	اگر (اشاریہ == lapic_mapping_اشاریہ && lapic_addr) {
 		lapic_addr_vaddr = addr;
-		return OK;
+		واپس OK;
 	}
-	else if (ioapic_enabled && index >= ioapic_first_index &&
-		index <= ioapic_last_index) {
-		int i = index - ioapic_first_index;
+	ورنہ اگر (ioapic_enabled && اشاریہ >= ioapic_پہلا_اشاریہ &&
+		اشاریہ <= ioapic_آخری_اشاریہ) {
+		صحیح i = اشاریہ - ioapic_پہلا_اشاریہ;
 		io_apic[i].vaddr = addr;
-		return OK;
+		واپس OK;
 	}
-#endif
+#اگر_ختم
 
-#if CONFIG_OXPCIE
-	if (index == oxpcie_mapping_index) {
-		oxpcie_set_vaddr((unsigned char *) addr);
-		return OK;
+#اگر CONFIG_OXPCIE
+	اگر (اشاریہ == oxpcie_mapping_اشاریہ) {
+		oxpcie_سیٹ_vaddr((غیرعلامتی حرف *) addr);
+		واپس OK;
 	}
-#endif
-	if(index == first_um_idx) {
-		extern struct minix_ipcvecs minix_ipcvecs_sysenter,
+#اگر_ختم
+	اگر(اشاریہ == پہلا_um_idx) {
+		خارجی ساخت minix_ipcvecs minix_ipcvecs_sysenter,
 			minix_ipcvecs_syscall,
 			minix_ipcvecs_softint;
-		extern u32_t usermapped_offset;
-		assert(addr > (u32_t) &usermapped_start);
-		usermapped_offset = addr - (u32_t) &usermapped_start;
-#define FIXEDPTR(ptr) (void *) ((u32_t)ptr + usermapped_offset)
-#define FIXPTR(ptr) ptr = FIXEDPTR(ptr)
-#define ASSIGN(minixstruct) minix_kerninfo.minixstruct = FIXEDPTR(&minixstruct)
-		ASSIGN(kinfo);
-		ASSIGN(machine);
-		ASSIGN(kmessages);
-		ASSIGN(loadinfo);
-		ASSIGN(kuserinfo);
-		ASSIGN(arm_frclock); /* eh, why not. */
-		ASSIGN(kclockinfo);
+		خارجی u32_t usermapped_انحراف;
+		أكد(addr > (u32_t) &usermapped_آغاز);
+		usermapped_انحراف = addr - (u32_t) &usermapped_آغاز;
+#تعریف_کرو FIXEDPTR(ptr) (خالی *) ((u32_t)ptr + usermapped_انحراف)
+#تعریف_کرو FIXPTR(ptr) ptr = FIXEDPTR(ptr)
+#تعریف_کرو تفویض(minixstruct) minix_kerninfo.minixstruct = FIXEDPTR(&minixstruct)
+		تفویض(kinfo);
+		تفویض(machine);
+		تفویض(kmessages);
+		تفویض(loadinfo);
+		تفویض(kuserinfo);
+		تفویض(arm_frclock); /* eh, why not. */
+		تفویض(kclockinfo);
 
 		/* select the right set of IPC routines to map into processes */
-		if(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
+		اگر(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
 			DEBUGBASIC(("kernel: selecting intel sysenter ipc style\n"));
 			minix_kerninfo.minix_ipcvecs = &minix_ipcvecs_sysenter;
-		} else  if(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
+		} ورنہ  اگر(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
 			DEBUGBASIC(("kernel: selecting amd syscall ipc style\n"));
 			minix_kerninfo.minix_ipcvecs = &minix_ipcvecs_syscall;
-		} else	{
+		} ورنہ	{
 			DEBUGBASIC(("kernel: selecting fallback (int) ipc style\n"));
 			minix_kerninfo.minix_ipcvecs = &minix_ipcvecs_softint;
 		}
@@ -910,111 +910,111 @@ int arch_phys_map_reply(const int index, const vir_bytes addr)
 
 		minix_kerninfo.kerninfo_magic = KERNINFO_MAGIC;
 		minix_kerninfo.minix_feature_flags = minix_feature_flags;
-		minix_kerninfo_user = (vir_bytes) FIXEDPTR(&minix_kerninfo);
+		minix_kerninfo_user = (vir_بائٹیں) FIXEDPTR(&minix_kerninfo);
 
 		/* if libc_ipc is set, disable usermapped ipc functions
 		 * and force binaries to use in-libc fallbacks.
 		 */
-		if(env_get("libc_ipc")) {
-			printf("kernel: forcing in-libc fallback ipc style\n");
-			minix_kerninfo.minix_ipcvecs = NULL;
-		} else {
+		اگر(env_get("libc_ipc")) {
+			لکھو("kernel: forcing in-libc fallback ipc style\n");
+			minix_kerninfo.minix_ipcvecs = تہی;
+		} ورنہ {
 			minix_kerninfo.ki_flags |= MINIX_KIF_IPCVECS;
 		}
 
 		minix_kerninfo.ki_flags |= MINIX_KIF_USERINFO;
 
-		return OK;
+		واپس OK;
 	}
 
-	if(index == usermapped_index) return OK;
+	اگر(اشاریہ == usermapped_اشاریہ) واپس OK;
 
-	if (index == video_mem_mapping_index) {
+	اگر (اشاریہ == video_mem_mapping_اشاریہ) {
 		video_mem_vaddr =  addr;
-		return OK;
+		واپس OK;
 	}
 
-	return EINVAL;
+	واپس EINVAL;
 }
 
-int arch_enable_paging(struct proc * caller)
+صحیح arch_enable_paging(ساخت proc * caller)
 {
-	assert(caller->p_seg.p_cr3);
+	أكد(caller->p_seg.p_cr3);
 
 	/* load caller's page table */
-	switch_address_space(caller);
+	switch_پتہ_space(caller);
 
-	video_mem = (char *) video_mem_vaddr;
+	video_mem = (حرف *) video_mem_vaddr;
 
-#ifdef USE_APIC
+#اگر_تعریف_شدہ USE_APIC
 	/* start using the virtual addresses */
 
 	/* if local APIC is enabled */
-	if (lapic_addr) {
+	اگر (lapic_addr) {
 		lapic_addr = lapic_addr_vaddr;
 		lapic_eoi_addr = LAPIC_EOI;
 	}
 	/* if IO apics are enabled */
-	if (ioapic_enabled) {
-		int i;
+	اگر (ioapic_enabled) {
+		صحیح i;
 
-		for (i = 0; i < nioapics; i++) {
+		برائے (i = 0; i < nioapics; i++) {
 			io_apic[i].addr = io_apic[i].vaddr;
 		}
 	}
-#if CONFIG_SMP
+#اگر CONFIG_SMP
 	barrier();
 
-	wait_for_APs_to_finish_booting();
-#endif
-#endif
+	wait_for_APs_مقصد_اختتام_booting();
+#اگر_ختم
+#اگر_ختم
 
-#ifdef USE_WATCHDOG
+#اگر_تعریف_شدہ USE_WATCHDOG
 	/*
 	 * We make sure that we don't enable the watchdog until paging is turned
 	 * on as we might get an NMI while switching and we might still use wrong
 	 * lapic address. Bad things would happen. It is unfortunate but such is
 	 * life
 	 */
-	if (watchdog_enabled)
-		i386_watchdog_start();
-#endif
+	اگر (watchdog_enabled)
+		i386_watchdog_آغاز();
+#اگر_ختم
 
-	return OK;
+	واپس OK;
 }
 
-void release_address_space(struct proc *pr)
+خالی release_پتہ_space(ساخت proc *pr)
 {
-	pr->p_seg.p_cr3_v = NULL;
+	pr->p_seg.p_cr3_v = تہی;
 }
 
 /* computes a checksum of a buffer of a given length. The byte sum must be zero */
-int platform_tbl_checksum_ok(void *ptr, unsigned int length)
+صحیح platform_tbl_checksum_ok(خالی *ptr, غیرعلامتی صحیح لمبائی)
 {
-	u8_t total = 0;
-	unsigned int i;
-	for (i = 0; i < length; i++)
-		total += ((unsigned char *)ptr)[i];
-	return !total;
+	u8_t کل = 0;
+	غیرعلامتی صحیح i;
+	برائے (i = 0; i < لمبائی; i++)
+		کل += ((غیرعلامتی حرف *)ptr)[i];
+	واپس !کل;
 }
 
-int platform_tbl_ptr(phys_bytes start,
-					phys_bytes end,
-					unsigned increment,
-					void * buff,
-					unsigned size,
-					phys_bytes * phys_addr,
-					int ((* cmp_f)(void *)))
+صحیح platform_tbl_ptr(phys_بائٹیں آغاز,
+					phys_بائٹیں انتہا,
+					غیرعلامتی increment,
+					خالی * buff,
+					غیرعلامتی سائز,
+					phys_بائٹیں * phys_addr,
+					صحیح ((* cmp_f)(خالی *)))
 {
-	phys_bytes addr;
+	phys_بائٹیں addr;
 
-	for (addr = start; addr < end; addr += increment) {
-		phys_copy (addr, (phys_bytes) buff, size);
-		if (cmp_f(buff)) {
-			if (phys_addr)
+	برائے (addr = آغاز; addr < انتہا; addr += increment) {
+		phys_copy (addr, (phys_بائٹیں) buff, سائز);
+		اگر (cmp_f(buff)) {
+			اگر (phys_addr)
 				*phys_addr = addr;
-			return 1;
+			واپس 1;
 		}
 	}
-	return 0;
+	واپس 0;
 }

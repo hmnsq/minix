@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#اگر_غیر_تعریف_شدہ _BSP_INIT_H_
+#تعریف_کرو _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+خالی bsp_init(خالی);
 
-#endif /* __BSP_INIT_H__ */
+#اگر_ختم /* __BSP_INIT_H__ */

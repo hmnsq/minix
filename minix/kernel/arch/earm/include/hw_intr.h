@@ -1,15 +1,15 @@
-#ifndef __HW_INTR_ARM_H__
-#define __HW_INTR_ARM_H__
+#اگر_غیر_تعریف_شدہ __HW_INTR_ARM_H__
+#تعریف_کرو __HW_INTR_ARM_H__
 
 
-#include "kernel/kernel.h"
-void irq_handle(int irq);
+#شامل "kernel/kernel.h"
+خالی irq_handle(صحیح irq);
 
-void hw_intr_mask(int irq);
-void hw_intr_unmask(int irq);
-void hw_intr_ack(int irq);
-void hw_intr_used(int irq);
-void hw_intr_not_used(int irq);
-void hw_intr_disable_all(void);
+خالی hw_intr_نقاب(صحیح irq);
+خالی hw_intr_unmask(صحیح irq);
+خالی hw_intr_ack(صحیح irq);
+خالی hw_intr_مستعمل(صحیح irq);
+خالی hw_intr_not_مستعمل(صحیح irq);
+خالی hw_intr_disable_all(خالی);
 
-#endif /* __HW_INTR_ARM_H__ */
+#اگر_ختم /* __HW_INTR_ARM_H__ */

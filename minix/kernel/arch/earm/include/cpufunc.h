@@ -1,42 +1,42 @@
-#ifndef _ARM_CPUFUNC_H
-#define _ARM_CPUFUNC_H
+#اگر_غیر_تعریف_شدہ _ARM_CPUFUNC_H
+#تعریف_کرو _ARM_CPUFUNC_H
 
-#if 0
+#اگر 0
 /* check interrupt state */
-static inline void check_int(unsigned int state, int line)
+ساکن اندرونی خالی check_int(غیرعلامتی صحیح state, صحیح سطر)
 {
-	unsigned int cpsr = 0;
+	غیرعلامتی صحیح cpsr = 0;
 
-	asm volatile("mrs %0, cpsr" : "=r" (cpsr));
+	asm متلون("mrs %0, cpsr" : "=r" (cpsr));
 
-	if ((cpsr & PSR_F) != (state & PSR_F))
-	    printf("%d: FIQs are unexpectedly %s\n", line, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
+	اگر ((cpsr & PSR_F) != (state & PSR_F))
+	    لکھو("%d: FIQs are unexpectedly %s\n", سطر, (cpsr & PSR_F) ? "MASKED" : "UNMASKED");
 
-	if ((cpsr & PSR_I) != (state & PSR_I))
-	    printf("%d: IRQs are unexpectedly %s\n", line, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
+	اگر ((cpsr & PSR_I) != (state & PSR_I))
+	    لکھو("%d: IRQs are unexpectedly %s\n", سطر, (cpsr & PSR_I) ? "MASKED" : "UNMASKED");
 
 }
-#endif
+#اگر_ختم
 
 /* Data memory barrier */
-static inline void dmb(void)
+ساکن اندرونی خالی dmb(خالی)
 {
-	asm volatile("dmb" : : : "memory");
+	asm متلون("dmb" : : : "memory");
 }
 
 /* Data synchronization barrier */
-static inline void dsb(void)
+ساکن اندرونی خالی dsb(خالی)
 {
-	asm volatile("dsb" : : : "memory");
+	asm متلون("dsb" : : : "memory");
 }
 
 /* Instruction synchronization barrier */
-static inline void isb(void)
+ساکن اندرونی خالی isb(خالی)
 {
-	asm volatile("isb" : : : "memory");
+	asm متلون("isb" : : : "memory");
 }
 
-static inline void barrier(void)
+ساکن اندرونی خالی barrier(خالی)
 {
 	dsb();
 	isb();
@@ -44,106 +44,106 @@ static inline void barrier(void)
 
 
 /* Read CLIDR, Cache Level ID Register */
-static inline u32_t read_clidr(void){
+ساکن اندرونی u32_t read_clidr(خالی){
 	u32_t clidr;
-	asm volatile("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
+	asm متلون("mrc p15, 1, %[clidr], c0, c0 , 1 @ READ CLIDR\n\t"
 				: [clidr] "=r" (clidr));
-	return clidr;
+	واپس clidr;
 }
 
 
 /* Read CSSELR, Cache Size Selection Register */
-static inline u32_t read_csselr(void){
+ساکن اندرونی u32_t read_csselr(خالی){
 	u32_t csselr;
-	asm volatile("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
+	asm متلون("mrc p15, 2, %[csselr], c0, c0 , 0 @ READ CSSELR\n\t"
 				: [csselr] "=r" (csselr));
-	return csselr;
+	واپس csselr;
 }
 
 /* Write CSSELR, Cache Size Selection Register */
-static inline void write_csselr(u32_t csselr){
-	asm volatile("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
+ساکن اندرونی خالی write_csselr(u32_t csselr){
+	asm متلون("mcr p15, 2, %[csselr], c0, c0 , 0 @ WRITE CSSELR\n\t"
 				: : [csselr] "r" (csselr));
 }
 
 /* Read Cache Size ID Register */
-static inline u32_t read_ccsidr(void)
+ساکن اندرونی u32_t read_ccsidr(خالی)
 {
 	u32_t ccsidr;
-	asm volatile("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
+	asm متلون("mrc p15, 1, %[ccsidr], c0, c0, 0 @ Read CCSIDR\n\t"
 			: [ccsidr] "=r" (ccsidr));
-	return ccsidr;
+	واپس ccsidr;
 }
 
 /* Read TLBTR, TLB Type Register */
-static inline u32_t read_tlbtr(void)
+ساکن اندرونی u32_t read_tlbtr(خالی)
 {
 	u32_t tlbtr;
-	asm volatile("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
+	asm متلون("mrc p15, 0, %[tlbtr], c0, c0, 3 @ Read TLBTR\n\t"
 			: [tlbtr] "=r" (tlbtr));
-	return tlbtr;
+	واپس tlbtr;
 }
 
 /* keesj:move these out */
-static inline u32_t ilog2(u32_t t)
+ساکن اندرونی u32_t ilog2(u32_t t)
 {
-	u32_t counter =0;
-	while( (t = t >> 1) ) counter ++;
-	return counter;
+	u32_t شمار_2 =0;
+	جب( (t = t >> 1) ) شمار_2 ++;
+	واپس شمار_2;
 }
 
 /* keesj:move these out */
-static inline u32_t ipow2(u32_t t)
+ساکن اندرونی u32_t ipow2(u32_t t)
 {
-	return 1 << t;
+	واپس 1 << t;
 }
 
 /*
  * type = 1 == CLEAN
  * type = 2 == INVALIDATE
  */
-static inline void dcache_maint(int type){
+ساکن اندرونی خالی dcache_maint(صحیح type){
 	u32_t cache_level ;
 	u32_t clidr;
 	u32_t ctype;
 	u32_t  ccsidr;
-	u32_t  line_size,line_length;
-	u32_t  number_of_sets,number_of_ways;
-	u32_t  set,way;
+	u32_t  سطر_سائز,سطر_لمبائی;
+	u32_t  نمبر_کا_sets,نمبر_کا_ways;
+	u32_t  سیٹ,way;
 
 	clidr = read_clidr();
 	u32_t loc =  ( clidr >> 24) & 0x7;
 	u32_t louu =  ( clidr >> 27) & 0x7;
 	u32_t louis =  ( clidr >> 21) & 0x7;
-	for (cache_level =0 ; cache_level < loc; cache_level++){
+	برائے (cache_level =0 ; cache_level < loc; cache_level++){
 		/* get current cache type */
 		ctype = ( clidr >> cache_level*3) & 0x7;
 		/* select data or unified or cache level */
 		write_csselr(cache_level << 1);
 		isb();
 		ccsidr = read_ccsidr();
-		line_size = ccsidr & 0x7;
-		line_length = 2 << (line_size + 1) ; /* 2**(line_size + 2) */
-		number_of_sets = ((ccsidr >> 13) & 0x7fff) + 1;
-		number_of_ways = ((ccsidr >> 3) & 0x3ff) + 1;
+		سطر_سائز = ccsidr & 0x7;
+		سطر_لمبائی = 2 << (سطر_سائز + 1) ; /* 2**(line_size + 2) */
+		نمبر_کا_sets = ((ccsidr >> 13) & 0x7fff) + 1;
+		نمبر_کا_ways = ((ccsidr >> 3) & 0x3ff) + 1;
 
-		u32_t way_bits = ilog2(number_of_ways);
-		if(ipow2(ilog2(number_of_ways) < number_of_ways) ) {
-			way_bits++;
+		u32_t way_بٹ = ilog2(نمبر_کا_ways);
+		اگر(ipow2(ilog2(نمبر_کا_ways) < نمبر_کا_ways) ) {
+			way_بٹ++;
 		}
 
-		u32_t l = ilog2(line_length);
-		for (way =0 ; way < number_of_ways; way++) {
-			for (set =0 ; set < number_of_sets; set++) {
-				u32_t val = ( way << (32 - way_bits) ) |  (set << l) | (cache_level << 1 );
-				if (type == 1) {
+		u32_t l = ilog2(سطر_لمبائی);
+		برائے (way =0 ; way < نمبر_کا_ways; way++) {
+			برائے (سیٹ =0 ; سیٹ < نمبر_کا_sets; سیٹ++) {
+				u32_t val = ( way << (32 - way_بٹ) ) |  (سیٹ << l) | (cache_level << 1 );
+				اگر (type == 1) {
 					/* DCCISW, Data Cache Clean and Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
-							: : [set] "r" (val));
-				} else if (type ==2 ){
+					asm متلون("mcr p15, 0, %[set], c7, c14, 2 @ DCCISW" 
+							: : [سیٹ] "r" (val));
+				} ورنہ اگر (type ==2 ){
 					/* DCISW, Data Cache Invalidate by Set/Way */
-					asm volatile("mcr p15, 0, %[set], c7, c6, 2" 
-							: : [set] "r" (val)); 
+					asm متلون("mcr p15, 0, %[set], c7, c6, 2" 
+							: : [سیٹ] "r" (val)); 
 				}
 			}
 		}
@@ -152,36 +152,36 @@ static inline void dcache_maint(int type){
 	isb();
 
 }
-static inline void dcache_clean(void){
+ساکن اندرونی خالی dcache_clean(خالی){
 	dcache_maint(1);
 }
-static inline void dcache_invalidate(void){
+ساکن اندرونی خالی dcache_invalidate(خالی){
 	dcache_maint(2);
 }
 
-static inline void refresh_tlb(void)
+ساکن اندرونی خالی refresh_tlb(خالی)
 {
 	dsb();
 
 	/* Invalidate entire unified TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
+	asm متلون("mcr p15, 0, %[zero], c8, c7, 0 @ TLBIALL\n\t" : : [zero] "r" (0));
 
-#if 0
+#اگر 0
 	/* Invalidate entire data TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
+	asm متلون("mcr p15, 0, %[zero], c8, c6, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire instruction TLB */
-	asm volatile("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
-#endif
+	asm متلون("mcr p15, 0, %[zero], c8, c5, 0" : : [zero] "r" (0));
+#اگر_ختم
 
 	/*
 	 * Invalidate all instruction caches to PoU.
 	 * Also flushes branch target cache.
 	 */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
+	asm متلون("mcr p15, 0, %[zero], c7, c5, 0" : : [zero] "r" (0));
 
 	/* Invalidate entire branch predictor array */
-	asm volatile("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
+	asm متلون("mcr p15, 0, %[zero], c7, c5, 6" : : [zero] "r" (0)); /* flush BTB */
 
 	dsb();
 	isb();
@@ -189,81 +189,81 @@ static inline void refresh_tlb(void)
 
 
 /* Read System Control Register */
-static inline u32_t read_sctlr(void)
+ساکن اندرونی u32_t read_sctlr(خالی)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
+	asm متلون("mrc p15, 0, %[ctl], c1, c0, 0 @ Read SCTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	واپس ctl;
 }
 
 /* Write System Control Register */
-static inline void write_sctlr(u32_t ctl)
+ساکن اندرونی خالی write_sctlr(u32_t ctl)
 {
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
+	asm متلون("mcr p15, 0, %[ctl], c1, c0, 0 @ Write SCTLR\n\t"
 			: : [ctl] "r" (ctl));
 	isb();
 }
 
 /* Read Translation Table Base Register 0 */
-static inline u32_t read_ttbr0(void)
+ساکن اندرونی u32_t read_ttbr0(خالی)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
+	asm متلون("mrc p15, 0, %[bar], c2, c0, 0 @ Read TTBR0\n\t"
 			: [bar] "=r" (bar));
 
-	return bar & ARM_TTBR_ADDR_MASK;
+	واپس bar & ARM_TTBR_ADDR_نقاب;
 }
 
 /* Write Translation Table Base Register 0 */
-static inline void write_ttbr0(u32_t bar)
+ساکن اندرونی خالی write_ttbr0(u32_t bar)
 {
 	barrier();
 	/* In our setup TTBR contains the base address *and* the flags
 	   but other pieces of the kernel code expect ttbr to be the 
 	   base address of the l1 page table. We therefore add the
 	   flags here and remove them in the read_ttbr0 */
-	u32_t v  =  (bar  & ARM_TTBR_ADDR_MASK ) | ARM_TTBR_FLAGS_CACHED;
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
+	u32_t v  =  (bar  & ARM_TTBR_ADDR_نقاب ) | ARM_TTBR_FLAGS_CACHED;
+	asm متلون("mcr p15, 0, %[bar], c2, c0, 0 @ Write TTBR0\n\t"
 			: : [bar] "r" (v));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 0 */
-static inline void reload_ttbr0(void)
+ساکن اندرونی خالی reload_ttbr0(خالی)
 {
 	reg_t ttbr = read_ttbr0();
 	write_ttbr0(ttbr);
 }
 
 /* Read Translation Table Base Register 1 */
-static inline u32_t read_ttbr1(void)
+ساکن اندرونی u32_t read_ttbr1(خالی)
 {
 	u32_t bar;
 
-	asm volatile("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
+	asm متلون("mrc p15, 0, %[bar], c2, c0, 1 @ Read TTBR1\n\t"
 			: [bar] "=r" (bar));
 
-	return bar;
+	واپس bar;
 }
 
 /* Write Translation Table Base Register 1 */
-static inline void write_ttbr1(u32_t bar)
+ساکن اندرونی خالی write_ttbr1(u32_t bar)
 {
 	barrier();
 
-	asm volatile("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
+	asm متلون("mcr p15, 0, %[bar], c2, c0, 1 @ Write TTBR1\n\t"
 			: : [bar] "r" (bar));
 
 	refresh_tlb();
 }
 
 /* Reload Translation Table Base Register 1 */
-static inline void reload_ttbr1(void)
+ساکن اندرونی خالی reload_ttbr1(خالی)
 {
 	reg_t ttbr = read_ttbr1();
 
@@ -271,193 +271,193 @@ static inline void reload_ttbr1(void)
 }
 
 /* Read Translation Table Base Control Register */
-static inline u32_t read_ttbcr(void)
+ساکن اندرونی u32_t read_ttbcr(خالی)
 {
 	u32_t bcr;
 
-	asm volatile("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
+	asm متلون("mrc p15, 0, %[bcr], c2, c0, 2 @ Read TTBCR\n\t"
 			: [bcr] "=r" (bcr));
 
-	return bcr;
+	واپس bcr;
 }
 
 /* Write Translation Table Base Control Register */
-static inline void write_ttbcr(u32_t bcr)
+ساکن اندرونی خالی write_ttbcr(u32_t bcr)
 {
-	asm volatile("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
+	asm متلون("mcr p15, 0, %[bcr], c2, c0, 2 @ Write TTBCR\n\t"
 			: : [bcr] "r" (bcr));
 
 	isb();
 }
 
 /* Read Domain Access Control Register */
-static inline u32_t read_dacr(void)
+ساکن اندرونی u32_t read_dacr(خالی)
 {
 	u32_t dacr;
 
-	asm volatile("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
+	asm متلون("mrc p15, 0, %[dacr], c3, c0, 0 @ Read DACR\n\t"
 			: [dacr] "=r" (dacr));
 
-	return dacr;
+	واپس dacr;
 }
 
 /* Write Domain Access Control Register */
-static inline void write_dacr(u32_t dacr)
+ساکن اندرونی خالی write_dacr(u32_t dacr)
 {
-	asm volatile("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
+	asm متلون("mcr p15, 0, %[dacr], c3, c0, 0 @ Write DACR\n\t"
 			: : [dacr] "r" (dacr));
 
 	isb();
 }
 
 /* Read Data Fault Status Register */
-static inline u32_t read_dfsr(void)
+ساکن اندرونی u32_t read_dfsr(خالی)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
+	asm متلون("mrc p15, 0, %[fsr], c5, c0, 0 @ Read DFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	واپس fsr;
 }
 
 /* Write Data Fault Status Register */
-static inline void write_dfsr(u32_t fsr)
+ساکن اندرونی خالی write_dfsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
+	asm متلون("mcr p15, 0, %[fsr], c5, c0, 0 @ Write DFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Instruction Fault Status Register */
-static inline u32_t read_ifsr(void)
+ساکن اندرونی u32_t read_ifsr(خالی)
 {
 	u32_t fsr;
 
-	asm volatile("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
+	asm متلون("mrc p15, 0, %[fsr], c5, c0, 1 @ Read IFSR\n\t"
 			: [fsr] "=r" (fsr));
 
-	return fsr;
+	واپس fsr;
 }
 
 /* Write Instruction Fault Status Register */
-static inline void write_ifsr(u32_t fsr)
+ساکن اندرونی خالی write_ifsr(u32_t fsr)
 {
-	asm volatile("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
+	asm متلون("mcr p15, 0, %[fsr], c5, c0, 1 @ Write IFSR\n\t"
 			: : [fsr] "r" (fsr));
 
 	isb();
 }
 
 /* Read Data Fault Address Register */
-static inline u32_t read_dfar(void)
+ساکن اندرونی u32_t read_dfar(خالی)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
+	asm متلون("mrc p15, 0, %[far], c6, c0, 0 @ Read DFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	واپس far;
 }
 
 /* Write Data Fault Address Register */
-static inline void write_dfar(u32_t far)
+ساکن اندرونی خالی write_dfar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
+	asm متلون("mcr p15, 0, %[far], c6, c0, 0 @ Write DFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Instruction Fault Address Register */
-static inline u32_t read_ifar(void)
+ساکن اندرونی u32_t read_ifar(خالی)
 {
 	u32_t far;
 
-	asm volatile("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
+	asm متلون("mrc p15, 0, %[far], c6, c0, 2 @ Read IFAR\n\t"
 			: [far] "=r" (far));
 
-	return far;
+	واپس far;
 }
 
 /* Write Instruction Fault Address Register */
-static inline void write_ifar(u32_t far)
+ساکن اندرونی خالی write_ifar(u32_t far)
 {
-	asm volatile("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
+	asm متلون("mcr p15, 0, %[far], c6, c0, 2 @ Write IFAR\n\t"
 			: : [far] "r" (far));
 
 	isb();
 }
 
 /* Read Vector Base Address Register */
-static inline u32_t read_vbar(void)
+ساکن اندرونی u32_t read_vbar(خالی)
 {
 	u32_t vbar;
 
-	asm volatile("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
+	asm متلون("mrc p15, 0, %[vbar], c12, c0, 0 @ Read VBAR\n\t"
 			: [vbar] "=r" (vbar));
 
-	return vbar;
+	واپس vbar;
 }
 
 /* Write Vector Base Address Register */
-static inline void write_vbar(u32_t vbar)
+ساکن اندرونی خالی write_vbar(u32_t vbar)
 {
-	asm volatile("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
+	asm متلون("mcr p15, 0, %[vbar], c12, c0, 0 @ Write VBAR\n\t"
 			: : [vbar] "r" (vbar));
 
 	isb();
 }
 
 /* Read the Main ID Register  */
-static inline u32_t read_midr(void)
+ساکن اندرونی u32_t read_midr(خالی)
 {
 	u32_t id;
 
-	asm volatile("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
+	asm متلون("mrc p15, 0, %[id], c0, c0, 0 @ read MIDR\n\t"
 			: [id] "=r" (id));
 
-	return id;
+	واپس id;
 }
 
 /* Read Auxiliary Control Register */
-static inline u32_t read_actlr(void)
+ساکن اندرونی u32_t read_actlr(خالی)
 {
 	u32_t ctl;
 
-	asm volatile("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
+	asm متلون("mrc p15, 0, %[ctl], c1, c0, 1 @ Read ACTLR\n\t"
 			: [ctl] "=r" (ctl));
 
-	return ctl;
+	واپس ctl;
 }
 
 /* Write Auxiliary Control Register */
-static inline void write_actlr(u32_t ctl)
+ساکن اندرونی خالی write_actlr(u32_t ctl)
 {
 //http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0344k/Babjbjbb.html
-	asm volatile("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
+	asm متلون("mcr p15, 0, %[ctl], c1, c0, 1 @ Write ACTLR\n\t"
 			: : [ctl] "r" (ctl));
 
 	isb();
 }
 
 /* Read Current Program Status Register */
-static inline u32_t read_cpsr(void)
+ساکن اندرونی u32_t read_cpsr(خالی)
 {
-	u32_t status;
+	u32_t حالت_2;
 
-	asm volatile("mrs %[status], cpsr @ read CPSR"
-			: [status] "=r" (status));
+	asm متلون("mrs %[status], cpsr @ read CPSR"
+			: [حالت_2] "=r" (حالت_2));
 
-	return status;
+	واپس حالت_2;
 }
 
 /* Write Current Program Status Register */
-static inline void write_cpsr(u32_t status)
+ساکن اندرونی خالی write_cpsr(u32_t حالت_2)
 {
-	asm volatile("msr cpsr_c, %[status] @ write CPSR"
-			: : [status] "r" (status));
+	asm متلون("msr cpsr_c, %[status] @ write CPSR"
+			: : [حالت_2] "r" (حالت_2));
 }
 
-#endif /* _ARM_CPUFUNC_H */
+#اگر_ختم /* _ARM_CPUFUNC_H */

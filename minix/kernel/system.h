@@ -27,184 +27,184 @@
  *   Feb 02, 2004   created SYS_DEVIO to support drivers  (Jorrit N. Herder) 
  */ 
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#اگر_غیر_تعریف_شدہ SYSTEM_H
+#تعریف_کرو SYSTEM_H
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
-#define do_exec NULL
-#endif
+صحیح do_exec(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_EXEC
+#تعریف_کرو do_exec تہی
+#اگر_ختم
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
-#define do_fork NULL
-#endif
+صحیح do_fork(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_FORK
+#تعریف_کرو do_fork تہی
+#اگر_ختم
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
-#define do_clear NULL
-#endif
+صحیح do_clear(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_CLEAR
+#تعریف_کرو do_clear تہی
+#اگر_ختم
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
-#define do_trace NULL
-#endif
+صحیح do_trace(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_TRACE
+#تعریف_کرو do_trace تہی
+#اگر_ختم
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
-#define do_runctl NULL
-#endif
+صحیح do_runctl(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_RUNCTL
+#تعریف_کرو do_runctl تہی
+#اگر_ختم
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
-#define do_update NULL
-#endif
+صحیح do_update(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_UPDATE
+#تعریف_کرو do_update تہی
+#اگر_ختم
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
-#define do_exit NULL
-#endif
+صحیح do_exit(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_EXIT
+#تعریف_کرو do_exit تہی
+#اگر_ختم
 
-int do_copy(struct proc * caller, message *m_ptr);
-#define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
-#define do_copy NULL
-#endif
+صحیح do_copy(ساخت proc * caller, پیغام *m_ptr);
+#تعریف_کرو do_vircopy 	do_copy
+#اگر ! (USE_VIRCOPY || USE_PHYSCOPY)
+#تعریف_کرو do_copy تہی
+#اگر_ختم
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
-#define do_umap NULL
-#endif
+صحیح do_umap(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_UMAP
+#تعریف_کرو do_umap تہی
+#اگر_ختم
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
-#define do_umap_remote NULL
-#endif
+صحیح do_umap_remote(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_UMAP_REMOTE
+#تعریف_کرو do_umap_remote تہی
+#اگر_ختم
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
-#define do_vumap NULL
-#endif
+صحیح do_vumap(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_VUMAP
+#تعریف_کرو do_vumap تہی
+#اگر_ختم
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
-#define do_memset NULL
-#endif
+صحیح do_memset(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_MEMSET
+#تعریف_کرو do_memset تہی
+#اگر_ختم
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
-#define do_abort NULL
-#endif
+صحیح do_abort(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_ABORT
+#تعریف_کرو do_abort تہی
+#اگر_ختم
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
-#define do_getinfo NULL
-#endif
+صحیح do_getinfo(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_GETINFO
+#تعریف_کرو do_getinfo تہی
+#اگر_ختم
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
-#define do_privctl NULL
-#endif
+صحیح do_privctl(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_PRIVCTL
+#تعریف_کرو do_privctl تہی
+#اگر_ختم
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
-#define do_irqctl NULL
-#endif
+صحیح do_irqctl(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_IRQCTL
+#تعریف_کرو do_irqctl تہی
+#اگر_ختم
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
-#define do_devio NULL
-#endif
+صحیح do_devio(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_DEVIO
+#تعریف_کرو do_devio تہی
+#اگر_ختم
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
-#define do_vdevio NULL
-#endif
+صحیح do_vdevio(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_VDEVIO
+#تعریف_کرو do_vdevio تہی
+#اگر_ختم
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
-#define do_sdevio NULL
-#endif
+صحیح do_sdevio(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_SDEVIO
+#تعریف_کرو do_sdevio تہی
+#اگر_ختم
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
-#define do_kill NULL
-#endif
+صحیح do_kill(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_KILL
+#تعریف_کرو do_kill تہی
+#اگر_ختم
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
-#define do_getksig NULL
-#endif
+صحیح do_getksig(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_GETKSIG
+#تعریف_کرو do_getksig تہی
+#اگر_ختم
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
-#define do_endksig NULL
-#endif
+صحیح do_endksig(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_ENDKSIG
+#تعریف_کرو do_endksig تہی
+#اگر_ختم
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
-#define do_sigsend NULL
-#endif
+صحیح do_sigsend(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_SIGSEND
+#تعریف_کرو do_sigsend تہی
+#اگر_ختم
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
-#define do_sigreturn NULL
-#endif
+صحیح do_sigreturn(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_SIGRETURN
+#تعریف_کرو do_sigreturn تہی
+#اگر_ختم
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
-#define do_times NULL
-#endif
+صحیح do_times(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_TIMES
+#تعریف_کرو do_times تہی
+#اگر_ختم
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
-#define do_setalarm NULL
-#endif
+صحیح do_setalarm(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_SETALARM
+#تعریف_کرو do_setalarm تہی
+#اگر_ختم
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+صحیح do_stime(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_settime(ساخت proc * caller, پیغام *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
-#define do_vtimer NULL
-#endif
+صحیح do_vtimer(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_VTIMER
+#تعریف_کرو do_vtimer تہی
+#اگر_ختم
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+صحیح do_safecopy_مقصد(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_safecopy_from(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_vsafecopy(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_iopenable(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_vmctl(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_setgrant(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_readbios(ساخت proc * caller, پیغام *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+صحیح do_safememset(ساخت proc * caller, پیغام *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
-#define do_sprofile NULL
-#endif
+صحیح do_sprofile(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! SPROFILE
+#تعریف_کرو do_sprofile تہی
+#اگر_ختم
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
-#define do_getmcontext NULL
-#define do_setmcontext NULL
-#endif
+صحیح do_getmcontext(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_setmcontext(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_MCONTEXT
+#تعریف_کرو do_getmcontext تہی
+#تعریف_کرو do_setmcontext تہی
+#اگر_ختم
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+صحیح do_جدول_وقت(ساخت proc * caller, پیغام *m_ptr);
+صحیح do_schedctl(ساخت proc * caller, پیغام *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
-#define do_statectl NULL
-#endif
+صحیح do_statectl(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_STATECTL
+#تعریف_کرو do_statectl تہی
+#اگر_ختم
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
-#define do_padconf NULL
-#endif
+صحیح do_padconf(ساخت proc * caller, پیغام *m_ptr);
+#اگر ! USE_PADCONF
+#تعریف_کرو do_padconf تہی
+#اگر_ختم
 
-#endif	/* SYSTEM_H */
+#اگر_ختم	/* SYSTEM_H */
 

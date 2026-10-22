@@ -11,96 +11,96 @@
  *   m_lsys_krn_sys_getmcontext.ctx_ptr	# pointer to mcontext structure
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <assert.h>
-#include <machine/mcontext.h>
+#شامل "kernel/system.h"
+#شامل <string.h>
+#شامل <assert.h>
+#شامل <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#اگر USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+صحیح do_getmcontext(ساخت proc * caller, پیغام * m_ptr)
 {
 /* Retrieve machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  اندراج ساخت proc *rp;
+  صحیح proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  اگر (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	واپس(EINVAL);
+  اگر (iskerneln(proc_nr)) واپس(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
-#endif
+#اگر defined(__i386__)
+  اگر (!proc_مستعمل_fpu(rp))
+	واپس(OK);	/* No state to copy */
+#اگر_ختم
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  اگر ((r = ڈیٹا_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_بائٹیں) &mc, (phys_بائٹیں) حجم(mcontext_t))) != OK)
+	واپس(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#اگر defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  اگر (proc_مستعمل_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_SIZE);
+	أكد(حجم(mc.__fpregs.__fp_reg_set) == FPU_XFP_سائز);
+	حافظہ_نقل(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_سائز);
   } 
-#endif
+#اگر_ختم
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  اگر ((r = ڈیٹا_copy(KERNEL, (vir_بائٹیں) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
-	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	(phys_بائٹیں) حجم(mcontext_t))) != OK)
+	واپس(r);
 
-  return(OK);
+  واپس(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+صحیح do_setmcontext(ساخت proc * caller, پیغام * m_ptr)
 {
 /* Set machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  اندراج ساخت proc *rp;
+  صحیح proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  اگر (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) واپس(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  اگر ((r = ڈیٹا_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_بائٹیں) &mc, (phys_بائٹیں) حجم(mcontext_t))) != OK)
+	واپس(r);
 
-#if defined(__i386__)
+#اگر defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  اگر (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+	أكد(حجم(mc.__fpregs.__fp_reg_set) == FPU_XFP_سائز);
+	حافظہ_نقل(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_سائز);
+  } ورنہ
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
-#endif
+#اگر_ختم
 
-  return(OK);
+  واپس(OK);
 }
 
-#endif
+#اگر_ختم

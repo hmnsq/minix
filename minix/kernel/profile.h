@@ -1,25 +1,25 @@
-#ifndef PROFILE_H
-#define PROFILE_H
+#اگر_غیر_تعریف_شدہ PROFILE_H
+#تعریف_کرو PROFILE_H
 
-#include <minix/profile.h>
+#شامل <minix/profile.h>
 
-#if SPROFILE	/* statistical profiling */
+#اگر SPROFILE	/* statistical profiling */
 
-#include "arch_watchdog.h"
+#شامل "arch_watchdog.h"
 
-#define SAMPLE_BUFFER_SIZE	(64 << 20)
-extern char sprof_sample_buffer[SAMPLE_BUFFER_SIZE];
+#تعریف_کرو SAMPLE_بفر_سائز	(64 << 20)
+خارجی حرف sprof_sample_بفر[SAMPLE_بفر_سائز];
 
-EXTERN int sprofiling;			/* whether profiling is running */
-EXTERN int sprofiling_type;			/* whether profiling is running */
-EXTERN int sprof_mem_size;		/* available user memory for data */
-EXTERN struct sprof_info_s sprof_info;	/* profiling info for user program */
-EXTERN vir_bytes sprof_data_addr_vir;	/* user address to write data */
+EXTERN صحیح sprofiling;			/* whether profiling is running */
+EXTERN صحیح sprofiling_type;			/* whether profiling is running */
+EXTERN صحیح sprof_mem_سائز;		/* available user memory for data */
+EXTERN ساخت sprof_info_s sprof_info;	/* profiling info for user program */
+EXTERN vir_بائٹیں sprof_ڈیٹا_addr_vir;	/* user address to write data */
 EXTERN endpoint_t sprof_ep;		/* user process */
 
-void nmi_sprofile_handler(struct nmi_frame * frame);
+خالی nmi_sprofile_handler(ساخت nmi_چوکھٹا * چوکھٹا);
 
-#endif /* SPROFILE */
+#اگر_ختم /* SPROFILE */
 
-#endif /* PROFILE_H */
+#اگر_ختم /* PROFILE_H */
 

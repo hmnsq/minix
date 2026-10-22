@@ -1,97 +1,97 @@
 /* ARM-specific clock functions. */
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-#include "kernel/clock.h"
-#include "kernel/interrupt.h"
-#include <minix/u64.h>
-#include <minix/board.h>
-#include "kernel/glo.h"
-#include "kernel/profile.h"
+#شامل "kernel/clock.h"
+#شامل "kernel/interrupt.h"
+#شامل <minix/u64.h>
+#شامل <minix/board.h>
+#شامل "kernel/glo.h"
+#شامل "kernel/profile.h"
 
-#include <sys/sched.h> /* for CP_*, CPUSTATES */
-#if CPUSTATES != MINIX_CPUSTATES
+#شامل <sys/sched.h> /* for CP_*, CPUSTATES */
+#اگر CPUSTATES != MINIX_CPUSTATES
 /* If this breaks, the code in this file may have to be adapted accordingly. */
-#error "MINIX_CPUSTATES value is out of sync with NetBSD's!"
-#endif
+#غلطی "MINIX_CPUSTATES value is out of sync with NetBSD's!"
+#اگر_ختم
 
-#include "kernel/spinlock.h"
+#شامل "kernel/spinlock.h"
 
-#ifdef CONFIG_SMP
-#include "kernel/smp.h"
-#error CONFIG_SMP is unsupported on ARM
-#endif
+#اگر_تعریف_شدہ CONFIG_SMP
+#شامل "kernel/smp.h"
+#غلطی CONFIG_SMP is unsupported on ARM
+#اگر_ختم
 
-#include "bsp_timer.h"
-#include "bsp_intr.h"
+#شامل "bsp_timer.h"
+#شامل "bsp_intr.h"
 
-static unsigned tsc_per_ms[CONFIG_MAX_CPUS];
-static unsigned tsc_per_tick[CONFIG_MAX_CPUS];
-static uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
+ساکن غیرعلامتی tsc_فی_ms[CONFIG_MAX_CPUS];
+ساکن غیرعلامتی tsc_فی_tick[CONFIG_MAX_CPUS];
+ساکن uint64_t tsc_فی_state[CONFIG_MAX_CPUS][CPUSTATES];
 
-int init_local_timer(unsigned freq)
+صحیح init_local_timer(غیرعلامتی freq)
 {
 	bsp_timer_init(freq);
 
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		tsc_per_ms[0] = 16250;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		tsc_per_ms[0] = 15000;
-	} else {
+	اگر (BOARD_IS_BBXM(machine.board_id)) {
+		tsc_فی_ms[0] = 16250;
+	} ورنہ اگر (BOARD_IS_BB(machine.board_id)) {
+		tsc_فی_ms[0] = 15000;
+	} ورنہ {
 		panic("Can not do the clock setup. machine (0x%08x) is unknown\n",machine.board_id);
 	};
 
-	tsc_per_tick[0] = tsc_per_ms[0] * 1000 / system_hz;
+	tsc_فی_tick[0] = tsc_فی_ms[0] * 1000 / system_hz;
 
-	return 0;
+	واپس 0;
 }
 
-void stop_local_timer(void)
+خالی stop_local_timer(خالی)
 {
 	bsp_timer_stop();
 }
 
-void arch_timer_int_handler(void)
+خالی arch_timer_int_handler(خالی)
 {
 	bsp_timer_int_handler();
 }
 
-void cycles_accounting_init(void)
+خالی ادوار_accounting_init(خالی)
 {
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+#اگر_تعریف_شدہ CONFIG_SMP
+	غیرعلامتی cpu = cpuid;
+#اگر_ختم
 
 	read_tsc_64(get_cpu_var_ptr(cpu, tsc_ctr_switch));
 
-	get_cpu_var(cpu, cpu_last_tsc) = 0;
-	get_cpu_var(cpu, cpu_last_idle) = 0;
+	get_cpu_var(cpu, cpu_آخری_tsc) = 0;
+	get_cpu_var(cpu, cpu_آخری_idle) = 0;
 }
 
-void context_stop(struct proc * p)
+خالی context_stop(ساخت proc * p)
 {
 	u64_t tsc, tsc_delta;
 	u64_t * __tsc_ctr_switch = get_cpulocal_var_ptr(tsc_ctr_switch);
-	unsigned int cpu, tpt, counter;
+	غیرعلامتی صحیح cpu, tpt, شمار_2;
 
-#ifdef CONFIG_SMP
-#error CONFIG_SMP is unsupported on ARM
-#else
+#اگر_تعریف_شدہ CONFIG_SMP
+#غلطی CONFIG_SMP is unsupported on ARM
+#ورنہ
 	read_tsc_64(&tsc);
-	p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
+	p->p_ادوار = p->p_ادوار + tsc - *__tsc_ctr_switch;
 	cpu = 0;
-#endif
+#اگر_ختم
 
 	tsc_delta = tsc - *__tsc_ctr_switch;
 
-	if (kbill_ipc) {
-		kbill_ipc->p_kipc_cycles += tsc_delta;
-		kbill_ipc = NULL;
+	اگر (kbill_ipc) {
+		kbill_ipc->p_kipc_ادوار += tsc_delta;
+		kbill_ipc = تہی;
 	}
 
-	if (kbill_kcall) {
-		kbill_kcall->p_kcall_cycles += tsc_delta;
-		kbill_kcall = NULL;
+	اگر (kbill_kcall) {
+		kbill_kcall->p_kcall_ادوار += tsc_delta;
+		kbill_kcall = تہی;
 	}
 
 	/*
@@ -104,11 +104,11 @@ void context_stop(struct proc * p)
 	 * the code below is a loop, but the loop will in by far most cases not
 	 * be executed more than once, and often be skipped at all.
 	 */
-	tpt = tsc_per_tick[cpu];
+	tpt = tsc_فی_tick[cpu];
 
-	p->p_tick_cycles += tsc_delta;
-	while (tpt > 0 && p->p_tick_cycles >= tpt) {
-		p->p_tick_cycles -= tpt;
+	p->p_tick_ادوار += tsc_delta;
+	جب (tpt > 0 && p->p_tick_ادوار >= tpt) {
+		p->p_tick_ادوار -= tpt;
 
 		/*
 		 * The process has spent roughly a whole clock tick worth of
@@ -124,124 +124,124 @@ void context_stop(struct proc * p)
 	 * process during its current quantum. Skip IDLE and other pseudo kernel
 	 * tasks, except for global accounting purposes.
 	 */
-	if (p->p_endpoint >= 0) {
+	اگر (p->p_endpoint >= 0) {
 		/* On MINIX3, the "system" counter covers system processes. */
-		if (p->p_priv != priv_addr(USER_PRIV_ID))
-			counter = CP_SYS;
-		else if (p->p_misc_flags & MF_NICED)
-			counter = CP_NICE;
-		else
-			counter = CP_USER;
+		اگر (p->p_priv != priv_addr(USER_PRIV_ID))
+			شمار_2 = CP_SYS;
+		ورنہ اگر (p->p_misc_flags & MF_NICED)
+			شمار_2 = CP_NICE;
+		ورنہ
+			شمار_2 = CP_USER;
 
-#if DEBUG_RACE
-		p->p_cpu_time_left = 0;
-#else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
-		} else {
-			p->p_cpu_time_left = 0;
+#اگر DEBUG_RACE
+		p->p_cpu_وقت_بایاں = 0;
+#ورنہ
+		اگر (tsc_delta < p->p_cpu_وقت_بایاں) {
+			p->p_cpu_وقت_بایاں -= tsc_delta;
+		} ورنہ {
+			p->p_cpu_وقت_بایاں = 0;
 		}
-#endif
-	} else {
+#اگر_ختم
+	} ورنہ {
 		/* On MINIX3, the "interrupts" counter covers the kernel. */
-		if (p->p_endpoint == IDLE)
-			counter = CP_IDLE;
-		else
-			counter = CP_INTR;
+		اگر (p->p_endpoint == IDLE)
+			شمار_2 = CP_IDLE;
+		ورنہ
+			شمار_2 = CP_INTR;
 	}
 
-	tsc_per_state[cpu][counter] += tsc_delta;
+	tsc_فی_state[cpu][شمار_2] += tsc_delta;
 
 	*__tsc_ctr_switch = tsc;
 }
 
-void context_stop_idle(void)
+خالی context_stop_idle(خالی)
 {
-	int is_idle;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	صحیح is_idle;
+#اگر_تعریف_شدہ CONFIG_SMP
+	غیرعلامتی cpu = cpuid;
+#اگر_ختم
 
 	is_idle = get_cpu_var(cpu, cpu_is_idle);
 	get_cpu_var(cpu, cpu_is_idle) = 0;
 
 	context_stop(get_cpulocal_var_ptr(idle_proc));
 
-	if (is_idle)
+	اگر (is_idle)
 		restart_local_timer();
-#if SPROFILE
-	if (sprofiling)
+#اگر SPROFILE
+	اگر (sprofiling)
 		get_cpulocal_var(idle_interrupted) = 1;
-#endif
+#اگر_ختم
 }
 
-void restart_local_timer(void)
+خالی restart_local_timer(خالی)
 {
 }
 
-int register_local_timer_handler(const irq_handler_t handler)
+صحیح رجسٹر_local_timer_handler(ثابت irq_handler_t handler)
 {
-	return bsp_register_timer_handler(handler);
+	واپس bsp_رجسٹر_timer_handler(handler);
 }
 
-u64_t ms_2_cpu_time(unsigned ms)
+u64_t ms_2_cpu_وقت(غیرعلامتی ms)
 {
-	return (u64_t)tsc_per_ms[cpuid] * ms;
+	واپس (u64_t)tsc_فی_ms[cpuid] * ms;
 }
 
-unsigned cpu_time_2_ms(u64_t cpu_time)
+غیرعلامتی cpu_وقت_2_ms(u64_t cpu_وقت)
 {
-	return (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
+	واپس (غیرعلامتی طویل)(cpu_وقت / tsc_فی_ms[cpuid]);
 }
 
-short cpu_load(void)
+مختصر cpu_بھرو(خالی)
 {
 	u64_t current_tsc, *current_idle;
 	u64_t tsc_delta, idle_delta, busy;
-	struct proc *idle;
-	short load;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	ساخت proc *idle;
+	مختصر بھرو;
+#اگر_تعریف_شدہ CONFIG_SMP
+	غیرعلامتی cpu = cpuid;
+#اگر_ختم
 
-	u64_t *last_tsc, *last_idle;
+	u64_t *آخری_tsc, *آخری_idle;
 
-	last_tsc = get_cpu_var_ptr(cpu, cpu_last_tsc);
-	last_idle = get_cpu_var_ptr(cpu, cpu_last_idle);
+	آخری_tsc = get_cpu_var_ptr(cpu, cpu_آخری_tsc);
+	آخری_idle = get_cpu_var_ptr(cpu, cpu_آخری_idle);
 
 	idle = get_cpu_var_ptr(cpu, idle_proc);;
 	read_tsc_64(&current_tsc);
-	current_idle = &idle->p_cycles; /* ptr to idle proc */
+	current_idle = &idle->p_ادوار; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (*last_tsc) {
-		tsc_delta = current_tsc - *last_tsc;
-		idle_delta = *current_idle - *last_idle;
+	اگر (*آخری_tsc) {
+		tsc_delta = current_tsc - *آخری_tsc;
+		idle_delta = *current_idle - *آخری_idle;
 
 		busy = tsc_delta - idle_delta;
 		busy = busy * 100;
-		load = ex64lo(busy / tsc_delta);
+		بھرو = ex64lo(busy / tsc_delta);
 
-		if (load > 100)
-			load = 100;
-	} else
-		load = 0;
+		اگر (بھرو > 100)
+			بھرو = 100;
+	} ورنہ
+		بھرو = 0;
 
-	*last_tsc = current_tsc;
-	*last_idle = *current_idle;
-	return load;
+	*آخری_tsc = current_tsc;
+	*آخری_idle = *current_idle;
+	واپس بھرو;
 }
 
 /*
  * Return the number of clock ticks spent in each of a predefined number of
  * CPU states.
  */
-void
-get_cpu_ticks(unsigned int cpu, uint64_t ticks[CPUSTATES])
+خالی
+get_cpu_ticks(غیرعلامتی صحیح cpu, uint64_t ticks[CPUSTATES])
 {
-	int i;
+	صحیح i;
 
 	/* TODO: make this inter-CPU safe! */
-	for (i = 0; i < CPUSTATES; i++)
-		ticks[i] = tsc_per_state[cpu][i] / tsc_per_tick[cpu];
+	برائے (i = 0; i < CPUSTATES; i++)
+		ticks[i] = tsc_فی_state[cpu][i] / tsc_فی_tick[cpu];
 }

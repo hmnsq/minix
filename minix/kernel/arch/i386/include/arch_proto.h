@@ -1,76 +1,76 @@
 
-#ifndef _I386_PROTO_H
-#define _I386_PROTO_H
+#اگر_غیر_تعریف_شدہ _I386_PROTO_H
+#تعریف_کرو _I386_PROTO_H
 
-#include <machine/vm.h>
+#شامل <machine/vm.h>
 
-#define K_STACK_SIZE	I386_PAGE_SIZE
+#تعریف_کرو K_ڈھیر_سائز	I386_صفحہ_سائز
 
-#ifndef __ASSEMBLY__
+#اگر_غیر_تعریف_شدہ __ASSEMBLY__
 
 /* Hardware interrupt handlers. */
-void hwint00(void);
-void hwint01(void);
-void hwint02(void);
-void hwint03(void);
-void hwint04(void);
-void hwint05(void);
-void hwint06(void);
-void hwint07(void);
-void hwint08(void);
-void hwint09(void);
-void hwint10(void);
-void hwint11(void);
-void hwint12(void);
-void hwint13(void);
-void hwint14(void);
-void hwint15(void);
+خالی hwint00(خالی);
+خالی hwint01(خالی);
+خالی hwint02(خالی);
+خالی hwint03(خالی);
+خالی hwint04(خالی);
+خالی hwint05(خالی);
+خالی hwint06(خالی);
+خالی hwint07(خالی);
+خالی hwint08(خالی);
+خالی hwint09(خالی);
+خالی hwint10(خالی);
+خالی hwint11(خالی);
+خالی hwint12(خالی);
+خالی hwint13(خالی);
+خالی hwint14(خالی);
+خالی hwint15(خالی);
 
 /* Exception handlers (real or protected mode), in numerical order. */
-void int00(void), divide_error (void);
-void int01(void), single_step_exception (void);
-void int02(void), nmi (void);
-void int03(void), breakpoint_exception (void);
-void int04(void), overflow (void);
-void int05(void), bounds_check (void);
-void int06(void), inval_opcode (void);
-void int07(void), copr_not_available (void);
-void double_fault(void);
-void copr_seg_overrun(void);
-void inval_tss(void);
-void segment_not_present(void);
-void stack_exception(void);
-void general_protection(void);
-void page_fault(void);
-void copr_error(void);
-void alignment_check(void);
-void machine_check(void);
-void simd_exception(void);
+خالی int00(خالی), divide_error (خالی);
+خالی int01(خالی), single_قدم_exception (خالی);
+خالی int02(خالی), nmi (خالی);
+خالی int03(خالی), breakpoint_exception (خالی);
+خالی int04(خالی), حد_سے_تجاوز (خالی);
+خالی int05(خالی), bounds_check (خالی);
+خالی int06(خالی), inval_opcode (خالی);
+خالی int07(خالی), copr_not_دستیاب (خالی);
+خالی double_fault(خالی);
+خالی copr_seg_overrun(خالی);
+خالی inval_tss(خالی);
+خالی segment_not_present(خالی);
+خالی ڈھیر_exception(خالی);
+خالی general_protection(خالی);
+خالی صفحہ_fault(خالی);
+خالی copr_error(خالی);
+خالی alignment_check(خالی);
+خالی machine_check(خالی);
+خالی simd_exception(خالی);
 
-void restore_user_context_int(struct proc *);
-void restore_user_context_sysenter(struct proc *);
-void restore_user_context_syscall(struct proc *);
+خالی restore_user_context_int(ساخت proc *);
+خالی restore_user_context_sysenter(ساخت proc *);
+خالی restore_user_context_syscall(ساخت proc *);
 
 /* Software interrupt handlers, in numerical order. */
-void trp(void);
-void ipc_entry_softint_orig(void);
-void ipc_entry_softint_um(void);
-void ipc_entry_sysenter(void);
-void ipc_entry_syscall_cpu0(void);
-void ipc_entry_syscall_cpu1(void);
-void ipc_entry_syscall_cpu2(void);
-void ipc_entry_syscall_cpu3(void);
-void ipc_entry_syscall_cpu4(void);
-void ipc_entry_syscall_cpu5(void);
-void ipc_entry_syscall_cpu6(void);
-void ipc_entry_syscall_cpu7(void);
-void kernel_call_entry_orig(void);
-void kernel_call_entry_um(void);
-void level0_call(void);
+خالی trp(خالی);
+خالی ipc_اندراج_softint_orig(خالی);
+خالی ipc_اندراج_softint_um(خالی);
+خالی ipc_اندراج_sysenter(خالی);
+خالی ipc_اندراج_syscall_cpu0(خالی);
+خالی ipc_اندراج_syscall_cpu1(خالی);
+خالی ipc_اندراج_syscall_cpu2(خالی);
+خالی ipc_اندراج_syscall_cpu3(خالی);
+خالی ipc_اندراج_syscall_cpu4(خالی);
+خالی ipc_اندراج_syscall_cpu5(خالی);
+خالی ipc_اندراج_syscall_cpu6(خالی);
+خالی ipc_اندراج_syscall_cpu7(خالی);
+خالی kernel_call_اندراج_orig(خالی);
+خالی kernel_call_اندراج_um(خالی);
+خالی level0_call(خالی);
 
 /* exception.c */
-struct exception_frame {
-	reg_t	vector;		/* which interrupt vector was triggered */
+ساخت exception_چوکھٹا {
+	reg_t	سمتیہ;		/* which interrupt vector was triggered */
 	reg_t	errcode;	/* zero if no exception does not push err code */
 	reg_t	eip;
 	reg_t	cs;
@@ -79,92 +79,92 @@ struct exception_frame {
 	reg_t	ss;		/* undefined if trap is nested */
 };
 
-void exception(struct exception_frame * frame);
+خالی exception(ساخت exception_چوکھٹا * چوکھٹا);
 
 /* klib.S */
-__dead void monitor(void);
-__dead void reset(void);
-__dead void poweroff_vmware_clihlt(void);
-__dead void x86_triplefault(void);
-reg_t read_cr0(void);
-reg_t read_cr2(void);
-void write_cr0(unsigned long value);
-unsigned long read_cr4(void);
-void write_cr4(unsigned long value);
-void write_cr3(unsigned long value);
-unsigned long read_cpu_flags(void);
-phys_bytes vir2phys(void *);
-void phys_insb(u16_t port, phys_bytes buf, size_t count);
-void phys_insw(u16_t port, phys_bytes buf, size_t count);
-void phys_outsb(u16_t port, phys_bytes buf, size_t count);
-void phys_outsw(u16_t port, phys_bytes buf, size_t count);
-u32_t read_cr3(void);
-void reload_cr3(void);
-void i386_invlpg(phys_bytes linaddr);
-vir_bytes phys_memset(phys_bytes ph, u32_t c, phys_bytes bytes);
-void reload_ds(void);
-void ia32_msr_read(u32_t reg, u32_t * hi, u32_t * lo);
-void ia32_msr_write(u32_t reg, u32_t hi, u32_t lo);
-void fninit(void);
-void clts(void);
-void fxsave(void *);
-void fnsave(void *);
-int fxrstor(void *);
-int __fxrstor_end(void *);
-int frstor(void *);
-int __frstor_end(void *);
-int __frstor_failure(void *);
-unsigned short fnstsw(void);
-void fnstcw(unsigned short* cw);
-void x86_lgdt(void *);
-void x86_lldt(u32_t);
-void x86_ltr(u32_t);
-void x86_lidt(void *);
-void x86_load_kerncs(void);
-void x86_load_ds(u32_t);
-void x86_load_ss(u32_t);
-void x86_load_es(u32_t);
-void x86_load_fs(u32_t);
-void x86_load_gs(u32_t);
+__dead خالی monitor(خالی);
+__dead خالی reset(خالی);
+__dead خالی poweroff_vmware_clihlt(خالی);
+__dead خالی x86_triplefault(خالی);
+reg_t read_cr0(خالی);
+reg_t read_cr2(خالی);
+خالی write_cr0(غیرعلامتی طویل قدر);
+غیرعلامتی طویل read_cr4(خالی);
+خالی write_cr4(غیرعلامتی طویل قدر);
+خالی write_cr3(غیرعلامتی طویل قدر);
+غیرعلامتی طویل read_cpu_flags(خالی);
+phys_بائٹیں vir2phys(خالی *);
+خالی phys_insb(u16_t پورٹ, phys_بائٹیں buf, size_t گنتی);
+خالی phys_insw(u16_t پورٹ, phys_بائٹیں buf, size_t گنتی);
+خالی phys_outsb(u16_t پورٹ, phys_بائٹیں buf, size_t گنتی);
+خالی phys_outsw(u16_t پورٹ, phys_بائٹیں buf, size_t گنتی);
+u32_t read_cr3(خالی);
+خالی reload_cr3(خالی);
+خالی i386_invlpg(phys_بائٹیں linaddr);
+vir_بائٹیں phys_memset(phys_بائٹیں ph, u32_t c, phys_بائٹیں بائٹیں);
+خالی reload_ds(خالی);
+خالی ia32_msr_read(u32_t reg, u32_t * hi, u32_t * lo);
+خالی ia32_msr_write(u32_t reg, u32_t hi, u32_t lo);
+خالی fninit(خالی);
+خالی clts(خالی);
+خالی fxsave(خالی *);
+خالی fnsave(خالی *);
+صحیح fxrstor(خالی *);
+صحیح __fxrstor_end(خالی *);
+صحیح frstor(خالی *);
+صحیح __frstor_end(خالی *);
+صحیح __frstor_failure(خالی *);
+غیرعلامتی مختصر fnstsw(خالی);
+خالی fnstcw(غیرعلامتی مختصر* cw);
+خالی x86_lgdt(خالی *);
+خالی x86_lldt(u32_t);
+خالی x86_ltr(u32_t);
+خالی x86_lidt(خالی *);
+خالی x86_بھرو_kerncs(خالی);
+خالی x86_بھرو_ds(u32_t);
+خالی x86_بھرو_ss(u32_t);
+خالی x86_بھرو_es(u32_t);
+خالی x86_بھرو_fs(u32_t);
+خالی x86_بھرو_gs(u32_t);
 
 /* ipc functions in usermapped_ipc.S */
-int usermapped_send_softint(endpoint_t dest, message *m_ptr);
-int usermapped_receive_softint(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
-int usermapped_notify_softint(endpoint_t dest);
-int usermapped_do_kernel_call_softint(message *m_ptr);
-int usermapped_senda_softint(asynmsg_t *table, size_t count);
+صحیح usermapped_send_softint(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_receive_softint(endpoint_t src, پیغام *m_ptr, صحیح *حالت_ptr);
+صحیح usermapped_sendrec_softint(endpoint_t src_dest, پیغام *m_ptr);
+صحیح usermapped_sendnb_softint(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_notify_softint(endpoint_t dest);
+صحیح usermapped_do_kernel_call_softint(پیغام *m_ptr);
+صحیح usermapped_senda_softint(asynmsg_t *جدول, size_t گنتی);
 
-int usermapped_send_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_receive_syscall(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_notify_syscall(endpoint_t dest);
-int usermapped_do_kernel_call_syscall(message *m_ptr);
-int usermapped_senda_syscall(asynmsg_t *table, size_t count);
+صحیح usermapped_send_syscall(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_receive_syscall(endpoint_t src, پیغام *m_ptr, صحیح *حالت_ptr);
+صحیح usermapped_sendrec_syscall(endpoint_t src_dest, پیغام *m_ptr);
+صحیح usermapped_sendnb_syscall(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_notify_syscall(endpoint_t dest);
+صحیح usermapped_do_kernel_call_syscall(پیغام *m_ptr);
+صحیح usermapped_senda_syscall(asynmsg_t *جدول, size_t گنتی);
 
-int usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_receive_sysenter(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_notify_sysenter(endpoint_t dest);
-int usermapped_do_kernel_call_sysenter(message *m_ptr);
-int usermapped_senda_sysenter(asynmsg_t *table, size_t count);
+صحیح usermapped_send_sysenter(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_receive_sysenter(endpoint_t src, پیغام *m_ptr, صحیح *حالت_ptr);
+صحیح usermapped_sendrec_sysenter(endpoint_t src_dest, پیغام *m_ptr);
+صحیح usermapped_sendnb_sysenter(endpoint_t dest, پیغام *m_ptr);
+صحیح usermapped_notify_sysenter(endpoint_t dest);
+صحیح usermapped_do_kernel_call_sysenter(پیغام *m_ptr);
+صحیح usermapped_senda_sysenter(asynmsg_t *جدول, size_t گنتی);
 
-void switch_k_stack(void * esp, void (* continuation)(void));
+خالی switch_k_ڈھیر(خالی * esp, خالی (* continuation)(خالی));
 
-void __switch_address_space(struct proc * p, struct proc ** __ptproc);
-#define switch_address_space(proc)	\
+خالی __switch_address_space(ساخت proc * p, ساخت proc ** __ptproc);
+#تعریف_کرو switch_پتہ_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
-void refresh_tlb(void);
+خالی refresh_tlb(خالی);
 
 /* multiboot.c */
-void multiboot_init(void);
+خالی multiboot_init(خالی);
 
 /* protect.c */
-struct tss_s {
+ساخت tss_s {
   reg_t backlink;
   reg_t sp0;                    /* stack pointer to use during interrupt */
   reg_t ss0;                    /*   "   segment  "  "    "        "     */
@@ -195,90 +195,90 @@ struct tss_s {
 /* u8_t iomap[0]; */
 } __attribute__((packed));
 
-void enable_iop(struct proc *pp);
-u32_t read_cs(void);
-u32_t read_ds(void);
-u32_t read_ss(void);
+خالی enable_iop(ساخت proc *pp);
+u32_t read_cs(خالی);
+u32_t read_ds(خالی);
+u32_t read_ss(خالی);
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
-void vm_enable_paging(void);
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
-phys_bytes pg_roundup(phys_bytes b);
-void pg_info(reg_t *, u32_t **);
-void pg_clear(void);
-void pg_identity(kinfo_t *);
-phys_bytes pg_load(void);
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+خالی جوڑو_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
+phys_بائٹیں alloc_سب_سے_نیچا(kinfo_t *cbi, phys_بائٹیں len);
+خالی vm_enable_paging(خالی);
+خالی cut_memmap(kinfo_t *cbi, phys_بائٹیں آغاز, phys_بائٹیں انتہا);
+phys_بائٹیں pg_roundup(phys_بائٹیں b);
+خالی pg_info(reg_t *, u32_t **);
+خالی pg_clear(خالی);
+خالی pg_شناختی_عنصر(kinfo_t *);
+phys_بائٹیں pg_بھرو(خالی);
+خالی pg_map(phys_بائٹیں phys, vir_بائٹیں vaddr, vir_بائٹیں vaddr_انتہا, kinfo_t *cbi);
+صحیح pg_mapkernel(خالی);
+خالی pg_mapproc(ساخت proc *p, ساخت boot_image *ip, kinfo_t *cbi);
 
 /* prototype of an interrupt vector table entry */
-struct gate_table_s {
- void(*gate) (void);
-	unsigned char vec_nr;
-	unsigned char privilege;
+ساخت gate_جدول_s {
+ خالی(*gate) (خالی);
+	غیرعلامتی حرف vec_nr;
+	غیرعلامتی حرف privilege;
 };
 
 /* copies an array of vectors to the IDT. The last vector must be zero filled */
-void idt_copy_vectors(struct gate_table_s * first);
-void idt_copy_vectors_pic(void);
-void idt_reload(void);
+خالی idt_copy_vectors(ساخت gate_جدول_s * پہلا);
+خالی idt_copy_vectors_pic(خالی);
+خالی idt_reload(خالی);
 
-EXTERN void * k_stacks_start;
-extern void * k_stacks;
+EXTERN خالی * k_stacks_آغاز;
+خارجی خالی * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#تعریف_کرو get_k_ڈھیر_چوٹی(cpu)	((خالی *)(((حرف*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_ڈھیر_سائز))
 
-void mfence(void);
-#define barrier()	do { mfence(); } while(0)
+خالی mfence(خالی);
+#تعریف_کرو barrier()	کرو { mfence(); } جب(0)
 
 
-#ifndef __GNUC__
+#اگر_غیر_تعریف_شدہ __GNUC__
 /* call a function to read the stack fram pointer (%ebp) */
-reg_t read_ebp(void);
-#define get_stack_frame(__X)	((reg_t)read_ebp())
-#else
+reg_t read_ebp(خالی);
+#تعریف_کرو get_ڈھیر_چوکھٹا(__X)	((reg_t)read_ebp())
+#ورنہ
 /* read %ebp directly */
-#define get_stack_frame(__X)	((reg_t)__builtin_frame_address(0))
-#endif
+#تعریف_کرو get_ڈھیر_چوکھٹا(__X)	((reg_t)__builtin_frame_address(0))
+#اگر_ختم
 
 /*
  * sets up TSS for a cpu and assigns kernel stack and cpu id
  */
-int tss_init(unsigned cpu, void * kernel_stack);
+صحیح tss_init(غیرعلامتی cpu, خالی * kernel_ڈھیر);
 
-void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type);
+خالی int_gate_idt(غیرعلامتی vec_nr, vir_بائٹیں انحراف, غیرعلامتی dpl_type);
 
-void __copy_msg_from_user_end(void);
-void __copy_msg_to_user_end(void);
-void __user_copy_msg_pointer_failure(void);
+خالی __copy_msg_from_user_end(خالی);
+خالی __copy_msg_to_user_end(خالی);
+خالی __user_copy_msg_pointer_failure(خالی);
 
-int platform_tbl_checksum_ok(void *ptr, unsigned int length);
-int platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
-	increment, void * buff, unsigned size, phys_bytes * phys_addr, int ((*
-	cmp_f)(void *)));
+صحیح platform_tbl_checksum_ok(خالی *ptr, غیرعلامتی صحیح لمبائی);
+صحیح platform_tbl_ptr(phys_بائٹیں آغاز, phys_بائٹیں انتہا, غیرعلامتی
+	increment, خالی * buff, غیرعلامتی سائز, phys_بائٹیں * phys_addr, صحیح ((*
+	cmp_f)(خالی *)));
 
 /* breakpoints.c */
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags);
-#define BREAKPOINT_COUNT		4
-#define BREAKPOINT_FLAG_RW_MASK		(3 << 0)
-#define BREAKPOINT_FLAG_RW_EXEC		(0 << 0)
-#define BREAKPOINT_FLAG_RW_WRITE	(1 << 0)
-#define BREAKPOINT_FLAG_RW_RW		(2 << 0)
-#define BREAKPOINT_FLAG_LEN_MASK	(3 << 2)
-#define BREAKPOINT_FLAG_LEN_1		(0 << 2)
-#define BREAKPOINT_FLAG_LEN_2		(1 << 2)
-#define BREAKPOINT_FLAG_LEN_4		(2 << 2)
-#define BREAKPOINT_FLAG_MODE_MASK	(3 << 4)
-#define BREAKPOINT_FLAG_MODE_OFF	(0 << 4)
-#define BREAKPOINT_FLAG_MODE_LOCAL	(1 << 4)
-#define BREAKPOINT_FLAG_MODE_GLOBAL	(2 << 4)
+صحیح breakpoint_سیٹ(phys_بائٹیں linaddr, صحیح bp, ثابت صحیح flags);
+#تعریف_کرو BREAKPOINT_گنتی		4
+#تعریف_کرو BREAKPOINT_FLAG_RW_نقاب		(3 << 0)
+#تعریف_کرو BREAKPOINT_FLAG_RW_EXEC		(0 << 0)
+#تعریف_کرو BREAKPOINT_FLAG_RW_WRITE	(1 << 0)
+#تعریف_کرو BREAKPOINT_FLAG_RW_RW		(2 << 0)
+#تعریف_کرو BREAKPOINT_FLAG_LEN_نقاب	(3 << 2)
+#تعریف_کرو BREAKPOINT_FLAG_LEN_1		(0 << 2)
+#تعریف_کرو BREAKPOINT_FLAG_LEN_2		(1 << 2)
+#تعریف_کرو BREAKPOINT_FLAG_LEN_4		(2 << 2)
+#تعریف_کرو BREAKPOINT_FLAG_منوال_نقاب	(3 << 4)
+#تعریف_کرو BREAKPOINT_FLAG_منوال_OFF	(0 << 4)
+#تعریف_کرو BREAKPOINT_FLAG_منوال_LOCAL	(1 << 4)
+#تعریف_کرو BREAKPOINT_FLAG_منوال_GLOBAL	(2 << 4)
 
 /* functions defined in architecture-independent kernel source. */
-#include "kernel/proto.h"
+#شامل "kernel/proto.h"
 
-#endif /* __ASSEMBLY__ */
+#اگر_ختم /* __ASSEMBLY__ */
 
-#endif
+#اگر_ختم

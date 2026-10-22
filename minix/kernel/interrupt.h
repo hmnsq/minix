@@ -1,6 +1,6 @@
-#ifndef __INTERRUPT_H__
-#define __INTERRUPT_H__
+#اگر_غیر_تعریف_شدہ __INTERRUPT_H__
+#تعریف_کرو __INTERRUPT_H__
 
-#include "hw_intr.h"
+#شامل "hw_intr.h"
 
-#endif /* __INTERRUPT_H__ */
+#اگر_ختم /* __INTERRUPT_H__ */

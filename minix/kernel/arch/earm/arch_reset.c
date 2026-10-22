@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#شامل <unistd.h>
+#شامل <ctype.h>
+#شامل <string.h>
+#شامل <machine/cpu.h>
+#شامل <assert.h>
+#شامل <signal.h>
+#شامل <machine/vm.h>
+#شامل <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#شامل <minix/board.h>
+#شامل <sys/reboot.h>
 
-#include <minix/u64.h>
+#شامل <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#شامل "archconst.h"
+#شامل "arch_proto.h"
+#شامل "bsp_reset.h"
+#شامل "bsp_serial.h"
+#شامل "kernel/proc.h"
+#شامل "kernel/debug.h"
+#شامل "direct_utils.h"
+#شامل <machine/multiboot.h>
 
-void
-halt_cpu(void)
+خالی
+halt_cpu(خالی)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm متلون("dsb");
+	asm متلون("cpsie i");
+	asm متلون("wfi");
+	asm متلون("cpsid i");
 }
 
-void
-reset(void)
+خالی
+reset(خالی)
 {
 	bsp_reset(); /* should not exit */
-	direct_print("Reset not supported.");
-	while (1);
+	براہ_راست_print("Reset not supported.");
+	جب (1);
 }
 
-void
-poweroff(void)
+خالی
+poweroff(خالی)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
-	direct_print("Unable to power-off this device.");
-	while (1);
+	براہ_راست_print("Unable to power-off this device.");
+	جب (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead خالی
+arch_shutdown(صحیح how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	اگر((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	اگر(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		برائے (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,14 +69,14 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	جب (1);
 }
 
-#ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+#اگر_تعریف_شدہ DEBUG_SERIAL
+خالی
+ser_putc(حرف c)
 {
 	bsp_ser_putc(c);
 }
 
-#endif
+#اگر_ختم

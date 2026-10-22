@@ -1,9 +1,9 @@
-#ifndef __I386_WATCHDOG_H__
-#define __I386_WATCHDOG_H__
+#اگر_غیر_تعریف_شدہ __I386_WATCHDOG_H__
+#تعریف_کرو __I386_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-struct nmi_frame {
+ساخت nmi_چوکھٹا {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,8 +21,8 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+صحیح i386_watchdog_آغاز(خالی);
 
-#define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
+#تعریف_کرو nmi_اندر_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
-#endif /* __I386_WATCHDOG_H__ */
+#اگر_ختم /* __I386_WATCHDOG_H__ */

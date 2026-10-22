@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#شامل <ctype.h>
+#شامل <string.h>
+#شامل <machine/cmos.h>
+#شامل <machine/bios.h>
+#شامل <machine/cpu.h>
+#شامل <minix/cpufeature.h>
+#شامل <sys/reboot.h>
+#شامل <assert.h>
+#شامل <signal.h>
 
-#include <minix/u64.h>
+#شامل <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#شامل "arch_proto.h"
+#شامل "oxpcie.h"
+#شامل "direct_utils.h"
 
-#ifdef USE_ACPI
-#include "acpi.h"
-#endif
+#اگر_تعریف_شدہ USE_ACPI
+#شامل "acpi.h"
+#اگر_ختم
 
-#define     KBCMDP          4       /* kbd controller port (O) */
-#define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
-#define      IO_KBD          0x060           /* 8042 Keyboard */
+#تعریف_کرو     KBCMDP          4       /* kbd controller port (O) */
+#تعریف_کرو      KBC_PULSE0     0xfe    /* pulse output bit 0 */
+#تعریف_کرو      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+صحیح cpu_has_tsc;
 
-void
-reset(void)
+خالی
+reset(خالی)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        اگر (b != 0xff) {
+                اگر ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	جب(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+ساکن __dead خالی
+halt(خالی)
 {
-	for ( ; ; )
+	برائے ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+ساکن __dead خالی
+poweroff(خالی)
 {
-	const char *shutdown_str;
+	ثابت حرف *shutdown_str;
 
-#ifdef USE_ACPI
+#اگر_تعریف_شدہ USE_ACPI
 	acpi_poweroff();
-#endif
+#اگر_ختم
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        جب (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,40 +105,40 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead خالی arch_shutdown(صحیح how)
 {
-	unsigned char unused_ch;
+	غیرعلامتی حرف غیر_مستعمل_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	جب(براہ_راست_read_char(&غیر_مستعمل_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	اگر(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		اگر (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
-		direct_cls();
-		direct_print("Minix panic. System diagnostics buffer:\n\n");
-		direct_print(kmess.kmess_buf);
-		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		براہ_راست_cls();
+		براہ_راست_print("Minix panic. System diagnostics buffer:\n\n");
+		براہ_راست_print(kmess.kmess_buf);
+		براہ_راست_print("\nSystem has panicked, press any key to reboot");
+		جب (!براہ_راست_read_char(&غیر_مستعمل_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	اگر((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	اگر(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		برائے (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -150,24 +150,24 @@ __dead void arch_shutdown(int how)
 	NOT_REACHABLE;
 }
 
-#ifdef DEBUG_SERIAL
-void ser_putc(char c)
+#اگر_تعریف_شدہ DEBUG_SERIAL
+خالی ser_putc(حرف c)
 {
-        int i;
-        int lsr, thr;
+        صحیح i;
+        صحیح lsr, thr;
 
-#if CONFIG_OXPCIE
+#اگر CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#ورنہ
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        برائے (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                اگر (inb( lsr) & LSR_THRE)
+                        توڑو;
         }
         outb( thr, c);
-#endif
+#اگر_ختم
 }
 
-#endif
+#اگر_ختم

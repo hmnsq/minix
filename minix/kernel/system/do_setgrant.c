@@ -6,25 +6,25 @@
  *   m_lsys_krn_sys_setgrant.size    number of entries
  */
 
-#include "kernel/system.h"
-#include <minix/safecopies.h>
+#شامل "kernel/system.h"
+#شامل <minix/safecopies.h>
 
 /*===========================================================================*
  *				do_setgrant				     *
  *===========================================================================*/
-int do_setgrant(struct proc * caller, message * m_ptr)
+صحیح do_setgrant(ساخت proc * caller, پیغام * m_ptr)
 {
-	int r;
+	صحیح r;
 
 	/* Copy grant table set in priv. struct. */
-	if (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
+	اگر (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
 		r = EPERM;
-	} else {
-		_K_SET_GRANT_TABLE(caller,
+	} ورنہ {
+		K_سیٹ_GRANT_جدول(caller,
 			m_ptr->m_lsys_krn_sys_setgrant.addr,
-			m_ptr->m_lsys_krn_sys_setgrant.size);
+			m_ptr->m_lsys_krn_sys_setgrant.سائز);
 		r = OK;
 	}
 
-	return r;
+	واپس r;
 }

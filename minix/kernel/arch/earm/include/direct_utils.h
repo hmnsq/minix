@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#اگر_غیر_تعریف_شدہ MB_UTILS_H
+#تعریف_کرو MB_UTILS_H
 
-#include "kernel/kernel.h"
+#شامل "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+خالی براہ_راست_cls(خالی);
+خالی براہ_راست_print(ثابت حرف*);
+خالی براہ_راست_print_char(حرف);
+صحیح براہ_راست_read_char(غیرعلامتی حرف*);
 
-#endif
+#اگر_ختم

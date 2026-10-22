@@ -12,20 +12,20 @@
  *   Sep 24, 2004   redesigned alarm timers  (Jorrit N. Herder)
  */
 
-#include <minix/endpoint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#شامل <minix/endpoint.h>
+#شامل <stdlib.h>
+#شامل <string.h>
+#شامل <assert.h>
 
-#include "clock.h"
+#شامل "clock.h"
 
-#ifdef USE_WATCHDOG
-#include "watchdog.h"
-#endif
+#اگر_تعریف_شدہ USE_WATCHDOG
+#شامل "watchdog.h"
+#اگر_ختم
 
 /* Function prototype for PRIVATE functions.
  */
-static void load_update(void);
+ساکن خالی بھرو_update(خالی);
 
 /* The CLOCK's timers queue. The functions in <minix/timers.h> operate on this.
  * Each system process possesses a single synchronous alarm timer. If other
@@ -34,40 +34,40 @@ static void load_update(void);
  * via (re)set_kernel_timer().
  * When a timer expires its watchdog function is run by the CLOCK task.
  */
-static minix_timer_t *clock_timers;	/* queue of CLOCK timers */
+ساکن minix_timer_t *clock_timers;	/* queue of CLOCK timers */
 
 /* Number of ticks to adjust realtime by. A negative value implies slowing
  * down realtime, a positive value implies speeding it up.
  */
-static int32_t adjtime_delta = 0;
+ساکن int32_t adjtime_delta = 0;
 
 /*
  * Initialize the clock variables.
  */
-void
-init_clock(void)
+خالی
+init_clock(خالی)
 {
-	char *value;
+	حرف *قدر;
 
 	/* Initialize clock information structure. */
-	memset(&kclockinfo, 0, sizeof(kclockinfo));
+	memset(&kclockinfo, 0, حجم(kclockinfo));
 
 	/* Get clock tick frequency. */
-	value = env_get("hz");
-	if (value != NULL)
-		kclockinfo.hz = atoi(value);
-	if (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
+	قدر = env_get("hz");
+	اگر (قدر != تہی)
+		kclockinfo.hz = atoi(قدر);
+	اگر (قدر == تہی || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
 		kclockinfo.hz = DEFAULT_HZ;
 
 	/* Load average data initialization. */
-	memset(&kloadinfo, 0, sizeof(kloadinfo));
+	memset(&kloadinfo, 0, حجم(kloadinfo));
 }
 
 /*
  * The boot processor's timer interrupt handler. In addition to non-boot cpus
  * it keeps real time and notifies the clock task if need be.
  */
-int timer_int_handler(void)
+صحیح timer_int_handler(خالی)
 {
 	/* Update user and system accounting times. Charge the current process
 	 * for user time. If the current process is not billable, that is, if a
@@ -76,29 +76,29 @@ int timer_int_handler(void)
 	 * user's system time.
 	 */
 
-	struct proc * p, * billp;
+	ساخت proc * p, * billp;
 
 	/* FIXME watchdog for slave cpus! */
-#ifdef USE_WATCHDOG
+#اگر_تعریف_شدہ USE_WATCHDOG
 	/*
 	 * we need to know whether local timer ticks are happening or whether
 	 * the kernel is locked up. We don't care about overflows as we only
 	 * need to know that it's still ticking or not
 	 */
 	watchdog_local_timer_ticks++;
-#endif
+#اگر_ختم
 
-	if (cpu_is_bsp(cpuid)) {
+	اگر (cpu_is_bsp(cpuid)) {
 		kclockinfo.uptime++;
 
 		/* if adjtime_delta has ticks remaining, apply one to realtime.
 		 * limit changes to every other interrupt.
 		 */
-		if (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
+		اگر (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
 			/* go forward or stay behind */
 			kclockinfo.realtime += (adjtime_delta > 0) ? 2 : 0;
 			adjtime_delta += (adjtime_delta > 0) ? -1 : +1;
-		} else {
+		} ورنہ {
 			kclockinfo.realtime++;
 		}
 	}
@@ -113,10 +113,10 @@ int timer_int_handler(void)
 	p = get_cpulocal_var(proc_ptr);
 	billp = get_cpulocal_var(bill_ptr);
 
-	p->p_user_time++;
+	p->p_user_وقت++;
 
-	if (! (priv(p)->s_flags & BILLABLE)) {
-		billp->p_sys_time++;
+	اگر (! (priv(p)->s_flags & BILLABLE)) {
+		billp->p_sys_وقت++;
 	}
 
 	/* Decrement virtual timers, if applicable. We decrement both the
@@ -125,16 +125,16 @@ int timer_int_handler(void)
 	 * well.  If any of the timers expire, do_clocktick() will send out
 	 * signals.
 	 */
-	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
-		p->p_virt_left--;
+	اگر ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_بایاں > 0)) {
+		p->p_virt_بایاں--;
 	}
-	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
-		p->p_prof_left--;
+	اگر ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_بایاں > 0)) {
+		p->p_prof_بایاں--;
 	}
-	if (! (priv(p)->s_flags & BILLABLE) &&
+	اگر (! (priv(p)->s_flags & BILLABLE) &&
 			(billp->p_misc_flags & MF_PROF_TIMER) &&
-			(billp->p_prof_left > 0)) {
-		billp->p_prof_left--;
+			(billp->p_prof_بایاں > 0)) {
+		billp->p_prof_بایاں--;
 	}
 
 	/*
@@ -144,47 +144,47 @@ int timer_int_handler(void)
 	 */
 	vtimer_check(p);
 
-	if (p != billp)
+	اگر (p != billp)
 		vtimer_check(billp);
 
 	/* Update load average. */
-	load_update();
+	بھرو_update();
 
-	if (cpu_is_bsp(cpuid)) {
+	اگر (cpu_is_bsp(cpuid)) {
 		/*
 		 * If a timer expired, notify the clock task.  Keep in mind
 		 * that clock tick values may overflow, so we must only look at
 		 * relative differences, and only if there are timers at all.
 		 */
-		if (clock_timers != NULL &&
+		اگر (clock_timers != تہی &&
 		    tmr_has_expired(clock_timers, kclockinfo.uptime))
-			tmrs_exptimers(&clock_timers, kclockinfo.uptime, NULL);
+			tmrs_exptimers(&clock_timers, kclockinfo.uptime, تہی);
 
-#ifdef DEBUG_SERIAL
-		if (kinfo.do_serial_debug)
+#اگر_تعریف_شدہ DEBUG_SERIAL
+		اگر (kinfo.do_serial_debug)
 			do_ser_debug();
-#endif
+#اگر_ختم
 
 	}
 
 	arch_timer_int_handler();
 
-	return(1);					/* reenable interrupts */
+	واپس(1);					/* reenable interrupts */
 }
 
 /*===========================================================================*
  *				get_realtime				     *
  *===========================================================================*/
-clock_t get_realtime(void)
+clock_t get_realtime(خالی)
 {
   /* Get and return the current wall time in ticks since boot. */
-  return(kclockinfo.realtime);
+  واپس(kclockinfo.realtime);
 }
 
 /*===========================================================================*
  *				set_realtime				     *
  *===========================================================================*/
-void set_realtime(clock_t newrealtime)
+خالی سیٹ_realtime(clock_t newrealtime)
 {
   kclockinfo.realtime = newrealtime;
 }
@@ -192,7 +192,7 @@ void set_realtime(clock_t newrealtime)
 /*===========================================================================*
  *				set_adjtime_delta			     *
  *===========================================================================*/
-void set_adjtime_delta(int32_t ticks)
+خالی سیٹ_adjtime_delta(int32_t ticks)
 {
   adjtime_delta = ticks;
 }
@@ -200,16 +200,16 @@ void set_adjtime_delta(int32_t ticks)
 /*===========================================================================*
  *				get_monotonic				     *
  *===========================================================================*/
-clock_t get_monotonic(void)
+clock_t get_monotonic(خالی)
 {
   /* Get and return the number of ticks since boot. */
-  return(kclockinfo.uptime);
+  واپس(kclockinfo.uptime);
 }
 
 /*===========================================================================*
  *				set_boottime				     *
  *===========================================================================*/
-void set_boottime(time_t newboottime)
+خالی سیٹ_boottime(time_t newboottime)
 {
   kclockinfo.boottime = newboottime;
 }
@@ -217,32 +217,32 @@ void set_boottime(time_t newboottime)
 /*===========================================================================*
  *				get_boottime				     *
  *===========================================================================*/
-time_t get_boottime(void)
+time_t get_boottime(خالی)
 {
   /* Get and return the number of seconds since the UNIX epoch. */
-  return(kclockinfo.boottime);
+  واپس(kclockinfo.boottime);
 }
 
 /*===========================================================================*
  *				set_kernel_timer			     *
  *===========================================================================*/
-void set_kernel_timer(
+خالی سیٹ_kernel_timer(
   minix_timer_t *tp,			/* pointer to timer structure */
-  clock_t exp_time,			/* expiration monotonic time */
+  clock_t exp_وقت,			/* expiration monotonic time */
   tmr_func_t watchdog,			/* watchdog to be called */
-  int arg				/* argument for watchdog function */
+  صحیح arg				/* argument for watchdog function */
 )
 {
 /* Insert the new timer in the active timers list. Always update the
  * next timeout time by setting it to the front of the active list.
  */
-  (void)tmrs_settimer(&clock_timers, tp, exp_time, watchdog, arg, NULL, NULL);
+  (خالی)tmrs_settimer(&clock_timers, tp, exp_وقت, watchdog, arg, تہی, تہی);
 }
 
 /*===========================================================================*
  *				reset_kernel_timer			     *
  *===========================================================================*/
-void reset_kernel_timer(
+خالی reset_kernel_timer(
   minix_timer_t *tp			/* pointer to timer structure */
 )
 {
@@ -250,19 +250,19 @@ void reset_kernel_timer(
  * active and expired lists. Always update the next timeout time by setting
  * it to the front of the active list.
  */
-  if (tmr_is_set(tp))
-	(void)tmrs_clrtimer(&clock_timers, tp, NULL, NULL);
+  اگر (tmr_is_سیٹ(tp))
+	(خالی)tmrs_clrtimer(&clock_timers, tp, تہی, تہی);
 }
 
 /*===========================================================================*
  *				load_update				     *
  *===========================================================================*/
-static void load_update(void)
+ساکن خالی بھرو_update(خالی)
 {
-	u16_t slot;
-	int enqueued = 0, q;
-	struct proc *p;
-	struct proc **rdy_head;
+	u16_t خانہ;
+	صحیح enqueued = 0, q;
+	ساخت proc *p;
+	ساخت proc **rdy_سر;
 
 	/* Load average data is stored as a list of numbers in a circular
 	 * buffer. Each slot accumulates _LOAD_UNIT_SECS of samples of
@@ -270,43 +270,43 @@ static void load_update(void)
 	 * be made of the load average over variable periods, in the
 	 * user library (see getloadavg(3)).
 	 */
-	slot = (kclockinfo.uptime / system_hz / _LOAD_UNIT_SECS) %
-	    _LOAD_HISTORY;
-	if(slot != kloadinfo.proc_last_slot) {
-		kloadinfo.proc_load_history[slot] = 0;
-		kloadinfo.proc_last_slot = slot;
+	خانہ = (kclockinfo.uptime / system_hz / بھرو_UNIT_SECS) %
+	    بھرو_HISTORY;
+	اگر(خانہ != kloadinfo.proc_آخری_خانہ) {
+		kloadinfo.proc_بھرو_history[خانہ] = 0;
+		kloadinfo.proc_آخری_خانہ = خانہ;
 	}
 
-	rdy_head = get_cpulocal_var(run_q_head);
+	rdy_سر = get_cpulocal_var(تسلسل_q_سر);
 	/* Cumulation. How many processes are ready now? */
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		for(p = rdy_head[q]; p != NULL; p = p->p_nextready) {
+	برائے(q = 0; q < NR_SCHED_QUEUES; q++) {
+		برائے(p = rdy_سر[q]; p != تہی; p = p->p_nextready) {
 			enqueued++;
 		}
 	}
 
-	kloadinfo.proc_load_history[slot] += enqueued;
+	kloadinfo.proc_بھرو_history[خانہ] += enqueued;
 
 	/* Up-to-dateness. */
-	kloadinfo.last_clock = kclockinfo.uptime;
+	kloadinfo.آخری_clock = kclockinfo.uptime;
 }
 
-int boot_cpu_init_timer(unsigned freq)
+صحیح boot_cpu_init_timer(غیرعلامتی freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	اگر (init_local_timer(freq))
+		واپس -1;
 
-	if (register_local_timer_handler(
+	اگر (رجسٹر_local_timer_handler(
 				(irq_handler_t) timer_int_handler))
-		return -1;
+		واپس -1;
 
-	return 0;
+	واپس 0;
 }
 
-int app_cpu_init_timer(unsigned freq)
+صحیح app_cpu_init_timer(غیرعلامتی freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	اگر (init_local_timer(freq))
+		واپس -1;
 
-	return 0;
+	واپس 0;
 }

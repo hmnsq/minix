@@ -8,50 +8,50 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#شامل <assert.h>
 
-#include <minix/safecopies.h>
+#شامل <minix/safecopies.h>
 
-#include "kernel/system.h"
+#شامل "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+صحیح do_safememset(ساخت proc *caller, پیغام *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
 	endpoint_t dst_endpt = m_ptr->SMS_DST;
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
-	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
-	size_t len = (size_t)m_ptr->SMS_BYTES;
+	vir_بائٹیں g_انحراف = m_ptr->SMS_انحراف;
+	صحیح نمونہ = m_ptr->SMS_نمونہ;
+	size_t len = (size_t)m_ptr->SMS_بائٹیں;
 
-	struct proc *dst_p;
+	ساخت proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	ساکن vir_بائٹیں v_انحراف;
+	صحیح r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	اگر (dst_endpt == NONE || caller_endpt == NONE)
+		واپس EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	اگر (!(dst_p = endpoint_lookup(dst_endpt)))
+		واپس EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
-		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+	اگر (!(priv(dst_p) && priv(dst_p)->s_grant_جدول)) {
+		لکھو("safememset: dst %d has no grant table\n", dst_endpt);
+		واپس EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_انحراف, &v_انحراف, &new_granter, تہی);
 
-	if (r != OK) {
-		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+	اگر (r != OK) {
+		لکھو("safememset: grant %d verify failed %d", grantid, r);
+		واپس r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	واپس vm_memset(caller, new_granter, v_انحراف, نمونہ, len);
 }

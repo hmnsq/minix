@@ -1,7 +1,7 @@
-#ifndef __OMAP_RTC_H
-#define __OMAP_RTC_H
+#اگر_غیر_تعریف_شدہ __OMAP_RTC_H
+#تعریف_کرو __OMAP_RTC_H
 
-void omap3_rtc_init(void);
-void omap3_rtc_run(void);
+خالی omap3_rtc_init(خالی);
+خالی omap3_rtc_تسلسل(خالی);
 
-#endif /* __OMAP_RTC_H */
+#اگر_ختم /* __OMAP_RTC_H */

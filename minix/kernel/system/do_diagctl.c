@@ -9,60 +9,60 @@
  *	m_lsys_krn_sys_diagctl.endpt
  */
 
-#include "kernel/system.h"
+#شامل "kernel/system.h"
 
 
 /*===========================================================================*
  *			        do_diagctl				     *
  *===========================================================================*/
-int do_diagctl(struct proc * caller, message * m_ptr)
+صحیح do_diagctl(ساخت proc * caller, پیغام * m_ptr)
 {
-  vir_bytes len, buf;
-  static char mybuf[DIAG_BUFSIZE];
-  int s, i, proc_nr;
+  vir_بائٹیں len, buf;
+  ساکن حرف mybuf[DIAG_BUFSIZE];
+  صحیح s, i, proc_nr;
 
-  switch (m_ptr->m_lsys_krn_sys_diagctl.code) {
-    case DIAGCTL_CODE_DIAG:
+  انتخاب (m_ptr->m_lsys_krn_sys_diagctl.رمز) {
+    حالت DIAGCTL_رمز_DIAG:
         buf = m_ptr->m_lsys_krn_sys_diagctl.buf;
         len = m_ptr->m_lsys_krn_sys_diagctl.len;
-	if(len < 1 || len > DIAG_BUFSIZE) {
-		printf("do_diagctl: diag for %d: len %d out of range\n",
+	اگر(len < 1 || len > DIAG_BUFSIZE) {
+		لکھو("do_diagctl: diag for %d: len %d out of range\n",
 			caller->p_endpoint, len);
-		return EINVAL;
+		واپس EINVAL;
 	}
-	if((s=data_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
-					(vir_bytes) mybuf, len)) != OK) {
-		printf("do_diagctl: diag for %d: len %d: copy failed: %d\n",
+	اگر((s=ڈیٹا_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
+					(vir_بائٹیں) mybuf, len)) != OK) {
+		لکھو("do_diagctl: diag for %d: len %d: copy failed: %d\n",
 			caller->p_endpoint, len, s);
-		return s;
+		واپس s;
 	}
-	for(i = 0; i < len; i++)
+	برائے(i = 0; i < len; i++)
 		kputc(mybuf[i]);
-	kputc(END_OF_KMESS);
-	return OK;
-    case DIAGCTL_CODE_STACKTRACE:
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
-		return EINVAL;
+	kputc(انتہا_کا_KMESS);
+	واپس OK;
+    حالت DIAGCTL_رمز_STACKTRACE:
+	اگر(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
+		واپس EINVAL;
 	proc_stacktrace(proc_addr(proc_nr));
-	return OK;
-    case DIAGCTL_CODE_REGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	واپس OK;
+    حالت DIAGCTL_رمز_رجسٹر:
+	اگر (!(priv(caller)->s_flags & SYS_PROC))
+		واپس EPERM;
 	priv(caller)->s_diag_sig = TRUE;
 	/* If the message log is not empty, send a first notification
 	 * immediately. After bootup the log is basically never empty.
 	 */
-	if (kmess.km_size > 0 && !kinfo.do_serial_debug)
+	اگر (kmess.km_سائز > 0 && !kinfo.do_serial_debug)
 		send_sig(caller->p_endpoint, SIGKMESS);
-	return OK;
-    case DIAGCTL_CODE_UNREGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	واپس OK;
+    حالت DIAGCTL_رمز_UNREGISTER:
+	اگر (!(priv(caller)->s_flags & SYS_PROC))
+		واپس EPERM;
 	priv(caller)->s_diag_sig = FALSE;
-	return OK;
-    default:
-	printf("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.code);
-        return(EINVAL);
+	واپس OK;
+    طےشدہ:
+	لکھو("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.رمز);
+        واپس(EINVAL);
   }
 }
 

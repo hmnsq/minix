@@ -1,7 +1,7 @@
-#ifndef _BSP_SERIAL_H_
-#define _BSP_SERIAL_H_
+#اگر_غیر_تعریف_شدہ _BSP_SERIAL_H_
+#تعریف_کرو _BSP_SERIAL_H_
 
-void bsp_ser_init(void);
-void bsp_ser_putc(char c);
+خالی bsp_ser_init(خالی);
+خالی bsp_ser_putc(حرف c);
 
-#endif /* _BSP_SERIAL_H_ */
+#اگر_ختم /* _BSP_SERIAL_H_ */

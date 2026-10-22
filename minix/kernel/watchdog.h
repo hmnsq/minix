@@ -1,11 +1,11 @@
-#ifndef __WATCHDOG_H__
-#define __WATCHDOG_H__
+#اگر_غیر_تعریف_شدہ __WATCHDOG_H__
+#تعریف_کرو __WATCHDOG_H__
 
-#include "kernel/kernel.h"
-#include "arch_watchdog.h"
+#شامل "kernel/kernel.h"
+#شامل "arch_watchdog.h"
 
-extern int watchdog_enabled; /* if set to non-zero the watch dog is enabled */
-extern unsigned watchdog_local_timer_ticks; /* is timer still ticking? */
+خارجی صحیح watchdog_enabled; /* if set to non-zero the watch dog is enabled */
+خارجی غیرعلامتی watchdog_local_timer_ticks; /* is timer still ticking? */
 
 /*
  * as the implementation is not only architecture dependent but like in x86 case
@@ -13,38 +13,38 @@ extern unsigned watchdog_local_timer_ticks; /* is timer still ticking? */
  * implement it in runtime after the correct arch/model was detected
  */
 
-typedef void (* arch_watchdog_method_t)(const unsigned);
-typedef int (* arch_watchdog_profile_init_t)(const unsigned);
+قسمتعریف خالی (* arch_watchdog_طریقہ_t)(ثابت غیرعلامتی);
+قسمتعریف صحیح (* arch_watchdog_profile_init_t)(ثابت غیرعلامتی);
 
-struct arch_watchdog {
-	arch_watchdog_method_t		init;	/* initial setup */
-	arch_watchdog_method_t		reinit;	/* reinit after a tick */
+ساخت arch_watchdog {
+	arch_watchdog_طریقہ_t		init;	/* initial setup */
+	arch_watchdog_طریقہ_t		reinit;	/* reinit after a tick */
 	arch_watchdog_profile_init_t	profile_init;
 	u64_t				resetval;
 	u64_t				watchdog_resetval;
 	u64_t				profile_resetval;
 };
 
-extern struct arch_watchdog *watchdog;
+خارجی ساخت arch_watchdog *watchdog;
 
 /* let the arch code do whatever it needs to setup or quit the watchdog */
-int arch_watchdog_init(void);
-void arch_watchdog_stop(void);
+صحیح arch_watchdog_init(خالی);
+خالی arch_watchdog_stop(خالی);
 
-#ifdef __i386__
+#اگر_تعریف_شدہ __i386__
 /* if the watchdog detects lockup, let the arch code to handle it */
-void arch_watchdog_lockup(const struct nmi_frame * frame);
+خالی arch_watchdog_lockup(ثابت ساخت nmi_چوکھٹا * چوکھٹا);
 
 /* generic NMI handler. Takes one argument which points to where the arch
  * specific low level handler dumped CPU information and can be inspected by the
  * arch specific code of the watchdog implementation */
-void nmi_watchdog_handler(struct nmi_frame * frame);
-#endif
+خالی nmi_watchdog_handler(ساخت nmi_چوکھٹا * چوکھٹا);
+#اگر_ختم
 
 /*
  * start and stop profiling using the NMI watchdog
  */
-int nmi_watchdog_start_profiling(const unsigned freq);
-void nmi_watchdog_stop_profiling(void);
+صحیح nmi_watchdog_آغاز_profiling(ثابت غیرعلامتی freq);
+خالی nmi_watchdog_stop_profiling(خالی);
 
-#endif /* __WATCHDOG_H__ */
+#اگر_ختم /* __WATCHDOG_H__ */

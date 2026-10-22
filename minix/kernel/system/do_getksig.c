@@ -6,38 +6,38 @@
  *	m_sigcalls.map		# bit map with pending signals
  */
 
-#include "kernel/system.h"
-#include <signal.h>
-#include <minix/endpoint.h>
+#شامل "kernel/system.h"
+#شامل <signal.h>
+#شامل <minix/endpoint.h>
 
-#if USE_GETKSIG
+#اگر USE_GETKSIG
 
 /*===========================================================================*
  *			      do_getksig				     *
  *===========================================================================*/
-int do_getksig(struct proc * caller, message * m_ptr)
+صحیح do_getksig(ساخت proc * caller, پیغام * m_ptr)
 {
 /* The signal manager is ready to accept signals and repeatedly does a kernel
  * call to get one. Find a process with pending signals. If no signals are
  * available, return NONE in the process number field.
  */
-  register struct proc *rp;
+  اندراج ساخت proc *rp;
 
   /* Find the next process with pending signals. */
-  for (rp = BEG_USER_ADDR; rp < END_PROC_ADDR; rp++) {
-      if (RTS_ISSET(rp, RTS_SIGNALED)) {
-          if (caller->p_endpoint != priv(rp)->s_sig_mgr) continue;
+  برائے (rp = BEG_USER_ADDR; rp < انتہا_PROC_ADDR; rp++) {
+      اگر (RTS_ISSET(rp, RTS_SIGNALED)) {
+          اگر (caller->p_endpoint != priv(rp)->s_sig_mgr) جاری;
 	  /* store signaled process' endpoint */
           m_ptr->m_sigcalls.endpt = rp->p_endpoint;
           m_ptr->m_sigcalls.map = rp->p_pending;	/* pending signals map */
-          (void) sigemptyset(&rp->p_pending); 	/* clear map in the kernel */
+          (خالی) sigemptyset(&rp->p_pending); 	/* clear map in the kernel */
 	  RTS_UNSET(rp, RTS_SIGNALED);		/* blocked by SIG_PENDING */
-          return(OK);
+          واپس(OK);
       }
   }
 
   /* No process with pending signals was found. */
   m_ptr->m_sigcalls.endpt = NONE;
-  return(OK);
+  واپس(OK);
 }
-#endif /* USE_GETKSIG */
+#اگر_ختم /* USE_GETKSIG */

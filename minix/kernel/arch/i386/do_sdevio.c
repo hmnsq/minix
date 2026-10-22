@@ -10,42 +10,42 @@
  *    m_lsys_krn_sys_sdevio.offset	(offset into the grant)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#شامل "kernel/system.h"
+#شامل <minix/devio.h>
+#شامل <minix/endpoint.h>
 
-#include "arch_proto.h"
+#شامل "arch_proto.h"
 
-#if USE_SDEVIO
+#اگر USE_SDEVIO
 
 /*===========================================================================*
  *			        do_sdevio                                    *
  *===========================================================================*/
-int do_sdevio(struct proc * caller, message *m_ptr)
+صحیح do_sdevio(ساخت proc * caller, پیغام *m_ptr)
 {
-  vir_bytes newoffset;
+  vir_بائٹیں newoffset;
   endpoint_t newep;
-  int proc_nr;
+  صحیح proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
-  vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
-  long port = m_ptr->m_lsys_krn_sys_sdevio.port;
-  phys_bytes vir_buf;
-  int i, r, req_type, req_dir, size, nr_io_range;
-  struct priv *privp;
-  struct io_range *iorp;
-  struct proc *destproc;
-  int retval;
+  vir_بائٹیں گنتی = m_ptr->m_lsys_krn_sys_sdevio.vec_سائز;
+  طویل پورٹ = m_ptr->m_lsys_krn_sys_sdevio.پورٹ;
+  phys_بائٹیں vir_buf;
+  صحیح i, r, req_type, req_dir, سائز, nr_io_range;
+  ساخت priv *privp;
+  ساخت io_range *iorp;
+  ساخت proc *destproc;
+  صحیح retval;
 
   /* Allow safe copies and accesses to SELF */
-  if ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
+  اگر ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != DIO_محفوظ &&
 	proc_nr_e != SELF)
   {
-	static int first= 1;
-	if (first)
+	ساکن صحیح پہلا= 1;
+	اگر (پہلا)
 	{
-		first= 0;
-		printf("do_sdevio: for %d, req %d\n",
-			m_ptr->m_source, m_ptr->m_lsys_krn_sys_sdevio.request);
+		پہلا= 0;
+		لکھو("do_sdevio: for %d, req %d\n",
+			m_ptr->m_ماخذ, m_ptr->m_lsys_krn_sys_sdevio.request);
 	}
   }
 
@@ -53,39 +53,39 @@ int do_sdevio(struct proc * caller, message *m_ptr)
    * A driver may directly provide a pointer to a buffer at the user-process
    * that initiated the device I/O. Kernel processes, of course, are denied.
    */
-  if (proc_nr_e == SELF)
+  اگر (proc_nr_e == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if(!isokendpt(proc_nr_e, &proc_nr))
-		return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ورنہ
+	اگر(!isokendpt(proc_nr_e, &proc_nr))
+		واپس(EINVAL);
+  اگر (iskerneln(proc_nr)) واپس(EPERM);
 
   /* Extract direction (in or out) and type (size). */
   req_dir = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_DIRMASK;
   req_type = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_TYPEMASK;
 
   /* Check for 'safe' variants. */
-  if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
+  اگر((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == DIO_محفوظ) {
      /* Map grant address to physical address. */
-     if((r=verify_grant(proc_nr_e, caller->p_endpoint,
-		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
-		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
-		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
-		NULL)) != OK) {
-	if(r == ENOTREADY) return r;
-	printf("do_sdevio: verify_grant failed\n");
-	return EPERM;
+     اگر((r=verify_grant(proc_nr_e, caller->p_endpoint,
+		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, گنتی,
+		req_dir == DIO_داخلہ ? CPF_WRITE : CPF_READ,
+		m_ptr->m_lsys_krn_sys_sdevio.انحراف, &newoffset, &newep,
+		تہی)) != OK) {
+	اگر(r == ENOTREADY) واپس r;
+	لکھو("do_sdevio: verify_grant failed\n");
+	واپس EPERM;
     }
-	if(!isokendpt(newep, &proc_nr))
-		return(EINVAL);
+	اگر(!isokendpt(newep, &proc_nr))
+		واپس(EINVAL);
      destproc = proc_addr(proc_nr);
      vir_buf = newoffset;
-  } else {
-     if(proc_nr != _ENDPOINT_P(caller->p_endpoint))
+  } ورنہ {
+     اگر(proc_nr != _ENDPOINT_P(caller->p_endpoint))
      {
-	printf("do_sdevio: unsafe sdevio by %d in %d denied\n",
+	لکھو("do_sdevio: unsafe sdevio by %d in %d denied\n",
 		caller->p_endpoint, proc_nr_e);
-	return EPERM;
+	واپس EPERM;
      }
      /* Get and check physical address. */
      vir_buf = m_ptr->m_lsys_krn_sys_sdevio.vec_addr;
@@ -93,71 +93,71 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
      /* current process must be target for phys_* to be OK */
 
-  switch_address_space(destproc);
+  switch_پتہ_space(destproc);
 
-  switch (req_type)
+  انتخاب (req_type)
   {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	حالت _DIO_BYTE: سائز= 1; توڑو;
+	حالت DIO_لفظ: سائز= 2; توڑو;
+	حالت _DIO_LONG: سائز= 4; توڑو;
+	طےشدہ: سائز= 4; توڑو;	/* Be conservative */
   }
 
   privp= priv(caller);
-  if (privp && privp->s_flags & CHECK_IO_PORT)
+  اگر (privp && privp->s_flags & CHECK_IO_پورٹ)
   {
-	port= m_ptr->m_lsys_krn_sys_sdevio.port;
+	پورٹ= m_ptr->m_lsys_krn_sys_sdevio.پورٹ;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	برائے (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		اگر (پورٹ >= iorp->ior_بنیاد && پورٹ+سائز-1 <= iorp->ior_حد_بندی)
+			توڑو;
 	}
-	if (i >= nr_io_range)
+	اگر (i >= nr_io_range)
 	{
-		printf(
+		لکھو(
 		"do_sdevio: I/O port check failed for proc %d, port 0x%x\n",
-			m_ptr->m_source, port);
+			m_ptr->m_ماخذ, پورٹ);
 		retval = EPERM;
-		goto return_error;
+		جاؤ return_error;
 	}
   }
 
-  if (port & (size-1))
+  اگر (پورٹ & (سائز-1))
   {
-	printf("do_devio: unaligned port 0x%x (size %d)\n", port, size);
+	لکھو("do_devio: unaligned port 0x%x (size %d)\n", پورٹ, سائز);
 	retval = EPERM;
-	goto return_error;
+	جاؤ return_error;
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
-      default:
+  اگر (req_dir == DIO_داخلہ) { 
+      انتخاب (req_type) {
+      حالت _DIO_BYTE: phys_insb(پورٹ, vir_buf, گنتی); توڑو; 
+      حالت DIO_لفظ: phys_insw(پورٹ, vir_buf, گنتی); توڑو; 
+      طےشدہ:
   		retval = EINVAL;
-		goto return_error;
+		جاؤ return_error;
       } 
-  } else if (req_dir == _DIO_OUTPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
-      default:
+  } ورنہ اگر (req_dir == _DIO_OUTPUT) { 
+      انتخاب (req_type) {
+      حالت _DIO_BYTE: phys_outsb(پورٹ, vir_buf, گنتی); توڑو; 
+      حالت DIO_لفظ: phys_outsw(پورٹ, vir_buf, گنتی); توڑو; 
+      طےشدہ:
   		retval = EINVAL;
-		goto return_error;
+		جاؤ return_error;
       } 
   }
-  else {
+  ورنہ {
 	  retval = EINVAL;
-	  goto return_error;
+	  جاؤ return_error;
   }
   retval = OK;
 
 return_error:
   /* switch back to the address of the process which made the call */
-  switch_address_space(caller);
-  return retval;
+  switch_پتہ_space(caller);
+  واپس retval;
 }
 
-#endif /* USE_SDEVIO */
+#اگر_ختم /* USE_SDEVIO */
