@@ -10,20 +10,20 @@
  *   m_krn_lsys_sys_times.real_ticks
  */
 
-#include "kernel/system.h"
+#అన్తర్భావ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_TIMES
+#ఒకవేళ USE_TIMES
 
 /*===========================================================================*
  *				do_times				     *
  *===========================================================================*/
-int do_times(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_times(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Handle sys_times().  Retrieve the accounting information. */
-  register const struct proc *rp;
-  int proc_nr;
+  నమోదు స్థిరరాశి నిర్మాణం proc *rp;
+  పూర్ణాంకం proc_nr;
   endpoint_t e_proc_nr;
 
   /* Insert the times needed by the SYS_TIMES kernel call in the message. 
@@ -32,15 +32,15 @@ int do_times(struct proc * caller, message * m_ptr)
    */
   e_proc_nr = (m_ptr->m_lsys_krn_sys_times.endpt == SELF) ?
       caller->p_endpoint : m_ptr->m_lsys_krn_sys_times.endpt;
-  if(e_proc_nr != NONE && isokendpt(e_proc_nr, &proc_nr)) {
+  ఒకవేళ(e_proc_nr != NONE && isokendpt(e_proc_nr, &proc_nr)) {
       rp = proc_addr(proc_nr);
-      m_ptr->m_krn_lsys_sys_times.user_time   = rp->p_user_time;
-      m_ptr->m_krn_lsys_sys_times.system_time = rp->p_sys_time;
+      m_ptr->m_krn_lsys_sys_times.user_సమయం   = rp->p_user_సమయం;
+      m_ptr->m_krn_lsys_sys_times.system_సమయం = rp->p_sys_సమయం;
   }
   m_ptr->m_krn_lsys_sys_times.boot_ticks = get_monotonic();
   m_ptr->m_krn_lsys_sys_times.real_ticks = get_realtime();
-  m_ptr->m_krn_lsys_sys_times.boot_time = get_boottime();
-  return(OK);
+  m_ptr->m_krn_lsys_sys_times.boot_సమయం = get_boottime();
+  తిరిగి(OK);
 }
 
-#endif /* USE_TIMES */
+#అయితే_ముగింపు /* USE_TIMES */

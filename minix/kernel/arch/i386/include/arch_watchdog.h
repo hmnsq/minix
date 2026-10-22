@@ -1,9 +1,9 @@
-#ifndef __I386_WATCHDOG_H__
-#define __I386_WATCHDOG_H__
+#నిర్వచితం_కాకపోతే __I386_WATCHDOG_H__
+#నిర్వచించు __I386_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-struct nmi_frame {
+నిర్మాణం nmi_చట్రం {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,8 +21,8 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+పూర్ణాంకం i386_watchdog_ప్రారంభం(శూన్య);
 
-#define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
+#నిర్వచించు nmi_లోపల_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
-#endif /* __I386_WATCHDOG_H__ */
+#అయితే_ముగింపు /* __I386_WATCHDOG_H__ */

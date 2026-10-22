@@ -5,54 +5,54 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <minix/type.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "kernel/proc.h"
+#అన్తర్భావ "kernel/vm.h"
+#అన్తర్భావ "kernel/proto.h"
+#అన్తర్భావ "arch_proto.h"
+#అన్తర్భావ "omap_rtc.h"
 
-#define RTC_SS_BASE 0x44e3e000
-#define RTC_SS_SIZE 0x1000
-#define RTC_CTRL_REG 0x40
-#define RTC_CTRL_RTC_STOP_BIT 0
+#నిర్వచించు RTC_SS_పునాది 0x44e3e000
+#నిర్వచించు RTC_SS_కొలత 0x1000
+#నిర్వచించు RTC_CTRL_REG 0x40
+#నిర్వచించు RTC_CTRL_RTC_STOP_బిట్టు 0
 
-struct omap_rtc
+నిర్మాణం omap_rtc
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_బైట్లు పునాది;
+	vir_బైట్లు కొలత;
 };
 
-static struct omap_rtc omap_rtc = {
-	.base = RTC_SS_BASE,
-	.size = RTC_SS_SIZE
+స్థిర నిర్మాణం omap_rtc omap_rtc = {
+	.పునాది = RTC_SS_పునాది,
+	.కొలత = RTC_SS_కొలత
 };
 
-static kern_phys_map rtc_phys_map;
+స్థిర kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+శూన్య
+omap3_rtc_init(శూన్య)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
-		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
+	ఒకవేళ (BOARD_IS_BB(machine.board_id)) {
+		kern_phys_map_ptr(omap_rtc.పునాది, omap_rtc.కొలత,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
-		    (vir_bytes) & omap_rtc.base);
+		    (vir_బైట్లు) & omap_rtc.పునాది);
 	}
 }
 
-void
-omap3_rtc_run(void)
+శూన్య
+omap3_rtc_నిరంతరం(శూన్య)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	ఒకవేళ (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
-		mmio_set((omap_rtc.base + RTC_CTRL_REG),
-		    (1 << RTC_CTRL_RTC_STOP_BIT));
+		mmio_సమితి((omap_rtc.పునాది + RTC_CTRL_REG),
+		    (1 << RTC_CTRL_RTC_STOP_బిట్టు));
 	}
 }

@@ -14,119 +14,119 @@
  *   14 Aug, 2006   Created (Rogier Meurs)
  */
 
-#include "kernel/system.h"
-#include "kernel/watchdog.h"
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ "kernel/watchdog.h"
 
-#if SPROFILE
+#ఒకవేళ SPROFILE
 
 /* user address to write info struct */
-static vir_bytes sprof_info_addr_vir;
+స్థిర vir_బైట్లు sprof_info_addr_vir;
 
-static void clean_seen_flag(void)
+స్థిర శూన్య clean_చూసిన_flag(శూన్య)
 {
-	int i;
+	పూర్ణాంకం i;
 
-	for (i = 0; i < NR_TASKS + NR_PROCS; i++)
-		proc[i].p_misc_flags &= ~MF_SPROF_SEEN;
+	కొరకు (i = 0; i < NR_TASKS + NR_PROCS; i++)
+		proc[i].p_misc_flags &= ~MF_SPROF_చూసిన;
 }
 
 /*===========================================================================*
  *				do_sprofile				     *
  *===========================================================================*/
-int do_sprofile(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_sprofile(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
-  int proc_nr;
-  int err;
+  పూర్ణాంకం proc_nr;
+  పూర్ణాంకం err;
 
-  switch(m_ptr->m_lsys_krn_sys_sprof.action) {
+  ఎంపిక(m_ptr->m_lsys_krn_sys_sprof.action) {
 
-  case PROF_START:
+  స్థితి PROF_ప్రారంభం:
 	/* Starting profiling.
 	 *
 	 * Check if profiling is not already running.  Calculate physical
 	 * addresses of user pointers.  Reset counters.  Start CMOS timer.
 	 * Turn on profiling.
 	 */
-	if (sprofiling) {
-		printf("SYSTEM: start s-profiling: already started\n");
-		return EBUSY;
+	ఒకవేళ (sprofiling) {
+		రాయి("SYSTEM: start s-profiling: already started\n");
+		తిరిగి EBUSY;
 	}
 
 	/* Test endpoint number. */
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
-		return EINVAL;
+	ఒకవేళ(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
+		తిరిగి EINVAL;
 
 	/* Set parameters for statistical profiler. */
 	sprof_ep = m_ptr->m_lsys_krn_sys_sprof.endpt;
 	sprof_info_addr_vir = m_ptr->m_lsys_krn_sys_sprof.ctl_ptr;
-	sprof_data_addr_vir = m_ptr->m_lsys_krn_sys_sprof.mem_ptr;
+	sprof_దత్తాంశం_addr_vir = m_ptr->m_lsys_krn_sys_sprof.mem_ptr;
 
-	sprof_info.mem_used = 0;
-	sprof_info.total_samples = 0;
+	sprof_info.mem_వాడిన = 0;
+	sprof_info.మొత్తం_samples = 0;
 	sprof_info.idle_samples = 0;
 	sprof_info.system_samples = 0;
 	sprof_info.user_samples = 0;
 
-	sprof_mem_size =
-		m_ptr->m_lsys_krn_sys_sprof.mem_size < SAMPLE_BUFFER_SIZE ?
-		m_ptr->m_lsys_krn_sys_sprof.mem_size : SAMPLE_BUFFER_SIZE;
+	sprof_mem_కొలత =
+		m_ptr->m_lsys_krn_sys_sprof.mem_కొలత < SAMPLE_బఫరు_కొలత ?
+		m_ptr->m_lsys_krn_sys_sprof.mem_కొలత : SAMPLE_బఫరు_కొలత;
 
-	switch (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
-		case PROF_RTC:
+	ఎంపిక (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
+		స్థితి PROF_RTC:
 			init_profile_clock(m_ptr->m_lsys_krn_sys_sprof.freq);
-			break;
-		case PROF_NMI:
-			err = nmi_watchdog_start_profiling(
+			ఆపు;
+		స్థితి PROF_NMI:
+			err = nmi_watchdog_ప్రారంభం_profiling(
 				m_ptr->m_lsys_krn_sys_sprof.freq);
-			if (err)
-				return err;
-			break;
-		default:
-			printf("ERROR : unknown profiling interrupt type\n");
-			return EINVAL;
+			ఒకవేళ (err)
+				తిరిగి err;
+			ఆపు;
+		అప్రమేయ:
+			రాయి("ERROR : unknown profiling interrupt type\n");
+			తిరిగి EINVAL;
 	}
 	
 	sprofiling = 1;
 
-	clean_seen_flag();
+	clean_చూసిన_flag();
 
-  	return OK;
+  	తిరిగి OK;
 
-  case PROF_STOP:
+  స్థితి PROF_STOP:
 	/* Stopping profiling.
 	 *
 	 * Check if profiling is indeed running.  Turn off profiling.
 	 * Stop CMOS timer.  Copy info struct to user process.
 	 */
-	if (!sprofiling) {
-		printf("SYSTEM: stop s-profiling: not started\n");
-		return EBUSY;
+	ఒకవేళ (!sprofiling) {
+		రాయి("SYSTEM: stop s-profiling: not started\n");
+		తిరిగి EBUSY;
 	}
 
 	sprofiling = 0;
 
-	switch (sprofiling_type) {
-		case PROF_RTC:
+	ఎంపిక (sprofiling_type) {
+		స్థితి PROF_RTC:
 			stop_profile_clock();
-			break;
-		case PROF_NMI:
+			ఆపు;
+		స్థితి PROF_NMI:
 			nmi_watchdog_stop_profiling();
-			break;
+			ఆపు;
 	}
 
-	data_copy(KERNEL, (vir_bytes) &sprof_info,
-		sprof_ep, sprof_info_addr_vir, sizeof(sprof_info));
-	data_copy(KERNEL, (vir_bytes) sprof_sample_buffer,
-		sprof_ep, sprof_data_addr_vir, sprof_info.mem_used);
+	దత్తాంశం_copy(KERNEL, (vir_బైట్లు) &sprof_info,
+		sprof_ep, sprof_info_addr_vir, పరిమాణం(sprof_info));
+	దత్తాంశం_copy(KERNEL, (vir_బైట్లు) sprof_sample_బఫరు,
+		sprof_ep, sprof_దత్తాంశం_addr_vir, sprof_info.mem_వాడిన);
 
-	clean_seen_flag();
+	clean_చూసిన_flag();
 
-  	return OK;
+  	తిరిగి OK;
 
-  default:
-	return EINVAL;
+  అప్రమేయ:
+	తిరిగి EINVAL;
   }
 }
 
-#endif /* SPROFILE */
+#అయితే_ముగింపు /* SPROFILE */
 

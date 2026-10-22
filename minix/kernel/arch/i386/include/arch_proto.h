@@ -1,76 +1,76 @@
 
-#ifndef _I386_PROTO_H
-#define _I386_PROTO_H
+#నిర్వచితం_కాకపోతే _I386_PROTO_H
+#నిర్వచించు _I386_PROTO_H
 
-#include <machine/vm.h>
+#అన్తర్భావ <machine/vm.h>
 
-#define K_STACK_SIZE	I386_PAGE_SIZE
+#నిర్వచించు K_దొంతర_కొలత	I386_పుట_కొలత
 
-#ifndef __ASSEMBLY__
+#నిర్వచితం_కాకపోతే __ASSEMBLY__
 
 /* Hardware interrupt handlers. */
-void hwint00(void);
-void hwint01(void);
-void hwint02(void);
-void hwint03(void);
-void hwint04(void);
-void hwint05(void);
-void hwint06(void);
-void hwint07(void);
-void hwint08(void);
-void hwint09(void);
-void hwint10(void);
-void hwint11(void);
-void hwint12(void);
-void hwint13(void);
-void hwint14(void);
-void hwint15(void);
+శూన్య hwint00(శూన్య);
+శూన్య hwint01(శూన్య);
+శూన్య hwint02(శూన్య);
+శూన్య hwint03(శూన్య);
+శూన్య hwint04(శూన్య);
+శూన్య hwint05(శూన్య);
+శూన్య hwint06(శూన్య);
+శూన్య hwint07(శూన్య);
+శూన్య hwint08(శూన్య);
+శూన్య hwint09(శూన్య);
+శూన్య hwint10(శూన్య);
+శూన్య hwint11(శూన్య);
+శూన్య hwint12(శూన్య);
+శూన్య hwint13(శూన్య);
+శూన్య hwint14(శూన్య);
+శూన్య hwint15(శూన్య);
 
 /* Exception handlers (real or protected mode), in numerical order. */
-void int00(void), divide_error (void);
-void int01(void), single_step_exception (void);
-void int02(void), nmi (void);
-void int03(void), breakpoint_exception (void);
-void int04(void), overflow (void);
-void int05(void), bounds_check (void);
-void int06(void), inval_opcode (void);
-void int07(void), copr_not_available (void);
-void double_fault(void);
-void copr_seg_overrun(void);
-void inval_tss(void);
-void segment_not_present(void);
-void stack_exception(void);
-void general_protection(void);
-void page_fault(void);
-void copr_error(void);
-void alignment_check(void);
-void machine_check(void);
-void simd_exception(void);
+శూన్య int00(శూన్య), divide_error (శూన్య);
+శూన్య int01(శూన్య), single_అడుగు_exception (శూన్య);
+శూన్య int02(శూన్య), nmi (శూన్య);
+శూన్య int03(శూన్య), breakpoint_exception (శూన్య);
+శూన్య int04(శూన్య), అధికప్రవాహం (శూన్య);
+శూన్య int05(శూన్య), bounds_check (శూన్య);
+శూన్య int06(శూన్య), inval_opcode (శూన్య);
+శూన్య int07(శూన్య), copr_not_అందుబాటు (శూన్య);
+శూన్య double_fault(శూన్య);
+శూన్య copr_seg_overrun(శూన్య);
+శూన్య inval_tss(శూన్య);
+శూన్య segment_not_present(శూన్య);
+శూన్య దొంతర_exception(శూన్య);
+శూన్య general_protection(శూన్య);
+శూన్య పుట_fault(శూన్య);
+శూన్య copr_error(శూన్య);
+శూన్య alignment_check(శూన్య);
+శూన్య machine_check(శూన్య);
+శూన్య simd_exception(శూన్య);
 
-void restore_user_context_int(struct proc *);
-void restore_user_context_sysenter(struct proc *);
-void restore_user_context_syscall(struct proc *);
+శూన్య restore_user_context_int(నిర్మాణం proc *);
+శూన్య restore_user_context_sysenter(నిర్మాణం proc *);
+శూన్య restore_user_context_syscall(నిర్మాణం proc *);
 
 /* Software interrupt handlers, in numerical order. */
-void trp(void);
-void ipc_entry_softint_orig(void);
-void ipc_entry_softint_um(void);
-void ipc_entry_sysenter(void);
-void ipc_entry_syscall_cpu0(void);
-void ipc_entry_syscall_cpu1(void);
-void ipc_entry_syscall_cpu2(void);
-void ipc_entry_syscall_cpu3(void);
-void ipc_entry_syscall_cpu4(void);
-void ipc_entry_syscall_cpu5(void);
-void ipc_entry_syscall_cpu6(void);
-void ipc_entry_syscall_cpu7(void);
-void kernel_call_entry_orig(void);
-void kernel_call_entry_um(void);
-void level0_call(void);
+శూన్య trp(శూన్య);
+శూన్య ipc_నమోదు_softint_orig(శూన్య);
+శూన్య ipc_నమోదు_softint_um(శూన్య);
+శూన్య ipc_నమోదు_sysenter(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu0(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu1(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu2(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu3(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu4(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu5(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu6(శూన్య);
+శూన్య ipc_నమోదు_syscall_cpu7(శూన్య);
+శూన్య kernel_call_నమోదు_orig(శూన్య);
+శూన్య kernel_call_నమోదు_um(శూన్య);
+శూన్య level0_call(శూన్య);
 
 /* exception.c */
-struct exception_frame {
-	reg_t	vector;		/* which interrupt vector was triggered */
+నిర్మాణం exception_చట్రం {
+	reg_t	సదిశ;		/* which interrupt vector was triggered */
 	reg_t	errcode;	/* zero if no exception does not push err code */
 	reg_t	eip;
 	reg_t	cs;
@@ -79,92 +79,92 @@ struct exception_frame {
 	reg_t	ss;		/* undefined if trap is nested */
 };
 
-void exception(struct exception_frame * frame);
+శూన్య exception(నిర్మాణం exception_చట్రం * చట్రం);
 
 /* klib.S */
-__dead void monitor(void);
-__dead void reset(void);
-__dead void poweroff_vmware_clihlt(void);
-__dead void x86_triplefault(void);
-reg_t read_cr0(void);
-reg_t read_cr2(void);
-void write_cr0(unsigned long value);
-unsigned long read_cr4(void);
-void write_cr4(unsigned long value);
-void write_cr3(unsigned long value);
-unsigned long read_cpu_flags(void);
-phys_bytes vir2phys(void *);
-void phys_insb(u16_t port, phys_bytes buf, size_t count);
-void phys_insw(u16_t port, phys_bytes buf, size_t count);
-void phys_outsb(u16_t port, phys_bytes buf, size_t count);
-void phys_outsw(u16_t port, phys_bytes buf, size_t count);
-u32_t read_cr3(void);
-void reload_cr3(void);
-void i386_invlpg(phys_bytes linaddr);
-vir_bytes phys_memset(phys_bytes ph, u32_t c, phys_bytes bytes);
-void reload_ds(void);
-void ia32_msr_read(u32_t reg, u32_t * hi, u32_t * lo);
-void ia32_msr_write(u32_t reg, u32_t hi, u32_t lo);
-void fninit(void);
-void clts(void);
-void fxsave(void *);
-void fnsave(void *);
-int fxrstor(void *);
-int __fxrstor_end(void *);
-int frstor(void *);
-int __frstor_end(void *);
-int __frstor_failure(void *);
-unsigned short fnstsw(void);
-void fnstcw(unsigned short* cw);
-void x86_lgdt(void *);
-void x86_lldt(u32_t);
-void x86_ltr(u32_t);
-void x86_lidt(void *);
-void x86_load_kerncs(void);
-void x86_load_ds(u32_t);
-void x86_load_ss(u32_t);
-void x86_load_es(u32_t);
-void x86_load_fs(u32_t);
-void x86_load_gs(u32_t);
+__dead శూన్య monitor(శూన్య);
+__dead శూన్య reset(శూన్య);
+__dead శూన్య poweroff_vmware_clihlt(శూన్య);
+__dead శూన్య x86_triplefault(శూన్య);
+reg_t read_cr0(శూన్య);
+reg_t read_cr2(శూన్య);
+శూన్య write_cr0(గుర్తులేని దీర్ఘ విలువ);
+గుర్తులేని దీర్ఘ read_cr4(శూన్య);
+శూన్య write_cr4(గుర్తులేని దీర్ఘ విలువ);
+శూన్య write_cr3(గుర్తులేని దీర్ఘ విలువ);
+గుర్తులేని దీర్ఘ read_cpu_flags(శూన్య);
+phys_బైట్లు vir2phys(శూన్య *);
+శూన్య phys_insb(u16_t పోర్టు, phys_బైట్లు buf, size_t లెక్క);
+శూన్య phys_insw(u16_t పోర్టు, phys_బైట్లు buf, size_t లెక్క);
+శూన్య phys_outsb(u16_t పోర్టు, phys_బైట్లు buf, size_t లెక్క);
+శూన్య phys_outsw(u16_t పోర్టు, phys_బైట్లు buf, size_t లెక్క);
+u32_t read_cr3(శూన్య);
+శూన్య reload_cr3(శూన్య);
+శూన్య i386_invlpg(phys_బైట్లు linaddr);
+vir_బైట్లు phys_memset(phys_బైట్లు ph, u32_t c, phys_బైట్లు బైట్లు);
+శూన్య reload_ds(శూన్య);
+శూన్య ia32_msr_read(u32_t reg, u32_t * hi, u32_t * lo);
+శూన్య ia32_msr_write(u32_t reg, u32_t hi, u32_t lo);
+శూన్య fninit(శూన్య);
+శూన్య clts(శూన్య);
+శూన్య fxsave(శూన్య *);
+శూన్య fnsave(శూన్య *);
+పూర్ణాంకం fxrstor(శూన్య *);
+పూర్ణాంకం __fxrstor_end(శూన్య *);
+పూర్ణాంకం frstor(శూన్య *);
+పూర్ణాంకం __frstor_end(శూన్య *);
+పూర్ణాంకం __frstor_failure(శూన్య *);
+గుర్తులేని పొట్టి fnstsw(శూన్య);
+శూన్య fnstcw(గుర్తులేని పొట్టి* cw);
+శూన్య x86_lgdt(శూన్య *);
+శూన్య x86_lldt(u32_t);
+శూన్య x86_ltr(u32_t);
+శూన్య x86_lidt(శూన్య *);
+శూన్య x86_ఎక్కించు_kerncs(శూన్య);
+శూన్య x86_ఎక్కించు_ds(u32_t);
+శూన్య x86_ఎక్కించు_ss(u32_t);
+శూన్య x86_ఎక్కించు_es(u32_t);
+శూన్య x86_ఎక్కించు_fs(u32_t);
+శూన్య x86_ఎక్కించు_gs(u32_t);
 
 /* ipc functions in usermapped_ipc.S */
-int usermapped_send_softint(endpoint_t dest, message *m_ptr);
-int usermapped_receive_softint(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_softint(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_softint(endpoint_t dest, message *m_ptr);
-int usermapped_notify_softint(endpoint_t dest);
-int usermapped_do_kernel_call_softint(message *m_ptr);
-int usermapped_senda_softint(asynmsg_t *table, size_t count);
+పూర్ణాంకం usermapped_send_softint(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_receive_softint(endpoint_t src, సందేశం *m_ptr, పూర్ణాంకం *స్థితి_ptr);
+పూర్ణాంకం usermapped_sendrec_softint(endpoint_t src_dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_sendnb_softint(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_notify_softint(endpoint_t dest);
+పూర్ణాంకం usermapped_do_kernel_call_softint(సందేశం *m_ptr);
+పూర్ణాంకం usermapped_senda_softint(asynmsg_t *పట్టిక, size_t లెక్క);
 
-int usermapped_send_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_receive_syscall(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_syscall(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_syscall(endpoint_t dest, message *m_ptr);
-int usermapped_notify_syscall(endpoint_t dest);
-int usermapped_do_kernel_call_syscall(message *m_ptr);
-int usermapped_senda_syscall(asynmsg_t *table, size_t count);
+పూర్ణాంకం usermapped_send_syscall(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_receive_syscall(endpoint_t src, సందేశం *m_ptr, పూర్ణాంకం *స్థితి_ptr);
+పూర్ణాంకం usermapped_sendrec_syscall(endpoint_t src_dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_sendnb_syscall(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_notify_syscall(endpoint_t dest);
+పూర్ణాంకం usermapped_do_kernel_call_syscall(సందేశం *m_ptr);
+పూర్ణాంకం usermapped_senda_syscall(asynmsg_t *పట్టిక, size_t లెక్క);
 
-int usermapped_send_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_receive_sysenter(endpoint_t src, message *m_ptr, int *status_ptr);
-int usermapped_sendrec_sysenter(endpoint_t src_dest, message *m_ptr);
-int usermapped_sendnb_sysenter(endpoint_t dest, message *m_ptr);
-int usermapped_notify_sysenter(endpoint_t dest);
-int usermapped_do_kernel_call_sysenter(message *m_ptr);
-int usermapped_senda_sysenter(asynmsg_t *table, size_t count);
+పూర్ణాంకం usermapped_send_sysenter(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_receive_sysenter(endpoint_t src, సందేశం *m_ptr, పూర్ణాంకం *స్థితి_ptr);
+పూర్ణాంకం usermapped_sendrec_sysenter(endpoint_t src_dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_sendnb_sysenter(endpoint_t dest, సందేశం *m_ptr);
+పూర్ణాంకం usermapped_notify_sysenter(endpoint_t dest);
+పూర్ణాంకం usermapped_do_kernel_call_sysenter(సందేశం *m_ptr);
+పూర్ణాంకం usermapped_senda_sysenter(asynmsg_t *పట్టిక, size_t లెక్క);
 
-void switch_k_stack(void * esp, void (* continuation)(void));
+శూన్య switch_k_దొంతర(శూన్య * esp, శూన్య (* continuation)(శూన్య));
 
-void __switch_address_space(struct proc * p, struct proc ** __ptproc);
-#define switch_address_space(proc)	\
+శూన్య __switch_address_space(నిర్మాణం proc * p, నిర్మాణం proc ** __ptproc);
+#నిర్వచించు switch_చిరునామా_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
-void refresh_tlb(void);
+శూన్య refresh_tlb(శూన్య);
 
 /* multiboot.c */
-void multiboot_init(void);
+శూన్య multiboot_init(శూన్య);
 
 /* protect.c */
-struct tss_s {
+నిర్మాణం tss_s {
   reg_t backlink;
   reg_t sp0;                    /* stack pointer to use during interrupt */
   reg_t ss0;                    /*   "   segment  "  "    "        "     */
@@ -195,90 +195,90 @@ struct tss_s {
 /* u8_t iomap[0]; */
 } __attribute__((packed));
 
-void enable_iop(struct proc *pp);
-u32_t read_cs(void);
-u32_t read_ds(void);
-u32_t read_ss(void);
+శూన్య enable_iop(నిర్మాణం proc *pp);
+u32_t read_cs(శూన్య);
+u32_t read_ds(శూన్య);
+u32_t read_ss(శూన్య);
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
-void vm_enable_paging(void);
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
-phys_bytes pg_roundup(phys_bytes b);
-void pg_info(reg_t *, u32_t **);
-void pg_clear(void);
-void pg_identity(kinfo_t *);
-phys_bytes pg_load(void);
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+శూన్య కూడు_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
+phys_బైట్లు alloc_అత్యల్ప(kinfo_t *cbi, phys_బైట్లు len);
+శూన్య vm_enable_paging(శూన్య);
+శూన్య cut_memmap(kinfo_t *cbi, phys_బైట్లు ప్రారంభం, phys_బైట్లు చివర);
+phys_బైట్లు pg_roundup(phys_బైట్లు b);
+శూన్య pg_info(reg_t *, u32_t **);
+శూన్య pg_clear(శూన్య);
+శూన్య pg_తటస్థం(kinfo_t *);
+phys_బైట్లు pg_ఎక్కించు(శూన్య);
+శూన్య pg_map(phys_బైట్లు phys, vir_బైట్లు vaddr, vir_బైట్లు vaddr_చివర, kinfo_t *cbi);
+పూర్ణాంకం pg_mapkernel(శూన్య);
+శూన్య pg_mapproc(నిర్మాణం proc *p, నిర్మాణం boot_image *ip, kinfo_t *cbi);
 
 /* prototype of an interrupt vector table entry */
-struct gate_table_s {
- void(*gate) (void);
-	unsigned char vec_nr;
-	unsigned char privilege;
+నిర్మాణం gate_పట్టిక_s {
+ శూన్య(*gate) (శూన్య);
+	గుర్తులేని అక్షరం vec_nr;
+	గుర్తులేని అక్షరం privilege;
 };
 
 /* copies an array of vectors to the IDT. The last vector must be zero filled */
-void idt_copy_vectors(struct gate_table_s * first);
-void idt_copy_vectors_pic(void);
-void idt_reload(void);
+శూన్య idt_copy_vectors(నిర్మాణం gate_పట్టిక_s * మొదటి);
+శూన్య idt_copy_vectors_pic(శూన్య);
+శూన్య idt_reload(శూన్య);
 
-EXTERN void * k_stacks_start;
-extern void * k_stacks;
+EXTERN శూన్య * k_stacks_ప్రారంభం;
+బాహ్య శూన్య * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#నిర్వచించు get_k_దొంతర_శిఖరం(cpu)	((శూన్య *)(((అక్షరం*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_దొంతర_కొలత))
 
-void mfence(void);
-#define barrier()	do { mfence(); } while(0)
+శూన్య mfence(శూన్య);
+#నిర్వచించు barrier()	చేయి { mfence(); } అయితే(0)
 
 
-#ifndef __GNUC__
+#నిర్వచితం_కాకపోతే __GNUC__
 /* call a function to read the stack fram pointer (%ebp) */
-reg_t read_ebp(void);
-#define get_stack_frame(__X)	((reg_t)read_ebp())
-#else
+reg_t read_ebp(శూన్య);
+#నిర్వచించు get_దొంతర_చట్రం(__X)	((reg_t)read_ebp())
+#లేకపోతే
 /* read %ebp directly */
-#define get_stack_frame(__X)	((reg_t)__builtin_frame_address(0))
-#endif
+#నిర్వచించు get_దొంతర_చట్రం(__X)	((reg_t)__builtin_frame_address(0))
+#అయితే_ముగింపు
 
 /*
  * sets up TSS for a cpu and assigns kernel stack and cpu id
  */
-int tss_init(unsigned cpu, void * kernel_stack);
+పూర్ణాంకం tss_init(గుర్తులేని cpu, శూన్య * kernel_దొంతర);
 
-void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type);
+శూన్య int_gate_idt(గుర్తులేని vec_nr, vir_బైట్లు స్థానభ్రంశం, గుర్తులేని dpl_type);
 
-void __copy_msg_from_user_end(void);
-void __copy_msg_to_user_end(void);
-void __user_copy_msg_pointer_failure(void);
+శూన్య __copy_msg_from_user_end(శూన్య);
+శూన్య __copy_msg_to_user_end(శూన్య);
+శూన్య __user_copy_msg_pointer_failure(శూన్య);
 
-int platform_tbl_checksum_ok(void *ptr, unsigned int length);
-int platform_tbl_ptr(phys_bytes start, phys_bytes end, unsigned
-	increment, void * buff, unsigned size, phys_bytes * phys_addr, int ((*
-	cmp_f)(void *)));
+పూర్ణాంకం platform_tbl_checksum_ok(శూన్య *ptr, గుర్తులేని పూర్ణాంకం నిడివి);
+పూర్ణాంకం platform_tbl_ptr(phys_బైట్లు ప్రారంభం, phys_బైట్లు చివర, గుర్తులేని
+	increment, శూన్య * buff, గుర్తులేని కొలత, phys_బైట్లు * phys_addr, పూర్ణాంకం ((*
+	cmp_f)(శూన్య *)));
 
 /* breakpoints.c */
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags);
-#define BREAKPOINT_COUNT		4
-#define BREAKPOINT_FLAG_RW_MASK		(3 << 0)
-#define BREAKPOINT_FLAG_RW_EXEC		(0 << 0)
-#define BREAKPOINT_FLAG_RW_WRITE	(1 << 0)
-#define BREAKPOINT_FLAG_RW_RW		(2 << 0)
-#define BREAKPOINT_FLAG_LEN_MASK	(3 << 2)
-#define BREAKPOINT_FLAG_LEN_1		(0 << 2)
-#define BREAKPOINT_FLAG_LEN_2		(1 << 2)
-#define BREAKPOINT_FLAG_LEN_4		(2 << 2)
-#define BREAKPOINT_FLAG_MODE_MASK	(3 << 4)
-#define BREAKPOINT_FLAG_MODE_OFF	(0 << 4)
-#define BREAKPOINT_FLAG_MODE_LOCAL	(1 << 4)
-#define BREAKPOINT_FLAG_MODE_GLOBAL	(2 << 4)
+పూర్ణాంకం breakpoint_సమితి(phys_బైట్లు linaddr, పూర్ణాంకం bp, స్థిరరాశి పూర్ణాంకం flags);
+#నిర్వచించు BREAKPOINT_లెక్క		4
+#నిర్వచించు BREAKPOINT_FLAG_RW_ముసుగు		(3 << 0)
+#నిర్వచించు BREAKPOINT_FLAG_RW_EXEC		(0 << 0)
+#నిర్వచించు BREAKPOINT_FLAG_RW_WRITE	(1 << 0)
+#నిర్వచించు BREAKPOINT_FLAG_RW_RW		(2 << 0)
+#నిర్వచించు BREAKPOINT_FLAG_LEN_ముసుగు	(3 << 2)
+#నిర్వచించు BREAKPOINT_FLAG_LEN_1		(0 << 2)
+#నిర్వచించు BREAKPOINT_FLAG_LEN_2		(1 << 2)
+#నిర్వచించు BREAKPOINT_FLAG_LEN_4		(2 << 2)
+#నిర్వచించు BREAKPOINT_FLAG_బహుళకం_ముసుగు	(3 << 4)
+#నిర్వచించు BREAKPOINT_FLAG_బహుళకం_OFF	(0 << 4)
+#నిర్వచించు BREAKPOINT_FLAG_బహుళకం_LOCAL	(1 << 4)
+#నిర్వచించు BREAKPOINT_FLAG_బహుళకం_GLOBAL	(2 << 4)
 
 /* functions defined in architecture-independent kernel source. */
-#include "kernel/proto.h"
+#అన్తర్భావ "kernel/proto.h"
 
-#endif /* __ASSEMBLY__ */
+#అయితే_ముగింపు /* __ASSEMBLY__ */
 
-#endif
+#అయితే_ముగింపు

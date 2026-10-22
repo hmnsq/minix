@@ -3,145 +3,145 @@
  * functions and sanity checking of the scheduling queues.
  */
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#include <minix/callnr.h>
-#include <minix/u64.h>
-#include <limits.h>
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ <minix/callnr.h>
+#అన్తర్భావ <minix/u64.h>
+#అన్తర్భావ <limits.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
-#define MAX_LOOP (NR_PROCS + NR_TASKS)
+#నిర్వచించు MAX_LOOP (NR_PROCS + NR_TASKS)
 
-int runqueues_ok_cpu(unsigned cpu)
+పూర్ణాంకం runqueues_ok_cpu(గుర్తులేని cpu)
 {
-  int q, l = 0;
-  register struct proc *xp;
-  struct proc **rdy_head, **rdy_tail;
+  పూర్ణాంకం q, l = 0;
+  నమోదు నిర్మాణం proc *xp;
+  నిర్మాణం proc **rdy_తల, **rdy_తోక;
 
-  rdy_head = get_cpu_var(cpu, run_q_head);
-  rdy_tail = get_cpu_var(cpu, run_q_tail);
+  rdy_తల = get_cpu_var(cpu, నిరంతరం_q_తల);
+  rdy_తోక = get_cpu_var(cpu, నిరంతరం_q_తోక);
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	xp->p_found = 0;
-	if (l++ > MAX_LOOP) panic("check error");
+  కొరకు (xp = BEG_PROC_ADDR; xp < చివర_PROC_ADDR; ++xp) {
+	xp->p_దొరికింది = 0;
+	ఒకవేళ (l++ > MAX_LOOP) panic("check error");
   }
 
-  for (q=l=0; q < NR_SCHED_QUEUES; q++) {
-    if (rdy_head[q] && !rdy_tail[q]) {
-	printf("head but no tail in %d\n", q);
-	return 0;
+  కొరకు (q=l=0; q < NR_SCHED_QUEUES; q++) {
+    ఒకవేళ (rdy_తల[q] && !rdy_తోక[q]) {
+	రాయి("head but no tail in %d\n", q);
+	తిరిగి 0;
     }
-    if (!rdy_head[q] && rdy_tail[q]) {
-	printf("tail but no head in %d\n", q);
-	return 0;
+    ఒకవేళ (!rdy_తల[q] && rdy_తోక[q]) {
+	రాయి("tail but no head in %d\n", q);
+	తిరిగి 0;
     }
-    if (rdy_tail[q] && rdy_tail[q]->p_nextready) {
-	printf("tail and tail->next not null in %d\n", q);
-	return 0;
+    ఒకవేళ (rdy_తోక[q] && rdy_తోక[q]->p_nextready) {
+	రాయి("tail and tail->next not null in %d\n", q);
+	తిరిగి 0;
     }
-    for(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
-	const vir_bytes vxp = (vir_bytes) xp;
-	vir_bytes dxp;
-	if(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
-  		printf("xp out of range\n");
-		return 0;
+    కొరకు(xp = rdy_తల[q]; xp; xp = xp->p_nextready) {
+	స్థిరరాశి vir_బైట్లు vxp = (vir_బైట్లు) xp;
+	vir_బైట్లు dxp;
+	ఒకవేళ(vxp < (vir_బైట్లు) BEG_PROC_ADDR || vxp >= (vir_బైట్లు) చివర_PROC_ADDR) {
+  		రాయి("xp out of range\n");
+		తిరిగి 0;
 	}
-	dxp = vxp - (vir_bytes) BEG_PROC_ADDR;
-	if(dxp % sizeof(struct proc)) {
-  		printf("xp not a real pointer");
-		return 0;
+	dxp = vxp - (vir_బైట్లు) BEG_PROC_ADDR;
+	ఒకవేళ(dxp % పరిమాణం(నిర్మాణం proc)) {
+  		రాయి("xp not a real pointer");
+		తిరిగి 0;
 	}
-	if(!proc_ptr_ok(xp)) {
-  		printf("xp bogus pointer");
-		return 0;
+	ఒకవేళ(!proc_ptr_ok(xp)) {
+  		రాయి("xp bogus pointer");
+		తిరిగి 0;
 	}
-	if (RTS_ISSET(xp, RTS_SLOT_FREE)) {
-		printf("scheduling error: dead proc q %d %d\n",
+	ఒకవేళ (RTS_ISSET(xp, RTS_స్థానం_FREE)) {
+		రాయి("scheduling error: dead proc q %d %d\n",
 			q, xp->p_endpoint);
-		return 0;
+		తిరిగి 0;
 	}
-        if (!proc_is_runnable(xp)) {
-		printf("scheduling error: unready on runq %d proc %d\n",
+        ఒకవేళ (!proc_is_runnable(xp)) {
+		రాయి("scheduling error: unready on runq %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		తిరిగి 0;
         }
-        if (xp->p_priority != q) {
-		printf("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
+        ఒకవేళ (xp->p_ప్రాధాన్యత != q) {
+		రాయి("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
 			q, xp->p_nr, xp->p_endpoint, xp->p_name);
-		return 0;
+		తిరిగి 0;
 	}
-	if (xp->p_found) {
-		printf("scheduling error: double sched q %d proc %d\n",
+	ఒకవేళ (xp->p_దొరికింది) {
+		రాయి("scheduling error: double sched q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		తిరిగి 0;
 	}
-	xp->p_found = 1;
-	if (!xp->p_nextready && rdy_tail[q] != xp) {
-		printf("sched err: last element not tail q %d proc %d\n",
+	xp->p_దొరికింది = 1;
+	ఒకవేళ (!xp->p_nextready && rdy_తోక[q] != xp) {
+		రాయి("sched err: last element not tail q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		తిరిగి 0;
 	}
-	if (l++ > MAX_LOOP) {
-		printf("loop in schedule queue?");
-		return 0;
+	ఒకవేళ (l++ > MAX_LOOP) {
+		రాయి("loop in schedule queue?");
+		తిరిగి 0;
 	}
     }
   }	
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	if(!proc_ptr_ok(xp)) {
-		printf("xp bogus pointer in proc table\n");
-		return 0;
+  కొరకు (xp = BEG_PROC_ADDR; xp < చివర_PROC_ADDR; ++xp) {
+	ఒకవేళ(!proc_ptr_ok(xp)) {
+		రాయి("xp bogus pointer in proc table\n");
+		తిరిగి 0;
 	}
-	if (isemptyp(xp))
-		continue;
-	if(proc_is_runnable(xp) && !xp->p_found) {
-		printf("sched error: ready proc %d not on queue\n", xp->p_nr);
-		return 0;
+	ఒకవేళ (isemptyp(xp))
+		కొనసాగు;
+	ఒకవేళ(proc_is_runnable(xp) && !xp->p_దొరికింది) {
+		రాయి("sched error: ready proc %d not on queue\n", xp->p_nr);
+		తిరిగి 0;
 	}
   }
 
   /* All is ok. */
-  return 1;
+  తిరిగి 1;
 }
 
-#ifdef CONFIG_SMP
-static int runqueues_ok_all(void)
+#నిర్వచితమైతే CONFIG_SMP
+స్థిర పూర్ణాంకం runqueues_ok_all(శూన్య)
 {
-	unsigned c;
+	గుర్తులేని c;
 
-	for (c = 0 ; c < ncpus; c++) {
-		if (!runqueues_ok_cpu(c))
-			return 0;
+	కొరకు (c = 0 ; c < ncpus; c++) {
+		ఒకవేళ (!runqueues_ok_cpu(c))
+			తిరిగి 0;
 	}
-	return 1;	
+	తిరిగి 1;	
 }
 
-int runqueues_ok(void)
+పూర్ణాంకం runqueues_ok(శూన్య)
 {
-	return runqueues_ok_all();
+	తిరిగి runqueues_ok_all();
 }
 
-#else
+#లేకపోతే
 
-int runqueues_ok(void)
+పూర్ణాంకం runqueues_ok(శూన్య)
 {
-	return runqueues_ok_cpu(0);
+	తిరిగి runqueues_ok_cpu(0);
 }
 
 
-#endif
+#అయితే_ముగింపు
 
-char *
-rtsflagstr(const u32_t flags)
+అక్షరం *
+rtsflagstr(స్థిరరాశి u32_t flags)
 {
-	static char str[100];
+	స్థిర అక్షరం str[100];
 	str[0] = '\0';
 
-#define FLAG(n) if(flags & n) { strlcat(str, #n " ", sizeof(str)); }
+#నిర్వచించు FLAG(n) ఒకవేళ(flags & n) { strlcat(str, #n " ", పరిమాణం(str)); }
 
-	FLAG(RTS_SLOT_FREE);
+	FLAG(RTS_స్థానం_FREE);
 	FLAG(RTS_PROC_STOP);
 	FLAG(RTS_SENDING);
 	FLAG(RTS_RECEIVING);
@@ -155,166 +155,166 @@ rtsflagstr(const u32_t flags)
 	FLAG(RTS_VMREQUEST);
 	FLAG(RTS_VMREQTARGET);
 	FLAG(RTS_PREEMPTED);
-	FLAG(RTS_NO_QUANTUM);
+	FLAG(RTS_NO_కాలాంశం);
 
-	return str;
+	తిరిగి str;
 }
 
-char *
-miscflagstr(const u32_t flags)
+అక్షరం *
+miscflagstr(స్థిరరాశి u32_t flags)
 {
-	static char str[100];
+	స్థిర అక్షరం str[100];
 	str[0] = '\0';
 
-	FLAG(MF_REPLY_PEND);
+	FLAG(MF_జవాబు_PEND);
 	FLAG(MF_DELIVERMSG);
 	FLAG(MF_KCALL_RESUME);
 
-	return str;
+	తిరిగి str;
 }
 
-char *
-schedulerstr(struct proc *scheduler)
+అక్షరం *
+schedulerstr(నిర్మాణం proc *scheduler)
 {
-	if (scheduler != NULL)
+	ఒకవేళ (scheduler != ఖాళీ)
 	{
-		return scheduler->p_name;
+		తిరిగి scheduler->p_name;
 	}
 
-	return "KERNEL";
+	తిరిగి "KERNEL";
 }
 
-static void
-print_proc_name(struct proc *pp)
+స్థిర శూన్య
+print_proc_name(నిర్మాణం proc *pp)
 {
-	char *name = pp->p_name;
+	అక్షరం *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
 
-	if(name) {
-		printf("%s(%d)", name, ep);
+	ఒకవేళ(name) {
+		రాయి("%s(%d)", name, ep);
 	}
-	else {
-		printf("%d", ep);
+	లేకపోతే {
+		రాయి("%d", ep);
 	}
 }
 
-static void
+స్థిర శూన్య
 print_endpoint(endpoint_t ep)
 {
-	int proc_nr;
-	struct proc *pp = NULL;
+	పూర్ణాంకం proc_nr;
+	నిర్మాణం proc *pp = ఖాళీ;
 
-	switch(ep) {
-	case ANY:
-		printf("ANY");
-	break;
-	case SELF:
-		printf("SELF");
-	break;
-	case NONE:
-		printf("NONE");
-	break;
-	default:
-		if(!isokendpt(ep, &proc_nr)) {
-			printf("??? %d\n", ep);
+	ఎంపిక(ep) {
+	స్థితి ANY:
+		రాయి("ANY");
+	ఆపు;
+	స్థితి SELF:
+		రాయి("SELF");
+	ఆపు;
+	స్థితి NONE:
+		రాయి("NONE");
+	ఆపు;
+	అప్రమేయ:
+		ఒకవేళ(!isokendpt(ep, &proc_nr)) {
+			రాయి("??? %d\n", ep);
 		}
-		else {
+		లేకపోతే {
 			pp = proc_addr(proc_nr);
-			if(isemptyp(pp)) {
-				printf("??? empty slot %d\n", proc_nr);
+			ఒకవేళ(isemptyp(pp)) {
+				రాయి("??? empty slot %d\n", proc_nr);
 			}
-			else {
+			లేకపోతే {
 				print_proc_name(pp);
 			}
 		}
-	break;
+	ఆపు;
 	}
 }
 
-static void
-print_sigmgr(struct proc *pp)
+స్థిర శూన్య
+print_sigmgr(నిర్మాణం proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
-	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
-	printf("sigmgr ");
+	ఒకవేళ(sig_mgr == NONE) { రాయి("no sigmgr"); తిరిగి; }
+	రాయి("sigmgr ");
 	print_endpoint(sig_mgr);
-	if(bak_sig_mgr != NONE) {
-		printf(" / ");
+	ఒకవేళ(bak_sig_mgr != NONE) {
+		రాయి(" / ");
 		print_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+శూన్య print_proc(నిర్మాణం proc *pp)
 {
 	endpoint_t dep;
 
-	printf("%d: %s %d prio %d time %d/%d cycles 0x%x%08x cpu %2d "
+	రాయి("%d: %s %d prio %d time %d/%d cycles 0x%x%08x cpu %2d "
 			"pdbr 0x%lx rts %s misc %s sched %s ",
 		proc_nr(pp), pp->p_name, pp->p_endpoint, 
-		pp->p_priority, pp->p_user_time,
-		pp->p_sys_time, ex64hi(pp->p_cycles),
-		ex64lo(pp->p_cycles), pp->p_cpu,
-#if defined(__i386__)
+		pp->p_ప్రాధాన్యత, pp->p_user_సమయం,
+		pp->p_sys_సమయం, ex64hi(pp->p_చక్రాలు),
+		ex64lo(pp->p_చక్రాలు), pp->p_cpu,
+#ఒకవేళ defined(__i386__)
 		pp->p_seg.p_cr3,
-#elif defined(__arm__)
+#లేదావేళ defined(__arm__)
 		pp->p_seg.p_ttbr,
-#endif
+#అయితే_ముగింపు
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
 		schedulerstr(pp->p_scheduler));
 
 	print_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE) {
-		printf(" blocked on: ");
+	ఒకవేళ(dep != NONE) {
+		రాయి(" blocked on: ");
 		print_endpoint(dep);
 	}
-	printf("\n");
+	రాయి("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+స్థిర శూన్య print_proc_depends(నిర్మాణం proc *pp, స్థిరరాశి పూర్ణాంకం level)
 {
-	struct proc *depproc = NULL;
+	నిర్మాణం proc *depproc = ఖాళీ;
 	endpoint_t dep;
-#define COL { int i; for(i = 0; i < level; i++) printf("> "); }
+#నిర్వచించు నిలువు_2 { పూర్ణాంకం i; కొరకు(i = 0; i < level; i++) రాయి("> "); }
 
-	if(level >= NR_PROCS) {
-		printf("loop??\n");
-		return;
+	ఒకవేళ(level >= NR_PROCS) {
+		రాయి("loop??\n");
+		తిరిగి;
 	}
 
-	COL
+	నిలువు_2
 
 	print_proc(pp);
 
-	COL
+	నిలువు_2
 	proc_stacktrace(pp);
 
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE && dep != ANY) {
-		int procno;
-		if(isokendpt(dep, &procno)) {
+	ఒకవేళ(dep != NONE && dep != ANY) {
+		పూర్ణాంకం procno;
+		ఒకవేళ(isokendpt(dep, &procno)) {
 			depproc = proc_addr(procno);
-			if(isemptyp(depproc))
-				depproc = NULL;
+			ఒకవేళ(isemptyp(depproc))
+				depproc = ఖాళీ;
 		}
-		if (depproc)
+		ఒకవేళ (depproc)
 			print_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+శూన్య print_proc_recursive(నిర్మాణం proc *pp)
 {
 	print_proc_depends(pp, 0);
 }
 
-#if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
-static const char *mtypename(int mtype, int *possible_callname)
+#ఒకవేళ DEBUG_DUMPIPC || DEBUG_DUMPIPCF
+స్థిర స్థిరరాశి అక్షరం *mtypename(పూర్ణాంకం mtype, పూర్ణాంకం *possible_callname)
 {
-	char *callname = NULL, *errname = NULL;
+	అక్షరం *callname = ఖాళీ, *errname = ఖాళీ;
 	/* use generated file to recognize message types
 	 *
 	 * we try to match both error numbers and call numbers, as the
@@ -323,180 +323,180 @@ static const char *mtypename(int mtype, int *possible_callname)
 	 * whenever it might be a call number we tell the caller so the
 	 * call message fields can be decoded if known.
 	 */
-	switch(mtype) {
-#define IDENT(x) case x: callname = #x; *possible_callname = 1; break;
-#include "kernel/extracted-mtype.h"
-#undef IDENT
+	ఎంపిక(mtype) {
+#నిర్వచించు IDENT(x) స్థితి x: callname = #x; *possible_callname = 1; ఆపు;
+#అన్తర్భావ "kernel/extracted-mtype.h"
+#నిర్వచనం_రద్దు IDENT
 	}
-	switch(mtype) {
-#define IDENT(x) case x: errname = #x; break;
-#include "kernel/extracted-errno.h"
-#undef IDENT
+	ఎంపిక(mtype) {
+#నిర్వచించు IDENT(x) స్థితి x: errname = #x; ఆపు;
+#అన్తర్భావ "kernel/extracted-errno.h"
+#నిర్వచనం_రద్దు IDENT
 	}
 
 	/* no match */
-	if(!errname && !callname)
-		return NULL;
+	ఒకవేళ(!errname && !callname)
+		తిరిగి ఖాళీ;
 
 	/* 2 matches */
-	if(errname && callname) {
-		static char typename[100];
+	ఒకవేళ(errname && callname) {
+		స్థిర అక్షరం typename[100];
 		strcpy(typename, errname);
 		strcat(typename, " / ");
 		strcat(typename, callname);
-		return typename;
+		తిరిగి typename;
 	}
 
-	if(errname) return errname;
+	ఒకవేళ(errname) తిరిగి errname;
 
-	assert(callname);
-	return callname;
+	ప్రతిజ్ఞా(callname);
+	తిరిగి callname;
 }
 
-static void printproc(struct proc *rp)
+స్థిర శూన్య printproc(నిర్మాణం proc *rp)
 {
-	if (rp)
-		printf(" %s(%d)", rp->p_name, rp - proc);
-	else
-		printf(" kernel");
+	ఒకవేళ (rp)
+		రాయి(" %s(%d)", rp->p_name, rp - proc);
+	లేకపోతే
+		రాయి(" kernel");
 }
 
-static void printparam(const char *name, const void *data, size_t size)
+స్థిర శూన్య printparam(స్థిరరాశి అక్షరం *name, స్థిరరాశి శూన్య *దత్తాంశం, size_t కొలత)
 {
-	printf(" %s=", name);
-	switch (size) {
-		case sizeof(char):	printf("%d", *(char *) data);	break;
-		case sizeof(short):	printf("%d", *(short *) data);	break;
-		case sizeof(int):	printf("%d", *(int *) data);	break;
-		default:		printf("(%u bytes)", size);	break;
+	రాయి(" %s=", name);
+	ఎంపిక (కొలత) {
+		స్థితి పరిమాణం(అక్షరం):	రాయి("%d", *(అక్షరం *) దత్తాంశం);	ఆపు;
+		స్థితి పరిమాణం(పొట్టి):	రాయి("%d", *(పొట్టి *) దత్తాంశం);	ఆపు;
+		స్థితి పరిమాణం(పూర్ణాంకం):	రాయి("%d", *(పూర్ణాంకం *) దత్తాంశం);	ఆపు;
+		అప్రమేయ:		రాయి("(%u bytes)", కొలత);	ఆపు;
 	}
 }
 
-#ifdef DEBUG_DUMPIPC_NAMES
-static int namematch(char **names, int nnames, char *name)
+#నిర్వచితమైతే DEBUG_DUMPIPC_పేర్లు
+స్థిర పూర్ణాంకం namematch(అక్షరం **పేర్లు, పూర్ణాంకం nnames, అక్షరం *name)
 {
-	int i;
-	for(i = 0; i < nnames; i++)
-		if(!strcmp(names[i], name))
-			return 1;
-	return 0;
+	పూర్ణాంకం i;
+	కొరకు(i = 0; i < nnames; i++)
+		ఒకవేళ(!strcmp(పేర్లు[i], name))
+			తిరిగి 1;
+	తిరిగి 0;
 }
-#endif
+#అయితే_ముగింపు
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-	char operation, int printparams)
+శూన్య printmsg(సందేశం *సందేశం_2, నిర్మాణం proc *src, నిర్మాణం proc *dst,
+	అక్షరం operation, పూర్ణాంకం printparams)
 {
-	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	స్థిరరాశి అక్షరం *name;
+	పూర్ణాంకం mtype = సందేశం_2->m_type, mightbecall = 0;
 
-#ifdef DEBUG_DUMPIPC_NAMES
+#నిర్వచితమైతే DEBUG_DUMPIPC_పేర్లు
   {
-	char *names[] = DEBUG_DUMPIPC_NAMES;
-	int nnames = sizeof(names)/sizeof(names[0]);
+	అక్షరం *పేర్లు[] = DEBUG_DUMPIPC_పేర్లు;
+	పూర్ణాంకం nnames = పరిమాణం(పేర్లు)/పరిమాణం(పేర్లు[0]);
 
 	/* skip printing messages for messages neither to
 	 * or from DEBUG_DUMPIPC_EP if it is defined; either
 	 * can be NULL to indicate kernel
 	 */
-	if(!(src && namematch(names, nnames, src->p_name)) &&
-	   !(dst && namematch(names, nnames, dst->p_name))) {
-		return;
+	ఒకవేళ(!(src && namematch(పేర్లు, nnames, src->p_name)) &&
+	   !(dst && namematch(పేర్లు, nnames, dst->p_name))) {
+		తిరిగి;
 	}
   }
-#endif
+#అయితే_ముగింపు
 
 	/* source, destination and message type */
-	printf("%c", operation);
+	రాయి("%c", operation);
 	printproc(src);
 	printproc(dst);
 	name = mtypename(mtype, &mightbecall);
-	if (name) {
-		printf(" %s(%d/0x%x)", name, mtype, mtype);
-	} else {
-		printf(" %d/0x%x", mtype, mtype);
+	ఒకవేళ (name) {
+		రాయి(" %s(%d/0x%x)", name, mtype, mtype);
+	} లేకపోతే {
+		రాయి(" %d/0x%x", mtype, mtype);
 	}
 
-	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
-#include "kernel/extracted-mfield.h"
-#undef IDENT
+	ఒకవేళ (mightbecall && printparams) {
+#నిర్వచించు IDENT(x, y) ఒకవేళ (mtype == x) printparam(#y, &సందేశం_2->y, పరిమాణం(సందేశం_2->y));
+#అన్తర్భావ "kernel/extracted-mfield.h"
+#నిర్వచనం_రద్దు IDENT
 	}
-	printf("\n");
+	రాయి("\n");
 }
-#endif
+#అయితే_ముగింపు
 
-#if DEBUG_IPCSTATS
-#define IPCPROCS (NR_PROCS+1)	/* number of slots we need */
-#define KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
-static int messages[IPCPROCS][IPCPROCS];
+#ఒకవేళ DEBUG_IPCSTATS
+#నిర్వచించు IPCPROCS (NR_PROCS+1)	/* number of slots we need */
+#నిర్వచించు KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
+స్థిర పూర్ణాంకం messages[IPCPROCS][IPCPROCS];
 
-#define PRINTSLOTS 20
-static struct {
-	int src, dst, messages;
+#నిర్వచించు PRINTSLOTS 20
+స్థిర నిర్మాణం {
+	పూర్ణాంకం src, dst, messages;
 } winners[PRINTSLOTS];
-static int total, goodslots;
+స్థిర పూర్ణాంకం మొత్తం, goodslots;
 
-static void printstats(int ticks)
+స్థిర శూన్య printstats(పూర్ణాంకం ticks)
 {
-	int i;
-	for(i = 0; i < goodslots; i++) {
-#define name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
-#define persec(n) (system_hz*(n)/ticks)
-		char	*n1 = name(winners[i].src),
+	పూర్ణాంకం i;
+	కొరకు(i = 0; i < goodslots; i++) {
+#నిర్వచించు name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
+#నిర్వచించు persec(n) (system_hz*(n)/ticks)
+		అక్షరం	*n1 = name(winners[i].src),
 			*n2 = name(winners[i].dst);
-		printf("%2d.  %8s -> %8s  %9d/s\n",
+		రాయి("%2d.  %8s -> %8s  %9d/s\n",
 			i, n1, n2, persec(winners[i].messages));
 	}
-	printf("total %d/s\n", persec(total));
+	రాయి("total %d/s\n", persec(మొత్తం));
 }
 
-static void sortstats(void)
+స్థిర శూన్య sortstats(శూన్య)
 {
 	/* Print top message senders/receivers. */
-	int src_slot, dst_slot;
-	total = goodslots = 0;
-	for(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
-		for(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
-			int w = PRINTSLOTS, rem,
-				n = messages[src_slot][dst_slot];
-			total += n;
-			while(w > 0 && n > winners[w-1].messages)
+	పూర్ణాంకం src_స్థానం, dst_స్థానం;
+	మొత్తం = goodslots = 0;
+	కొరకు(src_స్థానం = 0; src_స్థానం < IPCPROCS; src_స్థానం++) {
+		కొరకు(dst_స్థానం = 0; dst_స్థానం < IPCPROCS; dst_స్థానం++) {
+			పూర్ణాంకం w = PRINTSLOTS, rem,
+				n = messages[src_స్థానం][dst_స్థానం];
+			మొత్తం += n;
+			అయితే(w > 0 && n > winners[w-1].messages)
 				w--;
-			if(w >= PRINTSLOTS) continue;
+			ఒకవేళ(w >= PRINTSLOTS) కొనసాగు;
 
 			/* This combination has beaten the current winners
 			 * and should be inserted at position 'w.'
 			 */
 			rem = PRINTSLOTS-w-1;
-			assert(rem >= 0);
-			assert(rem < PRINTSLOTS);
-			if(rem > 0) {
-				assert(w+1 <= PRINTSLOTS-1);
-				assert(w >= 0);
+			ప్రతిజ్ఞా(rem >= 0);
+			ప్రతిజ్ఞా(rem < PRINTSLOTS);
+			ఒకవేళ(rem > 0) {
+				ప్రతిజ్ఞా(w+1 <= PRINTSLOTS-1);
+				ప్రతిజ్ఞా(w >= 0);
 				memmove(&winners[w+1], &winners[w],
-					rem*sizeof(winners[0]));
+					rem*పరిమాణం(winners[0]));
 			}
-			winners[w].src = src_slot;
-			winners[w].dst = dst_slot;
+			winners[w].src = src_స్థానం;
+			winners[w].dst = dst_స్థానం;
 			winners[w].messages = n;
-			if(goodslots < PRINTSLOTS) goodslots++;
+			ఒకవేళ(goodslots < PRINTSLOTS) goodslots++;
 		}
 	}
 }
 
-#define proc2slot(p, s) { \
-	if(p) { s = p->p_nr; } \
-	else { s = KERNELIPC; } \
-	assert(s >= 0 && s < IPCPROCS); \
+#నిర్వచించు proc2slot(p, s) { \
+	ఒకవేళ(p) { s = p->p_nr; } \
+	లేకపోతే { s = KERNELIPC; } \
+	ప్రతిజ్ఞా(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+స్థిర శూన్య statmsg(సందేశం *సందేశం_2, నిర్మాణం proc *srcp, నిర్మాణం proc *dstp)
 {
-	int src, dst, now, secs, dt;
-	static int lastprint;
+	పూర్ణాంకం src, dst, now, secs, dt;
+	స్థిర పూర్ణాంకం lastprint;
 
 	/* Stat message. */
-	assert(src);
+	ప్రతిజ్ఞా(src);
 	proc2slot(srcp, src);
 	proc2slot(dstp, dst);
 	messages[src][dst]++;
@@ -505,59 +505,59 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 	now = get_monotonic();
 	dt = now - lastprint;
 	secs = dt/system_hz;
-	if(secs >= 30) {
-		memset(winners, 0, sizeof(winners));
+	ఒకవేళ(secs >= 30) {
+		memset(winners, 0, పరిమాణం(winners));
 		sortstats();
 		printstats(dt);
-		memset(messages, 0, sizeof(messages));
+		memset(messages, 0, పరిమాణం(messages));
 		lastprint = now;
 	}
 }
-#endif
+#అయితే_ముగింపు
 
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+#ఒకవేళ DEBUG_IPC_HOOK
+శూన్య hook_ipc_msgkcall(సందేశం *సందేశం_2, నిర్మాణం proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
-#endif
+#ఒకవేళ DEBUG_DUMPIPC
+	printmsg(సందేశం_2, proc, ఖాళీ, 'k', 1);
+#అయితే_ముగింపు
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+శూన్య hook_ipc_msgkresult(సందేశం *సందేశం_2, నిర్మాణం proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
-#endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
-#endif
+#ఒకవేళ DEBUG_DUMPIPC
+	printmsg(సందేశం_2, ఖాళీ, proc, 'k', 0);
+#అయితే_ముగింపు
+#ఒకవేళ DEBUG_IPCSTATS
+	statmsg(సందేశం_2, proc, ఖాళీ);
+#అయితే_ముగింపు
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+శూన్య hook_ipc_msgrecv(సందేశం *సందేశం_2, నిర్మాణం proc *src, నిర్మాణం proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
-#endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
-#endif
+#ఒకవేళ DEBUG_DUMPIPC
+	printmsg(సందేశం_2, src, dst, 'r', 0);
+#అయితే_ముగింపు
+#ఒకవేళ DEBUG_IPCSTATS
+	statmsg(సందేశం_2, src, dst);
+#అయితే_ముగింపు
 }
 
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
+శూన్య hook_ipc_msgsend(సందేశం *సందేశం_2, నిర్మాణం proc *src, నిర్మాణం proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
-#endif
+#ఒకవేళ DEBUG_DUMPIPC
+	printmsg(సందేశం_2, src, dst, 's', 1);
+#అయితే_ముగింపు
 }
 
-void hook_ipc_clear(struct proc *p)
+శూన్య hook_ipc_clear(నిర్మాణం proc *p)
 {
-#if DEBUG_IPCSTATS
-	int slot, i;
-	assert(p);
-	proc2slot(p, slot);
-	for(i = 0; i < IPCPROCS; i++)
-		messages[slot][i] = messages[i][slot] = 0;
-#endif
+#ఒకవేళ DEBUG_IPCSTATS
+	పూర్ణాంకం స్థానం, i;
+	ప్రతిజ్ఞా(p);
+	proc2slot(p, స్థానం);
+	కొరకు(i = 0; i < IPCPROCS; i++)
+		messages[స్థానం][i] = messages[i][స్థానం] = 0;
+#అయితే_ముగింపు
 }
-#endif
+#అయితే_ముగింపు

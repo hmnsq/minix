@@ -1,6 +1,6 @@
-#ifndef __CLOCK_ARM_H__
-#define __CLOCK_ARM_H__
+#నిర్వచితం_కాకపోతే __CLOCK_ARM_H__
+#నిర్వచించు __CLOCK_ARM_H__
 
-void arch_timer_int_handler(void);
+శూన్య arch_timer_int_handler(శూన్య);
 
-#endif /* __CLOCK_ARM_H__ */
+#అయితే_ముగింపు /* __CLOCK_ARM_H__ */

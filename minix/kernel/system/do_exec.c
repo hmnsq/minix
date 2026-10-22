@@ -8,43 +8,43 @@
  *   m_lsys_krn_sys_exec.ip		(new instruction pointer)
  *   m_lsys_krn_sys_exec.ps_str		(struct ps_strings *)
  */
-#include "kernel/system.h"
-#include <string.h>
-#include <minix/endpoint.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_EXEC
+#ఒకవేళ USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_exec(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
-  register struct proc *rp;
-  int proc_nr;
-  char name[PROC_NAME_LEN];
+  నమోదు నిర్మాణం proc *rp;
+  పూర్ణాంకం proc_nr;
+  అక్షరం name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  ఒకవేళ(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	తిరిగి EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  ఒకవేళ(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
-	KERNEL, (vir_bytes) name,
-	(phys_bytes) sizeof(name) - 1) != OK)
+  ఒకవేళ(దత్తాంశం_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+	KERNEL, (vir_బైట్లు) name,
+	(phys_బైట్లు) పరిమాణం(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
 
-  name[sizeof(name)-1] = '\0';
+  name[పరిమాణం(name)-1] = '\0';
 
   /* Set process state. */
   arch_proc_init(rp,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ip,
-	(u32_t) m_ptr->m_lsys_krn_sys_exec.stack,
+	(u32_t) m_ptr->m_lsys_krn_sys_exec.దొంతర,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ps_str, name);
 
   /* No reply to EXEC call */
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  తిరిగి(OK);
 }
-#endif /* USE_EXEC */
+#అయితే_ముగింపు /* USE_EXEC */

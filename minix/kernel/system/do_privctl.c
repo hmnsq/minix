@@ -9,96 +9,96 @@
  *   m.m_lsys_krn_sys_privctl.phys_len
  */
 
-#include "kernel/system.h"
-#include <signal.h>
-#include <string.h>
-#include <minix/endpoint.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <signal.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_PRIVCTL
+#ఒకవేళ USE_PRIVCTL
 
-#define PRIV_DEBUG 0
+#నిర్వచించు PRIV_DEBUG 0
 
-static int update_priv(struct proc *rp, struct priv *priv);
+స్థిర పూర్ణాంకం update_priv(నిర్మాణం proc *rp, నిర్మాణం priv *priv);
 
 /*===========================================================================*
  *				do_privctl				     *
  *===========================================================================*/
-int do_privctl(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_privctl(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Handle sys_privctl(). Update a process' privileges. If the process is not
  * yet a system process, make sure it gets its own privilege structure.
  */
-  struct proc *rp;
+  నిర్మాణం proc *rp;
   proc_nr_t proc_nr;
   sys_id_t priv_id;
   sys_map_t map;
-  int ipc_to_m, kcalls;
-  int i, r;
-  struct io_range io_range;
-  struct minix_mem_range mem_range;
-  struct priv priv;
-  int irq;
+  పూర్ణాంకం ipc_గమ్యం_m, kcalls;
+  పూర్ణాంకం i, r;
+  నిర్మాణం io_range io_range;
+  నిర్మాణం minix_mem_range mem_range;
+  నిర్మాణం priv priv;
+  పూర్ణాంకం irq;
 
   /* Check whether caller is allowed to make this call. Privileged processes 
    * can only update the privileges of processes that are inhibited from 
    * running by the RTS_NO_PRIV flag. This flag is set when a privileged process
    * forks. 
    */
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
-  if(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
+  ఒకవేళ (! (priv(caller)->s_flags & SYS_PROC)) తిరిగి(EPERM);
+  ఒకవేళ(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
 	&proc_nr);
-  else if(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
-	return(EINVAL);
+  లేకపోతే ఒకవేళ(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
+	తిరిగి(EINVAL);
   rp = proc_addr(proc_nr);
 
-  switch(m_ptr->m_lsys_krn_sys_privctl.request)
+  ఎంపిక(m_ptr->m_lsys_krn_sys_privctl.request)
   {
-  case SYS_PRIV_ALLOW:
+  స్థితి SYS_PRIV_ALLOW:
 	/* Allow process to run. Make sure its privilege structure has already
 	 * been set.
 	 */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ఒకవేళ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		తిరిగి(EPERM);
 	}
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	తిరిగి(OK);
 
-  case SYS_PRIV_YIELD:
+  స్థితి SYS_PRIV_YIELD:
 	/* Allow process to run and suspend the caller. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ఒకవేళ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		తిరిగి(EPERM);
 	}
-	RTS_SET(caller, RTS_NO_PRIV);
+	RTS_సమితి(caller, RTS_NO_PRIV);
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	తిరిగి(OK);
 
-  case SYS_PRIV_DISALLOW:
+  స్థితి SYS_PRIV_DISALLOW:
 	/* Disallow process from running. */
-	if (RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
-	RTS_SET(rp, RTS_NO_PRIV);
-	return(OK);
+	ఒకవేళ (RTS_ISSET(rp, RTS_NO_PRIV)) తిరిగి(EPERM);
+	RTS_సమితి(rp, RTS_NO_PRIV);
+	తిరిగి(OK);
 
-  case SYS_PRIV_CLEAR_IPC_REFS:
+  స్థితి SYS_PRIV_CLEAR_IPC_REFS:
 	/* Clear pending IPC for the process. */
 	clear_ipc_refs(rp, EDEADSRCDST);
-	return(OK);
+	తిరిగి(OK);
 
-  case SYS_PRIV_SET_SYS:
+  స్థితి SYS_PRIV_సమితి_SYS:
 	/* Set a privilege structure of a blocked system process. */
-	if (! RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ఒకవేళ (! RTS_ISSET(rp, RTS_NO_PRIV)) తిరిగి(EPERM);
 
 	/* Check whether a static or dynamic privilege id must be allocated. */
 	priv_id = NULL_PRIV_ID;
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ఒకవేళ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
 		/* Copy privilege structure from caller */
-		if((r=data_copy(caller->p_endpoint,
+		ఒకవేళ((r=దత్తాంశం_copy(caller->p_endpoint,
 			m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-			(vir_bytes) &priv, sizeof(priv))) != OK)
-			return r;
+			(vir_బైట్లు) &priv, పరిమాణం(priv))) != OK)
+			తిరిగి r;
 
 		/* See if the caller wants to assign a static privilege id. */
-		if(!(priv.s_flags & DYN_PRIV_ID)) {
+		ఒకవేళ(!(priv.s_flags & DYN_PRIV_ID)) {
 			priv_id = priv.s_id;
 		}
 	}
@@ -107,23 +107,23 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	 * fail, since there are only a limited number of system processes.
 	 * Then copy privileges from the caller and restore some defaults.
 	 */
-	if ((i=get_priv(rp, priv_id)) != OK)
+	ఒకవేళ ((i=get_priv(rp, priv_id)) != OK)
 	{
-		printf("do_privctl: unable to allocate priv_id %d: %d\n",
+		రాయి("do_privctl: unable to allocate priv_id %d: %d\n",
 			priv_id, i);
-		return(i);
+		తిరిగి(i);
 	}
 	priv_id = priv(rp)->s_id;		/* backup privilege id */
 	*priv(rp) = *priv(caller);		/* copy from caller */
 	priv(rp)->s_id = priv_id;		/* restore privilege id */
 	priv(rp)->s_proc_nr = proc_nr;		/* reassociate process nr */
 
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
+	కొరకు (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
 	      priv(rp)->s_asyn_pending.chunk[i] = 0;	/* - incoming asyn */
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
+	కొరకు (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
 	      priv(rp)->s_notify_pending.chunk[i] = 0;	/* - notifications */
 	priv(rp)->s_int_pending = 0;			/* - interrupts */
-	(void) sigemptyset(&priv(rp)->s_sig_pending);	/* - signals */
+	(శూన్య) sigemptyset(&priv(rp)->s_sig_pending);	/* - signals */
 	reset_kernel_timer(&priv(rp)->s_alarm_timer);	/* - alarm */
 	priv(rp)->s_asyntab= -1;			/* - asynsends */
 	priv(rp)->s_asynsize= 0;
@@ -133,17 +133,17 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	/* Set defaults for privilege bitmaps. */
 	priv(rp)->s_flags= DSRV_F;           /* privilege flags */
 	priv(rp)->s_init_flags= DSRV_I;      /* initialization flags */
-	priv(rp)->s_trap_mask= DSRV_T;       /* allowed traps */
-	memset(&map, 0, sizeof(map));
-	ipc_to_m = DSRV_M;                   /* allowed targets */
-	if (ipc_to_m == ALL_M) {
-		for (i = 0; i < NR_SYS_PROCS; i++)
-			set_sys_bit(map, i);
+	priv(rp)->s_trap_ముసుగు= DSRV_T;       /* allowed traps */
+	memset(&map, 0, పరిమాణం(map));
+	ipc_గమ్యం_m = DSRV_M;                   /* allowed targets */
+	ఒకవేళ (ipc_గమ్యం_m == ALL_M) {
+		కొరకు (i = 0; i < NR_SYS_PROCS; i++)
+			సమితి_sys_బిట్టు(map, i);
 	}
-	fill_sendto_mask(rp, &map);
+	fill_sendto_ముసుగు(rp, &map);
 	kcalls = DSRV_KC;                    /* allowed kernel calls */
-	for(i = 0; i < SYS_CALL_MASK_SIZE; i++) {
-		priv(rp)->s_k_call_mask[i] = (kcalls == NO_C ? 0 : (~0));
+	కొరకు(i = 0; i < SYS_CALL_ముసుగు_కొలత; i++) {
+		priv(rp)->s_k_call_ముసుగు[i] = (kcalls == NO_C ? 0 : (~0));
 	}
 
 	/* Set the default signal managers. */
@@ -156,132 +156,132 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	priv(rp)->s_nr_io_range= 0;
 	priv(rp)->s_nr_mem_range= 0;
 	priv(rp)->s_nr_irq= 0;
-	priv(rp)->s_grant_table= 0;
+	priv(rp)->s_grant_పట్టిక= 0;
 	priv(rp)->s_grant_entries= 0;
 	priv(rp)->s_grant_endpoint = rp->p_endpoint;
-	priv(rp)->s_state_table= 0;
+	priv(rp)->s_state_పట్టిక= 0;
 	priv(rp)->s_state_entries= 0;
 	priv(rp)->s_ipcf= 0;
 
 	/* Override defaults if the caller has supplied a privilege structure. */
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ఒకవేళ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
-		if((r = update_priv(rp, &priv)) != OK) {
-			return r;
+		ఒకవేళ((r = update_priv(rp, &priv)) != OK) {
+			తిరిగి r;
 		} 
 	}
 
-	return(OK);
+	తిరిగి(OK);
 
-  case SYS_PRIV_SET_USER:
+  స్థితి SYS_PRIV_సమితి_USER:
 	/* Set a privilege structure of a blocked user process. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ఒకవేళ (!RTS_ISSET(rp, RTS_NO_PRIV)) తిరిగి(EPERM);
 
 	/* Link the process to the privilege structure of the root user
 	 * process all the user processes share.
 	 */
 	priv(rp) = priv_addr(USER_PRIV_ID);
 
-	return(OK);
+	తిరిగి(OK);
 
-  case SYS_PRIV_ADD_IO:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  స్థితి SYS_PRIV_కూడు_IO:
+	ఒకవేళ (RTS_ISSET(rp, RTS_NO_PRIV))
+		తిరిగి(EPERM);
 
-#if 0 /* XXX -- do we need a call for this? */
-	if (strcmp(rp->p_name, "fxp") == 0 ||
+#ఒకవేళ 0 /* XXX -- do we need a call for this? */
+	ఒకవేళ (strcmp(rp->p_name, "fxp") == 0 ||
 		strcmp(rp->p_name, "rtl8139") == 0)
 	{
-		printf("setting ipc_stats_target to %d\n", rp->p_endpoint);
-		ipc_stats_target= rp->p_endpoint;
+		రాయి("setting ipc_stats_target to %d\n", rp->p_endpoint);
+		ipc_stats_లక్ష్యం= rp->p_endpoint;
 	}
-#endif
+#అయితే_ముగింపు
 
 	/* Get the I/O range */
-	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &io_range, sizeof(io_range));
+	దత్తాంశం_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
+		KERNEL, (vir_బైట్లు) &io_range, పరిమాణం(io_range));
 	/* Add the I/O range */
-	return priv_add_io(rp, &io_range);
+	తిరిగి priv_కూడు_io(rp, &io_range);
 
-  case SYS_PRIV_ADD_MEM:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  స్థితి SYS_PRIV_కూడు_MEM:
+	ఒకవేళ (RTS_ISSET(rp, RTS_NO_PRIV))
+		తిరిగి(EPERM);
 
 	/* Get the memory range */
-	if((r=data_copy(caller->p_endpoint,
+	ఒకవేళ((r=దత్తాంశం_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &mem_range, sizeof(mem_range))) != OK)
-		return r;
+		(vir_బైట్లు) &mem_range, పరిమాణం(mem_range))) != OK)
+		తిరిగి r;
 	/* Add the memory range */
-	return priv_add_mem(rp, &mem_range);
+	తిరిగి priv_కూడు_mem(rp, &mem_range);
 
-  case SYS_PRIV_ADD_IRQ:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  స్థితి SYS_PRIV_కూడు_IRQ:
+	ఒకవేళ (RTS_ISSET(rp, RTS_NO_PRIV))
+		తిరిగి(EPERM);
 
-#if 0
+#ఒకవేళ 0
 	/* Only system processes get IRQs? */
-	if (!(priv(rp)->s_flags & SYS_PROC))
-		return EPERM;
-#endif
-	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &irq, sizeof(irq));
+	ఒకవేళ (!(priv(rp)->s_flags & SYS_PROC))
+		తిరిగి EPERM;
+#అయితే_ముగింపు
+	దత్తాంశం_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
+		KERNEL, (vir_బైట్లు) &irq, పరిమాణం(irq));
 	/* Add the IRQ. */
-	return priv_add_irq(rp, irq);
+	తిరిగి priv_కూడు_irq(rp, irq);
 
-  case SYS_PRIV_QUERY_MEM:
+  స్థితి SYS_PRIV_QUERY_MEM:
   {
-	phys_bytes addr, limit;
-  	struct priv *sp;
+	phys_బైట్లు addr, హద్దు_2;
+  	నిర్మాణం priv *sp;
 	/* See if a certain process is allowed to map in certain physical
 	 * memory.
 	 */
-	addr = (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_start;
-	limit = addr + (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_len - 1;
-	if(limit < addr)
-		return EPERM;
-	if(!(sp = priv(rp)))
-		return EPERM;
-	for(i = 0; i < sp->s_nr_mem_range; i++) {
-		if(addr >= sp->s_mem_tab[i].mr_base &&
-		   limit <= sp->s_mem_tab[i].mr_limit)
-			return OK;
+	addr = (phys_బైట్లు) m_ptr->m_lsys_krn_sys_privctl.phys_ప్రారంభం;
+	హద్దు_2 = addr + (phys_బైట్లు) m_ptr->m_lsys_krn_sys_privctl.phys_len - 1;
+	ఒకవేళ(హద్దు_2 < addr)
+		తిరిగి EPERM;
+	ఒకవేళ(!(sp = priv(rp)))
+		తిరిగి EPERM;
+	కొరకు(i = 0; i < sp->s_nr_mem_range; i++) {
+		ఒకవేళ(addr >= sp->s_mem_tab[i].mr_పునాది &&
+		   హద్దు_2 <= sp->s_mem_tab[i].mr_హద్దు)
+			తిరిగి OK;
 	}
-	return EPERM;
+	తిరిగి EPERM;
   }
 
-  case SYS_PRIV_UPDATE_SYS:
+  స్థితి SYS_PRIV_UPDATE_SYS:
 	/* Update the privilege structure of a system process. */
-	if(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) return EINVAL;
+	ఒకవేళ(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) తిరిగి EINVAL;
 
 	/* Copy privilege structure from caller */
-	if((r=data_copy(caller->p_endpoint,
+	ఒకవేళ((r=దత్తాంశం_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &priv, sizeof(priv))) != OK)
-		return r;
+		(vir_బైట్లు) &priv, పరిమాణం(priv))) != OK)
+		తిరిగి r;
 
 	/* Override settings in existing privilege structure. */
-	if((r = update_priv(rp, &priv)) != OK) {
-		return r;
+	ఒకవేళ((r = update_priv(rp, &priv)) != OK) {
+		తిరిగి r;
 	}
 
-	return(OK);
+	తిరిగి(OK);
 
-  default:
-	printf("do_privctl: bad request %d\n",
+  అప్రమేయ:
+	రాయి("do_privctl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_privctl.request);
-	return EINVAL;
+	తిరిగి EINVAL;
   }
 }
 
 /*===========================================================================*
  *				update_priv				     *
  *===========================================================================*/
-static int update_priv(struct proc *rp, struct priv *priv)
+స్థిర పూర్ణాంకం update_priv(నిర్మాణం proc *rp, నిర్మాణం priv *priv)
 {
 /* Update the privilege structure of a given process. */
 
-  int i;
+  పూర్ణాంకం i;
 
   /* Copy flags and signal managers. */
   priv(rp)->s_flags = priv->s_flags;
@@ -290,82 +290,82 @@ static int update_priv(struct proc *rp, struct priv *priv)
   priv(rp)->s_bak_sig_mgr = priv->s_bak_sig_mgr;
 
   /* Copy IRQs. */
-  if(priv->s_flags & CHECK_IRQ) {
-  	if (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
-  		return EINVAL;
+  ఒకవేళ(priv->s_flags & CHECK_IRQ) {
+  	ఒకవేళ (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
+  		తిరిగి EINVAL;
   	priv(rp)->s_nr_irq= priv->s_nr_irq;
-  	for (i= 0; i<priv->s_nr_irq; i++)
+  	కొరకు (i= 0; i<priv->s_nr_irq; i++)
   	{
   		priv(rp)->s_irq_tab[i]= priv->s_irq_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding IRQ %d for %d\n",
+#ఒకవేళ PRIV_DEBUG
+  		రాయి("do_privctl: adding IRQ %d for %d\n",
   			priv(rp)->s_irq_tab[i], rp->p_endpoint);
-#endif
+#అయితే_ముగింపు
   	}
   }
 
   /* Copy I/O ranges. */
-  if(priv->s_flags & CHECK_IO_PORT) {
-  	if (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
-  		return EINVAL;
+  ఒకవేళ(priv->s_flags & CHECK_IO_పోర్టు) {
+  	ఒకవేళ (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
+  		తిరిగి EINVAL;
   	priv(rp)->s_nr_io_range= priv->s_nr_io_range;
-  	for (i= 0; i<priv->s_nr_io_range; i++)
+  	కొరకు (i= 0; i<priv->s_nr_io_range; i++)
   	{
   		priv(rp)->s_io_tab[i]= priv->s_io_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding I/O range [%x..%x] for %d\n",
-  			priv(rp)->s_io_tab[i].ior_base,
-  			priv(rp)->s_io_tab[i].ior_limit,
+#ఒకవేళ PRIV_DEBUG
+  		రాయి("do_privctl: adding I/O range [%x..%x] for %d\n",
+  			priv(rp)->s_io_tab[i].ior_పునాది,
+  			priv(rp)->s_io_tab[i].ior_హద్దు,
   			rp->p_endpoint);
-#endif
+#అయితే_ముగింపు
   	}
   }
 
   /* Copy memory ranges. */
-  if(priv->s_flags & CHECK_MEM) {
-  	if (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
-  		return EINVAL;
+  ఒకవేళ(priv->s_flags & CHECK_MEM) {
+  	ఒకవేళ (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
+  		తిరిగి EINVAL;
   	priv(rp)->s_nr_mem_range= priv->s_nr_mem_range;
-  	for (i= 0; i<priv->s_nr_mem_range; i++)
+  	కొరకు (i= 0; i<priv->s_nr_mem_range; i++)
   	{
   		priv(rp)->s_mem_tab[i]= priv->s_mem_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding mem range [%x..%x] for %d\n",
-  			priv(rp)->s_mem_tab[i].mr_base,
-  			priv(rp)->s_mem_tab[i].mr_limit,
+#ఒకవేళ PRIV_DEBUG
+  		రాయి("do_privctl: adding mem range [%x..%x] for %d\n",
+  			priv(rp)->s_mem_tab[i].mr_పునాది,
+  			priv(rp)->s_mem_tab[i].mr_హద్దు,
   			rp->p_endpoint);
-#endif
+#అయితే_ముగింపు
   	}
   }
 
   /* Copy trap mask. */
-  priv(rp)->s_trap_mask = priv->s_trap_mask;
+  priv(rp)->s_trap_ముసుగు = priv->s_trap_ముసుగు;
 
   /* Copy target mask. */
-#if PRIV_DEBUG
-  printf("do_privctl: Setting ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
-  	printf(" %08x", get_sys_bits(priv->s_ipc_to, i));
+#ఒకవేళ PRIV_DEBUG
+  రాయి("do_privctl: Setting ipc target mask for %d:");
+  కొరకు (i=0; i < NR_SYS_PROCS; i += BITCHUNK_బిట్లు) {
+  	రాయి(" %08x", get_sys_బిట్లు(priv->s_ipc_గమ్యం, i));
   }
-  printf("\n");
-#endif
+  రాయి("\n");
+#అయితే_ముగింపు
 
-  fill_sendto_mask(rp, &priv->s_ipc_to);
+  fill_sendto_ముసుగు(rp, &priv->s_ipc_గమ్యం);
 
-#if PRIV_DEBUG
-  printf("do_privctl: Set ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
-  	printf(" %08x", get_sys_bits(priv(rp)->s_ipc_to, i));
+#ఒకవేళ PRIV_DEBUG
+  రాయి("do_privctl: Set ipc target mask for %d:");
+  కొరకు (i=0; i < NR_SYS_PROCS; i += BITCHUNK_బిట్లు) {
+  	రాయి(" %08x", get_sys_బిట్లు(priv(rp)->s_ipc_గమ్యం, i));
   }
-  printf("\n");
-#endif
+  రాయి("\n");
+#అయితే_ముగింపు
 
   /* Copy kernel call mask. */
-  memcpy(priv(rp)->s_k_call_mask, priv->s_k_call_mask,
-  	sizeof(priv(rp)->s_k_call_mask));
+  జ్ఞాపకం_నకలు(priv(rp)->s_k_call_ముసుగు, priv->s_k_call_ముసుగు,
+  	పరిమాణం(priv(rp)->s_k_call_ముసుగు));
 
-  return OK;
+  తిరిగి OK;
 }
 
-#endif /* USE_PRIVCTL */
+#అయితే_ముగింపు /* USE_PRIVCTL */
 

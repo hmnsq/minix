@@ -1,7 +1,7 @@
-#ifndef _BSP_SERIAL_H_
-#define _BSP_SERIAL_H_
+#నిర్వచితం_కాకపోతే _BSP_SERIAL_H_
+#నిర్వచించు _BSP_SERIAL_H_
 
-void bsp_ser_init(void);
-void bsp_ser_putc(char c);
+శూన్య bsp_ser_init(శూన్య);
+శూన్య bsp_ser_putc(అక్షరం c);
 
-#endif /* _BSP_SERIAL_H_ */
+#అయితే_ముగింపు /* _BSP_SERIAL_H_ */

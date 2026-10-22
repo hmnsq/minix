@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#అన్తర్భావ <ctype.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <machine/cmos.h>
+#అన్తర్భావ <machine/bios.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <minix/cpufeature.h>
+#అన్తర్భావ <sys/reboot.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <signal.h>
 
-#include <minix/u64.h>
+#అన్తర్భావ <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#అన్తర్భావ "arch_proto.h"
+#అన్తర్భావ "oxpcie.h"
+#అన్తర్భావ "direct_utils.h"
 
-#ifdef USE_ACPI
-#include "acpi.h"
-#endif
+#నిర్వచితమైతే USE_ACPI
+#అన్తర్భావ "acpi.h"
+#అయితే_ముగింపు
 
-#define     KBCMDP          4       /* kbd controller port (O) */
-#define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
-#define      IO_KBD          0x060           /* 8042 Keyboard */
+#నిర్వచించు     KBCMDP          4       /* kbd controller port (O) */
+#నిర్వచించు      KBC_PULSE0     0xfe    /* pulse output bit 0 */
+#నిర్వచించు      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+పూర్ణాంకం cpu_has_tsc;
 
-void
-reset(void)
+శూన్య
+reset(శూన్య)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        ఒకవేళ (b != 0xff) {
+                ఒకవేళ ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	అయితే(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+స్థిర __dead శూన్య
+halt(శూన్య)
 {
-	for ( ; ; )
+	కొరకు ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+స్థిర __dead శూన్య
+poweroff(శూన్య)
 {
-	const char *shutdown_str;
+	స్థిరరాశి అక్షరం *shutdown_str;
 
-#ifdef USE_ACPI
+#నిర్వచితమైతే USE_ACPI
 	acpi_poweroff();
-#endif
+#అయితే_ముగింపు
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        అయితే (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,40 +105,40 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead శూన్య arch_shutdown(పూర్ణాంకం how)
 {
-	unsigned char unused_ch;
+	గుర్తులేని అక్షరం వాడని_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	అయితే(ప్రత్యక్ష_read_char(&వాడని_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	ఒకవేళ(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		ఒకవేళ (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
-		direct_cls();
-		direct_print("Minix panic. System diagnostics buffer:\n\n");
-		direct_print(kmess.kmess_buf);
-		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		ప్రత్యక్ష_cls();
+		ప్రత్యక్ష_print("Minix panic. System diagnostics buffer:\n\n");
+		ప్రత్యక్ష_print(kmess.kmess_buf);
+		ప్రత్యక్ష_print("\nSystem has panicked, press any key to reboot");
+		అయితే (!ప్రత్యక్ష_read_char(&వాడని_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ఒకవేళ((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ఒకవేళ(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		కొరకు (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -150,24 +150,24 @@ __dead void arch_shutdown(int how)
 	NOT_REACHABLE;
 }
 
-#ifdef DEBUG_SERIAL
-void ser_putc(char c)
+#నిర్వచితమైతే DEBUG_SERIAL
+శూన్య ser_putc(అక్షరం c)
 {
-        int i;
-        int lsr, thr;
+        పూర్ణాంకం i;
+        పూర్ణాంకం lsr, thr;
 
-#if CONFIG_OXPCIE
+#ఒకవేళ CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#లేకపోతే
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        కొరకు (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                ఒకవేళ (inb( lsr) & LSR_THRE)
+                        ఆపు;
         }
         outb( thr, c);
-#endif
+#అయితే_ముగింపు
 }
 
-#endif
+#అయితే_ముగింపు

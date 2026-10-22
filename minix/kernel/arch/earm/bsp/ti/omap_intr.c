@@ -1,72 +1,72 @@
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <minix/type.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "hw_intr.h"
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "kernel/proc.h"
+#అన్తర్భావ "kernel/vm.h"
+#అన్తర్భావ "kernel/proto.h"
+#అన్తర్భావ "arch_proto.h"
+#అన్తర్భావ "hw_intr.h"
 
-#include "omap_intr_registers.h"
-static struct omap_intr
+#అన్తర్భావ "omap_intr_registers.h"
+స్థిర నిర్మాణం omap_intr
 {
-	vir_bytes base;
-	int size;
+	vir_బైట్లు పునాది;
+	పూర్ణాంకం కొలత;
 } omap_intr;
 
-static kern_phys_map intr_phys_map;
+స్థిర kern_phys_map intr_phys_map;
 
-int
-intr_init(const int auto_eoi)
+పూర్ణాంకం
+intr_init(స్థిరరాశి పూర్ణాంకం auto_eoi)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		omap_intr.base = OMAP3_DM37XX_INTR_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		omap_intr.base = OMAP3_AM335X_INTR_BASE;
-	} else {
+	ఒకవేళ (BOARD_IS_BBXM(machine.board_id)) {
+		omap_intr.పునాది = OMAP3_DM37_XX_INTR_పునాది;
+	} లేకపోతే ఒకవేళ (BOARD_IS_BB(machine.board_id)) {
+		omap_intr.పునాది = OMAP3_AM335_X_INTR_పునాది;
+	} లేకపోతే {
 		panic
 		    ("Can not do the interrupt setup. machine (0x%08x) is unknown\n",
 		    machine.board_id);
 	};
-	omap_intr.size = 0x1000;	/* 4K */
+	omap_intr.కొలత = 0x1000;	/* 4K */
 
-	kern_phys_map_ptr(omap_intr.base, omap_intr.size,
+	kern_phys_map_ptr(omap_intr.పునాది, omap_intr.కొలత,
 	    VMMF_UNCACHED | VMMF_WRITE,
-	    &intr_phys_map, (vir_bytes) & omap_intr.base);
-	return 0;
+	    &intr_phys_map, (vir_బైట్లు) & omap_intr.పునాది);
+	తిరిగి 0;
 }
 
-void
-bsp_irq_handle(void)
+శూన్య
+bsp_irq_handle(శూన్య)
 {
 	/* Function called from assembly to handle interrupts */
 
 	/* get irq */
-	int irq =
-	    mmio_read(omap_intr.base +
-	    OMAP3_INTCPS_SIR_IRQ) & OMAP3_INTR_ACTIVEIRQ_MASK;
+	పూర్ణాంకం irq =
+	    mmio_read(omap_intr.పునాది +
+	    OMAP3_INTCPS_SIR_IRQ) & OMAP3_INTR_ACTIVEIRQ_ముసుగు;
 	/* handle irq */
 	irq_handle(irq);
 	/* re-enable. this should not trigger interrupts due to current cpsr
 	 * state */
-	mmio_write(omap_intr.base + OMAP3_INTCPS_CONTROL,
+	mmio_write(omap_intr.పునాది + OMAP3_INTCPS_CONTROL,
 	    OMAP3_INTR_NEWIRQAGR);
 }
 
-void
-bsp_irq_unmask(int irq)
+శూన్య
+bsp_irq_unmask(పూర్ణాంకం irq)
 {
-	mmio_write(OMAP3_INTR_MIR_CLEAR(omap_intr.base, irq >> 5),
+	mmio_write(OMAP3_INTR_MIR_CLEAR(omap_intr.పునాది, irq >> 5),
 	    1 << (irq & 0x1f));
 }
 
-void
-bsp_irq_mask(const int irq)
+శూన్య
+bsp_irq_ముసుగు(స్థిరరాశి పూర్ణాంకం irq)
 {
-	mmio_write(OMAP3_INTR_MIR_SET(omap_intr.base, irq >> 5),
+	mmio_write(OMAP3_INTR_MIR_సమితి(omap_intr.పునాది, irq >> 5),
 	    1 << (irq & 0x1f));
 }

@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#అన్తర్భావ <unistd.h>
+#అన్తర్భావ <ctype.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <signal.h>
+#అన్తర్భావ <machine/vm.h>
+#అన్తర్భావ <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ <sys/reboot.h>
 
-#include <minix/u64.h>
+#అన్తర్భావ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#అన్తర్భావ "archconst.h"
+#అన్తర్భావ "arch_proto.h"
+#అన్తర్భావ "bsp_reset.h"
+#అన్తర్భావ "bsp_serial.h"
+#అన్తర్భావ "kernel/proc.h"
+#అన్తర్భావ "kernel/debug.h"
+#అన్తర్భావ "direct_utils.h"
+#అన్తర్భావ <machine/multiboot.h>
 
-void
-halt_cpu(void)
+శూన్య
+halt_cpu(శూన్య)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm అస్థిర("dsb");
+	asm అస్థిర("cpsie i");
+	asm అస్థిర("wfi");
+	asm అస్థిర("cpsid i");
 }
 
-void
-reset(void)
+శూన్య
+reset(శూన్య)
 {
 	bsp_reset(); /* should not exit */
-	direct_print("Reset not supported.");
-	while (1);
+	ప్రత్యక్ష_print("Reset not supported.");
+	అయితే (1);
 }
 
-void
-poweroff(void)
+శూన్య
+poweroff(శూన్య)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
-	direct_print("Unable to power-off this device.");
-	while (1);
+	ప్రత్యక్ష_print("Unable to power-off this device.");
+	అయితే (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead శూన్య
+arch_shutdown(పూర్ణాంకం how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ఒకవేళ((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ఒకవేళ(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		కొరకు (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,14 +69,14 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	అయితే (1);
 }
 
-#ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+#నిర్వచితమైతే DEBUG_SERIAL
+శూన్య
+ser_putc(అక్షరం c)
 {
 	bsp_ser_putc(c);
 }
 
-#endif
+#అయితే_ముగింపు

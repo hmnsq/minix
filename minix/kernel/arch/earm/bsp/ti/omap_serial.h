@@ -1,27 +1,27 @@
-#ifndef _OMAP_SERIAL_H
-#define _OMAP_SERIAL_H
+#నిర్వచితం_కాకపోతే _OMAP_SERIAL_H
+#నిర్వచించు _OMAP_SERIAL_H
 
 /* UART register map */
-#define OMAP3_DM37XX_DEBUG_UART_BASE 0x49020000 /* UART3 physical address */
-#define OMAP3_AM335X_DEBUG_UART_BASE 0x44E09000 /* UART0? physical address */
+#నిర్వచించు OMAP3_DM37_XX_DEBUG_UART_పునాది 0x49020000 /* UART3 physical address */
+#నిర్వచించు OMAP3_AM335_X_DEBUG_UART_పునాది 0x44E09000 /* UART0? physical address */
 
 /* UART registers */
-#define OMAP3_THR 0x000 /* Transmit holding register */
-#define OMAP3_LSR 0x014 /* Line status register */
-#define OMAP3_SSR 0x044 /* Supplementary status register */
+#నిర్వచించు OMAP3_THR 0x000 /* Transmit holding register */
+#నిర్వచించు OMAP3_LSR 0x014 /* Line status register */
+#నిర్వచించు OMAP3_SSR 0x044 /* Supplementary status register */
 
 /* Line status register fields */
-#define OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
-#define OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
+#నిర్వచించు OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
+#నిర్వచించు OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
 
 /* Supplementary status register fields */
-#define OMAP3_SSR_TX_FIFO_FULL (1 << 0) /* Transmit FIFO full */
+#నిర్వచించు OMAP3_SSR_TX_FIFO_నిండిన (1 << 0) /* Transmit FIFO full */
 
-#ifndef __ASSEMBLY__
+#నిర్వచితం_కాకపోతే __ASSEMBLY__
 
-void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+శూన్య omap3_ser_init(శూన్య);
+శూన్య omap3_ser_putc(అక్షరం c);
 
-#endif /* __ASSEMBLY__ */
+#అయితే_ముగింపు /* __ASSEMBLY__ */
 
-#endif /* _OMAP_SERIAL_H */
+#అయితే_ముగింపు /* _OMAP_SERIAL_H */

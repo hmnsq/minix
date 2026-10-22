@@ -1,130 +1,130 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#అన్తర్భావ <minix/minlib.h>
+#అన్తర్భావ <minix/cpufeature.h>
+#అన్తర్భావ <machine/partition.h>
+#అన్తర్భావ "string.h"
+#అన్తర్భావ "direct_utils.h"
+#అన్తర్భావ "serial.h"
+#అన్తర్భావ "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+స్థిర పూర్ణాంకం print_పంక్తి = 1, print_నిలువు = 1;
 
-#include <sys/video.h>
+#అన్తర్భావ <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+బాహ్య అక్షరం *video_mem;
+#నిర్వచించు VIDOFFSET(పంక్తి, నిలువు) ((పంక్తి) * MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య * 2 + (నిలువు) * 2)
+#నిర్వచించు VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_పంక్తులు-1,MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య-1)
 
-void direct_put_char(char c, int line, int col) 
+శూన్య ప్రత్యక్ష_put_char(అక్షరం c, పూర్ణాంకం పంక్తి, పూర్ణాంకం నిలువు) 
 {
-	int offset = VIDOFFSET(line, col);
-	video_mem[offset] = c;
-	video_mem[offset+1] = 0x07;	/* grey-on-black */
+	పూర్ణాంకం స్థానభ్రంశం = VIDOFFSET(పంక్తి, నిలువు);
+	video_mem[స్థానభ్రంశం] = c;
+	video_mem[స్థానభ్రంశం+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+స్థిర అక్షరం ప్రత్యక్ష_get_char(పూర్ణాంకం పంక్తి, పూర్ణాంకం నిలువు) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	తిరిగి video_mem[VIDOFFSET(పంక్తి, నిలువు)];
 }
 
-void direct_cls(void)
+శూన్య ప్రత్యక్ష_cls(శూన్య)
 {
 	/* Clear screen */
-	int i,j;
+	పూర్ణాంకం i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
-			direct_put_char(' ', j, i);
+	కొరకు(i = 0; i < MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య; i++)
+		కొరకు(j = 0; j < MULTIBOOT_CONSOLE_పంక్తులు; j++)
+			ప్రత్యక్ష_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_పంక్తి = print_నిలువు = 0;
 
 	/* Tell video hardware origin is 0. */
-	outb(C_6845+INDEX, VID_ORG);
-	outb(C_6845+DATA, 0);
-	outb(C_6845+INDEX, VID_ORG+1);
-	outb(C_6845+DATA, 0);
+	outb(C_6845+సూచీ_2, VID_ORG);
+	outb(C_6845+దత్తాంశం_2, 0);
+	outb(C_6845+సూచీ_2, VID_ORG+1);
+	outb(C_6845+దత్తాంశం_2, 0);
 }
 
-static void direct_scroll_up(int lines) 
+స్థిర శూన్య ప్రత్యక్ష_scroll_పైకి(పూర్ణాంకం పంక్తులు) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
-			direct_put_char(c, i, j);
+	పూర్ణాంకం i, j;
+	కొరకు (i = 0; i < MULTIBOOT_CONSOLE_పంక్తులు; i++ ) {
+		కొరకు (j = 0; j < MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య; j++ ) {
+			అక్షరం c = 0;
+			ఒకవేళ(i < MULTIBOOT_CONSOLE_పంక్తులు-పంక్తులు)
+				c = ప్రత్యక్ష_get_char(i + పంక్తులు, j);
+			ప్రత్యక్ష_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_పంక్తి-= పంక్తులు;
 }
 
-void direct_print_char(char c)
+శూన్య ప్రత్యక్ష_print_char(అక్షరం c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	అయితే (print_పంక్తి >= MULTIBOOT_CONSOLE_పంక్తులు)
+		ప్రత్యక్ష_scroll_పైకి(1);
 
-#define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+#నిర్వచించు TABWIDTH 8
+	ఒకవేళ(c == '\t') {
+		ఒకవేళ(print_నిలువు >= MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} లేకపోతే {
+			చేయి {
+				ప్రత్యక్ష_put_char(' ', print_పంక్తి, print_నిలువు++);
+			} అయితే(print_నిలువు % TABWIDTH);
+			తిరిగి;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
-		print_col = 0;
-		return;
+	ఒకవేళ (c == '\n') {
+		అయితే (print_నిలువు < MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య)
+			ప్రత్యక్ష_put_char(' ', print_పంక్తి, print_నిలువు++);
+		print_పంక్తి++;
+		print_నిలువు = 0;
+		తిరిగి;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	ప్రత్యక్ష_put_char(c, print_పంక్తి, print_నిలువు++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
-		print_col = 0;
+	ఒకవేళ (print_నిలువు >= MULTIBOOT_CONSOLE_నిలువుల_సంఖ్య) {
+		print_పంక్తి++;
+		print_నిలువు = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	అయితే (print_పంక్తి >= MULTIBOOT_CONSOLE_పంక్తులు)
+		ప్రత్యక్ష_scroll_పైకి(1);
 }
 
-void direct_print(const char *str)
+శూన్య ప్రత్యక్ష_print(స్థిరరాశి అక్షరం *str)
 {
-	while (*str) {
-		direct_print_char(*str);
+	అయితే (*str) {
+		ప్రత్యక్ష_print_char(*str);
 		str++;
 	}
 }
 
 /* Standard and AT keyboard.  (PS/2 MCA implies AT throughout.) */
-#define KEYBD		0x60	/* I/O port for keyboard data */
-#define KB_STATUS	0x64	/* I/O port for status on AT */
-#define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
-#define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
+#నిర్వచించు KEYBD		0x60	/* I/O port for keyboard data */
+#నిర్వచించు KB_స్థితి	0x64	/* I/O port for status on AT */
+#నిర్వచించు KB_బహిర్గతం_నిండిన	0x01	/* status bit set when keypress char pending */
+#నిర్వచించు KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+పూర్ణాంకం ప్రత్యక్ష_read_char(గుర్తులేని అక్షరం *ch)
 {
-	unsigned long sb;
+	గుర్తులేని దీర్ఘ sb;
 
-	sb = inb(KB_STATUS);
+	sb = inb(KB_స్థితి);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	ఒకవేళ (!(sb & KB_బహిర్గతం_నిండిన)) {
+		తిరిగి 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	ఒకవేళ (!(sb & KB_AUX_BYTE))
+		తిరిగి 1;
 
-	return 0;
+	తిరిగి 0;
 }
 

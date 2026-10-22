@@ -1,7 +1,7 @@
-#ifndef __SCONST_H__
-#define __SCONST_H__
+#నిర్వచితం_కాకపోతే __SCONST_H__
+#నిర్వచించు __SCONST_H__
 
-#include "kernel/const.h"
-#include "kernel/procoffsets.h"
+#అన్తర్భావ "kernel/const.h"
+#అన్తర్భావ "kernel/procoffsets.h"
 
-#endif /* __SCONST_H__ */
+#అయితే_ముగింపు /* __SCONST_H__ */

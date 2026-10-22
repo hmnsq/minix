@@ -9,75 +9,75 @@
  *    m_krn_lsys_sys_irqctl.hook_id	(returns index of irq hook assigned at kernel)
  */
 
-#include "kernel/system.h"
+#అన్తర్భావ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_IRQCTL
+#ఒకవేళ USE_IRQCTL
 
-static int generic_handler(irq_hook_t *hook);
+స్థిర పూర్ణాంకం generic_handler(irq_hook_t *hook);
 
 /*===========================================================================*
  *				do_irqctl				     *
  *===========================================================================*/
-int do_irqctl(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_irqctl(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
   /* Dismember the request message. */
-  int irq_vec;
-  int irq_hook_id;
-  int notify_id;
-  int r = OK;
-  int i;
+  పూర్ణాంకం irq_vec;
+  పూర్ణాంకం irq_hook_id;
+  పూర్ణాంకం notify_id;
+  పూర్ణాంకం r = OK;
+  పూర్ణాంకం i;
   irq_hook_t *hook_ptr;
-  struct priv *privp;
+  నిర్మాణం priv *privp;
 
   /* Hook identifiers start at 1 and end at NR_IRQ_HOOKS. */
   irq_hook_id = m_ptr->m_lsys_krn_sys_irqctl.hook_id - 1;
-  irq_vec = m_ptr->m_lsys_krn_sys_irqctl.vector;
+  irq_vec = m_ptr->m_lsys_krn_sys_irqctl.సదిశ;
 
   /* See what is requested and take needed actions. */
-  switch(m_ptr->m_lsys_krn_sys_irqctl.request) {
+  ఎంపిక(m_ptr->m_lsys_krn_sys_irqctl.request) {
 
   /* Enable or disable IRQs. This is straightforward. */
-  case IRQ_ENABLE:           
-  case IRQ_DISABLE: 
-      if (irq_hook_id >= NR_IRQ_HOOKS || irq_hook_id < 0 ||
-          irq_hooks[irq_hook_id].proc_nr_e == NONE) return(EINVAL);
-      if (irq_hooks[irq_hook_id].proc_nr_e != caller->p_endpoint) return(EPERM);
-      if (m_ptr->m_lsys_krn_sys_irqctl.request == IRQ_ENABLE) {
+  స్థితి IRQ_ENABLE:           
+  స్థితి IRQ_DISABLE: 
+      ఒకవేళ (irq_hook_id >= NR_IRQ_HOOKS || irq_hook_id < 0 ||
+          irq_hooks[irq_hook_id].proc_nr_e == NONE) తిరిగి(EINVAL);
+      ఒకవేళ (irq_hooks[irq_hook_id].proc_nr_e != caller->p_endpoint) తిరిగి(EPERM);
+      ఒకవేళ (m_ptr->m_lsys_krn_sys_irqctl.request == IRQ_ENABLE) {
           enable_irq(&irq_hooks[irq_hook_id]);	
       }
-      else 
+      లేకపోతే 
           disable_irq(&irq_hooks[irq_hook_id]);	
-      break;
+      ఆపు;
 
   /* Control IRQ policies. Set a policy and needed details in the IRQ table.
    * This policy is used by a generic function to handle hardware interrupts. 
    */
-  case IRQ_SETPOLICY:  
+  స్థితి IRQ_SETPOLICY:  
 
       /* Check if IRQ line is acceptable. */
-      if (irq_vec < 0 || irq_vec >= NR_IRQ_VECTORS) return(EINVAL);
+      ఒకవేళ (irq_vec < 0 || irq_vec >= NR_IRQ_VECTORS) తిరిగి(EINVAL);
 
       privp= priv(caller);
-      if (!privp)
+      ఒకవేళ (!privp)
       {
-	printf("do_irqctl: no priv structure!\n");
-	return EPERM;
+	రాయి("do_irqctl: no priv structure!\n");
+	తిరిగి EPERM;
       }
-      if (privp->s_flags & CHECK_IRQ)
+      ఒకవేళ (privp->s_flags & CHECK_IRQ)
       {
-	for (i= 0; i<privp->s_nr_irq; i++)
+	కొరకు (i= 0; i<privp->s_nr_irq; i++)
 	{
-		if (irq_vec == privp->s_irq_tab[i])
-			break;
+		ఒకవేళ (irq_vec == privp->s_irq_tab[i])
+			ఆపు;
 	}
-	if (i >= privp->s_nr_irq)
+	ఒకవేళ (i >= privp->s_nr_irq)
 	{
-		printf(
+		రాయి(
 		"do_irqctl: IRQ check failed for proc %d, IRQ %d\n",
 			caller->p_endpoint, irq_vec);
-		return EPERM;
+		తిరిగి EPERM;
 	}
     }
 
@@ -85,12 +85,12 @@ int do_irqctl(struct proc * caller, message * m_ptr)
        * is returned on the notification message if a interrupt occurs.
        */
       notify_id = m_ptr->m_lsys_krn_sys_irqctl.hook_id;
-      if (notify_id > CHAR_BIT * sizeof(irq_id_t) - 1) return(EINVAL);
+      ఒకవేళ (notify_id > CHAR_బిట్టు * పరిమాణం(irq_id_t) - 1) తిరిగి(EINVAL);
 
       /* Try to find an existing mapping to override. */
-      hook_ptr = NULL;
-      for (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
-          if (irq_hooks[i].proc_nr_e == caller->p_endpoint
+      hook_ptr = ఖాళీ;
+      కొరకు (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
+          ఒకవేళ (irq_hooks[i].proc_nr_e == caller->p_endpoint
               && irq_hooks[i].notify_id == notify_id) {
               irq_hook_id = i;
               hook_ptr = &irq_hooks[irq_hook_id];	/* existing hook */
@@ -99,13 +99,13 @@ int do_irqctl(struct proc * caller, message * m_ptr)
       }
 
       /* If there is nothing to override, find a free hook for this mapping. */
-      for (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
-          if (irq_hooks[i].proc_nr_e == NONE) {
+      కొరకు (i=0; !hook_ptr && i<NR_IRQ_HOOKS; i++) {
+          ఒకవేళ (irq_hooks[i].proc_nr_e == NONE) {
               irq_hook_id = i;
               hook_ptr = &irq_hooks[irq_hook_id];	/* free hook */
           }
       }
-      if (hook_ptr == NULL) return(ENOSPC);
+      ఒకవేళ (hook_ptr == ఖాళీ) తిరిగి(ENOSPC);
 
       /* Install the handler. */
       hook_ptr->proc_nr_e = caller->p_endpoint;	/* process to notify */
@@ -117,36 +117,36 @@ int do_irqctl(struct proc * caller, message * m_ptr)
 
       /* Return index of the IRQ hook in use. */
       m_ptr->m_krn_lsys_sys_irqctl.hook_id = irq_hook_id + 1;
-      break;
+      ఆపు;
 
-  case IRQ_RMPOLICY:
-      if (irq_hook_id < 0 || irq_hook_id >= NR_IRQ_HOOKS ||
+  స్థితి IRQ_RMPOLICY:
+      ఒకవేళ (irq_hook_id < 0 || irq_hook_id >= NR_IRQ_HOOKS ||
                irq_hooks[irq_hook_id].proc_nr_e == NONE) {
-           return(EINVAL);
-      } else if (caller->p_endpoint != irq_hooks[irq_hook_id].proc_nr_e) {
-           return(EPERM);
+           తిరిగి(EINVAL);
+      } లేకపోతే ఒకవేళ (caller->p_endpoint != irq_hooks[irq_hook_id].proc_nr_e) {
+           తిరిగి(EPERM);
       }
       /* Remove the handler and return. */
       rm_irq_handler(&irq_hooks[irq_hook_id]);
       irq_hooks[irq_hook_id].proc_nr_e = NONE;
-      break;
+      ఆపు;
 
-  default:
+  అప్రమేయ:
       r = EINVAL;				/* invalid IRQ REQUEST */
   }
-  return(r);
+  తిరిగి(r);
 }
 
 /*===========================================================================*
  *			       generic_handler				     *
  *===========================================================================*/
-static int generic_handler(irq_hook_t * hook)
+స్థిర పూర్ణాంకం generic_handler(irq_hook_t * hook)
 {
 /* This function handles hardware interrupt in a simple and generic way. All
  * interrupts are transformed into messages to a driver. The IRQ line will be
  * reenabled if the policy says so.
  */
-  int proc_nr;
+  పూర్ణాంకం proc_nr;
 
   /* As a side-effect, the interrupt handler gathers random information by 
    * timestamping the interrupt events. This is used for /dev/random.
@@ -157,7 +157,7 @@ static int generic_handler(irq_hook_t * hook)
    * If it's dead, this should never happen, as processes that die 
    * automatically get their interrupt hooks unhooked.
    */
-  if(!isokendpt(hook->proc_nr_e, &proc_nr))
+  ఒకవేళ(!isokendpt(hook->proc_nr_e, &proc_nr))
      panic("invalid interrupt handler: %d", hook->proc_nr_e);
 
   /* Add a bit for this interrupt to the process' pending interrupts. When 
@@ -168,7 +168,7 @@ static int generic_handler(irq_hook_t * hook)
 
   /* Build notification message and return. */
   mini_notify(proc_addr(HARDWARE), hook->proc_nr_e);
-  return(hook->policy & IRQ_REENABLE);
+  తిరిగి(hook->policy & IRQ_REENABLE);
 }
 
-#endif /* USE_IRQCTL */
+#అయితే_ముగింపు /* USE_IRQCTL */

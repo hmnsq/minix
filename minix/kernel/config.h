@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#నిర్వచితం_కాకపోతే CONFIG_H
+#నిర్వచించు CONFIG_H
 
 /* This file defines the kernel configuration. It allows to set sizes of some
  * kernel buffers and to enable or disable debugging code, timing features, 
@@ -15,54 +15,54 @@
  * the system binary, making it smaller. If you are not sure, it is best
  * to keep all kernel calls enabled.
  */
-#define USE_FORK       	   1	/* fork a new process */
-#define USE_NEWMAP     	   1	/* set a new memory map */
-#define USE_EXEC       	   1	/* update process after execute */
-#define USE_CLEAR	   1	/* clean up after process exit */
-#define USE_EXIT	   1	/* a system process wants to exit */
-#define USE_TRACE          1	/* process information and tracing */
-#define USE_GETKSIG    	   1	/* retrieve pending kernel signals */
-#define USE_ENDKSIG    	   1	/* finish pending kernel signals */
-#define USE_KILL       	   1 	/* send a signal to a process */
-#define USE_SIGSEND    	   1	/* send POSIX-style signal */
-#define USE_SIGRETURN  	   1	/* sys_sigreturn(proc_nr, ctxt_ptr, flags) */
-#define USE_ABORT      	   1	/* shut down MINIX */
-#define USE_GETINFO    	   1 	/* retrieve a copy of kernel data */
-#define USE_TIMES 	   1	/* get process and system time info */
-#define USE_SETALARM	   1	/* schedule a synchronous alarm */
-#define USE_VTIMER         1	/* set or retrieve a process-virtual timer */
-#define USE_DEVIO      	   1	/* read or write a single I/O port */
-#define USE_VDEVIO     	   1	/* process vector with I/O requests */
-#define USE_SDEVIO     	   1	/* perform I/O request on a buffer */
-#define USE_IRQCTL     	   1	/* set an interrupt policy */
-#define USE_PRIVCTL    	   1	/* system privileges control */
-#define USE_UMAP       	   1	/* map virtual to physical address */
-#define USE_UMAP_REMOTE	   1	/* sys_umap on behalf of another process */
-#define USE_VUMAP      	   1	/* vectored virtual to physical mapping */
-#define USE_VIRCOPY   	   1	/* copy using virtual addressing */ 
-#define USE_PHYSCOPY  	   1 	/* copy using physical addressing */
-#define USE_MEMSET  	   1	/* write char to a given memory area */
-#define USE_RUNCTL         1	/* control stop flags of a process */
-#define USE_STATECTL       1	/* let a process control its state */
-#define USE_MCONTEXT       1	/* enable getting/setting of machine context */
+#నిర్వచించు USE_FORK       	   1	/* fork a new process */
+#నిర్వచించు USE_NEWMAP     	   1	/* set a new memory map */
+#నిర్వచించు USE_EXEC       	   1	/* update process after execute */
+#నిర్వచించు USE_CLEAR	   1	/* clean up after process exit */
+#నిర్వచించు USE_EXIT	   1	/* a system process wants to exit */
+#నిర్వచించు USE_TRACE          1	/* process information and tracing */
+#నిర్వచించు USE_GETKSIG    	   1	/* retrieve pending kernel signals */
+#నిర్వచించు USE_ENDKSIG    	   1	/* finish pending kernel signals */
+#నిర్వచించు USE_KILL       	   1 	/* send a signal to a process */
+#నిర్వచించు USE_SIGSEND    	   1	/* send POSIX-style signal */
+#నిర్వచించు USE_SIGRETURN  	   1	/* sys_sigreturn(proc_nr, ctxt_ptr, flags) */
+#నిర్వచించు USE_ABORT      	   1	/* shut down MINIX */
+#నిర్వచించు USE_GETINFO    	   1 	/* retrieve a copy of kernel data */
+#నిర్వచించు USE_TIMES 	   1	/* get process and system time info */
+#నిర్వచించు USE_SETALARM	   1	/* schedule a synchronous alarm */
+#నిర్వచించు USE_VTIMER         1	/* set or retrieve a process-virtual timer */
+#నిర్వచించు USE_DEVIO      	   1	/* read or write a single I/O port */
+#నిర్వచించు USE_VDEVIO     	   1	/* process vector with I/O requests */
+#నిర్వచించు USE_SDEVIO     	   1	/* perform I/O request on a buffer */
+#నిర్వచించు USE_IRQCTL     	   1	/* set an interrupt policy */
+#నిర్వచించు USE_PRIVCTL    	   1	/* system privileges control */
+#నిర్వచించు USE_UMAP       	   1	/* map virtual to physical address */
+#నిర్వచించు USE_UMAP_REMOTE	   1	/* sys_umap on behalf of another process */
+#నిర్వచించు USE_VUMAP      	   1	/* vectored virtual to physical mapping */
+#నిర్వచించు USE_VIRCOPY   	   1	/* copy using virtual addressing */ 
+#నిర్వచించు USE_PHYSCOPY  	   1 	/* copy using physical addressing */
+#నిర్వచించు USE_MEMSET  	   1	/* write char to a given memory area */
+#నిర్వచించు USE_RUNCTL         1	/* control stop flags of a process */
+#నిర్వచించు USE_STATECTL       1	/* let a process control its state */
+#నిర్వచించు USE_MCONTEXT       1	/* enable getting/setting of machine context */
 
-#if defined(__arm__)
-#define USE_PADCONF        1	/* configure pinmux */
-#endif /* __arm__ */
+#ఒకవేళ defined(__arm__)
+#నిర్వచించు USE_PADCONF        1	/* configure pinmux */
+#అయితే_ముగింపు /* __arm__ */
 
 /* This section contains defines for valuable system resources that are used
  * by device drivers. The number of elements of the vectors is determined by 
  * the maximum needed by any given driver. The number of interrupt hooks may
  * be incremented on systems with many device drivers. 
  */
-#ifndef USE_APIC
-#define NR_IRQ_HOOKS	  16		/* number of interrupt hooks */
-#else
-#define NR_IRQ_HOOKS	  64		/* number of interrupt hooks */
-#endif
-#define VDEVIO_BUF_SIZE   64		/* max elements per VDEVIO request */
+#నిర్వచితం_కాకపోతే USE_APIC
+#నిర్వచించు NR_IRQ_HOOKS	  16		/* number of interrupt hooks */
+#లేకపోతే
+#నిర్వచించు NR_IRQ_HOOKS	  64		/* number of interrupt hooks */
+#అయితే_ముగింపు
+#నిర్వచించు VDEVIO_BUF_కొలత   64		/* max elements per VDEVIO request */
 
-#define K_PARAM_SIZE     512
+#నిర్వచించు K_PARAM_కొలత     512
 
-#endif /* CONFIG_H */
+#అయితే_ముగింపు /* CONFIG_H */
 

@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <minix/devio.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_DEVIO
+#ఒకవేళ USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_devio(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
-    struct priv *privp;
-    port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    నిర్మాణం priv *privp;
+    పోర్టు_t పోర్టు;
+    నిర్మాణం io_range *iorp;
+    పూర్ణాంకం i, కొలత, nr_io_range;
+    పూర్ణాంకం io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    ఎంపిక (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	స్థితి _DIO_BYTE: కొలత= 1; ఆపు;
+	స్థితి DIO_మాట: కొలత= 2; ఆపు;
+	స్థితి _DIO_LONG: కొలత= 4; ఆపు;
+	అప్రమేయ: కొలత= 4; ఆపు;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    ఒకవేళ (!privp)
     {
-	printf("no priv structure!\n");
-	goto doit;
+	రాయి("no priv structure!\n");
+	వెళ్ళు doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    ఒకవేళ (privp->s_flags & CHECK_IO_పోర్టు)
     {
-	port= m_ptr->m_lsys_krn_sys_devio.port;
+	పోర్టు= m_ptr->m_lsys_krn_sys_devio.పోర్టు;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	కొరకు (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		ఒకవేళ (పోర్టు >= iorp->ior_పునాది && పోర్టు+కొలత-1 <= iorp->ior_హద్దు)
+			ఆపు;
 	}
-	if (i >= nr_io_range)
+	ఒకవేళ (i >= nr_io_range)
 	{
-			printf("do_devio: port 0x%x (size %d) not allowed\n",
-				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+			రాయి("do_devio: port 0x%x (size %d) not allowed\n",
+				m_ptr->m_lsys_krn_sys_devio.పోర్టు, కొలత);
+		తిరిగి EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    ఒకవేళ (m_ptr->m_lsys_krn_sys_devio.పోర్టు & (కొలత-1))
     {
-		printf("do_devio: unaligned port 0x%x (size %d)\n",
-			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+		రాయి("do_devio: unaligned port 0x%x (size %d)\n",
+			m_ptr->m_lsys_krn_sys_devio.పోర్టు, కొలత);
+	తిరిగి EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    ఒకవేళ (io_dir == DIO_ఆదానం) { 
+      ఎంపిక (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+        స్థితి _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.విలువ =
+			inb(m_ptr->m_lsys_krn_sys_devio.పోర్టు);
+		ఆపు;
+        స్థితి DIO_మాట:
+		m_ptr->m_krn_lsys_sys_devio.విలువ =
+			inw(m_ptr->m_lsys_krn_sys_devio.పోర్టు);
+		ఆపు;
+        స్థితి _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.విలువ =
+			inl(m_ptr->m_lsys_krn_sys_devio.పోర్టు);
+		ఆపు;
+    	అప్రమేయ: తిరిగి(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
-		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
-		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
-		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+    } లేకపోతే { 
+      ఎంపిక (io_type) {
+	స్థితి _DIO_BYTE:
+		outb(m_ptr->m_lsys_krn_sys_devio.పోర్టు,
+			m_ptr->m_lsys_krn_sys_devio.విలువ);
+		ఆపు;
+	స్థితి DIO_మాట:
+		outw(m_ptr->m_lsys_krn_sys_devio.పోర్టు,
+			m_ptr->m_lsys_krn_sys_devio.విలువ);
+		ఆపు;
+	స్థితి _DIO_LONG:
+		outl(m_ptr->m_lsys_krn_sys_devio.పోర్టు,
+			m_ptr->m_lsys_krn_sys_devio.విలువ);
+		ఆపు;
+    	అప్రమేయ: తిరిగి(EINVAL);
       } 
     }
-    return(OK);
+    తిరిగి(OK);
 }
 
-#endif /* USE_DEVIO */
+#అయితే_ముగింపు /* USE_DEVIO */

@@ -1,29 +1,29 @@
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <minix/type.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "kernel/proc.h"
+#అన్తర్భావ "kernel/vm.h"
+#అన్తర్భావ "kernel/proto.h"
+#అన్తర్భావ "arch_proto.h"
 
-#include "omap_serial.h"
+#అన్తర్భావ "omap_serial.h"
 
-struct omap_serial
+నిర్మాణం omap_serial
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_బైట్లు పునాది;
+	vir_బైట్లు కొలత;
 };
 
-static struct omap_serial omap_serial = {
-	.base = 0,
+స్థిర నిర్మాణం omap_serial omap_serial = {
+	.పునాది = 0,
 };
 
-static kern_phys_map serial_phys_map;
+స్థిర kern_phys_map serial_phys_map;
 
 /* 
  * In kernel serial for the omap. The serial driver, like most other
@@ -42,43 +42,43 @@ static kern_phys_map serial_phys_map;
  * The serial driver also gets used in the "pre_init" stage before the kernel is loaded
  * in high memory, so keep in mind there are two copies of this code in the kernel.
  */
-void
-bsp_ser_init(void)
+శూన్య
+bsp_ser_init(శూన్య)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		omap_serial.base = OMAP3_DM37XX_DEBUG_UART_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		omap_serial.base = OMAP3_AM335X_DEBUG_UART_BASE;
+	ఒకవేళ (BOARD_IS_BBXM(machine.board_id)) {
+		omap_serial.పునాది = OMAP3_DM37_XX_DEBUG_UART_పునాది;
+	} లేకపోతే ఒకవేళ (BOARD_IS_BB(machine.board_id)) {
+		omap_serial.పునాది = OMAP3_AM335_X_DEBUG_UART_పునాది;
 	}
-	omap_serial.size = 0x1000;	/* 4k */
+	omap_serial.కొలత = 0x1000;	/* 4k */
 
-	kern_phys_map_ptr(omap_serial.base, omap_serial.size,
+	kern_phys_map_ptr(omap_serial.పునాది, omap_serial.కొలత,
 	    VMMF_UNCACHED | VMMF_WRITE, &serial_phys_map,
-	    (vir_bytes) & omap_serial.base);
-	assert(omap_serial.base);
+	    (vir_బైట్లు) & omap_serial.పునాది);
+	ప్రతిజ్ఞా(omap_serial.పునాది);
 }
 
-void
-bsp_ser_putc(char c)
+శూన్య
+bsp_ser_putc(అక్షరం c)
 {
-	int i;
-	assert(omap_serial.base);
+	పూర్ణాంకం i;
+	ప్రతిజ్ఞా(omap_serial.పునాది);
 
 	/* Wait until FIFO's empty */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base + OMAP3_LSR) & OMAP3_LSR_THRE) {
-			break;
+	కొరకు (i = 0; i < 100000; i++) {
+		ఒకవేళ (mmio_read(omap_serial.పునాది + OMAP3_LSR) & OMAP3_LSR_THRE) {
+			ఆపు;
 		}
 	}
 
 	/* Write character */
-	mmio_write(omap_serial.base + OMAP3_THR, c);
+	mmio_write(omap_serial.పునాది + OMAP3_THR, c);
 
 	/* And wait again until FIFO's empty to prevent TTY from overwriting */
-	for (i = 0; i < 100000; i++) {
-		if (mmio_read(omap_serial.base +
+	కొరకు (i = 0; i < 100000; i++) {
+		ఒకవేళ (mmio_read(omap_serial.పునాది +
 			OMAP3_LSR) & (OMAP3_LSR_THRE | OMAP3_LSR_TEMT)) {
-			break;
+			ఆపు;
 		}
 	}
 }

@@ -12,20 +12,20 @@
  *   Sep 24, 2004   redesigned alarm timers  (Jorrit N. Herder)
  */
 
-#include <minix/endpoint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#అన్తర్భావ <minix/endpoint.h>
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
 
-#include "clock.h"
+#అన్తర్భావ "clock.h"
 
-#ifdef USE_WATCHDOG
-#include "watchdog.h"
-#endif
+#నిర్వచితమైతే USE_WATCHDOG
+#అన్తర్భావ "watchdog.h"
+#అయితే_ముగింపు
 
 /* Function prototype for PRIVATE functions.
  */
-static void load_update(void);
+స్థిర శూన్య ఎక్కించు_update(శూన్య);
 
 /* The CLOCK's timers queue. The functions in <minix/timers.h> operate on this.
  * Each system process possesses a single synchronous alarm timer. If other
@@ -34,40 +34,40 @@ static void load_update(void);
  * via (re)set_kernel_timer().
  * When a timer expires its watchdog function is run by the CLOCK task.
  */
-static minix_timer_t *clock_timers;	/* queue of CLOCK timers */
+స్థిర minix_timer_t *clock_timers;	/* queue of CLOCK timers */
 
 /* Number of ticks to adjust realtime by. A negative value implies slowing
  * down realtime, a positive value implies speeding it up.
  */
-static int32_t adjtime_delta = 0;
+స్థిర int32_t adjtime_delta = 0;
 
 /*
  * Initialize the clock variables.
  */
-void
-init_clock(void)
+శూన్య
+init_clock(శూన్య)
 {
-	char *value;
+	అక్షరం *విలువ;
 
 	/* Initialize clock information structure. */
-	memset(&kclockinfo, 0, sizeof(kclockinfo));
+	memset(&kclockinfo, 0, పరిమాణం(kclockinfo));
 
 	/* Get clock tick frequency. */
-	value = env_get("hz");
-	if (value != NULL)
-		kclockinfo.hz = atoi(value);
-	if (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
+	విలువ = env_get("hz");
+	ఒకవేళ (విలువ != ఖాళీ)
+		kclockinfo.hz = atoi(విలువ);
+	ఒకవేళ (విలువ == ఖాళీ || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
 		kclockinfo.hz = DEFAULT_HZ;
 
 	/* Load average data initialization. */
-	memset(&kloadinfo, 0, sizeof(kloadinfo));
+	memset(&kloadinfo, 0, పరిమాణం(kloadinfo));
 }
 
 /*
  * The boot processor's timer interrupt handler. In addition to non-boot cpus
  * it keeps real time and notifies the clock task if need be.
  */
-int timer_int_handler(void)
+పూర్ణాంకం timer_int_handler(శూన్య)
 {
 	/* Update user and system accounting times. Charge the current process
 	 * for user time. If the current process is not billable, that is, if a
@@ -76,29 +76,29 @@ int timer_int_handler(void)
 	 * user's system time.
 	 */
 
-	struct proc * p, * billp;
+	నిర్మాణం proc * p, * billp;
 
 	/* FIXME watchdog for slave cpus! */
-#ifdef USE_WATCHDOG
+#నిర్వచితమైతే USE_WATCHDOG
 	/*
 	 * we need to know whether local timer ticks are happening or whether
 	 * the kernel is locked up. We don't care about overflows as we only
 	 * need to know that it's still ticking or not
 	 */
 	watchdog_local_timer_ticks++;
-#endif
+#అయితే_ముగింపు
 
-	if (cpu_is_bsp(cpuid)) {
+	ఒకవేళ (cpu_is_bsp(cpuid)) {
 		kclockinfo.uptime++;
 
 		/* if adjtime_delta has ticks remaining, apply one to realtime.
 		 * limit changes to every other interrupt.
 		 */
-		if (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
+		ఒకవేళ (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
 			/* go forward or stay behind */
 			kclockinfo.realtime += (adjtime_delta > 0) ? 2 : 0;
 			adjtime_delta += (adjtime_delta > 0) ? -1 : +1;
-		} else {
+		} లేకపోతే {
 			kclockinfo.realtime++;
 		}
 	}
@@ -113,10 +113,10 @@ int timer_int_handler(void)
 	p = get_cpulocal_var(proc_ptr);
 	billp = get_cpulocal_var(bill_ptr);
 
-	p->p_user_time++;
+	p->p_user_సమయం++;
 
-	if (! (priv(p)->s_flags & BILLABLE)) {
-		billp->p_sys_time++;
+	ఒకవేళ (! (priv(p)->s_flags & BILLABLE)) {
+		billp->p_sys_సమయం++;
 	}
 
 	/* Decrement virtual timers, if applicable. We decrement both the
@@ -125,16 +125,16 @@ int timer_int_handler(void)
 	 * well.  If any of the timers expire, do_clocktick() will send out
 	 * signals.
 	 */
-	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
-		p->p_virt_left--;
+	ఒకవేళ ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_ఎడమ > 0)) {
+		p->p_virt_ఎడమ--;
 	}
-	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
-		p->p_prof_left--;
+	ఒకవేళ ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_ఎడమ > 0)) {
+		p->p_prof_ఎడమ--;
 	}
-	if (! (priv(p)->s_flags & BILLABLE) &&
+	ఒకవేళ (! (priv(p)->s_flags & BILLABLE) &&
 			(billp->p_misc_flags & MF_PROF_TIMER) &&
-			(billp->p_prof_left > 0)) {
-		billp->p_prof_left--;
+			(billp->p_prof_ఎడమ > 0)) {
+		billp->p_prof_ఎడమ--;
 	}
 
 	/*
@@ -144,47 +144,47 @@ int timer_int_handler(void)
 	 */
 	vtimer_check(p);
 
-	if (p != billp)
+	ఒకవేళ (p != billp)
 		vtimer_check(billp);
 
 	/* Update load average. */
-	load_update();
+	ఎక్కించు_update();
 
-	if (cpu_is_bsp(cpuid)) {
+	ఒకవేళ (cpu_is_bsp(cpuid)) {
 		/*
 		 * If a timer expired, notify the clock task.  Keep in mind
 		 * that clock tick values may overflow, so we must only look at
 		 * relative differences, and only if there are timers at all.
 		 */
-		if (clock_timers != NULL &&
+		ఒకవేళ (clock_timers != ఖాళీ &&
 		    tmr_has_expired(clock_timers, kclockinfo.uptime))
-			tmrs_exptimers(&clock_timers, kclockinfo.uptime, NULL);
+			tmrs_exptimers(&clock_timers, kclockinfo.uptime, ఖాళీ);
 
-#ifdef DEBUG_SERIAL
-		if (kinfo.do_serial_debug)
+#నిర్వచితమైతే DEBUG_SERIAL
+		ఒకవేళ (kinfo.do_serial_debug)
 			do_ser_debug();
-#endif
+#అయితే_ముగింపు
 
 	}
 
 	arch_timer_int_handler();
 
-	return(1);					/* reenable interrupts */
+	తిరిగి(1);					/* reenable interrupts */
 }
 
 /*===========================================================================*
  *				get_realtime				     *
  *===========================================================================*/
-clock_t get_realtime(void)
+clock_t get_realtime(శూన్య)
 {
   /* Get and return the current wall time in ticks since boot. */
-  return(kclockinfo.realtime);
+  తిరిగి(kclockinfo.realtime);
 }
 
 /*===========================================================================*
  *				set_realtime				     *
  *===========================================================================*/
-void set_realtime(clock_t newrealtime)
+శూన్య సమితి_realtime(clock_t newrealtime)
 {
   kclockinfo.realtime = newrealtime;
 }
@@ -192,7 +192,7 @@ void set_realtime(clock_t newrealtime)
 /*===========================================================================*
  *				set_adjtime_delta			     *
  *===========================================================================*/
-void set_adjtime_delta(int32_t ticks)
+శూన్య సమితి_adjtime_delta(int32_t ticks)
 {
   adjtime_delta = ticks;
 }
@@ -200,16 +200,16 @@ void set_adjtime_delta(int32_t ticks)
 /*===========================================================================*
  *				get_monotonic				     *
  *===========================================================================*/
-clock_t get_monotonic(void)
+clock_t get_monotonic(శూన్య)
 {
   /* Get and return the number of ticks since boot. */
-  return(kclockinfo.uptime);
+  తిరిగి(kclockinfo.uptime);
 }
 
 /*===========================================================================*
  *				set_boottime				     *
  *===========================================================================*/
-void set_boottime(time_t newboottime)
+శూన్య సమితి_boottime(time_t newboottime)
 {
   kclockinfo.boottime = newboottime;
 }
@@ -217,32 +217,32 @@ void set_boottime(time_t newboottime)
 /*===========================================================================*
  *				get_boottime				     *
  *===========================================================================*/
-time_t get_boottime(void)
+time_t get_boottime(శూన్య)
 {
   /* Get and return the number of seconds since the UNIX epoch. */
-  return(kclockinfo.boottime);
+  తిరిగి(kclockinfo.boottime);
 }
 
 /*===========================================================================*
  *				set_kernel_timer			     *
  *===========================================================================*/
-void set_kernel_timer(
+శూన్య సమితి_kernel_timer(
   minix_timer_t *tp,			/* pointer to timer structure */
-  clock_t exp_time,			/* expiration monotonic time */
+  clock_t exp_సమయం,			/* expiration monotonic time */
   tmr_func_t watchdog,			/* watchdog to be called */
-  int arg				/* argument for watchdog function */
+  పూర్ణాంకం arg				/* argument for watchdog function */
 )
 {
 /* Insert the new timer in the active timers list. Always update the
  * next timeout time by setting it to the front of the active list.
  */
-  (void)tmrs_settimer(&clock_timers, tp, exp_time, watchdog, arg, NULL, NULL);
+  (శూన్య)tmrs_settimer(&clock_timers, tp, exp_సమయం, watchdog, arg, ఖాళీ, ఖాళీ);
 }
 
 /*===========================================================================*
  *				reset_kernel_timer			     *
  *===========================================================================*/
-void reset_kernel_timer(
+శూన్య reset_kernel_timer(
   minix_timer_t *tp			/* pointer to timer structure */
 )
 {
@@ -250,19 +250,19 @@ void reset_kernel_timer(
  * active and expired lists. Always update the next timeout time by setting
  * it to the front of the active list.
  */
-  if (tmr_is_set(tp))
-	(void)tmrs_clrtimer(&clock_timers, tp, NULL, NULL);
+  ఒకవేళ (tmr_is_సమితి(tp))
+	(శూన్య)tmrs_clrtimer(&clock_timers, tp, ఖాళీ, ఖాళీ);
 }
 
 /*===========================================================================*
  *				load_update				     *
  *===========================================================================*/
-static void load_update(void)
+స్థిర శూన్య ఎక్కించు_update(శూన్య)
 {
-	u16_t slot;
-	int enqueued = 0, q;
-	struct proc *p;
-	struct proc **rdy_head;
+	u16_t స్థానం;
+	పూర్ణాంకం enqueued = 0, q;
+	నిర్మాణం proc *p;
+	నిర్మాణం proc **rdy_తల;
 
 	/* Load average data is stored as a list of numbers in a circular
 	 * buffer. Each slot accumulates _LOAD_UNIT_SECS of samples of
@@ -270,43 +270,43 @@ static void load_update(void)
 	 * be made of the load average over variable periods, in the
 	 * user library (see getloadavg(3)).
 	 */
-	slot = (kclockinfo.uptime / system_hz / _LOAD_UNIT_SECS) %
-	    _LOAD_HISTORY;
-	if(slot != kloadinfo.proc_last_slot) {
-		kloadinfo.proc_load_history[slot] = 0;
-		kloadinfo.proc_last_slot = slot;
+	స్థానం = (kclockinfo.uptime / system_hz / ఎక్కించు_UNIT_SECS) %
+	    ఎక్కించు_HISTORY;
+	ఒకవేళ(స్థానం != kloadinfo.proc_చివరి_స్థానం) {
+		kloadinfo.proc_ఎక్కించు_history[స్థానం] = 0;
+		kloadinfo.proc_చివరి_స్థానం = స్థానం;
 	}
 
-	rdy_head = get_cpulocal_var(run_q_head);
+	rdy_తల = get_cpulocal_var(నిరంతరం_q_తల);
 	/* Cumulation. How many processes are ready now? */
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		for(p = rdy_head[q]; p != NULL; p = p->p_nextready) {
+	కొరకు(q = 0; q < NR_SCHED_QUEUES; q++) {
+		కొరకు(p = rdy_తల[q]; p != ఖాళీ; p = p->p_nextready) {
 			enqueued++;
 		}
 	}
 
-	kloadinfo.proc_load_history[slot] += enqueued;
+	kloadinfo.proc_ఎక్కించు_history[స్థానం] += enqueued;
 
 	/* Up-to-dateness. */
-	kloadinfo.last_clock = kclockinfo.uptime;
+	kloadinfo.చివరి_clock = kclockinfo.uptime;
 }
 
-int boot_cpu_init_timer(unsigned freq)
+పూర్ణాంకం boot_cpu_init_timer(గుర్తులేని freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	ఒకవేళ (init_local_timer(freq))
+		తిరిగి -1;
 
-	if (register_local_timer_handler(
+	ఒకవేళ (రిజిస్టరు_local_timer_handler(
 				(irq_handler_t) timer_int_handler))
-		return -1;
+		తిరిగి -1;
 
-	return 0;
+	తిరిగి 0;
 }
 
-int app_cpu_init_timer(unsigned freq)
+పూర్ణాంకం app_cpu_init_timer(గుర్తులేని freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	ఒకవేళ (init_local_timer(freq))
+		తిరిగి -1;
 
-	return 0;
+	తిరిగి 0;
 }

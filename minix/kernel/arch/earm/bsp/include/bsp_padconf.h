@@ -1,11 +1,11 @@
-#ifndef _BSP_PADCONF_H_
-#define _BSP_PADCONF_H_
+#నిర్వచితం_కాకపోతే _BSP_PADCONF_H_
+#నిర్వచించు _BSP_PADCONF_H_
 
-#ifndef __ASSEMBLY__
+#నిర్వచితం_కాకపోతే __ASSEMBLY__
 
-void bsp_padconf_init(void);
-int bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value);
+శూన్య bsp_padconf_init(శూన్య);
+పూర్ణాంకం bsp_padconf_సమితి(u32_t padconf, u32_t ముసుగు, u32_t విలువ);
 
-#endif /* __ASSEMBLY__ */
+#అయితే_ముగింపు /* __ASSEMBLY__ */
 
-#endif /* _BSP_PADCONF_H_ */
+#అయితే_ముగింపు /* _BSP_PADCONF_H_ */

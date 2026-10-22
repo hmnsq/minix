@@ -10,113 +10,113 @@
  *   m_lsys_krn_sys_umap.nr_bytes	(size of datastructure)
  */
 
-#include "kernel/system.h"
+#అన్తర్భావ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#if USE_UMAP || USE_UMAP_REMOTE
+#ఒకవేళ USE_UMAP || USE_UMAP_REMOTE
 
-#if ! USE_UMAP_REMOTE
-#undef do_umap_remote
-#endif
+#ఒకవేళ ! USE_UMAP_REMOTE
+#నిర్వచనం_రద్దు do_umap_remote
+#అయితే_ముగింపు
 
 /*==========================================================================*
  *				do_umap_remote				    *
  *==========================================================================*/
-int do_umap_remote(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_umap_remote(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Map virtual address to physical, for non-kernel processes. */
-  int seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
-  int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
-  vir_bytes offset = m_ptr->m_lsys_krn_sys_umap.src_addr;
-  int count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
+  పూర్ణాంకం seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
+  పూర్ణాంకం seg_సూచీ = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_సూచీ;
+  vir_బైట్లు స్థానభ్రంశం = m_ptr->m_lsys_krn_sys_umap.src_addr;
+  పూర్ణాంకం లెక్క = m_ptr->m_lsys_krn_sys_umap.nr_బైట్లు;
   endpoint_t endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
   endpoint_t grantee = m_ptr->m_lsys_krn_sys_umap.dst_endpt;
-  int proc_nr, proc_nr_grantee;
-  phys_bytes phys_addr = 0, lin_addr = 0;
-  struct proc *targetpr;
+  పూర్ణాంకం proc_nr, proc_nr_grantee;
+  phys_బైట్లు phys_addr = 0, lin_addr = 0;
+  నిర్మాణం proc *targetpr;
 
   /* Verify process number. */
-  if (endpt == SELF)
+  ఒకవేళ (endpt == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if (! isokendpt(endpt, &proc_nr))
-		return(EINVAL);
+  లేకపోతే
+	ఒకవేళ (! isokendpt(endpt, &proc_nr))
+		తిరిగి(EINVAL);
   targetpr = proc_addr(proc_nr);
 
   /* Verify grantee endpoint */
-  if (grantee == SELF) {
+  ఒకవేళ (grantee == SELF) {
 	grantee = caller->p_endpoint;
-  } else if (grantee == NONE ||
+  } లేకపోతే ఒకవేళ (grantee == NONE ||
 	grantee == ANY ||
-	seg_index != MEM_GRANT ||
+	seg_సూచీ != MEM_GRANT ||
 	!isokendpt(grantee, &proc_nr_grantee)) {
-	return EINVAL;
+	తిరిగి EINVAL;
   }
 
   /* See which mapping should be made. */
-  switch(seg_type) {
-  case LOCAL_VM_SEG:
-    if(seg_index == MEM_GRANT) {
-	vir_bytes newoffset;
+  ఎంపిక(seg_type) {
+  స్థితి LOCAL_VM_SEG:
+    ఒకవేళ(seg_సూచీ == MEM_GRANT) {
+	vir_బైట్లు newoffset;
 	endpoint_t newep;
-	int new_proc_nr;
-	cp_grant_id_t grant = (cp_grant_id_t) offset;
+	పూర్ణాంకం new_proc_nr;
+	cp_grant_id_t grant = (cp_grant_id_t) స్థానభ్రంశం;
 
-        if(verify_grant(targetpr->p_endpoint, grantee, grant, count,
-                0, 0, &newoffset, &newep, NULL) != OK) {
-                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, count, caller->p_name);
+        ఒకవేళ(verify_grant(targetpr->p_endpoint, grantee, grant, లెక్క,
+                0, 0, &newoffset, &newep, ఖాళీ) != OK) {
+                రాయి("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, స్థానభ్రంశం, లెక్క, caller->p_name);
 		proc_stacktrace(caller);
-                return EFAULT;
+                తిరిగి EFAULT;
         }
 
-        if(!isokendpt(newep, &new_proc_nr)) {
-                printf("SYSTEM: do_umap: isokendpt failed\n");
-                return EFAULT;
+        ఒకవేళ(!isokendpt(newep, &new_proc_nr)) {
+                రాయి("SYSTEM: do_umap: isokendpt failed\n");
+                తిరిగి EFAULT;
         }
 
 	/* New lookup. */
-	offset = newoffset;
+	స్థానభ్రంశం = newoffset;
 	targetpr = proc_addr(new_proc_nr);
-	seg_index = VIR_ADDR;
+	seg_సూచీ = VIR_ADDR;
       }
 
-      if(seg_index == VIR_ADDR) {
-        phys_addr = lin_addr = offset;
-      } else {
-	printf("SYSTEM: bogus seg type 0x%lx\n", seg_index);
-	return EFAULT;
+      ఒకవేళ(seg_సూచీ == VIR_ADDR) {
+        phys_addr = lin_addr = స్థానభ్రంశం;
+      } లేకపోతే {
+	రాయి("SYSTEM: bogus seg type 0x%lx\n", seg_సూచీ);
+	తిరిగి EFAULT;
       }
-      if(!lin_addr) {
-	printf("SYSTEM:do_umap: umap_local failed\n");
-	return EFAULT;
+      ఒకవేళ(!lin_addr) {
+	రాయి("SYSTEM:do_umap: umap_local failed\n");
+	తిరిగి EFAULT;
       }
-      if(vm_lookup(targetpr, lin_addr, &phys_addr, NULL) != OK) {
-	printf("SYSTEM:do_umap: vm_lookup failed\n");
-	return EFAULT;
+      ఒకవేళ(vm_lookup(targetpr, lin_addr, &phys_addr, ఖాళీ) != OK) {
+	రాయి("SYSTEM:do_umap: vm_lookup failed\n");
+	తిరిగి EFAULT;
       }
-      if(phys_addr == 0)
+      ఒకవేళ(phys_addr == 0)
 	panic("vm_lookup returned zero physical address");
-      break;
-  default:
-  	printf("umap: peculiar type\n");
-  	return EINVAL;
+      ఆపు;
+  అప్రమేయ:
+  	రాయి("umap: peculiar type\n");
+  	తిరిగి EINVAL;
   }
 
-  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
-	printf("SYSTEM:do_umap: not contiguous\n");
-	return EFAULT;
+  ఒకవేళ(vm_running && vm_lookup_range(targetpr, lin_addr, ఖాళీ, లెక్క) != లెక్క) {
+	రాయి("SYSTEM:do_umap: not contiguous\n");
+	తిరిగి EFAULT;
   }
 
   m_ptr->m_krn_lsys_sys_umap.dst_addr = phys_addr;
-  if(phys_addr == 0) {
-	  printf("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
+  ఒకవేళ(phys_addr == 0) {
+	  రాయి("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
 		seg_type, caller->p_endpoint, caller->p_name,
-		caller->p_reg.pc, offset, phys_addr);
-	printf("caller stack: ");
+		caller->p_reg.pc, స్థానభ్రంశం, phys_addr);
+	రాయి("caller stack: ");
 	proc_stacktrace(caller);
   }
-  return (phys_addr == 0) ? EFAULT: OK;
+  తిరిగి (phys_addr == 0) ? EFAULT: OK;
 }
 
-#endif /* USE_UMAP || USE_UMAP_REMOTE */
+#అయితే_ముగింపు /* USE_UMAP || USE_UMAP_REMOTE */

@@ -1,30 +1,30 @@
-#ifndef TYPE_H
-#define TYPE_H
+#నిర్వచితం_కాకపోతే TYPE_H
+#నిర్వచించు TYPE_H
 
-#include <minix/com.h>
-#include <machine/interrupt.h>
-#include <machine/multiboot.h>
+#అన్తర్భావ <minix/com.h>
+#అన్తర్భావ <machine/interrupt.h>
+#అన్తర్భావ <machine/multiboot.h>
 
 /* Process table and system property related types. */ 
-typedef int proc_nr_t;			/* process table entry number */
-typedef short sys_id_t;			/* system process index */
-typedef struct {			/* bitmap for system indexes */
+రకనిర్వచనం పూర్ణాంకం proc_nr_t;			/* process table entry number */
+రకనిర్వచనం పొట్టి sys_id_t;			/* system process index */
+రకనిర్వచనం నిర్మాణం {			/* bitmap for system indexes */
   bitchunk_t chunk[BITMAP_CHUNKS(NR_SYS_PROCS)];
 } sys_map_t;
 
-typedef unsigned long irq_policy_t;	
-typedef unsigned long irq_id_t;	
+రకనిర్వచనం గుర్తులేని దీర్ఘ irq_policy_t;	
+రకనిర్వచనం గుర్తులేని దీర్ఘ irq_id_t;	
 
-typedef struct irq_hook {
-  struct irq_hook *next;		/* next hook in chain */
-  int (*handler)(struct irq_hook *);	/* interrupt handler */
-  int irq;				/* IRQ vector number */ 
-  int id;				/* id of this hook */
+రకనిర్వచనం నిర్మాణం irq_hook {
+  నిర్మాణం irq_hook *తదుపరి;		/* next hook in chain */
+  పూర్ణాంకం (*handler)(నిర్మాణం irq_hook *);	/* interrupt handler */
+  పూర్ణాంకం irq;				/* IRQ vector number */ 
+  పూర్ణాంకం id;				/* id of this hook */
   endpoint_t proc_nr_e;			/* (endpoint) NONE if not in use */
   irq_id_t notify_id;			/* id to return on interrupt */
   irq_policy_t policy;			/* bit mask for policy */
 } irq_hook_t;
 
-typedef int (*irq_handler_t)(struct irq_hook *);
+రకనిర్వచనం పూర్ణాంకం (*irq_handler_t)(నిర్మాణం irq_hook *);
 
-#endif /* TYPE_H */
+#అయితే_ముగింపు /* TYPE_H */

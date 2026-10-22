@@ -1,25 +1,25 @@
-#ifndef PROFILE_H
-#define PROFILE_H
+#నిర్వచితం_కాకపోతే PROFILE_H
+#నిర్వచించు PROFILE_H
 
-#include <minix/profile.h>
+#అన్తర్భావ <minix/profile.h>
 
-#if SPROFILE	/* statistical profiling */
+#ఒకవేళ SPROFILE	/* statistical profiling */
 
-#include "arch_watchdog.h"
+#అన్తర్భావ "arch_watchdog.h"
 
-#define SAMPLE_BUFFER_SIZE	(64 << 20)
-extern char sprof_sample_buffer[SAMPLE_BUFFER_SIZE];
+#నిర్వచించు SAMPLE_బఫరు_కొలత	(64 << 20)
+బాహ్య అక్షరం sprof_sample_బఫరు[SAMPLE_బఫరు_కొలత];
 
-EXTERN int sprofiling;			/* whether profiling is running */
-EXTERN int sprofiling_type;			/* whether profiling is running */
-EXTERN int sprof_mem_size;		/* available user memory for data */
-EXTERN struct sprof_info_s sprof_info;	/* profiling info for user program */
-EXTERN vir_bytes sprof_data_addr_vir;	/* user address to write data */
+EXTERN పూర్ణాంకం sprofiling;			/* whether profiling is running */
+EXTERN పూర్ణాంకం sprofiling_type;			/* whether profiling is running */
+EXTERN పూర్ణాంకం sprof_mem_కొలత;		/* available user memory for data */
+EXTERN నిర్మాణం sprof_info_s sprof_info;	/* profiling info for user program */
+EXTERN vir_బైట్లు sprof_దత్తాంశం_addr_vir;	/* user address to write data */
 EXTERN endpoint_t sprof_ep;		/* user process */
 
-void nmi_sprofile_handler(struct nmi_frame * frame);
+శూన్య nmi_sprofile_handler(నిర్మాణం nmi_చట్రం * చట్రం);
 
-#endif /* SPROFILE */
+#అయితే_ముగింపు /* SPROFILE */
 
-#endif /* PROFILE_H */
+#అయితే_ముగింపు /* PROFILE_H */
 

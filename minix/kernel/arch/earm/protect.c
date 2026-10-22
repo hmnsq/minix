@@ -3,81 +3,81 @@
  * for local descriptors in the process table.
  */
 
-#include <assert.h>
-#include <string.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <string.h>
 
-#include <machine/multiboot.h>
+#అన్తర్భావ <machine/multiboot.h>
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#include "archconst.h"
-#include "arch_proto.h"
+#అన్తర్భావ "archconst.h"
+#అన్తర్భావ "arch_proto.h"
 
-#include <sys/exec.h>
-#include <libexec.h>
+#అన్తర్భావ <sys/exec.h>
+#అన్తర్భావ <libexec.h>
 
-struct tss_s tss[CONFIG_MAX_CPUS];
-extern int exc_vector_table;
+నిర్మాణం tss_s tss[CONFIG_MAX_CPUS];
+బాహ్య పూర్ణాంకం exc_సదిశ_పట్టిక;
 
-int prot_init_done = 0;
+పూర్ణాంకం prot_init_పూర్తి = 0;
 
-phys_bytes vir2phys(void *vir)
+phys_బైట్లు vir2phys(శూన్య *vir)
 {
 	/* defined in kernel.lds */
-	extern char _kern_vir_base, _kern_phys_base;
-	u32_t offset = (vir_bytes) &_kern_vir_base -
-	    (vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	బాహ్య అక్షరం kern_vir_పునాది, kern_phys_పునాది;
+	u32_t స్థానభ్రంశం = (vir_బైట్లు) &kern_vir_పునాది -
+	    (vir_బైట్లు) &kern_phys_పునాది;
+	తిరిగి (phys_బైట్లు)vir - స్థానభ్రంశం;
 }
 
-int tss_init(unsigned cpu, void * kernel_stack)
+పూర్ణాంకం tss_init(గుర్తులేని cpu, శూన్య * kernel_దొంతర)
 {
 
-	struct tss_s * t = &tss[cpu];
+	నిర్మాణం tss_s * t = &tss[cpu];
 
 	/*
 	 * make space for process pointer and cpu id and point to the first
 	 * usable word
 	 */
-	t->sp0 = ((unsigned) kernel_stack) - ARM_STACK_TOP_RESERVED;
+	t->sp0 = ((గుర్తులేని) kernel_దొంతర) - ARM_దొంతర_శిఖరం_RESERVED;
 	/*
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
 	 */
-	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
+	*((reg_t *)(t->sp0 + 1 * పరిమాణం(reg_t))) = cpu;
 
-	return 0;
+	తిరిగి 0;
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(పూర్ణాంకం pnr)
 {
-	int i;
+	పూర్ణాంకం i;
 
-	assert(pnr >= 0);
+	ప్రతిజ్ఞా(pnr >= 0);
 
 	/* Search for desired process in boot process
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	కొరకు(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		పూర్ణాంకం p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
-			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+		ఒకవేళ(image[i].proc_nr == pnr) {
+			ప్రతిజ్ఞా(p < MULTIBOOT_MAX_MODS);
+			ప్రతిజ్ఞా(p < kinfo.mbi.mi_mods_లెక్క);
+			తిరిగి &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+పూర్ణాంకం booting_cpu = 0;
 
-void prot_init(void)
+శూన్య prot_init(శూన్య)
 {
 	/* tell the HW where we stored our vector table */
-	write_vbar((reg_t)&exc_vector_table);
+	write_vbar((reg_t)&exc_సదిశ_పట్టిక);
 
 	/* Set up a new post-relocate bootstrap pagetable so that
 	 * we can map in VM, and we no longer rely on pre-relocated
@@ -85,40 +85,40 @@ void prot_init(void)
 	 */
 
 	pg_clear();
-	pg_identity(&kinfo); /* Still need 1:1 for device memory . */
+	pg_తటస్థం(&kinfo); /* Still need 1:1 for device memory . */
 	pg_mapkernel();
-	pg_load();
+	pg_ఎక్కించు();
 
-	prot_init_done = 1;
+	prot_init_పూర్తి = 1;
 }
 
-static int alloc_for_vm = 0;
+స్థిర పూర్ణాంకం alloc_for_vm = 0;
 
-void arch_post_init(void)
+శూన్య arch_post_init(శూన్య)
 {
 	/* Let memory mapping code know what's going on at bootstrap time */
-	struct proc *vm;
+	నిర్మాణం proc *vm;
 	vm = proc_addr(VM_PROC_NR);
 	get_cpulocal_var(ptproc) = vm;
 	pg_info(&vm->p_seg.p_ttbr, &vm->p_seg.p_ttbr_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+స్థిర పూర్ణాంకం libexec_pg_alloc(నిర్మాణం exec_info *execi, vir_బైట్లు vaddr, size_t len)
 {
 	pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
-	pg_load();
-	memset((char *) vaddr, 0, len);
+	pg_ఎక్కించు();
+	memset((అక్షరం *) vaddr, 0, len);
 	alloc_for_vm += len;
-	return OK;
+	తిరిగి OK;
 }
 
-void arch_boot_proc(struct boot_image *ip, struct proc *rp)
+శూన్య arch_boot_proc(నిర్మాణం boot_image *ip, నిర్మాణం proc *rp)
 {
 	multiboot_module_t *mod;
-	struct ps_strings *psp;
-	char *sp;
+	నిర్మాణం ps_అక్షరశ్రేణులు *psp;
+	అక్షరం *sp;
 
-	if(rp->p_nr < 0) return;
+	ఒకవేళ(rp->p_nr < 0) తిరిగి;
 
 	mod = bootmod(rp->p_nr);
 
@@ -126,19 +126,19 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
-		struct exec_info execi;
+	ఒకవేళ(rp->p_nr == VM_PROC_NR) {
+		నిర్మాణం exec_info execi;
 
-		memset(&execi, 0, sizeof(execi));
+		memset(&execi, 0, పరిమాణం(execi));
 
 		/* exec parameters */
-		execi.stack_high = kinfo.user_sp;
-		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
+		execi.దొంతర_ఎగువ = kinfo.user_sp;
+		execi.దొంతర_కొలత = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
-		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
-		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
-		strlcpy(execi.progname, ip->proc_name, sizeof(execi.progname));
-		execi.frame_len = 0;
+		execi.hdr = (అక్షరం *) mod->mod_ప్రారంభం; /* phys mem direct */
+		execi.filesize = execi.hdr_len = mod->mod_చివర - mod->mod_ప్రారంభం;
+		strlcpy(execi.progname, ip->proc_name, పరిమాణం(execi.progname));
+		execi.చట్రం_len = 0;
 
 		/* callbacks for use in the kernel */
 		execi.copymem = libexec_copy_memcpy;
@@ -146,38 +146,38 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.allocmem_prealloc_junk = libexec_pg_alloc;
 		execi.allocmem_prealloc_cleared = libexec_pg_alloc;
 		execi.allocmem_ondemand = libexec_pg_alloc;
-		execi.clearproc = NULL;
+		execi.clearproc = ఖాళీ;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		ఒకవేళ(libexec_ఎక్కించు_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
-		sp -= sizeof(struct ps_strings);
-		psp = (struct ps_strings *) sp;
+		sp = (అక్షరం *)execi.దొంతర_ఎగువ;
+		sp -= పరిమాణం(నిర్మాణం ps_అక్షరశ్రేణులు);
+		psp = (నిర్మాణం ps_అక్షరశ్రేణులు *) sp;
 
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (పరిమాణం(శూన్య *) + పరిమాణం(శూన్య *) + పరిమాణం(పూర్ణాంకం));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (అక్షరం **)(sp + పరిమాణం(పూర్ణాంకం));
 		psp->ps_nargvstr = 0;
-		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
+		psp->ps_envstr = psp->ps_argvstr + పరిమాణం(శూన్య *);
 		psp->ps_nenvstr = 0;
 
-		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+		arch_proc_init(rp, execi.pc, (vir_బైట్లు)sp,
+			execi.దొంతర_ఎగువ - పరిమాణం(నిర్మాణం ps_అక్షరశ్రేణులు),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */
-		add_memmap(&kinfo, mod->mod_start, mod->mod_end-mod->mod_start);
-		mod->mod_end = mod->mod_start = 0;
+		కూడు_memmap(&kinfo, mod->mod_ప్రారంభం, mod->mod_చివర-mod->mod_ప్రారంభం);
+		mod->mod_చివర = mod->mod_ప్రారంభం = 0;
 
 		/* Remember them */
-		kinfo.vm_allocated_bytes = alloc_for_vm;
+		kinfo.vm_allocated_బైట్లు = alloc_for_vm;
 	}
 }

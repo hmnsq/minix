@@ -1,83 +1,83 @@
 /* Implements sys_padconf() for the AM335X and DM37XX. */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/mmio.h>
-#include <minix/padconf.h>
-#include <minix/board.h>
-#include <minix/com.h>
-#include <assert.h>
-#include <io.h>
-#include <stdlib.h>
-#include <stdio.h>
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "arch_proto.h"
+#అన్తర్భావ <sys/types.h>
+#అన్తర్భావ <machine/cpu.h>
+#అన్తర్భావ <minix/mmio.h>
+#అన్తర్భావ <minix/padconf.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ <minix/com.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <io.h>
+#అన్తర్భావ <stdlib.h>
+#అన్తర్భావ <stdio.h>
 
-#include "bsp_padconf.h"
+#అన్తర్భావ "bsp_padconf.h"
 
-struct omap_padconf
+నిర్మాణం omap_padconf
 {
-	vir_bytes base;
-	vir_bytes offset;
-	vir_bytes size;
-	unsigned int board_filter_value;
-	unsigned int board_filter_mask;
+	vir_బైట్లు పునాది;
+	vir_బైట్లు స్థానభ్రంశం;
+	vir_బైట్లు కొలత;
+	గుర్తులేని పూర్ణాంకం board_filter_విలువ;
+	గుర్తులేని పూర్ణాంకం board_filter_ముసుగు;
 };
 
-static struct omap_padconf omap_padconfs[] = {
+స్థిర నిర్మాణం omap_padconf omap_padconfs[] = {
 	{
-		    .base = PADCONF_DM37XX_REGISTERS_BASE,
-		    .offset = PADCONF_DM37XX_REGISTERS_OFFSET,
-		    .size = PADCONF_DM37XX_REGISTERS_SIZE,
-		    .board_filter_value = BOARD_FILTER_BBXM_VALUE,
-		    .board_filter_mask = BOARD_FILTER_BBXM_MASK,
+		    .పునాది = PADCONF_DM37_XX_REGISTERS_పునాది,
+		    .స్థానభ్రంశం = PADCONF_DM37_XX_REGISTERS_స్థానభ్రంశం,
+		    .కొలత = PADCONF_DM37_XX_REGISTERS_కొలత,
+		    .board_filter_విలువ = BOARD_FILTER_BBXM_విలువ,
+		    .board_filter_ముసుగు = BOARD_FILTER_BBXM_ముసుగు,
 	    },
 	{
-		    .base = PADCONF_AM335X_REGISTERS_BASE,
-		    .offset = PADCONF_AM335X_REGISTERS_OFFSET,
-		    .size = PADCONF_AM335X_REGISTERS_SIZE,
-		    .board_filter_value = BOARD_FILTER_BB_VALUE,
-		    .board_filter_mask = BOARD_FILTER_BB_MASK,
+		    .పునాది = PADCONF_AM335_X_REGISTERS_పునాది,
+		    .స్థానభ్రంశం = PADCONF_AM335_X_REGISTERS_స్థానభ్రంశం,
+		    .కొలత = PADCONF_AM335_X_REGISTERS_కొలత,
+		    .board_filter_విలువ = BOARD_FILTER_BB_విలువ,
+		    .board_filter_ముసుగు = BOARD_FILTER_BB_ముసుగు,
 	    },
 };
 
 /* initialized in init */
-static struct omap_padconf *omap_padconf;
+స్థిర నిర్మాణం omap_padconf *omap_padconf;
 
-static kern_phys_map padconf_phys_map;
+స్థిర kern_phys_map padconf_phys_map;
 
-int
-bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value)
+పూర్ణాంకం
+bsp_padconf_సమితి(u32_t padconf, u32_t ముసుగు, u32_t విలువ)
 {
 	/* check that the value will be inside the padconf memory range */
-	if (padconf >= (omap_padconf->size - omap_padconf->offset)) {
-		return EINVAL;	/* outside of valid range */
+	ఒకవేళ (padconf >= (omap_padconf->కొలత - omap_padconf->స్థానభ్రంశం)) {
+		తిరిగి EINVAL;	/* outside of valid range */
 	}
 
-	set32(padconf + omap_padconf->base + omap_padconf->offset, mask,
-	    value);
+	set32(padconf + omap_padconf->పునాది + omap_padconf->స్థానభ్రంశం, ముసుగు,
+	    విలువ);
 
-	return OK;
+	తిరిగి OK;
 }
 
-void
-bsp_padconf_init(void)
+శూన్య
+bsp_padconf_init(శూన్య)
 {
-	int x;
-	omap_padconf = NULL;
+	పూర్ణాంకం x;
+	omap_padconf = ఖాళీ;
 	/* find the correct padconf */
-	for (x = 0; x < sizeof(omap_padconfs) / sizeof(omap_padconfs[0]); x++) {
-		if ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
-		    omap_padconfs[x].board_filter_value) {
+	కొరకు (x = 0; x < పరిమాణం(omap_padconfs) / పరిమాణం(omap_padconfs[0]); x++) {
+		ఒకవేళ ((omap_padconfs[x].board_filter_ముసుగు & machine.board_id) ==
+		    omap_padconfs[x].board_filter_విలువ) {
 			omap_padconf = &omap_padconfs[x];
-			break;
+			ఆపు;
 		}
 	}
-	assert(omap_padconf);
+	ప్రతిజ్ఞా(omap_padconf);
 
-	kern_phys_map_ptr(omap_padconf->base, omap_padconf->size,
+	kern_phys_map_ptr(omap_padconf->పునాది, omap_padconf->కొలత,
 	    VMMF_UNCACHED | VMMF_WRITE,
-	    &padconf_phys_map, (vir_bytes) & omap_padconf->base);
+	    &padconf_phys_map, (vir_బైట్లు) & omap_padconf->పునాది);
 
-	return;
+	తిరిగి;
 }

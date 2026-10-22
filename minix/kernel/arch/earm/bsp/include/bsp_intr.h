@@ -1,12 +1,12 @@
-#ifndef _BSP_INTR_H_
-#define _BSP_INTR_H_
+#నిర్వచితం_కాకపోతే _BSP_INTR_H_
+#నిర్వచించు _BSP_INTR_H_
 
-#ifndef __ASSEMBLY__
+#నిర్వచితం_కాకపోతే __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
-void bsp_irq_handle(void);
+శూన్య bsp_irq_unmask(పూర్ణాంకం irq);
+శూన్య bsp_irq_ముసుగు(పూర్ణాంకం irq);
+శూన్య bsp_irq_handle(శూన్య);
 
-#endif /* __ASSEMBLY__ */
+#అయితే_ముగింపు /* __ASSEMBLY__ */
 
-#endif /* _BSP_INTR_H_ */
+#అయితే_ముగింపు /* _BSP_INTR_H_ */

@@ -13,62 +13,62 @@
  *      m_lsys_kern_vsafecopy.vec_size   number of significant elements in vector
  */
 
-#include <assert.h>
+#అన్తర్భావ <assert.h>
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ "kernel/vm.h"
 
-#define MAX_INDIRECT_DEPTH 5	/* up to how many indirect grants to follow? */
+#నిర్వచించు MAX_పరోక్ష_లోతు 5	/* up to how many indirect grants to follow? */
 
-#define MEM_TOP 0xFFFFFFFFUL
+#నిర్వచించు MEM_శిఖరం 0xFFFFFFFFUL
 
-static int safecopy(struct proc *, endpoint_t, endpoint_t,
-	cp_grant_id_t, size_t, vir_bytes, vir_bytes, int);
+స్థిర పూర్ణాంకం safecopy(నిర్మాణం proc *, endpoint_t, endpoint_t,
+	cp_grant_id_t, size_t, vir_బైట్లు, vir_బైట్లు, పూర్ణాంకం);
 
-#define HASGRANTTABLE(gr) \
-	(priv(gr) && priv(gr)->s_grant_table)
+#నిర్వచించు HASGRANTTABLE(gr) \
+	(priv(gr) && priv(gr)->s_grant_పట్టిక)
 
-struct cp_sfinfo {		/* information for handling soft faults */
-	int try;		/* if nonzero, try copy only, stop on fault */
+నిర్మాణం cp_sfinfo {		/* information for handling soft faults */
+	పూర్ణాంకం try;		/* if nonzero, try copy only, stop on fault */
 	endpoint_t endpt;	/* endpoint owning grant with CPF_TRY flag */
-	vir_bytes addr;		/* address to write mark upon soft fault */
-	cp_grant_id_t value;	/* grant ID to use as mark value to write */
+	vir_బైట్లు addr;		/* address to write mark upon soft fault */
+	cp_grant_id_t విలువ;	/* grant ID to use as mark value to write */
 };
 
 /*===========================================================================*
  *				verify_grant				     *
  *===========================================================================*/
-int verify_grant(
+పూర్ణాంకం verify_grant(
   endpoint_t granter,		/* copyee */
   endpoint_t grantee,		/* copyer */
   cp_grant_id_t grant,		/* grant id */
-  vir_bytes bytes,		/* copy size */
-  int access,			/* direction (read/write) */
-  vir_bytes offset_in,		/* copy offset within grant */
-  vir_bytes *offset_result,	/* copy offset within virtual address space */
+  vir_బైట్లు బైట్లు,		/* copy size */
+  పూర్ణాంకం access,			/* direction (read/write) */
+  vir_బైట్లు స్థానభ్రంశం_లోపల,		/* copy offset within grant */
+  vir_బైట్లు *స్థానభ్రంశం_ఫలితం,	/* copy offset within virtual address space */
   endpoint_t *e_granter,	/* new granter (magic grants) */
-  struct cp_sfinfo *sfinfo	/* storage for soft fault information */
+  నిర్మాణం cp_sfinfo *sfinfo	/* storage for soft fault information */
 )
 {
 	cp_grant_t g;
-	int proc_nr;
-	const struct proc *granter_proc;
-	int grant_idx, grant_seq;
-	int depth = 0;
+	పూర్ణాంకం proc_nr;
+	స్థిరరాశి నిర్మాణం proc *granter_proc;
+	పూర్ణాంకం grant_idx, grant_seq;
+	పూర్ణాంకం లోతు = 0;
 
-	do {
+	చేయి {
 		/* Get granter process slot (if valid), and check range of
 		 * grant id.
 		 */
-		if(!isokendpt(granter, &proc_nr) ) {
-			printf(
-			"grant verify failed: invalid granter %d\n", (int) granter);
-			return(EINVAL);
+		ఒకవేళ(!isokendpt(granter, &proc_nr) ) {
+			రాయి(
+			"grant verify failed: invalid granter %d\n", (పూర్ణాంకం) granter);
+			తిరిగి(EINVAL);
 		}
-		if(!GRANT_VALID(grant)) {
-			printf(
-			"grant verify failed: invalid grant %d\n", (int) grant);
-			return(EINVAL);
+		ఒకవేళ(!GRANT_VALID(grant)) {
+			రాయి(
+			"grant verify failed: invalid grant %d\n", (పూర్ణాంకం) grant);
+			తిరిగి(EINVAL);
 		}
 		granter_proc = proc_addr(proc_nr);
 
@@ -80,12 +80,12 @@ int verify_grant(
 		 * while until the grant table is final. This is necessary to
 		 * avoid races at live update time.
 		 */
-		if(priv(granter_proc)->s_grant_endpoint != granter_proc->p_endpoint) {
-			if(!access) {
-				return OK;
+		ఒకవేళ(priv(granter_proc)->s_grant_endpoint != granter_proc->p_endpoint) {
+			ఒకవేళ(!access) {
+				తిరిగి OK;
 			}
-			else if(!HASGRANTTABLE(granter_proc) || grantee != priv(granter_proc)->s_grant_endpoint) {
-				return ENOTREADY;
+			లేకపోతే ఒకవేళ(!HASGRANTTABLE(granter_proc) || grantee != priv(granter_proc)->s_grant_endpoint) {
+				తిరిగి ENOTREADY;
 			}
 		}
 
@@ -93,24 +93,24 @@ int verify_grant(
 		 * priv. structure, or the grant table in the priv. structure
 		 * is too small for the grant, return EPERM.
 		 */
-		if(!HASGRANTTABLE(granter_proc)) {
-			printf(
+		ఒకవేళ(!HASGRANTTABLE(granter_proc)) {
+			రాయి(
 			"grant verify failed: granter %d has no grant table\n",
 			granter);
-			return(EPERM);
+			తిరిగి(EPERM);
 		}
 
 		grant_idx = GRANT_IDX(grant);
 		grant_seq = GRANT_SEQ(grant);
 
-		if(priv(granter_proc)->s_grant_entries <= grant_idx) {
-				printf(
+		ఒకవేళ(priv(granter_proc)->s_grant_entries <= grant_idx) {
+				రాయి(
 				"verify_grant: grant verify failed in ep %d "
 				"proc %d: grant 0x%x (#%d) out of range "
 				"for table size %d\n",
 					granter, proc_nr, grant, grant_idx,
 					priv(granter_proc)->s_grant_entries);
-			return(EPERM);
+			తిరిగి(EPERM);
 		}
 
 		/* Copy the grant entry corresponding to this ID's index to see
@@ -118,26 +118,26 @@ int verify_grant(
 		 * has (presumably) set an invalid grant table entry by
 		 * returning EPERM, just like with an invalid grant id.
 		 */
-		if(data_copy(granter, priv(granter_proc)->s_grant_table +
-			sizeof(g) * grant_idx,
-			KERNEL, (vir_bytes) &g, sizeof(g)) != OK) {
-			printf(
+		ఒకవేళ(దత్తాంశం_copy(granter, priv(granter_proc)->s_grant_పట్టిక +
+			పరిమాణం(g) * grant_idx,
+			KERNEL, (vir_బైట్లు) &g, పరిమాణం(g)) != OK) {
+			రాయి(
 			"verify_grant: grant verify: data_copy failed\n");
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* Check validity: flags and sequence number. */
-		if((g.cp_flags & (CPF_USED | CPF_VALID)) !=
-			(CPF_USED | CPF_VALID)) {
-			printf("verify_grant: grant failed: invalid flags "
+		ఒకవేళ((g.cp_flags & (CPF_వాడిన | CPF_VALID)) !=
+			(CPF_వాడిన | CPF_VALID)) {
+			రాయి("verify_grant: grant failed: invalid flags "
 			    "(0x%x, 0x%lx)\n", grant, g.cp_flags);
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
-		if (g.cp_seq != grant_seq) {
-			printf("verify_grant: grant failed: invalid sequence "
+		ఒకవేళ (g.cp_seq != grant_seq) {
+			రాయి("verify_grant: grant failed: invalid sequence "
 			    "(0x%x, %d vs %d)\n", grant, grant_seq, g.cp_seq);
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* The given grant may be an indirect grant, that is, a grant
@@ -145,170 +145,170 @@ int verify_grant(
 		 * granter (i.e., for which it is the grantee). This can lead
 		 * to a chain of indirect grants which must be followed back.
 		 */
-		if((g.cp_flags & CPF_INDIRECT)) {
+		ఒకవేళ((g.cp_flags & CPF_పరోక్ష)) {
 			/* Stop after a few iterations. There may be a loop. */
-			if (depth == MAX_INDIRECT_DEPTH) {
-				printf(
+			ఒకవేళ (లోతు == MAX_పరోక్ష_లోతు) {
+				రాయి(
 					"verify grant: indirect grant verify "
 					"failed: exceeded maximum depth\n");
-				return ELOOP;
+				తిరిగి ELOOP;
 			}
-			depth++;
+			లోతు++;
 
 			/* Verify actual grantee. */
-			if(g.cp_u.cp_indirect.cp_who_to != grantee &&
+			ఒకవేళ(g.cp_u.cp_పరోక్ష.cp_who_గమ్యం != grantee &&
 				grantee != ANY &&
-				g.cp_u.cp_indirect.cp_who_to != ANY) {
-				printf(
+				g.cp_u.cp_పరోక్ష.cp_who_గమ్యం != ANY) {
+				రాయి(
 					"verify_grant: indirect grant verify "
 					"failed: bad grantee\n");
-				return EPERM;
+				తిరిగి EPERM;
 			}
 
 			/* Start over with new granter, grant, and grantee. */
 			grantee = granter;
-			granter = g.cp_u.cp_indirect.cp_who_from;
-			grant = g.cp_u.cp_indirect.cp_grant;
+			granter = g.cp_u.cp_పరోక్ష.cp_who_from;
+			grant = g.cp_u.cp_పరోక్ష.cp_grant;
 		}
-	} while(g.cp_flags & CPF_INDIRECT);
+	} అయితే(g.cp_flags & CPF_పరోక్ష);
 
 	/* Check access of grant. */
-	if(((g.cp_flags & access) != access)) {
-		printf(
+	ఒకవేళ(((g.cp_flags & access) != access)) {
+		రాయి(
 	"verify_grant: grant verify failed: access invalid; want 0x%x, have 0x%x\n",
 			access, g.cp_flags);
-		return EPERM;
+		తిరిగి EPERM;
 	}
 
-	if((g.cp_flags & CPF_DIRECT)) {
+	ఒకవేళ((g.cp_flags & CPF_ప్రత్యక్ష)) {
 		/* Don't fiddle around with grants that wrap, arithmetic
 		 * below may be confused.
 		 */
-		if(MEM_TOP - g.cp_u.cp_direct.cp_len + 1 <
-			g.cp_u.cp_direct.cp_start) {
-			printf(
+		ఒకవేళ(MEM_శిఖరం - g.cp_u.cp_ప్రత్యక్ష.cp_len + 1 <
+			g.cp_u.cp_ప్రత్యక్ష.cp_ప్రారంభం) {
+			రాయి(
 		"verify_grant: direct grant verify failed: len too long\n");
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* Verify actual grantee. */
-		if(g.cp_u.cp_direct.cp_who_to != grantee && grantee != ANY
-			&& g.cp_u.cp_direct.cp_who_to != ANY) {
-			printf(
+		ఒకవేళ(g.cp_u.cp_ప్రత్యక్ష.cp_who_గమ్యం != grantee && grantee != ANY
+			&& g.cp_u.cp_ప్రత్యక్ష.cp_who_గమ్యం != ANY) {
+			రాయి(
 		"verify_grant: direct grant verify failed: bad grantee\n");
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* Verify actual copy range. */
-		if((offset_in+bytes < offset_in) ||
-		    offset_in+bytes > g.cp_u.cp_direct.cp_len) {
-			printf(
+		ఒకవేళ((స్థానభ్రంశం_లోపల+బైట్లు < స్థానభ్రంశం_లోపల) ||
+		    స్థానభ్రంశం_లోపల+బైట్లు > g.cp_u.cp_ప్రత్యక్ష.cp_len) {
+			రాయి(
 		"verify_grant: direct grant verify failed: bad size or range. "
 		"granted %d bytes @ 0x%lx; wanted %d bytes @ 0x%lx\n",
-				g.cp_u.cp_direct.cp_len,
-				g.cp_u.cp_direct.cp_start,
-				bytes, offset_in);
-			return EPERM;
+				g.cp_u.cp_ప్రత్యక్ష.cp_len,
+				g.cp_u.cp_ప్రత్యక్ష.cp_ప్రారంభం,
+				బైట్లు, స్థానభ్రంశం_లోపల);
+			తిరిగి EPERM;
 		}
 
 		/* Verify successful - tell caller what address it is. */
-		*offset_result = g.cp_u.cp_direct.cp_start + offset_in;
+		*స్థానభ్రంశం_ఫలితం = g.cp_u.cp_ప్రత్యక్ష.cp_ప్రారంభం + స్థానభ్రంశం_లోపల;
 		*e_granter = granter;
-	} else if(g.cp_flags & CPF_MAGIC) {
+	} లేకపోతే ఒకవేళ(g.cp_flags & CPF_MAGIC) {
 		/* Currently, it is hardcoded that only VFS and MIB may do
 		 * magic grants.  TODO: this should be a system.conf flag.
 		 */
-		if(granter != VFS_PROC_NR && granter != MIB_PROC_NR) {
-			printf(
+		ఒకవేళ(granter != VFS_PROC_NR && granter != MIB_PROC_NR) {
+			రాయి(
 		"verify_grant: magic grant verify failed: granter (%d) "
 		"not allowed\n", granter);
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* Verify actual grantee. */
-		if(g.cp_u.cp_magic.cp_who_to != grantee && grantee != ANY
-			&& g.cp_u.cp_direct.cp_who_to != ANY) {
-			printf(
+		ఒకవేళ(g.cp_u.cp_magic.cp_who_గమ్యం != grantee && grantee != ANY
+			&& g.cp_u.cp_ప్రత్యక్ష.cp_who_గమ్యం != ANY) {
+			రాయి(
 		"verify_grant: magic grant verify failed: bad grantee\n");
-			return EPERM;
+			తిరిగి EPERM;
 		}
 
 		/* Verify actual copy range. */
-		if((offset_in+bytes < offset_in) ||
-		    offset_in+bytes > g.cp_u.cp_magic.cp_len) {
-			printf(
+		ఒకవేళ((స్థానభ్రంశం_లోపల+బైట్లు < స్థానభ్రంశం_లోపల) ||
+		    స్థానభ్రంశం_లోపల+బైట్లు > g.cp_u.cp_magic.cp_len) {
+			రాయి(
 		"verify_grant: magic grant verify failed: bad size or range. "
 		"granted %d bytes @ 0x%lx; wanted %d bytes @ 0x%lx\n",
 				g.cp_u.cp_magic.cp_len,
-				g.cp_u.cp_magic.cp_start,
-				bytes, offset_in);
-			return EPERM;
+				g.cp_u.cp_magic.cp_ప్రారంభం,
+				బైట్లు, స్థానభ్రంశం_లోపల);
+			తిరిగి EPERM;
 		}
 
 		/* Verify successful - tell caller what address it is. */
-		*offset_result = g.cp_u.cp_magic.cp_start + offset_in;
+		*స్థానభ్రంశం_ఫలితం = g.cp_u.cp_magic.cp_ప్రారంభం + స్థానభ్రంశం_లోపల;
 		*e_granter = g.cp_u.cp_magic.cp_who_from;
-	} else {
-		printf(
+	} లేకపోతే {
+		రాయి(
 		"verify_grant: grant verify failed: unknown grant type\n");
-		return EPERM;
+		తిరిగి EPERM;
 	}
 
 	/* If requested, store information regarding soft faults. */
-	if (sfinfo != NULL && (sfinfo->try = !!(g.cp_flags & CPF_TRY))) {
+	ఒకవేళ (sfinfo != ఖాళీ && (sfinfo->try = !!(g.cp_flags & CPF_TRY))) {
 		sfinfo->endpt = granter;
-		sfinfo->addr = priv(granter_proc)->s_grant_table +
-		    sizeof(g) * grant_idx + offsetof(cp_grant_t, cp_faulted);
-		sfinfo->value = grant;
+		sfinfo->addr = priv(granter_proc)->s_grant_పట్టిక +
+		    పరిమాణం(g) * grant_idx + offsetof(cp_grant_t, cp_faulted);
+		sfinfo->విలువ = grant;
 	}
 
-	return OK;
+	తిరిగి OK;
 }
 
 /*===========================================================================*
  *				safecopy				     *
  *===========================================================================*/
-static int safecopy(
-  struct proc * caller,
+స్థిర పూర్ణాంకం safecopy(
+  నిర్మాణం proc * caller,
   endpoint_t granter,
   endpoint_t grantee,
   cp_grant_id_t grantid,
-  size_t bytes,
-  vir_bytes g_offset,
-  vir_bytes addr,
-  int access			/* CPF_READ for a copy from granter to grantee, CPF_WRITE
+  size_t బైట్లు,
+  vir_బైట్లు g_స్థానభ్రంశం,
+  vir_బైట్లు addr,
+  పూర్ణాంకం access			/* CPF_READ for a copy from granter to grantee, CPF_WRITE
 				 * for a copy from grantee to granter.
 				 */
 )
 {
-	static struct vir_addr v_src, v_dst;
-	static vir_bytes v_offset;
+	స్థిర నిర్మాణం vir_addr v_src, v_dst;
+	స్థిర vir_బైట్లు v_స్థానభ్రంశం;
 	endpoint_t new_granter, *src, *dst;
-	int r;
-	struct cp_sfinfo sfinfo;
+	పూర్ణాంకం r;
+	నిర్మాణం cp_sfinfo sfinfo;
 
-	if(granter == NONE || grantee == NONE) {
-		printf("safecopy: nonsense processes\n");
-		return EFAULT;
+	ఒకవేళ(granter == NONE || grantee == NONE) {
+		రాయి("safecopy: nonsense processes\n");
+		తిరిగి EFAULT;
 	}
 
 	/* Decide who is src and who is dst. */
-	if(access & CPF_READ) {
+	ఒకవేళ(access & CPF_READ) {
 		src = &granter;
 		dst = &grantee;
-	} else {
+	} లేకపోతే {
 		src = &grantee;
 		dst = &granter;
 	}
 
 	/* Verify permission exists. */
-	if((r=verify_grant(granter, grantee, grantid, bytes, access,
-	    g_offset, &v_offset, &new_granter, &sfinfo)) != OK) {
-		if(r == ENOTREADY) return r;
-			printf(
+	ఒకవేళ((r=verify_grant(granter, grantee, grantid, బైట్లు, access,
+	    g_స్థానభ్రంశం, &v_స్థానభ్రంశం, &new_granter, &sfinfo)) != OK) {
+		ఒకవేళ(r == ENOTREADY) తిరిగి r;
+			రాయి(
 		"grant %d verify to copy %d->%d by %d failed: err %d\n",
 				grantid, *src, *dst, grantee, r);
-		return r;
+		తిరిగి r;
 	}
 
 	/* verify_grant() can redirect the grantee to someone else,
@@ -324,16 +324,16 @@ static int safecopy(
 	 * Depending on the access, this is the source or destination
 	 * address.
 	 */
-	if(access & CPF_READ) {
-		v_src.offset = v_offset;
-		v_dst.offset = (vir_bytes) addr;
-	} else {
-		v_src.offset = (vir_bytes) addr;
-		v_dst.offset = v_offset;
+	ఒకవేళ(access & CPF_READ) {
+		v_src.స్థానభ్రంశం = v_స్థానభ్రంశం;
+		v_dst.స్థానభ్రంశం = (vir_బైట్లు) addr;
+	} లేకపోతే {
+		v_src.స్థానభ్రంశం = (vir_బైట్లు) addr;
+		v_dst.స్థానభ్రంశం = v_స్థానభ్రంశం;
 	}
 
 	/* Do the regular copy. */
-	if (sfinfo.try) {
+	ఒకవేళ (sfinfo.try) {
 		/*
 		 * Try copying without transparently faulting in pages.
 		 * TODO: while CPF_TRY is meant to protect against deadlocks on
@@ -343,8 +343,8 @@ static int safecopy(
 		 * a good idea to go through VM even in this case, and have VM
 		 * fail (only) if the affected page belongs to a file mapping.
 		 */
-		r = virtual_copy(&v_src, &v_dst, bytes);
-		if (r == EFAULT_SRC || r == EFAULT_DST) {
+		r = virtual_copy(&v_src, &v_dst, బైట్లు);
+		ఒకవేళ (r == EFAULT_SRC || r == EFAULT_DST) {
 			/*
 			 * Mark the magic grant as having experienced a soft
 			 * fault during its lifetime.  The exact value does not
@@ -352,97 +352,97 @@ static int safecopy(
 			 * sequence number) as a form of protection in the
 			 * light of CPU concurrency.
 			 */
-			r = data_copy(KERNEL, (vir_bytes)&sfinfo.value,
-			    sfinfo.endpt, sfinfo.addr, sizeof(sfinfo.value));
+			r = దత్తాంశం_copy(KERNEL, (vir_బైట్లు)&sfinfo.విలువ,
+			    sfinfo.endpt, sfinfo.addr, పరిమాణం(sfinfo.విలువ));
 			/*
 			 * Failure means the creator of the magic grant messed
 			 * up, which can only be unintentional, so report..
 			 */
-			if (r != OK)
-				printf("Kernel: writing soft fault marker %d "
+			ఒకవేళ (r != OK)
+				రాయి("Kernel: writing soft fault marker %d "
 				    "into %d at 0x%lx failed (%d)\n",
-				    sfinfo.value, sfinfo.endpt, sfinfo.addr,
+				    sfinfo.విలువ, sfinfo.endpt, sfinfo.addr,
 				    r);
 
-			return EFAULT;
+			తిరిగి EFAULT;
 		}
-		return r;
+		తిరిగి r;
 	}
-	return virtual_copy_vmcheck(caller, &v_src, &v_dst, bytes);
+	తిరిగి virtual_copy_vmcheck(caller, &v_src, &v_dst, బైట్లు);
 }
 
 /*===========================================================================*
  *				do_safecopy_to				     *
  *===========================================================================*/
-int do_safecopy_to(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_safecopy_గమ్యం(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
-	return safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_to, caller->p_endpoint,
+	తిరిగి safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_గమ్యం, caller->p_endpoint,
 		(cp_grant_id_t) m_ptr->m_lsys_kern_safecopy.gid,
-		m_ptr->m_lsys_kern_safecopy.bytes, m_ptr->m_lsys_kern_safecopy.offset,
-		(vir_bytes) m_ptr->m_lsys_kern_safecopy.address, CPF_WRITE);
+		m_ptr->m_lsys_kern_safecopy.బైట్లు, m_ptr->m_lsys_kern_safecopy.స్థానభ్రంశం,
+		(vir_బైట్లు) m_ptr->m_lsys_kern_safecopy.చిరునామా, CPF_WRITE);
 }
 
 /*===========================================================================*
  *				do_safecopy_from			     *
  *===========================================================================*/
-int do_safecopy_from(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_safecopy_from(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
-	return safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_to, caller->p_endpoint,
+	తిరిగి safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_గమ్యం, caller->p_endpoint,
 		(cp_grant_id_t) m_ptr->m_lsys_kern_safecopy.gid,
-		m_ptr->m_lsys_kern_safecopy.bytes, m_ptr->m_lsys_kern_safecopy.offset,
-		(vir_bytes) m_ptr->m_lsys_kern_safecopy.address, CPF_READ);
+		m_ptr->m_lsys_kern_safecopy.బైట్లు, m_ptr->m_lsys_kern_safecopy.స్థానభ్రంశం,
+		(vir_బైట్లు) m_ptr->m_lsys_kern_safecopy.చిరునామా, CPF_READ);
 }
 
 /*===========================================================================*
  *				do_vsafecopy				     *
  *===========================================================================*/
-int do_vsafecopy(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_vsafecopy(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
-	static struct vscp_vec vec[SCPVEC_NR];
-	static struct vir_addr src, dst;
-	int r, i, els;
-	size_t bytes;
+	స్థిర నిర్మాణం vscp_vec vec[SCPVEC_NR];
+	స్థిర నిర్మాణం vir_addr src, dst;
+	పూర్ణాంకం r, i, els;
+	size_t బైట్లు;
 
 	/* Set vector copy parameters. */
 	src.proc_nr_e = caller->p_endpoint;
-	assert(src.proc_nr_e != NONE);
-	src.offset = (vir_bytes) m_ptr->m_lsys_kern_vsafecopy.vec_addr;
+	ప్రతిజ్ఞా(src.proc_nr_e != NONE);
+	src.స్థానభ్రంశం = (vir_బైట్లు) m_ptr->m_lsys_kern_vsafecopy.vec_addr;
 	dst.proc_nr_e = KERNEL;
-	dst.offset = (vir_bytes) vec;
+	dst.స్థానభ్రంశం = (vir_బైట్లు) vec;
 
 	/* No. of vector elements. */
-	els = m_ptr->m_lsys_kern_vsafecopy.vec_size;
-	bytes = els * sizeof(struct vscp_vec);
+	els = m_ptr->m_lsys_kern_vsafecopy.vec_కొలత;
+	బైట్లు = els * పరిమాణం(నిర్మాణం vscp_vec);
 
 	/* Obtain vector of copies. */
-	if((r=virtual_copy_vmcheck(caller, &src, &dst, bytes)) != OK)
-		return r;
+	ఒకవేళ((r=virtual_copy_vmcheck(caller, &src, &dst, బైట్లు)) != OK)
+		తిరిగి r;
 
 	/* Perform safecopies. */
-	for(i = 0; i < els; i++) {
-		int access;
+	కొరకు(i = 0; i < els; i++) {
+		పూర్ణాంకం access;
 		endpoint_t granter;
-		if(vec[i].v_from == SELF) {
+		ఒకవేళ(vec[i].v_from == SELF) {
 			access = CPF_WRITE;
-			granter = vec[i].v_to;
-		} else if(vec[i].v_to == SELF) {
+			granter = vec[i].v_గమ్యం;
+		} లేకపోతే ఒకవేళ(vec[i].v_గమ్యం == SELF) {
 			access = CPF_READ;
 			granter = vec[i].v_from;
-		} else {
-			printf("vsafecopy: %d: element %d/%d: no SELF found\n",
+		} లేకపోతే {
+			రాయి("vsafecopy: %d: element %d/%d: no SELF found\n",
 				caller->p_endpoint, i, els);
-			return EINVAL;
+			తిరిగి EINVAL;
 		}
 
 		/* Do safecopy for this element. */
-		if((r=safecopy(caller, granter, caller->p_endpoint,
+		ఒకవేళ((r=safecopy(caller, granter, caller->p_endpoint,
 			vec[i].v_gid,
-			vec[i].v_bytes, vec[i].v_offset,
+			vec[i].v_బైట్లు, vec[i].v_స్థానభ్రంశం,
 			vec[i].v_addr, access)) != OK) {
-			return r;
+			తిరిగి r;
 		}
 	}
 
-	return OK;
+	తిరిగి OK;
 }
 

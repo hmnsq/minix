@@ -1,64 +1,64 @@
-#ifndef KERNEL_H
-#define KERNEL_H
+#నిర్వచితం_కాకపోతే KERNEL_H
+#నిర్వచించు KERNEL_H
 
 /* boot verbose */
-#define CONFIG_BOOT_VERBOSE
+#నిర్వచించు CONFIG_BOOT_VERBOSE
 
-#ifndef CONFIG_MAX_CPUS
-#define CONFIG_MAX_CPUS	1
-#endif
+#నిర్వచితం_కాకపోతే CONFIG_MAX_CPUS
+#నిర్వచించు CONFIG_MAX_CPUS	1
+#అయితే_ముగింపు
 
 /* OXPCIe952 PCIe with 2 UARTs in-kernel support */
-#define CONFIG_OXPCIE	0
+#నిర్వచించు CONFIG_OXPCIE	0
 
 /* This is the master header for the kernel.  It includes some other files
  * and defines the principal constants.
  */
-#define _SYSTEM            1	/* tell headers that this is the kernel */
+#నిర్వచించు _SYSTEM            1	/* tell headers that this is the kernel */
 
 /*
  * we need the defines above in assembly files to configure the kernel
  * correctly. However we don't need the rest
  */
-#ifndef __ASSEMBLY__
+#నిర్వచితం_కాకపోతే __ASSEMBLY__
 
 /* The following are so basic, all the *.c files get them automatically. */
-#include <minix/config.h>	/* global configuration, MUST be first */
-#include <sys/types.h>		/* general system types */
-#include <minix/const.h>	/* MINIX specific constants */
-#include <minix/type.h>		/* MINIX specific types, e.g. message */
-#include <minix/ipc.h>		/* MINIX run-time system */
-#include <minix/sysutil.h>	/* MINIX utility library functions */
-#include <minix/timers.h>		/* watchdog timer management */
-#include <errno.h>		/* return codes and error numbers */
-#include <sys/param.h>
-#include <minix/param.h>
+#అన్తర్భావ <minix/config.h>	/* global configuration, MUST be first */
+#అన్తర్భావ <sys/types.h>		/* general system types */
+#అన్తర్భావ <minix/const.h>	/* MINIX specific constants */
+#అన్తర్భావ <minix/type.h>		/* MINIX specific types, e.g. message */
+#అన్తర్భావ <minix/ipc.h>		/* MINIX run-time system */
+#అన్తర్భావ <minix/sysutil.h>	/* MINIX utility library functions */
+#అన్తర్భావ <minix/timers.h>		/* watchdog timer management */
+#అన్తర్భావ <errno.h>		/* return codes and error numbers */
+#అన్తర్భావ <sys/param.h>
+#అన్తర్భావ <minix/param.h>
 
 /* Important kernel header files. */
-#include "kernel/config.h"		/* configuration, MUST be first */
-#include "kernel/const.h"		/* constants, MUST be second */
-#include "kernel/type.h"		/* type definitions, MUST be third */
-#include "kernel/proto.h"		/* function prototypes */
-#include "kernel/glo.h"		/* global variables */
-#include "kernel/ipc.h"		/* IPC constants */
-#include "kernel/profile.h"		/* system profiling */
-#include "kernel/proc.h"		/* process table */
-#include "kernel/cpulocals.h"		/* CPU-local variables */
-#include "kernel/debug.h"		/* debugging, MUST be last kernel header */
+#అన్తర్భావ "kernel/config.h"		/* configuration, MUST be first */
+#అన్తర్భావ "kernel/const.h"		/* constants, MUST be second */
+#అన్తర్భావ "kernel/type.h"		/* type definitions, MUST be third */
+#అన్తర్భావ "kernel/proto.h"		/* function prototypes */
+#అన్తర్భావ "kernel/glo.h"		/* global variables */
+#అన్తర్భావ "kernel/ipc.h"		/* IPC constants */
+#అన్తర్భావ "kernel/profile.h"		/* system profiling */
+#అన్తర్భావ "kernel/proc.h"		/* process table */
+#అన్తర్భావ "kernel/cpulocals.h"		/* CPU-local variables */
+#అన్తర్భావ "kernel/debug.h"		/* debugging, MUST be last kernel header */
 
-#ifndef CONFIG_SMP
+#నిర్వచితం_కాకపోతే CONFIG_SMP
 /* We only support 1 cpu now */
-#define CONFIG_MAX_CPUS	1
-#define cpuid		0
+#నిర్వచించు CONFIG_MAX_CPUS	1
+#నిర్వచించు cpuid		0
 /* this is always true on an uniprocessor */
-#define cpu_is_bsp(x) 1
+#నిర్వచించు cpu_is_bsp(x) 1
 
-#else
+#లేకపోతే
 
-#include "kernel/smp.h"
+#అన్తర్భావ "kernel/smp.h"
 
-#endif
+#అయితే_ముగింపు
 
-#endif /* __ASSEMBLY__ */
+#అయితే_ముగింపు /* __ASSEMBLY__ */
 
-#endif /* KERNEL_H */
+#అయితే_ముగింపు /* KERNEL_H */

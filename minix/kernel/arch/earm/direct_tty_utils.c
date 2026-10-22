@@ -1,30 +1,30 @@
 
-#include "kernel/kernel.h"
-#include "direct_utils.h"
-#include "bsp_serial.h"
-#include "glo.h"
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "direct_utils.h"
+#అన్తర్భావ "bsp_serial.h"
+#అన్తర్భావ "glo.h"
 
-void direct_cls(void)
+శూన్య ప్రత్యక్ష_cls(శూన్య)
 {
     /* Do nothing */
 }
 
-void direct_print_char(char c)
+శూన్య ప్రత్యక్ష_print_char(అక్షరం c)
 {
-	if(c == '\n')
+	ఒకవేళ(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
-void direct_print(const char *str)
+శూన్య ప్రత్యక్ష_print(స్థిరరాశి అక్షరం *str)
 {
-	while (*str) {
-		direct_print_char(*str);
+	అయితే (*str) {
+		ప్రత్యక్ష_print_char(*str);
 		str++;
 	}
 }
 
-int direct_read_char(unsigned char *ch)
+పూర్ణాంకం ప్రత్యక్ష_read_char(గుర్తులేని అక్షరం *ch)
 {
-	return 0;
+	తిరిగి 0;
 }

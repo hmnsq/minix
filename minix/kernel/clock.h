@@ -1,22 +1,22 @@
-#ifndef __CLOCK_H__
-#define __CLOCK_H__
+#నిర్వచితం_కాకపోతే __CLOCK_H__
+#నిర్వచించు __CLOCK_H__
 
-#include "kernel/kernel.h"
-#include "arch_clock.h"
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "arch_clock.h"
 
-int boot_cpu_init_timer(unsigned freq);
-int app_cpu_init_timer(unsigned freq);
+పూర్ణాంకం boot_cpu_init_timer(గుర్తులేని freq);
+పూర్ణాంకం app_cpu_init_timer(గుర్తులేని freq);
 
-int timer_int_handler(void);
+పూర్ణాంకం timer_int_handler(శూన్య);
 
-int init_local_timer(unsigned freq);
+పూర్ణాంకం init_local_timer(గుర్తులేని freq);
 /* stop the local timer ticking */
-void stop_local_timer(void);
+శూన్య stop_local_timer(శూన్య);
 /* let the time tick again with the original settings after it was stopped */
-void restart_local_timer(void);
-int register_local_timer_handler(irq_handler_t handler);
+శూన్య restart_local_timer(శూన్య);
+పూర్ణాంకం రిజిస్టరు_local_timer_handler(irq_handler_t handler);
 
-u64_t ms_2_cpu_time(unsigned ms);
-unsigned cpu_time_2_ms(u64_t cpu_time);
+u64_t ms_2_cpu_సమయం(గుర్తులేని ms);
+గుర్తులేని cpu_సమయం_2_ms(u64_t cpu_సమయం);
 
-#endif /* __CLOCK_H__ */
+#అయితే_ముగింపు /* __CLOCK_H__ */

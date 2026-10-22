@@ -27,184 +27,184 @@
  *   Feb 02, 2004   created SYS_DEVIO to support drivers  (Jorrit N. Herder) 
  */ 
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#నిర్వచితం_కాకపోతే SYSTEM_H
+#నిర్వచించు SYSTEM_H
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
-#define do_exec NULL
-#endif
+పూర్ణాంకం do_exec(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_EXEC
+#నిర్వచించు do_exec ఖాళీ
+#అయితే_ముగింపు
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
-#define do_fork NULL
-#endif
+పూర్ణాంకం do_fork(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_FORK
+#నిర్వచించు do_fork ఖాళీ
+#అయితే_ముగింపు
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
-#define do_clear NULL
-#endif
+పూర్ణాంకం do_clear(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_CLEAR
+#నిర్వచించు do_clear ఖాళీ
+#అయితే_ముగింపు
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
-#define do_trace NULL
-#endif
+పూర్ణాంకం do_trace(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_TRACE
+#నిర్వచించు do_trace ఖాళీ
+#అయితే_ముగింపు
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
-#define do_runctl NULL
-#endif
+పూర్ణాంకం do_runctl(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_RUNCTL
+#నిర్వచించు do_runctl ఖాళీ
+#అయితే_ముగింపు
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
-#define do_update NULL
-#endif
+పూర్ణాంకం do_update(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_UPDATE
+#నిర్వచించు do_update ఖాళీ
+#అయితే_ముగింపు
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
-#define do_exit NULL
-#endif
+పూర్ణాంకం do_exit(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_EXIT
+#నిర్వచించు do_exit ఖాళీ
+#అయితే_ముగింపు
 
-int do_copy(struct proc * caller, message *m_ptr);
-#define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
-#define do_copy NULL
-#endif
+పూర్ణాంకం do_copy(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#నిర్వచించు do_vircopy 	do_copy
+#ఒకవేళ ! (USE_VIRCOPY || USE_PHYSCOPY)
+#నిర్వచించు do_copy ఖాళీ
+#అయితే_ముగింపు
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
-#define do_umap NULL
-#endif
+పూర్ణాంకం do_umap(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_UMAP
+#నిర్వచించు do_umap ఖాళీ
+#అయితే_ముగింపు
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
-#define do_umap_remote NULL
-#endif
+పూర్ణాంకం do_umap_remote(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_UMAP_REMOTE
+#నిర్వచించు do_umap_remote ఖాళీ
+#అయితే_ముగింపు
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
-#define do_vumap NULL
-#endif
+పూర్ణాంకం do_vumap(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_VUMAP
+#నిర్వచించు do_vumap ఖాళీ
+#అయితే_ముగింపు
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
-#define do_memset NULL
-#endif
+పూర్ణాంకం do_memset(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_MEMSET
+#నిర్వచించు do_memset ఖాళీ
+#అయితే_ముగింపు
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
-#define do_abort NULL
-#endif
+పూర్ణాంకం do_abort(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_ABORT
+#నిర్వచించు do_abort ఖాళీ
+#అయితే_ముగింపు
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
-#define do_getinfo NULL
-#endif
+పూర్ణాంకం do_getinfo(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_GETINFO
+#నిర్వచించు do_getinfo ఖాళీ
+#అయితే_ముగింపు
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
-#define do_privctl NULL
-#endif
+పూర్ణాంకం do_privctl(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_PRIVCTL
+#నిర్వచించు do_privctl ఖాళీ
+#అయితే_ముగింపు
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
-#define do_irqctl NULL
-#endif
+పూర్ణాంకం do_irqctl(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_IRQCTL
+#నిర్వచించు do_irqctl ఖాళీ
+#అయితే_ముగింపు
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
-#define do_devio NULL
-#endif
+పూర్ణాంకం do_devio(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_DEVIO
+#నిర్వచించు do_devio ఖాళీ
+#అయితే_ముగింపు
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
-#define do_vdevio NULL
-#endif
+పూర్ణాంకం do_vdevio(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_VDEVIO
+#నిర్వచించు do_vdevio ఖాళీ
+#అయితే_ముగింపు
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
-#define do_sdevio NULL
-#endif
+పూర్ణాంకం do_sdevio(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_SDEVIO
+#నిర్వచించు do_sdevio ఖాళీ
+#అయితే_ముగింపు
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
-#define do_kill NULL
-#endif
+పూర్ణాంకం do_kill(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_KILL
+#నిర్వచించు do_kill ఖాళీ
+#అయితే_ముగింపు
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
-#define do_getksig NULL
-#endif
+పూర్ణాంకం do_getksig(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_GETKSIG
+#నిర్వచించు do_getksig ఖాళీ
+#అయితే_ముగింపు
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
-#define do_endksig NULL
-#endif
+పూర్ణాంకం do_endksig(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_ENDKSIG
+#నిర్వచించు do_endksig ఖాళీ
+#అయితే_ముగింపు
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
-#define do_sigsend NULL
-#endif
+పూర్ణాంకం do_sigsend(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_SIGSEND
+#నిర్వచించు do_sigsend ఖాళీ
+#అయితే_ముగింపు
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
-#define do_sigreturn NULL
-#endif
+పూర్ణాంకం do_sigreturn(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_SIGRETURN
+#నిర్వచించు do_sigreturn ఖాళీ
+#అయితే_ముగింపు
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
-#define do_times NULL
-#endif
+పూర్ణాంకం do_times(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_TIMES
+#నిర్వచించు do_times ఖాళీ
+#అయితే_ముగింపు
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
-#define do_setalarm NULL
-#endif
+పూర్ణాంకం do_setalarm(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_SETALARM
+#నిర్వచించు do_setalarm ఖాళీ
+#అయితే_ముగింపు
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+పూర్ణాంకం do_stime(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_settime(నిర్మాణం proc * caller, సందేశం *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
-#define do_vtimer NULL
-#endif
+పూర్ణాంకం do_vtimer(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_VTIMER
+#నిర్వచించు do_vtimer ఖాళీ
+#అయితే_ముగింపు
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+పూర్ణాంకం do_safecopy_గమ్యం(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_safecopy_from(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_vsafecopy(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_iopenable(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_vmctl(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_setgrant(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_readbios(నిర్మాణం proc * caller, సందేశం *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+పూర్ణాంకం do_safememset(నిర్మాణం proc * caller, సందేశం *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
-#define do_sprofile NULL
-#endif
+పూర్ణాంకం do_sprofile(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! SPROFILE
+#నిర్వచించు do_sprofile ఖాళీ
+#అయితే_ముగింపు
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
-#define do_getmcontext NULL
-#define do_setmcontext NULL
-#endif
+పూర్ణాంకం do_getmcontext(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_setmcontext(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_MCONTEXT
+#నిర్వచించు do_getmcontext ఖాళీ
+#నిర్వచించు do_setmcontext ఖాళీ
+#అయితే_ముగింపు
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+పూర్ణాంకం do_కాలపట్టిక(నిర్మాణం proc * caller, సందేశం *m_ptr);
+పూర్ణాంకం do_schedctl(నిర్మాణం proc * caller, సందేశం *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
-#define do_statectl NULL
-#endif
+పూర్ణాంకం do_statectl(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_STATECTL
+#నిర్వచించు do_statectl ఖాళీ
+#అయితే_ముగింపు
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
-#define do_padconf NULL
-#endif
+పూర్ణాంకం do_padconf(నిర్మాణం proc * caller, సందేశం *m_ptr);
+#ఒకవేళ ! USE_PADCONF
+#నిర్వచించు do_padconf ఖాళీ
+#అయితే_ముగింపు
 
-#endif	/* SYSTEM_H */
+#అయితే_ముగింపు	/* SYSTEM_H */
 

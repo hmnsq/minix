@@ -1,97 +1,97 @@
 /* ARM-specific clock functions. */
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#include "kernel/clock.h"
-#include "kernel/interrupt.h"
-#include <minix/u64.h>
-#include <minix/board.h>
-#include "kernel/glo.h"
-#include "kernel/profile.h"
+#అన్తర్భావ "kernel/clock.h"
+#అన్తర్భావ "kernel/interrupt.h"
+#అన్తర్భావ <minix/u64.h>
+#అన్తర్భావ <minix/board.h>
+#అన్తర్భావ "kernel/glo.h"
+#అన్తర్భావ "kernel/profile.h"
 
-#include <sys/sched.h> /* for CP_*, CPUSTATES */
-#if CPUSTATES != MINIX_CPUSTATES
+#అన్తర్భావ <sys/sched.h> /* for CP_*, CPUSTATES */
+#ఒకవేళ CPUSTATES != MINIX_CPUSTATES
 /* If this breaks, the code in this file may have to be adapted accordingly. */
-#error "MINIX_CPUSTATES value is out of sync with NetBSD's!"
-#endif
+#దోషం "MINIX_CPUSTATES value is out of sync with NetBSD's!"
+#అయితే_ముగింపు
 
-#include "kernel/spinlock.h"
+#అన్తర్భావ "kernel/spinlock.h"
 
-#ifdef CONFIG_SMP
-#include "kernel/smp.h"
-#error CONFIG_SMP is unsupported on ARM
-#endif
+#నిర్వచితమైతే CONFIG_SMP
+#అన్తర్భావ "kernel/smp.h"
+#దోషం CONFIG_SMP is unsupported on ARM
+#అయితే_ముగింపు
 
-#include "bsp_timer.h"
-#include "bsp_intr.h"
+#అన్తర్భావ "bsp_timer.h"
+#అన్తర్భావ "bsp_intr.h"
 
-static unsigned tsc_per_ms[CONFIG_MAX_CPUS];
-static unsigned tsc_per_tick[CONFIG_MAX_CPUS];
-static uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
+స్థిర గుర్తులేని tsc_చొప్పున_ms[CONFIG_MAX_CPUS];
+స్థిర గుర్తులేని tsc_చొప్పున_tick[CONFIG_MAX_CPUS];
+స్థిర uint64_t tsc_చొప్పున_state[CONFIG_MAX_CPUS][CPUSTATES];
 
-int init_local_timer(unsigned freq)
+పూర్ణాంకం init_local_timer(గుర్తులేని freq)
 {
 	bsp_timer_init(freq);
 
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		tsc_per_ms[0] = 16250;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		tsc_per_ms[0] = 15000;
-	} else {
+	ఒకవేళ (BOARD_IS_BBXM(machine.board_id)) {
+		tsc_చొప్పున_ms[0] = 16250;
+	} లేకపోతే ఒకవేళ (BOARD_IS_BB(machine.board_id)) {
+		tsc_చొప్పున_ms[0] = 15000;
+	} లేకపోతే {
 		panic("Can not do the clock setup. machine (0x%08x) is unknown\n",machine.board_id);
 	};
 
-	tsc_per_tick[0] = tsc_per_ms[0] * 1000 / system_hz;
+	tsc_చొప్పున_tick[0] = tsc_చొప్పున_ms[0] * 1000 / system_hz;
 
-	return 0;
+	తిరిగి 0;
 }
 
-void stop_local_timer(void)
+శూన్య stop_local_timer(శూన్య)
 {
 	bsp_timer_stop();
 }
 
-void arch_timer_int_handler(void)
+శూన్య arch_timer_int_handler(శూన్య)
 {
 	bsp_timer_int_handler();
 }
 
-void cycles_accounting_init(void)
+శూన్య చక్రాలు_accounting_init(శూన్య)
 {
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+#నిర్వచితమైతే CONFIG_SMP
+	గుర్తులేని cpu = cpuid;
+#అయితే_ముగింపు
 
 	read_tsc_64(get_cpu_var_ptr(cpu, tsc_ctr_switch));
 
-	get_cpu_var(cpu, cpu_last_tsc) = 0;
-	get_cpu_var(cpu, cpu_last_idle) = 0;
+	get_cpu_var(cpu, cpu_చివరి_tsc) = 0;
+	get_cpu_var(cpu, cpu_చివరి_idle) = 0;
 }
 
-void context_stop(struct proc * p)
+శూన్య context_stop(నిర్మాణం proc * p)
 {
 	u64_t tsc, tsc_delta;
 	u64_t * __tsc_ctr_switch = get_cpulocal_var_ptr(tsc_ctr_switch);
-	unsigned int cpu, tpt, counter;
+	గుర్తులేని పూర్ణాంకం cpu, tpt, counter;
 
-#ifdef CONFIG_SMP
-#error CONFIG_SMP is unsupported on ARM
-#else
+#నిర్వచితమైతే CONFIG_SMP
+#దోషం CONFIG_SMP is unsupported on ARM
+#లేకపోతే
 	read_tsc_64(&tsc);
-	p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
+	p->p_చక్రాలు = p->p_చక్రాలు + tsc - *__tsc_ctr_switch;
 	cpu = 0;
-#endif
+#అయితే_ముగింపు
 
 	tsc_delta = tsc - *__tsc_ctr_switch;
 
-	if (kbill_ipc) {
-		kbill_ipc->p_kipc_cycles += tsc_delta;
-		kbill_ipc = NULL;
+	ఒకవేళ (kbill_ipc) {
+		kbill_ipc->p_kipc_చక్రాలు += tsc_delta;
+		kbill_ipc = ఖాళీ;
 	}
 
-	if (kbill_kcall) {
-		kbill_kcall->p_kcall_cycles += tsc_delta;
-		kbill_kcall = NULL;
+	ఒకవేళ (kbill_kcall) {
+		kbill_kcall->p_kcall_చక్రాలు += tsc_delta;
+		kbill_kcall = ఖాళీ;
 	}
 
 	/*
@@ -104,11 +104,11 @@ void context_stop(struct proc * p)
 	 * the code below is a loop, but the loop will in by far most cases not
 	 * be executed more than once, and often be skipped at all.
 	 */
-	tpt = tsc_per_tick[cpu];
+	tpt = tsc_చొప్పున_tick[cpu];
 
-	p->p_tick_cycles += tsc_delta;
-	while (tpt > 0 && p->p_tick_cycles >= tpt) {
-		p->p_tick_cycles -= tpt;
+	p->p_tick_చక్రాలు += tsc_delta;
+	అయితే (tpt > 0 && p->p_tick_చక్రాలు >= tpt) {
+		p->p_tick_చక్రాలు -= tpt;
 
 		/*
 		 * The process has spent roughly a whole clock tick worth of
@@ -124,124 +124,124 @@ void context_stop(struct proc * p)
 	 * process during its current quantum. Skip IDLE and other pseudo kernel
 	 * tasks, except for global accounting purposes.
 	 */
-	if (p->p_endpoint >= 0) {
+	ఒకవేళ (p->p_endpoint >= 0) {
 		/* On MINIX3, the "system" counter covers system processes. */
-		if (p->p_priv != priv_addr(USER_PRIV_ID))
+		ఒకవేళ (p->p_priv != priv_addr(USER_PRIV_ID))
 			counter = CP_SYS;
-		else if (p->p_misc_flags & MF_NICED)
+		లేకపోతే ఒకవేళ (p->p_misc_flags & MF_NICED)
 			counter = CP_NICE;
-		else
+		లేకపోతే
 			counter = CP_USER;
 
-#if DEBUG_RACE
-		p->p_cpu_time_left = 0;
-#else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
-		} else {
-			p->p_cpu_time_left = 0;
+#ఒకవేళ DEBUG_RACE
+		p->p_cpu_సమయం_ఎడమ = 0;
+#లేకపోతే
+		ఒకవేళ (tsc_delta < p->p_cpu_సమయం_ఎడమ) {
+			p->p_cpu_సమయం_ఎడమ -= tsc_delta;
+		} లేకపోతే {
+			p->p_cpu_సమయం_ఎడమ = 0;
 		}
-#endif
-	} else {
+#అయితే_ముగింపు
+	} లేకపోతే {
 		/* On MINIX3, the "interrupts" counter covers the kernel. */
-		if (p->p_endpoint == IDLE)
+		ఒకవేళ (p->p_endpoint == IDLE)
 			counter = CP_IDLE;
-		else
+		లేకపోతే
 			counter = CP_INTR;
 	}
 
-	tsc_per_state[cpu][counter] += tsc_delta;
+	tsc_చొప్పున_state[cpu][counter] += tsc_delta;
 
 	*__tsc_ctr_switch = tsc;
 }
 
-void context_stop_idle(void)
+శూన్య context_stop_idle(శూన్య)
 {
-	int is_idle;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	పూర్ణాంకం is_idle;
+#నిర్వచితమైతే CONFIG_SMP
+	గుర్తులేని cpu = cpuid;
+#అయితే_ముగింపు
 
 	is_idle = get_cpu_var(cpu, cpu_is_idle);
 	get_cpu_var(cpu, cpu_is_idle) = 0;
 
 	context_stop(get_cpulocal_var_ptr(idle_proc));
 
-	if (is_idle)
+	ఒకవేళ (is_idle)
 		restart_local_timer();
-#if SPROFILE
-	if (sprofiling)
+#ఒకవేళ SPROFILE
+	ఒకవేళ (sprofiling)
 		get_cpulocal_var(idle_interrupted) = 1;
-#endif
+#అయితే_ముగింపు
 }
 
-void restart_local_timer(void)
+శూన్య restart_local_timer(శూన్య)
 {
 }
 
-int register_local_timer_handler(const irq_handler_t handler)
+పూర్ణాంకం రిజిస్టరు_local_timer_handler(స్థిరరాశి irq_handler_t handler)
 {
-	return bsp_register_timer_handler(handler);
+	తిరిగి bsp_రిజిస్టరు_timer_handler(handler);
 }
 
-u64_t ms_2_cpu_time(unsigned ms)
+u64_t ms_2_cpu_సమయం(గుర్తులేని ms)
 {
-	return (u64_t)tsc_per_ms[cpuid] * ms;
+	తిరిగి (u64_t)tsc_చొప్పున_ms[cpuid] * ms;
 }
 
-unsigned cpu_time_2_ms(u64_t cpu_time)
+గుర్తులేని cpu_సమయం_2_ms(u64_t cpu_సమయం)
 {
-	return (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
+	తిరిగి (గుర్తులేని దీర్ఘ)(cpu_సమయం / tsc_చొప్పున_ms[cpuid]);
 }
 
-short cpu_load(void)
+పొట్టి cpu_ఎక్కించు(శూన్య)
 {
 	u64_t current_tsc, *current_idle;
 	u64_t tsc_delta, idle_delta, busy;
-	struct proc *idle;
-	short load;
-#ifdef CONFIG_SMP
-	unsigned cpu = cpuid;
-#endif
+	నిర్మాణం proc *idle;
+	పొట్టి ఎక్కించు;
+#నిర్వచితమైతే CONFIG_SMP
+	గుర్తులేని cpu = cpuid;
+#అయితే_ముగింపు
 
-	u64_t *last_tsc, *last_idle;
+	u64_t *చివరి_tsc, *చివరి_idle;
 
-	last_tsc = get_cpu_var_ptr(cpu, cpu_last_tsc);
-	last_idle = get_cpu_var_ptr(cpu, cpu_last_idle);
+	చివరి_tsc = get_cpu_var_ptr(cpu, cpu_చివరి_tsc);
+	చివరి_idle = get_cpu_var_ptr(cpu, cpu_చివరి_idle);
 
 	idle = get_cpu_var_ptr(cpu, idle_proc);;
 	read_tsc_64(&current_tsc);
-	current_idle = &idle->p_cycles; /* ptr to idle proc */
+	current_idle = &idle->p_చక్రాలు; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (*last_tsc) {
-		tsc_delta = current_tsc - *last_tsc;
-		idle_delta = *current_idle - *last_idle;
+	ఒకవేళ (*చివరి_tsc) {
+		tsc_delta = current_tsc - *చివరి_tsc;
+		idle_delta = *current_idle - *చివరి_idle;
 
 		busy = tsc_delta - idle_delta;
 		busy = busy * 100;
-		load = ex64lo(busy / tsc_delta);
+		ఎక్కించు = ex64lo(busy / tsc_delta);
 
-		if (load > 100)
-			load = 100;
-	} else
-		load = 0;
+		ఒకవేళ (ఎక్కించు > 100)
+			ఎక్కించు = 100;
+	} లేకపోతే
+		ఎక్కించు = 0;
 
-	*last_tsc = current_tsc;
-	*last_idle = *current_idle;
-	return load;
+	*చివరి_tsc = current_tsc;
+	*చివరి_idle = *current_idle;
+	తిరిగి ఎక్కించు;
 }
 
 /*
  * Return the number of clock ticks spent in each of a predefined number of
  * CPU states.
  */
-void
-get_cpu_ticks(unsigned int cpu, uint64_t ticks[CPUSTATES])
+శూన్య
+get_cpu_ticks(గుర్తులేని పూర్ణాంకం cpu, uint64_t ticks[CPUSTATES])
 {
-	int i;
+	పూర్ణాంకం i;
 
 	/* TODO: make this inter-CPU safe! */
-	for (i = 0; i < CPUSTATES; i++)
-		ticks[i] = tsc_per_state[cpu][i] / tsc_per_tick[cpu];
+	కొరకు (i = 0; i < CPUSTATES; i++)
+		ticks[i] = tsc_చొప్పున_state[cpu][i] / tsc_చొప్పున_tick[cpu];
 }

@@ -11,96 +11,96 @@
  *   m_lsys_krn_sys_getmcontext.ctx_ptr	# pointer to mcontext structure
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <assert.h>
-#include <machine/mcontext.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <string.h>
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#ఒకవేళ USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_getmcontext(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Retrieve machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  నమోదు నిర్మాణం proc *rp;
+  పూర్ణాంకం proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ఒకవేళ (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	తిరిగి(EINVAL);
+  ఒకవేళ (iskerneln(proc_nr)) తిరిగి(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
-#endif
+#ఒకవేళ defined(__i386__)
+  ఒకవేళ (!proc_వాడిన_fpu(rp))
+	తిరిగి(OK);	/* No state to copy */
+#అయితే_ముగింపు
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  ఒకవేళ ((r = దత్తాంశం_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_బైట్లు) &mc, (phys_బైట్లు) పరిమాణం(mcontext_t))) != OK)
+	తిరిగి(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#ఒకవేళ defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  ఒకవేళ (proc_వాడిన_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_SIZE);
+	ప్రతిజ్ఞా(పరిమాణం(mc.__fpregs.__fp_reg_set) == FPU_XFP_కొలత);
+	జ్ఞాపకం_నకలు(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_కొలత);
   } 
-#endif
+#అయితే_ముగింపు
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  ఒకవేళ ((r = దత్తాంశం_copy(KERNEL, (vir_బైట్లు) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
-	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	(phys_బైట్లు) పరిమాణం(mcontext_t))) != OK)
+	తిరిగి(r);
 
-  return(OK);
+  తిరిగి(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_setmcontext(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Set machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  నమోదు నిర్మాణం proc *rp;
+  పూర్ణాంకం proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  ఒకవేళ (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) తిరిగి(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  ఒకవేళ ((r = దత్తాంశం_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_బైట్లు) &mc, (phys_బైట్లు) పరిమాణం(mcontext_t))) != OK)
+	తిరిగి(r);
 
-#if defined(__i386__)
+#ఒకవేళ defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  ఒకవేళ (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
-	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+	ప్రతిజ్ఞా(పరిమాణం(mc.__fpregs.__fp_reg_set) == FPU_XFP_కొలత);
+	జ్ఞాపకం_నకలు(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_కొలత);
+  } లేకపోతే
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
-#endif
+#అయితే_ముగింపు
 
-  return(OK);
+  తిరిగి(OK);
 }
 
-#endif
+#అయితే_ముగింపు

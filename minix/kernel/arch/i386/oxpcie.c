@@ -1,23 +1,23 @@
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#ఒకవేళ CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
-#include "oxpcie.h"
-#include "serial.h"
+#అన్తర్భావ "oxpcie.h"
+#అన్తర్భావ "serial.h"
 
-static unsigned char *oxpcie_vaddr = NULL;
+స్థిర గుర్తులేని అక్షరం *oxpcie_vaddr = ఖాళీ;
 
-void oxpcie_set_vaddr(unsigned char *vaddr)
+శూన్య oxpcie_సమితి_vaddr(గుర్తులేని అక్షరం *vaddr)
 {
 	oxpcie_vaddr = vaddr;
 }
 
-static void oxpcie_init(void)
+స్థిర శూన్య oxpcie_init(శూన్య)
 {
-	printf("oxpcie_init\n");
+	రాయి("oxpcie_init\n");
 	/* Enable access to EFR and DLM+DLL */
 	OXPCIE_LCR = 0xBF;
 
@@ -45,39 +45,39 @@ static void oxpcie_init(void)
 	OXPCIE_CPR2 = 0;
 }
 
-void oxpcie_putc(char c)
+శూన్య oxpcie_putc(అక్షరం c)
 {
-	static int inuse = 0;
+	స్థిర పూర్ణాంకం inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	ఒకవేళ(vm_running && oxpcie_vaddr && !inuse) {
+        	పూర్ణాంకం i;
+		స్థిర పూర్ణాంకం init_పూర్తి;
 		inuse = 1;
 
-		if(!init_done) {
+		ఒకవేళ(!init_పూర్తి) {
 			oxpcie_init();
-			init_done = 1;
+			init_పూర్తి = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
-                       		break;
+        	కొరకు (i= 0; i<100000; i++) {
+			ఒకవేళ(OXPCIE_LSR & LSR_THRE)
+                       		ఆపు;
 		}
 		OXPCIE_THR = c;
 		inuse = 0;
 	}
 }
 
-int oxpcie_in(void)
+పూర్ణాంకం oxpcie_లోపల(శూన్య)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	ఒకవేళ(vm_running && oxpcie_vaddr) {
+		పూర్ణాంకం lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		ఒకవేళ(lsr & LSR_DR)
+			తిరిగి (పూర్ణాంకం) OXPCIE_RBR;
 	}
 
-	return -1;
+	తిరిగి -1;
 }
 
-#endif
+#అయితే_ముగింపు

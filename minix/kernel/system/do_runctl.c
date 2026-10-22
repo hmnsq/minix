@@ -7,15 +7,15 @@
  *    m1_i3:	RC_FLAGS	request flags
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <assert.h>
 
-#if USE_RUNCTL
+#ఒకవేళ USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+పూర్ణాంకం do_runctl(నిర్మాణం proc * caller, సందేశం * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
-  register struct proc *rp;
+  పూర్ణాంకం proc_nr, action, flags;
+  నమోదు నిర్మాణం proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ఒకవేళ (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) తిరిగి(EINVAL);
+  ఒకవేళ (iskerneln(proc_nr)) తిరిగి(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,36 +41,36 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  ఒకవేళ (action == RC_STOP && (flags & RC_DELAY)) {
+	ఒకవేళ (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	ఒకవేళ (rp->p_misc_flags & MF_SIG_DELAY)
+		తిరిగి (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
-  switch (action) {
-  case RC_STOP:
-#if CONFIG_SMP
+  ఎంపిక (action) {
+  స్థితి RC_STOP:
+#ఒకవేళ CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
-		  smp_schedule_stop_proc(rp);
-		  break;
+	  ఒకవేళ (rp->p_cpu != cpuid) {
+		  smp_కాలపట్టిక_stop_proc(rp);
+		  ఆపు;
 	  }
-#endif
-	  RTS_SET(rp, RTS_PROC_STOP);
-	break;
-  case RC_RESUME:
-	assert(RTS_ISSET(rp, RTS_PROC_STOP));
+#అయితే_ముగింపు
+	  RTS_సమితి(rp, RTS_PROC_STOP);
+	ఆపు;
+  స్థితి RC_RESUME:
+	ప్రతిజ్ఞా(RTS_ISSET(rp, RTS_PROC_STOP));
 	RTS_UNSET(rp, RTS_PROC_STOP);
-	break;
-  default:
-	return(EINVAL);
+	ఆపు;
+  అప్రమేయ:
+	తిరిగి(EINVAL);
   }
 
-  return(OK);
+  తిరిగి(OK);
 }
 
-#endif /* USE_RUNCTL */
+#అయితే_ముగింపు /* USE_RUNCTL */
 

@@ -1,7 +1,7 @@
-#ifndef __OMAP_RTC_H
-#define __OMAP_RTC_H
+#నిర్వచితం_కాకపోతే __OMAP_RTC_H
+#నిర్వచించు __OMAP_RTC_H
 
-void omap3_rtc_init(void);
-void omap3_rtc_run(void);
+శూన్య omap3_rtc_init(శూన్య);
+శూన్య omap3_rtc_నిరంతరం(శూన్య);
 
-#endif /* __OMAP_RTC_H */
+#అయితే_ముగింపు /* __OMAP_RTC_H */

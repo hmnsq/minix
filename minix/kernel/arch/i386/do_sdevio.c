@@ -10,42 +10,42 @@
  *    m_lsys_krn_sys_sdevio.offset	(offset into the grant)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#అన్తర్భావ "kernel/system.h"
+#అన్తర్భావ <minix/devio.h>
+#అన్తర్భావ <minix/endpoint.h>
 
-#include "arch_proto.h"
+#అన్తర్భావ "arch_proto.h"
 
-#if USE_SDEVIO
+#ఒకవేళ USE_SDEVIO
 
 /*===========================================================================*
  *			        do_sdevio                                    *
  *===========================================================================*/
-int do_sdevio(struct proc * caller, message *m_ptr)
+పూర్ణాంకం do_sdevio(నిర్మాణం proc * caller, సందేశం *m_ptr)
 {
-  vir_bytes newoffset;
+  vir_బైట్లు newoffset;
   endpoint_t newep;
-  int proc_nr;
+  పూర్ణాంకం proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
-  vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
-  long port = m_ptr->m_lsys_krn_sys_sdevio.port;
-  phys_bytes vir_buf;
-  int i, r, req_type, req_dir, size, nr_io_range;
-  struct priv *privp;
-  struct io_range *iorp;
-  struct proc *destproc;
-  int retval;
+  vir_బైట్లు లెక్క = m_ptr->m_lsys_krn_sys_sdevio.vec_కొలత;
+  దీర్ఘ పోర్టు = m_ptr->m_lsys_krn_sys_sdevio.పోర్టు;
+  phys_బైట్లు vir_buf;
+  పూర్ణాంకం i, r, req_type, req_dir, కొలత, nr_io_range;
+  నిర్మాణం priv *privp;
+  నిర్మాణం io_range *iorp;
+  నిర్మాణం proc *destproc;
+  పూర్ణాంకం retval;
 
   /* Allow safe copies and accesses to SELF */
-  if ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
+  ఒకవేళ ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != DIO_సురక్షిత &&
 	proc_nr_e != SELF)
   {
-	static int first= 1;
-	if (first)
+	స్థిర పూర్ణాంకం మొదటి= 1;
+	ఒకవేళ (మొదటి)
 	{
-		first= 0;
-		printf("do_sdevio: for %d, req %d\n",
-			m_ptr->m_source, m_ptr->m_lsys_krn_sys_sdevio.request);
+		మొదటి= 0;
+		రాయి("do_sdevio: for %d, req %d\n",
+			m_ptr->m_ఆధారం, m_ptr->m_lsys_krn_sys_sdevio.request);
 	}
   }
 
@@ -53,39 +53,39 @@ int do_sdevio(struct proc * caller, message *m_ptr)
    * A driver may directly provide a pointer to a buffer at the user-process
    * that initiated the device I/O. Kernel processes, of course, are denied.
    */
-  if (proc_nr_e == SELF)
+  ఒకవేళ (proc_nr_e == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if(!isokendpt(proc_nr_e, &proc_nr))
-		return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  లేకపోతే
+	ఒకవేళ(!isokendpt(proc_nr_e, &proc_nr))
+		తిరిగి(EINVAL);
+  ఒకవేళ (iskerneln(proc_nr)) తిరిగి(EPERM);
 
   /* Extract direction (in or out) and type (size). */
   req_dir = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_DIRMASK;
   req_type = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_TYPEMASK;
 
   /* Check for 'safe' variants. */
-  if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
+  ఒకవేళ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == DIO_సురక్షిత) {
      /* Map grant address to physical address. */
-     if((r=verify_grant(proc_nr_e, caller->p_endpoint,
-		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
-		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
-		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
-		NULL)) != OK) {
-	if(r == ENOTREADY) return r;
-	printf("do_sdevio: verify_grant failed\n");
-	return EPERM;
+     ఒకవేళ((r=verify_grant(proc_nr_e, caller->p_endpoint,
+		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, లెక్క,
+		req_dir == DIO_ఆదానం ? CPF_WRITE : CPF_READ,
+		m_ptr->m_lsys_krn_sys_sdevio.స్థానభ్రంశం, &newoffset, &newep,
+		ఖాళీ)) != OK) {
+	ఒకవేళ(r == ENOTREADY) తిరిగి r;
+	రాయి("do_sdevio: verify_grant failed\n");
+	తిరిగి EPERM;
     }
-	if(!isokendpt(newep, &proc_nr))
-		return(EINVAL);
+	ఒకవేళ(!isokendpt(newep, &proc_nr))
+		తిరిగి(EINVAL);
      destproc = proc_addr(proc_nr);
      vir_buf = newoffset;
-  } else {
-     if(proc_nr != _ENDPOINT_P(caller->p_endpoint))
+  } లేకపోతే {
+     ఒకవేళ(proc_nr != _ENDPOINT_P(caller->p_endpoint))
      {
-	printf("do_sdevio: unsafe sdevio by %d in %d denied\n",
+	రాయి("do_sdevio: unsafe sdevio by %d in %d denied\n",
 		caller->p_endpoint, proc_nr_e);
-	return EPERM;
+	తిరిగి EPERM;
      }
      /* Get and check physical address. */
      vir_buf = m_ptr->m_lsys_krn_sys_sdevio.vec_addr;
@@ -93,71 +93,71 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
      /* current process must be target for phys_* to be OK */
 
-  switch_address_space(destproc);
+  switch_చిరునామా_space(destproc);
 
-  switch (req_type)
+  ఎంపిక (req_type)
   {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	స్థితి _DIO_BYTE: కొలత= 1; ఆపు;
+	స్థితి DIO_మాట: కొలత= 2; ఆపు;
+	స్థితి _DIO_LONG: కొలత= 4; ఆపు;
+	అప్రమేయ: కొలత= 4; ఆపు;	/* Be conservative */
   }
 
   privp= priv(caller);
-  if (privp && privp->s_flags & CHECK_IO_PORT)
+  ఒకవేళ (privp && privp->s_flags & CHECK_IO_పోర్టు)
   {
-	port= m_ptr->m_lsys_krn_sys_sdevio.port;
+	పోర్టు= m_ptr->m_lsys_krn_sys_sdevio.పోర్టు;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	కొరకు (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		ఒకవేళ (పోర్టు >= iorp->ior_పునాది && పోర్టు+కొలత-1 <= iorp->ior_హద్దు)
+			ఆపు;
 	}
-	if (i >= nr_io_range)
+	ఒకవేళ (i >= nr_io_range)
 	{
-		printf(
+		రాయి(
 		"do_sdevio: I/O port check failed for proc %d, port 0x%x\n",
-			m_ptr->m_source, port);
+			m_ptr->m_ఆధారం, పోర్టు);
 		retval = EPERM;
-		goto return_error;
+		వెళ్ళు return_error;
 	}
   }
 
-  if (port & (size-1))
+  ఒకవేళ (పోర్టు & (కొలత-1))
   {
-	printf("do_devio: unaligned port 0x%x (size %d)\n", port, size);
+	రాయి("do_devio: unaligned port 0x%x (size %d)\n", పోర్టు, కొలత);
 	retval = EPERM;
-	goto return_error;
+	వెళ్ళు return_error;
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
-      default:
+  ఒకవేళ (req_dir == DIO_ఆదానం) { 
+      ఎంపిక (req_type) {
+      స్థితి _DIO_BYTE: phys_insb(పోర్టు, vir_buf, లెక్క); ఆపు; 
+      స్థితి DIO_మాట: phys_insw(పోర్టు, vir_buf, లెక్క); ఆపు; 
+      అప్రమేయ:
   		retval = EINVAL;
-		goto return_error;
+		వెళ్ళు return_error;
       } 
-  } else if (req_dir == _DIO_OUTPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
-      default:
+  } లేకపోతే ఒకవేళ (req_dir == _DIO_OUTPUT) { 
+      ఎంపిక (req_type) {
+      స్థితి _DIO_BYTE: phys_outsb(పోర్టు, vir_buf, లెక్క); ఆపు; 
+      స్థితి DIO_మాట: phys_outsw(పోర్టు, vir_buf, లెక్క); ఆపు; 
+      అప్రమేయ:
   		retval = EINVAL;
-		goto return_error;
+		వెళ్ళు return_error;
       } 
   }
-  else {
+  లేకపోతే {
 	  retval = EINVAL;
-	  goto return_error;
+	  వెళ్ళు return_error;
   }
   retval = OK;
 
 return_error:
   /* switch back to the address of the process which made the call */
-  switch_address_space(caller);
-  return retval;
+  switch_చిరునామా_space(caller);
+  తిరిగి retval;
 }
 
-#endif /* USE_SDEVIO */
+#అయితే_ముగింపు /* USE_SDEVIO */

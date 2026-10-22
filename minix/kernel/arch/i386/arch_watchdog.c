@@ -1,20 +1,20 @@
-#include "kernel/watchdog.h"
-#include "glo.h"
-#include <minix/minlib.h>
-#include <minix/u64.h>
+#అన్తర్భావ "kernel/watchdog.h"
+#అన్తర్భావ "glo.h"
+#అన్తర్భావ <minix/minlib.h>
+#అన్తర్భావ <minix/u64.h>
 
-#include "apic.h"
+#అన్తర్భావ "apic.h"
 
-#define CPUID_UNHALTED_CORE_CYCLES_AVAILABLE	0
+#నిర్వచించు CPUID_UNHALTED_CORE_చక్రాలు_అందుబాటు	0
 
 /*
  * Intel architecture performance counters watchdog
  */
 
-static struct arch_watchdog intel_arch_watchdog;
-static struct arch_watchdog amd_watchdog;
+స్థిర నిర్మాణం arch_watchdog intel_arch_watchdog;
+స్థిర నిర్మాణం arch_watchdog amd_watchdog;
 
-static void intel_arch_watchdog_init(const unsigned cpu)
+స్థిర శూన్య intel_arch_watchdog_init(స్థిరరాశి గుర్తులేని cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -30,7 +30,7 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	 * lowest 31 bits writable :(
 	 */
 	cpuf = cpu_get_freq(cpu);
-	while (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
+	అయితే (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
 		cpuf /= 2;
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
@@ -44,23 +44,23 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void intel_arch_watchdog_reinit(const unsigned cpu)
+స్థిర శూన్య intel_arch_watchdog_reinit(స్థిరరాశి గుర్తులేని cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(watchdog->resetval));
 }
 
-int arch_watchdog_init(void)
+పూర్ణాంకం arch_watchdog_init(శూన్య)
 {
 	u32_t eax, ebx, ecx, edx;
-	unsigned cpu = cpuid;
+	గుర్తులేని cpu = cpuid;
 
-	if (!lapic_addr) {
-		printf("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
-		return -1;
+	ఒకవేళ (!lapic_addr) {
+		రాయి("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
+		తిరిగి -1;
 	}
 
-	if (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
+	ఒకవేళ (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
 		eax = 0xA;
 
 		_cpuid(&eax, &ebx, &ecx, &edx);
@@ -69,42 +69,42 @@ int arch_watchdog_init(void)
 		 * architectural performance counters. Some Intel CPUs don't have this
 		 * feature
 		 */
-		if (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
-			return -1;
-		if (!((((eax >> 8)) & 0xff) > 0))
-			return -1;
+		ఒకవేళ (ebx & (1 << CPUID_UNHALTED_CORE_చక్రాలు_అందుబాటు))
+			తిరిగి -1;
+		ఒకవేళ (!((((eax >> 8)) & 0xff) > 0))
+			తిరిగి -1;
 
 		watchdog = &intel_arch_watchdog;
-	} else if (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
-		if (cpu_info[cpu].family != 6 &&
+	} లేకపోతే ఒకవేళ (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
+		ఒకవేళ (cpu_info[cpu].family != 6 &&
 				cpu_info[cpu].family != 15 &&
 				cpu_info[cpu].family != 16 &&
 				cpu_info[cpu].family != 17)
-			return -1;
-		else
+			తిరిగి -1;
+		లేకపోతే
 			watchdog = &amd_watchdog;
-	} else
-		return -1;
+	} లేకపోతే
+		తిరిగి -1;
 
 	/* Setup PC overflow as NMI for watchdog, it is masked for now */
-	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_MASK | APIC_ICR_DM_NMI);
-	(void) lapic_read(LAPIC_LVTPCR);
+	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_ముసుగు | APIC_ICR_DM_NMI);
+	(శూన్య) lapic_read(LAPIC_LVTPCR);
 
 	/* double check if LAPIC is enabled */
-	if (lapic_addr && watchdog->init) {
+	ఒకవేళ (lapic_addr && watchdog->init) {
 		watchdog->init(cpuid);
 	}
 
-	return 0;
+	తిరిగి 0;
 }
 
-void arch_watchdog_stop(void)
+శూన్య arch_watchdog_stop(శూన్య)
 {
 }
 
-void arch_watchdog_lockup(const struct nmi_frame * frame)
+శూన్య arch_watchdog_lockup(స్థిరరాశి నిర్మాణం nmi_చట్రం * చట్రం)
 {
-	printf("KERNEL LOCK UP\n"
+	రాయి("KERNEL LOCK UP\n"
 			"eax    0x%08x\n"
 			"ecx    0x%08x\n"
 			"edx    0x%08x\n"
@@ -119,39 +119,39 @@ void arch_watchdog_lockup(const struct nmi_frame * frame)
 			"pc     0x%08x\n"
 			"cs     0x%08x\n"
 			"eflags 0x%08x\n",
-			frame->eax,
-			frame->ecx,
-			frame->edx,
-			frame->ebx,
-			frame->ebp,
-			frame->esi,
-			frame->edi,
-			frame->gs,
-			frame->fs,
-			frame->es,
-			frame->ds,
-			frame->pc,
-			frame->cs,
-			frame->eflags
+			చట్రం->eax,
+			చట్రం->ecx,
+			చట్రం->edx,
+			చట్రం->ebx,
+			చట్రం->ebp,
+			చట్రం->esi,
+			చట్రం->edi,
+			చట్రం->gs,
+			చట్రం->fs,
+			చట్రం->es,
+			చట్రం->ds,
+			చట్రం->pc,
+			చట్రం->cs,
+			చట్రం->eflags
 			);
 	panic("Kernel lockup");
 }
 
-int i386_watchdog_start(void)
+పూర్ణాంకం i386_watchdog_ప్రారంభం(శూన్య)
 {
-	if (arch_watchdog_init()) {
-		printf("WARNING watchdog initialization "
+	ఒకవేళ (arch_watchdog_init()) {
+		రాయి("WARNING watchdog initialization "
 				"failed! Disabled\n");
 		watchdog_enabled = 0;
-		return -1;
+		తిరిగి -1;
 	}
-	else
-		BOOT_VERBOSE(printf("Watchdog enabled\n"););
+	లేకపోతే
+		BOOT_VERBOSE(రాయి("Watchdog enabled\n"););
 
-	return 0;
+	తిరిగి 0;
 }
 
-static int intel_arch_watchdog_profile_init(const unsigned freq)
+స్థిర పూర్ణాంకం intel_arch_watchdog_profile_init(స్థిరరాశి గుర్తులేని freq)
 {
 	u64_t cpuf;
 
@@ -163,28 +163,28 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 	 * if freq is too low and the cpu freq too high we may get in a range of
 	 * insane value which cannot be handled by the 31bit CPU perf counter
 	 */
-	if (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
-		printf("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
-		return EINVAL;
+	ఒకవేళ (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
+		రాయి("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
+		తిరిగి EINVAL;
 	}
 
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	తిరిగి OK;
 }
 
-static struct arch_watchdog intel_arch_watchdog = {
+స్థిర నిర్మాణం arch_watchdog intel_arch_watchdog = {
 	/*.init = */		intel_arch_watchdog_init,
 	/*.reinit = */		intel_arch_watchdog_reinit,
 	/*.profile_init = */	intel_arch_watchdog_profile_init
 };
 
-#define AMD_MSR_EVENT_SEL0		0xc0010000
-#define AMD_MSR_EVENT_CTR0		0xc0010004
-#define AMD_MSR_EVENT_SEL0_ENABLE	(1 << 22)
+#నిర్వచించు AMD_MSR_EVENT_SEL0		0xc0010000
+#నిర్వచించు AMD_MSR_EVENT_CTR0		0xc0010004
+#నిర్వచించు AMD_MSR_EVENT_SEL0_ENABLE	(1 << 22)
 
-static void amd_watchdog_init(const unsigned cpu)
+స్థిర శూన్య amd_watchdog_init(స్థిరరాశి గుర్తులేని cpu)
 {
 	u64_t cpuf;
 	u32_t val;
@@ -208,14 +208,14 @@ static void amd_watchdog_init(const unsigned cpu)
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 }
 
-static void amd_watchdog_reinit(const unsigned cpu)
+స్థిర శూన్య amd_watchdog_reinit(స్థిరరాశి గుర్తులేని cpu)
 {
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_DM_NMI);
 	ia32_msr_write(AMD_MSR_EVENT_CTR0,
 		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
 }
 
-static int amd_watchdog_profile_init(const unsigned freq)
+స్థిర పూర్ణాంకం amd_watchdog_profile_init(స్థిరరాశి గుర్తులేని freq)
 {
 	u64_t cpuf;
 
@@ -225,10 +225,10 @@ static int amd_watchdog_profile_init(const unsigned freq)
 
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	తిరిగి OK;
 }
 
-static struct arch_watchdog amd_watchdog = {
+స్థిర నిర్మాణం arch_watchdog amd_watchdog = {
 	/*.init = */		amd_watchdog_init,
 	/*.reinit = */		amd_watchdog_reinit,
 	/*.profile_init = */	amd_watchdog_profile_init

@@ -1,223 +1,223 @@
 
-#include <minix/cpufeature.h>
+#అన్తర్భావ <minix/cpufeature.h>
 
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#అన్తర్భావ <assert.h>
+#అన్తర్భావ "kernel/kernel.h"
+#అన్తర్భావ "arch_proto.h"
 
-#include <string.h>
+#అన్తర్భావ <string.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+బాహ్య అక్షరం kern_vir_పునాది, kern_phys_పునాది, kern_కొలత;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+స్థిర phys_బైట్లు kern_vir_ప్రారంభం = (phys_బైట్లు) &kern_vir_పునాది;
+స్థిర phys_బైట్లు kern_phys_ప్రారంభం = (phys_బైట్లు) &kern_phys_పునాది;
+స్థిర phys_బైట్లు kern_kernlen = (phys_బైట్లు) &kern_కొలత;
 
 /* page directory we can use to map things */
-static u32_t pagedir[1024]  __aligned(4096);
+స్థిర u32_t pagedir[1024]  __aligned(4096);
 
-void print_memmap(kinfo_t *cbi)
+శూన్య print_memmap(kinfo_t *cbi)
 {
-        int m;
-        assert(cbi->mmap_size < MAXMEMMAP);
-        for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
-                printf("%08lx-%08lx ",addr, endit);
+        పూర్ణాంకం m;
+        ప్రతిజ్ఞా(cbi->mmap_కొలత < MAXMEMMAP);
+        కొరకు(m = 0; m < cbi->mmap_కొలత; m++) {
+		phys_బైట్లు addr = cbi->memmap[m].mm_పునాది_addr, endit = cbi->memmap[m].mm_పునాది_addr + cbi->memmap[m].mm_నిడివి;
+                రాయి("%08lx-%08lx ",addr, endit);
         }
-        printf("\nsize %08lx\n", cbi->mmap_size);
+        రాయి("\nsize %08lx\n", cbi->mmap_కొలత);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+శూన్య cut_memmap(kinfo_t *cbi, phys_బైట్లు ప్రారంభం, phys_బైట్లు చివర)
 {
-        int m;
-        phys_bytes o;
+        పూర్ణాంకం m;
+        phys_బైట్లు o;
 
-        if((o=start % I386_PAGE_SIZE))
-                start -= o;
-        if((o=end % I386_PAGE_SIZE))
-                end += I386_PAGE_SIZE - o;
+        ఒకవేళ((o=ప్రారంభం % I386_పుట_కొలత))
+                ప్రారంభం -= o;
+        ఒకవేళ((o=చివర % I386_పుట_కొలత))
+                చివర += I386_పుట_కొలత - o;
 
-	assert(kernel_may_alloc);
+	ప్రతిజ్ఞా(kernel_may_alloc);
 
-        for(m = 0; m < cbi->mmap_size; m++) {
-                phys_bytes substart = start, subend = end;
-                phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
-                        memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
+        కొరకు(m = 0; m < cbi->mmap_కొలత; m++) {
+                phys_బైట్లు substart = ప్రారంభం, subend = చివర;
+                phys_బైట్లు memaddr = cbi->memmap[m].mm_పునాది_addr,
+                        memend = cbi->memmap[m].mm_పునాది_addr + cbi->memmap[m].mm_నిడివి;
 
                 /* adjust cut range to be a subset of the free memory */
-                if(substart < memaddr) substart = memaddr;
-                if(subend > memend) subend = memend;
-                if(substart >= subend) continue;
+                ఒకవేళ(substart < memaddr) substart = memaddr;
+                ఒకవేళ(subend > memend) subend = memend;
+                ఒకవేళ(substart >= subend) కొనసాగు;
 
                 /* if there is any overlap, forget this one and add
                  * 1-2 subranges back
                  */
-                cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-                if(substart > memaddr)
-                        add_memmap(cbi, memaddr, substart-memaddr);
-                if(subend < memend)
-                        add_memmap(cbi, subend, memend-subend);
+                cbi->memmap[m].mm_పునాది_addr = cbi->memmap[m].mm_నిడివి = 0;
+                ఒకవేళ(substart > memaddr)
+                        కూడు_memmap(cbi, memaddr, substart-memaddr);
+                ఒకవేళ(subend < memend)
+                        కూడు_memmap(cbi, subend, memend-subend);
         }
 }
 
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len)
+phys_బైట్లు alloc_అత్యల్ప(kinfo_t *cbi, phys_బైట్లు len)
 {
 	/* Allocate the lowest physical page we have. */
-	int m;
-#define EMPTY 0xffffffff
-	phys_bytes lowest = EMPTY;
-	assert(len > 0);
-	len = roundup(len, I386_PAGE_SIZE);
+	పూర్ణాంకం m;
+#నిర్వచించు ఖాళీలు 0xffffffff
+	phys_బైట్లు అత్యల్ప = ఖాళీలు;
+	ప్రతిజ్ఞా(len > 0);
+	len = roundup(len, I386_పుట_కొలత);
 
-	assert(kernel_may_alloc);
+	ప్రతిజ్ఞా(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
-		if(cbi->memmap[m].mm_length < len) continue;
-		if(cbi->memmap[m].mm_base_addr < lowest) lowest = cbi->memmap[m].mm_base_addr;
+	కొరకు(m = 0; m < cbi->mmap_కొలత; m++) {
+		ఒకవేళ(cbi->memmap[m].mm_నిడివి < len) కొనసాగు;
+		ఒకవేళ(cbi->memmap[m].mm_పునాది_addr < అత్యల్ప) అత్యల్ప = cbi->memmap[m].mm_పునాది_addr;
 	}
-	assert(lowest != EMPTY);
-	cut_memmap(cbi, lowest, len);
-	cbi->kernel_allocated_bytes_dynamic += len;
-	return lowest;
+	ప్రతిజ్ఞా(అత్యల్ప != ఖాళీలు);
+	cut_memmap(cbi, అత్యల్ప, len);
+	cbi->kernel_allocated_బైట్లు_dynamic += len;
+	తిరిగి అత్యల్ప;
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+శూన్య కూడు_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-        int m;
-#define LIMIT 0xFFFFF000
+        పూర్ణాంకం m;
+#నిర్వచించు హద్దు 0xFFFFF000
         /* Truncate available memory at 4GB as the rest of minix
          * currently can't deal with any bigger.
          */
-        if(addr > LIMIT) return;
-        if(addr + len > LIMIT) {
-                len -= (addr + len - LIMIT);
+        ఒకవేళ(addr > హద్దు) తిరిగి;
+        ఒకవేళ(addr + len > హద్దు) {
+                len -= (addr + len - హద్దు);
         }
-        assert(cbi->mmap_size < MAXMEMMAP);
-        if(len == 0) return;
-	addr = roundup(addr, I386_PAGE_SIZE);
-	len = rounddown(len, I386_PAGE_SIZE);
+        ప్రతిజ్ఞా(cbi->mmap_కొలత < MAXMEMMAP);
+        ఒకవేళ(len == 0) తిరిగి;
+	addr = roundup(addr, I386_పుట_కొలత);
+	len = rounddown(len, I386_పుట_కొలత);
 
-	assert(kernel_may_alloc);
+	ప్రతిజ్ఞా(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
-		phys_bytes highmark;
-                if(cbi->memmap[m].mm_length) continue;
-                cbi->memmap[m].mm_base_addr = addr;
-                cbi->memmap[m].mm_length = len;
-                cbi->memmap[m].mm_type = MULTIBOOT_MEMORY_AVAILABLE;
-                if(m >= cbi->mmap_size)
-                        cbi->mmap_size = m+1;
+        కొరకు(m = 0; m < MAXMEMMAP; m++) {
+		phys_బైట్లు highmark;
+                ఒకవేళ(cbi->memmap[m].mm_నిడివి) కొనసాగు;
+                cbi->memmap[m].mm_పునాది_addr = addr;
+                cbi->memmap[m].mm_నిడివి = len;
+                cbi->memmap[m].mm_type = MULTIBOOT_జ్ఞాపకం_అందుబాటు;
+                ఒకవేళ(m >= cbi->mmap_కొలత)
+                        cbi->mmap_కొలత = m+1;
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		ఒకవేళ(highmark > cbi->mem_ఎగువ_phys) {
+			cbi->mem_ఎగువ_phys = highmark;
 		}
 
-                return;
+                తిరిగి;
         }
 
         panic("no available memmap slot");
 }
 
-u32_t *alloc_pagetable(phys_bytes *ph)
+u32_t *alloc_pagetable(phys_బైట్లు *ph)
 {
 	u32_t *ret;
-#define PG_PAGETABLES 6
-	static u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
-	assert(sizeof(pagetables[pt_inuse]) == I386_PAGE_SIZE);
+#నిర్వచించు PG_PAGETABLES 6
+	స్థిర u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
+	స్థిర పూర్ణాంకం pt_inuse = 0;
+	ఒకవేళ(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
+	ప్రతిజ్ఞా(పరిమాణం(pagetables[pt_inuse]) == I386_పుట_కొలత);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	తిరిగి ret;
 }
 
-#define PAGE_KB (I386_PAGE_SIZE / 1024)
+#నిర్వచించు పుట_KB (I386_పుట_కొలత / 1024)
 
-phys_bytes pg_alloc_page(kinfo_t *cbi)
+phys_బైట్లు pg_alloc_పుట(kinfo_t *cbi)
 {
-	int m;
-	multiboot_memory_map_t *mmap;
+	పూర్ణాంకం m;
+	multiboot_జ్ఞాపకం_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	ప్రతిజ్ఞా(kernel_may_alloc);
 
-	for(m = cbi->mmap_size-1; m >= 0; m--) {
+	కొరకు(m = cbi->mmap_కొలత-1; m >= 0; m--) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) continue;
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % I386_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % I386_PAGE_SIZE));
+		ఒకవేళ(!mmap->mm_నిడివి) కొనసాగు;
+		ప్రతిజ్ఞా(mmap->mm_నిడివి > 0);
+		ప్రతిజ్ఞా(!(mmap->mm_నిడివి % I386_పుట_కొలత));
+		ప్రతిజ్ఞా(!(mmap->mm_పునాది_addr % I386_పుట_కొలత));
 
-		mmap->mm_length -= I386_PAGE_SIZE;
+		mmap->mm_నిడివి -= I386_పుట_కొలత;
 
-                cbi->kernel_allocated_bytes_dynamic += I386_PAGE_SIZE;
+                cbi->kernel_allocated_బైట్లు_dynamic += I386_పుట_కొలత;
 
-		return mmap->mm_base_addr + mmap->mm_length;
+		తిరిగి mmap->mm_పునాది_addr + mmap->mm_నిడివి;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+శూన్య pg_తటస్థం(kinfo_t *cbi)
 {
 	uint32_t i;
-	phys_bytes phys;
+	phys_బైట్లు phys;
 
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	ప్రతిజ్ఞా(cbi->mem_ఎగువ_phys);
 
         /* Set up an identity mapping page directory */
-        for(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
+        కొరకు(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
 		u32_t flags = I386_VM_PRESENT | I386_VM_BIGPAGE
 			| I386_VM_USER
 			| I386_VM_WRITE;
-                phys = i * I386_BIG_PAGE_SIZE;
-		if((cbi->mem_high_phys & I386_VM_ADDR_MASK_4MB)
-			<= (phys & I386_VM_ADDR_MASK_4MB)) {
+                phys = i * I386_BIG_పుట_కొలత;
+		ఒకవేళ((cbi->mem_ఎగువ_phys & I386_VM_ADDR_ముసుగు_4_MB)
+			<= (phys & I386_VM_ADDR_ముసుగు_4_MB)) {
 			flags |= I386_VM_PWT | I386_VM_PCD;
 		}
                 pagedir[i] =  phys | flags;
         }
 }
 
-int pg_mapkernel(void)
+పూర్ణాంకం pg_mapkernel(శూన్య)
 {
-	int pde;
-	u32_t mapped = 0, kern_phys = kern_phys_start;
+	పూర్ణాంకం pde;
+	u32_t mapped = 0, kern_phys = kern_phys_ప్రారంభం;
 
-        assert(!(kern_vir_start % I386_BIG_PAGE_SIZE));
-        assert(!(kern_phys % I386_BIG_PAGE_SIZE));
-        pde = kern_vir_start / I386_BIG_PAGE_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
+        ప్రతిజ్ఞా(!(kern_vir_ప్రారంభం % I386_BIG_పుట_కొలత));
+        ప్రతిజ్ఞా(!(kern_phys % I386_BIG_పుట_కొలత));
+        pde = kern_vir_ప్రారంభం / I386_BIG_పుట_కొలత; /* start pde */
+	అయితే(mapped < kern_kernlen) {
 	        pagedir[pde] = kern_phys | I386_VM_PRESENT | 
 			I386_VM_BIGPAGE | I386_VM_WRITE;
-		mapped += I386_BIG_PAGE_SIZE;
-		kern_phys += I386_BIG_PAGE_SIZE;
+		mapped += I386_BIG_పుట_కొలత;
+		kern_phys += I386_BIG_పుట_కొలత;
 		pde++;
 	}
-	return pde;	/* free pde */
+	తిరిగి pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+శూన్య vm_enable_paging(శూన్య)
 {
         u32_t cr0, cr4;
-        int pgeok;
+        పూర్ణాంకం pgeok;
 
         pgeok = _cpufeature(_CPUF_I386_PGE);
 
-#ifdef PAE
-	if(_cpufeature(_CPUF_I386_PAE) == 0)
+#నిర్వచితమైతే PAE
+	ఒకవేళ(_cpufeature(_CPUF_I386_PAE) == 0)
 		panic("kernel built with PAE support, CPU seems to lack PAE support?\n");
-#endif
+#అయితే_ముగింపు
 
         cr0= read_cr0();
         cr4= read_cr4();
 
 	/* The boot loader should have put us in protected mode. */
-	assert(cr0 & I386_CR0_PE);
+	ప్రతిజ్ఞా(cr0 & I386_CR0_PE);
 
         /* First clear PG and PGE flag, as PGE must be enabled after PG. */
         write_cr0(cr0 & ~I386_CR0_PG);
@@ -238,78 +238,78 @@ void vm_enable_paging(void)
         write_cr0(cr0);
 
         /* May we enable these features? */
-        if(pgeok)
+        ఒకవేళ(pgeok)
                 cr4 |= I386_CR4_PGE;
 
         write_cr4(cr4);
 }
 
-phys_bytes pg_load(void)
+phys_బైట్లు pg_ఎక్కించు(శూన్య)
 {
-	phys_bytes phpagedir = vir2phys(pagedir);
+	phys_బైట్లు phpagedir = vir2phys(pagedir);
         write_cr3(phpagedir);
-	return phpagedir;
+	తిరిగి phpagedir;
 }
 
-void pg_clear(void)
+శూన్య pg_clear(శూన్య)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	memset(pagedir, 0, పరిమాణం(pagedir));
 }
 
-phys_bytes pg_rounddown(phys_bytes b)
+phys_బైట్లు pg_rounddown(phys_బైట్లు b)
 {
-	phys_bytes o;
-	if(!(o = b % I386_PAGE_SIZE))
-		return b;
-	return b  - o;
+	phys_బైట్లు o;
+	ఒకవేళ(!(o = b % I386_పుట_కొలత))
+		తిరిగి b;
+	తిరిగి b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+శూన్య pg_map(phys_బైట్లు phys, vir_బైట్లు vaddr, vir_బైట్లు vaddr_చివర,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	స్థిర పూర్ణాంకం mapped_pde = -1;
+	స్థిర u32_t *pt = ఖాళీ;
+	పూర్ణాంకం pde, pte;
 
-	assert(kernel_may_alloc);
+	ప్రతిజ్ఞా(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % I386_PAGE_SIZE));
-	} else  {
-		assert((vaddr % I386_PAGE_SIZE) == (phys % I386_PAGE_SIZE));
+	ఒకవేళ(phys == PG_ALLOCATEME) {
+		ప్రతిజ్ఞా(!(vaddr % I386_పుట_కొలత));
+	} లేకపోతే  {
+		ప్రతిజ్ఞా((vaddr % I386_పుట_కొలత) == (phys % I386_పుట_కొలత));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}	
-	assert(vaddr < kern_vir_start);
+	ప్రతిజ్ఞా(vaddr < kern_vir_ప్రారంభం);
 
-	while(vaddr < vaddr_end) {
-		phys_bytes source = phys;
-		assert(!(vaddr % I386_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
-			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % I386_PAGE_SIZE));
+	అయితే(vaddr < vaddr_చివర) {
+		phys_బైట్లు ఆధారం = phys;
+		ప్రతిజ్ఞా(!(vaddr % I386_పుట_కొలత));
+		ఒకవేళ(phys == PG_ALLOCATEME) {
+			ఆధారం = pg_alloc_పుట(cbi);
+		} లేకపోతే {
+			ప్రతిజ్ఞా(!(phys % I386_పుట_కొలత));
 		}
-		assert(!(source % I386_PAGE_SIZE));
+		ప్రతిజ్ఞా(!(ఆధారం % I386_పుట_కొలత));
 		pde = I386_VM_PDE(vaddr);
 		pte = I386_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
-			phys_bytes ph;
+		ఒకవేళ(mapped_pde < pde) {
+			phys_బైట్లు ph;
 			pt = alloc_pagetable(&ph);
-			pagedir[pde] = (ph & I386_VM_ADDR_MASK)
+			pagedir[pde] = (ph & I386_VM_ADDR_ముసుగు)
 		                | I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
 			mapped_pde = pde;
 		}
-		assert(pt);
-		pt[pte] = (source & I386_VM_ADDR_MASK) |
+		ప్రతిజ్ఞా(pt);
+		pt[pte] = (ఆధారం & I386_VM_ADDR_ముసుగు) |
 			I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
-		vaddr += I386_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME)
-			phys += I386_PAGE_SIZE;
+		vaddr += I386_పుట_కొలత;
+		ఒకవేళ(phys != PG_ALLOCATEME)
+			phys += I386_పుట_కొలత;
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+శూన్య pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

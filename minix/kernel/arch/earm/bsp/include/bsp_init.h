@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#నిర్వచితం_కాకపోతే _BSP_INIT_H_
+#నిర్వచించు _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+శూన్య bsp_init(శూన్య);
 
-#endif /* __BSP_INIT_H__ */
+#అయితే_ముగింపు /* __BSP_INIT_H__ */

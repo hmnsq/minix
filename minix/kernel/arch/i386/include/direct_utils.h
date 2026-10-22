@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#నిర్వచితం_కాకపోతే MB_UTILS_H
+#నిర్వచించు MB_UTILS_H
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+శూన్య ప్రత్యక్ష_cls(శూన్య);
+శూన్య ప్రత్యక్ష_print(స్థిరరాశి అక్షరం*);
+శూన్య ప్రత్యక్ష_print_char(అక్షరం);
+పూర్ణాంకం ప్రత్యక్ష_read_char(గుర్తులేని అక్షరం*);
 
-#endif
+#అయితే_ముగింపు

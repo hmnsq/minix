@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#నిర్వచితం_కాకపోతే __SPINLOCK_H__
+#నిర్వచించు __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#అన్తర్భావ "kernel/kernel.h"
 
-typedef struct spinlock {
+రకనిర్వచనం నిర్మాణం spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#నిర్వచితం_కాకపోతే CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#నిర్వచించు SPINLOCK_DEFINE(name)
+#నిర్వచించు వ్యక్తిగత_SPINLOCK_DEFINE(name)
+#నిర్వచించు SPINLOCK_DECLARE(name)
+#నిర్వచించు spinlock_init(sl)
+#నిర్వచించు spinlock_తాళం(sl)
+#నిర్వచించు spinlock_unlock(sl)
 
-#else
+#లేకపోతే
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#నిర్వచించు SPINLOCK_DEFINE(name)	spinlock_t name;
+#నిర్వచించు వ్యక్తిగత_SPINLOCK_DEFINE(name)	వ్యక్తిగత SPINLOCK_DEFINE(name)
+#నిర్వచించు SPINLOCK_DECLARE(name)	బాహ్య SPINLOCK_DEFINE(name)
+#నిర్వచించు spinlock_init(sl) చేయి { (sl)->val = 0; } అయితే (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#ఒకవేళ CONFIG_MAX_CPUS == 1
+#నిర్వచించు spinlock_తాళం(sl)
+#నిర్వచించు spinlock_unlock(sl)
+#లేకపోతే
+శూన్య arch_spinlock_తాళం(atomic_t * sl);
+శూన్య arch_spinlock_unlock(atomic_t * sl);
+#నిర్వచించు spinlock_తాళం(sl)	arch_spinlock_తాళం((atomic_t*) sl)
+#నిర్వచించు spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#అయితే_ముగింపు
 
 
-#endif /* CONFIG_SMP */
+#అయితే_ముగింపు /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#నిర్వచించు BKL_తాళం()	spinlock_తాళం(&big_kernel_తాళం)
+#నిర్వచించు BKL_UNLOCK()	spinlock_unlock(&big_kernel_తాళం)
 
-#endif /* __SPINLOCK_H__ */
+#అయితే_ముగింపు /* __SPINLOCK_H__ */
