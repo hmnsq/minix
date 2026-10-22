@@ -2,10 +2,10 @@
 #define __HW_INTR_X86_H__
 
 #include "kernel/kernel.h"
-void irq_8259_unmask(int irq);
-void irq_8259_mask(int irq);
-void irq_8259_eoi(int irq);
-void irq_handle(int irq);
+void irq_8259_unmask(puur_naa_nka irq);
+void irq_8259_mask(puur_naa_nka irq);
+void irq_8259_eoi(puur_naa_nka irq);
+void irq_handle(puur_naa_nka irq);
 void i8259_disable(void);
 void eoi_8259_master(void);
 void eoi_8259_slave(void);
@@ -16,30 +16,30 @@ void eoi_8259_slave(void);
  * configurations. ACPI would be another option, however we don't support it
  * either
  */
-#if defined(USE_APIC)
+#ᨀᨘ defined(USE_APIC)
 #include "kernel/arch/i386/apic.h"
 
 #define hw_intr_mask(irq)	ioapic_mask_irq(irq)
 #define hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
 #define hw_intr_ack(irq)	ioapic_eoi(irq)
 #define hw_intr_used(irq)	do {					\
-					if (ioapic_enabled)		\
+					ᨀᨘ (ioapic_enabled)		\
 						ioapic_set_irq(irq);	\
-				} while (0)
+				} ᨀᨛ (0)
 #define hw_intr_not_used(irq)	do {					\
-					if (ioapic_enabled)		\
+					ᨀᨘ (ioapic_enabled)		\
 						ioapic_unset_irq(irq);	\
-				} while (0)
+				} ᨀᨛ (0)
 #define hw_intr_disable_all() do {					\
 					ioapic_disable_all();		\
 					ioapic_reset_pic();		\
 					lapic_disable();		\
-				} while (0)
+				} ᨀᨛ (0)
 #ifdef CONFIG_SMP
 #define ipi_ack			apic_eoi
 #endif
 
-#else
+#ᨀᨘᨁ
 /* legacy PIC */
 
 #define hw_intr_mask(irq)	irq_8259_mask(irq)

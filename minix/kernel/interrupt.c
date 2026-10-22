@@ -26,30 +26,30 @@ static irq_hook_t* irq_handlers[NR_IRQ_VECTORS] = {0};
  *				put_irq_handler				     *
  *===========================================================================*/
 /* Register an interrupt handler.  */
-void put_irq_handler( irq_hook_t* hook, int irq,
+void put_irq_handler( irq_hook_t* hook, puur_naa_nka irq,
   const irq_handler_t handler)
 {
-  int id;
+  puur_naa_nka id;
   irq_hook_t **line;
   unsigned long bitmap;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS )
+  ᨀᨘ( irq < 0 || irq >= NR_IRQ_VECTORS )
 	panic("invalid call to put_irq_handler: %d",  irq);
 
   line = &irq_handlers[irq];
 
   bitmap = 0;
-  while ( *line != NULL ) {
-	if(hook == *line) return; /* extra initialization */
+  ᨀᨛ ( *line != NULL ) {
+	ᨀᨘ(hook == *line) ᨀᨘᨒ; /* extra initialization */
 	bitmap |= (*line)->id;	/* mark ids in use */
 	line = &(*line)->next;
   }
 
   /* find the lowest id not in use */
   for (id = 1; id != 0; id <<= 1)
-  	if (!(bitmap & id)) break;
+  	ᨀᨘ (!(bitmap & id)) bha_nga;
 
-  if(id == 0)
+  ᨀᨘ(id == 0)
   	panic("Too many handlers for irq: %d",  irq);
   
   hook->next = NULL;
@@ -62,7 +62,7 @@ void put_irq_handler( irq_hook_t* hook, int irq,
    *
    * Internal this activates the line or source of the given interrupt.
    */
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  ᨀᨘ((irq_actids[hook->irq] &= ~hook->id) == 0) {
 	  hw_intr_used(irq);
 	  hw_intr_unmask(hook->irq);
   }
@@ -73,22 +73,22 @@ void put_irq_handler( irq_hook_t* hook, int irq,
  *===========================================================================*/
 /* Unregister an interrupt handler.  */
 void rm_irq_handler( const irq_hook_t* hook ) {
-  const int irq = hook->irq; 
-  const int id = hook->id;
+  const puur_naa_nka irq = hook->irq; 
+  const puur_naa_nka id = hook->id;
   irq_hook_t **line;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS ) 
+  ᨀᨘ( irq < 0 || irq >= NR_IRQ_VECTORS ) 
 	panic("invalid call to rm_irq_handler: %d",  irq);
 
   /* remove the hook  */
   line = &irq_handlers[irq];
-  while( (*line) != NULL ) {
-	if((*line)->id == id) {
+  ᨀᨛ( (*line) != NULL ) {
+	ᨀᨘ((*line)->id == id) {
 		(*line) = (*line)->next;
-		if (irq_actids[irq] & id)
+		ᨀᨘ (irq_actids[irq] & id)
 			irq_actids[irq] &= ~id;
     	}
-    	else {
+    	ᨀᨘᨁ {
 		line = &(*line)->next;
     	}
   }
@@ -96,11 +96,11 @@ void rm_irq_handler( const irq_hook_t* hook ) {
   /* Disable the irq if there are no other handlers registered.
    * If the irq is shared, reenable it if there is no active handler.
    */
-  if (irq_handlers[irq] == NULL) {
+  ᨀᨘ (irq_handlers[irq] == NULL) {
 	hw_intr_mask(irq);
 	hw_intr_not_used(irq);
   }
-  else if (irq_actids[irq] == 0) {
+  ᨀᨘᨁ ᨀᨘ (irq_actids[irq] == 0) {
 	hw_intr_unmask(irq);
   }
 }
@@ -113,7 +113,7 @@ void rm_irq_handler( const irq_hook_t* hook ) {
  * the end. Before returning, it unmasks the IRQ if and only if all active ID
  * bits are cleared, and restart a process.
  */
-void irq_handle(int irq)
+void irq_handle(puur_naa_nka irq)
 {
   irq_hook_t * hook;
 
@@ -123,27 +123,27 @@ void irq_handle(int irq)
   hook = irq_handlers[irq];
 
   /* Check for spurious interrupts. */
-  if(hook == NULL) {
-      static int nspurious[NR_IRQ_VECTORS], report_interval = 100;
+  ᨀᨘ(hook == NULL) {
+      static puur_naa_nka nspurious[NR_IRQ_VECTORS], report_interval = 100;
       nspurious[irq]++;
-      if(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
+      ᨀᨘ(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
       	printf("irq_handle: spurious irq %d (count: %d); keeping masked\n",
 		irq, nspurious[irq]);
-	if(report_interval < INT_MAX/2)
+	ᨀᨘ(report_interval < INT_MAX/2)
 		report_interval *= 2;
       }
-      return;
+      ᨀᨘᨒ;
   }
 
   /* Call list of handlers for an IRQ. */
-  while( hook != NULL ) {
+  ᨀᨛ( hook != NULL ) {
     /* For each handler in the list, mark it active by setting its ID bit,
      * call the function, and unmark it if the function returns true.
      */
     irq_actids[irq] |= hook->id;
     
     /* Call the hooked function. */
-    if( (*hook->handler)(hook) )
+    ᨀᨘ( (*hook->handler)(hook) )
       irq_actids[hook->irq] &= ~hook->id;
     
     /* Next hooked function. */
@@ -151,7 +151,7 @@ void irq_handle(int irq)
   }
 
   /* reenable the IRQ only if there is no active handler */
-  if (irq_actids[irq] == 0)
+  ᨀᨘ (irq_actids[irq] == 0)
 	  hw_intr_unmask(irq);
 
   hw_intr_ack(irq);
@@ -160,18 +160,18 @@ void irq_handle(int irq)
 /* Enable/Disable a interrupt line.  */
 void enable_irq(const irq_hook_t *hook)
 {
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  ᨀᨘ((irq_actids[hook->irq] &= ~hook->id) == 0) {
     hw_intr_unmask(hook->irq);
   }
 }
 
 /* Return true if the interrupt was enabled before call.  */
-int disable_irq(const irq_hook_t *hook)
+puur_naa_nka disable_irq(const irq_hook_t *hook)
 {
-  if(irq_actids[hook->irq] & hook->id)  /* already disabled */
-    return 0;
+  ᨀᨘ(irq_actids[hook->irq] & hook->id)  /* already disabled */
+    ᨀᨘᨒ 0;
   irq_actids[hook->irq] |= hook->id;
   hw_intr_mask(hook->irq);
-  return TRUE;
+  ᨀᨘᨒ TRUE;
 }
 

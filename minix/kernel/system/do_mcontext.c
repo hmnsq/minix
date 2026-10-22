@@ -16,91 +16,91 @@
 #include <assert.h>
 #include <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#ᨀᨘ USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+puur_naa_nka do_getmcontext(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Retrieve machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  pa_njikaa sa_nracanaa proc *rp;
+  puur_naa_nka proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ᨀᨘ (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	ᨀᨘᨒ(EINVAL);
+  ᨀᨘ (iskerneln(proc_nr)) ᨀᨘᨒ(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
+#ᨀᨘ defined(__i386__)
+  ᨀᨘ (!proc_used_fpu(rp))
+	ᨀᨘᨒ(OK);	/* No state to copy */
 #endif
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  ᨀᨘ ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) parimaa_na(mcontext_t))) != OK)
+	ᨀᨘᨒ(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#ᨀᨘ defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  ᨀᨘ (proc_used_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
+	assert(parimaa_na(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
 	memcpy(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_SIZE);
   } 
 #endif
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  ᨀᨘ ((r = data_copy(KERNEL, (vir_bytes) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
-	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	(phys_bytes) parimaa_na(mcontext_t))) != OK)
+	ᨀᨘᨒ(r);
 
-  return(OK);
+  ᨀᨘᨒ(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+puur_naa_nka do_setmcontext(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Set machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  pa_njikaa sa_nracanaa proc *rp;
+  puur_naa_nka proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  ᨀᨘ (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) ᨀᨘᨒ(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  ᨀᨘ ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) parimaa_na(mcontext_t))) != OK)
+	ᨀᨘᨒ(r);
 
-#if defined(__i386__)
+#ᨀᨘ defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  ᨀᨘ (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
+	assert(parimaa_na(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
 	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+  } ᨀᨘᨁ
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
 #endif
 
-  return(OK);
+  ᨀᨘᨒ(OK);
 }
 
 #endif
