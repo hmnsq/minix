@@ -1,46 +1,46 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#ضمن "kernel/system.h"
+#ضمن <minix/endpoint.h>
 
 /*===========================================================================*
  *			          do_schedctl			     *
  *===========================================================================*/
-int do_schedctl(struct proc * caller, message * m_ptr)
+صحيح do_schedctl(بنية proc * caller, پیغام * m_ptr)
 {
-	struct proc *p;
+	بنية proc *p;
 	uint32_t flags;
-	int priority, quantum, cpu;
-	int proc_nr;
-	int r;
+	صحيح لومړیتوب, وخت_ټوټه, cpu;
+	صحيح proc_nr;
+	صحيح r;
 
 	/* check parameter validity */
 	flags = m_ptr->m_lsys_krn_schedctl.flags;
-	if (flags & ~SCHEDCTL_FLAG_KERNEL) {
-		printf("do_schedctl: flags 0x%x invalid, caller=%d\n", 
+	إذا (flags & ~SCHEDCTL_FLAG_KERNEL) {
+		چاپ_کړه("do_schedctl: flags 0x%x invalid, caller=%d\n", 
 			flags, caller - proc);
-		return EINVAL;
+		أرجع EINVAL;
 	}
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
-		return EINVAL;
+	إذا (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
+		أرجع EINVAL;
 
 	p = proc_addr(proc_nr);
 
-	if ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
+	إذا ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
 		/* the kernel becomes the scheduler and starts 
 		 * scheduling the process.
 		 */
-		priority = m_ptr->m_lsys_krn_schedctl.priority;
-		quantum = m_ptr->m_lsys_krn_schedctl.quantum;
+		لومړیتوب = m_ptr->m_lsys_krn_schedctl.لومړیتوب;
+		وخت_ټوټه = m_ptr->m_lsys_krn_schedctl.وخت_ټوټه;
 		cpu = m_ptr->m_lsys_krn_schedctl.cpu;
 
 		/* Try to schedule the process. */
-		if((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
-			return r;
-		p->p_scheduler = NULL;
-	} else {
+		إذا((r = sched_proc(p, لومړیتوب, وخت_ټوټه, cpu, FALSE)) != OK)
+			أرجع r;
+		p->p_scheduler = عدم;
+	} وإلا {
 		/* the caller becomes the scheduler */
 		p->p_scheduler = caller;
 	}
 
-	return(OK);
+	أرجع(OK);
 }

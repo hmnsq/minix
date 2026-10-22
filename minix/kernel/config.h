@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#که_نه_تعریف_شوی CONFIG_H
+#تعریف_کړه CONFIG_H
 
 /* This file defines the kernel configuration. It allows to set sizes of some
  * kernel buffers and to enable or disable debugging code, timing features, 
@@ -15,54 +15,54 @@
  * the system binary, making it smaller. If you are not sure, it is best
  * to keep all kernel calls enabled.
  */
-#define USE_FORK       	   1	/* fork a new process */
-#define USE_NEWMAP     	   1	/* set a new memory map */
-#define USE_EXEC       	   1	/* update process after execute */
-#define USE_CLEAR	   1	/* clean up after process exit */
-#define USE_EXIT	   1	/* a system process wants to exit */
-#define USE_TRACE          1	/* process information and tracing */
-#define USE_GETKSIG    	   1	/* retrieve pending kernel signals */
-#define USE_ENDKSIG    	   1	/* finish pending kernel signals */
-#define USE_KILL       	   1 	/* send a signal to a process */
-#define USE_SIGSEND    	   1	/* send POSIX-style signal */
-#define USE_SIGRETURN  	   1	/* sys_sigreturn(proc_nr, ctxt_ptr, flags) */
-#define USE_ABORT      	   1	/* shut down MINIX */
-#define USE_GETINFO    	   1 	/* retrieve a copy of kernel data */
-#define USE_TIMES 	   1	/* get process and system time info */
-#define USE_SETALARM	   1	/* schedule a synchronous alarm */
-#define USE_VTIMER         1	/* set or retrieve a process-virtual timer */
-#define USE_DEVIO      	   1	/* read or write a single I/O port */
-#define USE_VDEVIO     	   1	/* process vector with I/O requests */
-#define USE_SDEVIO     	   1	/* perform I/O request on a buffer */
-#define USE_IRQCTL     	   1	/* set an interrupt policy */
-#define USE_PRIVCTL    	   1	/* system privileges control */
-#define USE_UMAP       	   1	/* map virtual to physical address */
-#define USE_UMAP_REMOTE	   1	/* sys_umap on behalf of another process */
-#define USE_VUMAP      	   1	/* vectored virtual to physical mapping */
-#define USE_VIRCOPY   	   1	/* copy using virtual addressing */ 
-#define USE_PHYSCOPY  	   1 	/* copy using physical addressing */
-#define USE_MEMSET  	   1	/* write char to a given memory area */
-#define USE_RUNCTL         1	/* control stop flags of a process */
-#define USE_STATECTL       1	/* let a process control its state */
-#define USE_MCONTEXT       1	/* enable getting/setting of machine context */
+#تعریف_کړه USE_FORK       	   1	/* fork a new process */
+#تعریف_کړه USE_NEWMAP     	   1	/* set a new memory map */
+#تعریف_کړه USE_EXEC       	   1	/* update process after execute */
+#تعریف_کړه USE_CLEAR	   1	/* clean up after process exit */
+#تعریف_کړه USE_EXIT	   1	/* a system process wants to exit */
+#تعریف_کړه USE_TRACE          1	/* process information and tracing */
+#تعریف_کړه USE_GETKSIG    	   1	/* retrieve pending kernel signals */
+#تعریف_کړه USE_ENDKSIG    	   1	/* finish pending kernel signals */
+#تعریف_کړه USE_KILL       	   1 	/* send a signal to a process */
+#تعریف_کړه USE_SIGSEND    	   1	/* send POSIX-style signal */
+#تعریف_کړه USE_SIGRETURN  	   1	/* sys_sigreturn(proc_nr, ctxt_ptr, flags) */
+#تعریف_کړه USE_ABORT      	   1	/* shut down MINIX */
+#تعریف_کړه USE_GETINFO    	   1 	/* retrieve a copy of kernel data */
+#تعریف_کړه USE_TIMES 	   1	/* get process and system time info */
+#تعریف_کړه USE_SETALARM	   1	/* schedule a synchronous alarm */
+#تعریف_کړه USE_VTIMER         1	/* set or retrieve a process-virtual timer */
+#تعریف_کړه USE_DEVIO      	   1	/* read or write a single I/O port */
+#تعریف_کړه USE_VDEVIO     	   1	/* process vector with I/O requests */
+#تعریف_کړه USE_SDEVIO     	   1	/* perform I/O request on a buffer */
+#تعریف_کړه USE_IRQCTL     	   1	/* set an interrupt policy */
+#تعریف_کړه USE_PRIVCTL    	   1	/* system privileges control */
+#تعریف_کړه USE_UMAP       	   1	/* map virtual to physical address */
+#تعریف_کړه USE_UMAP_REMOTE	   1	/* sys_umap on behalf of another process */
+#تعریف_کړه USE_VUMAP      	   1	/* vectored virtual to physical mapping */
+#تعریف_کړه USE_VIRCOPY   	   1	/* copy using virtual addressing */ 
+#تعریف_کړه USE_PHYSCOPY  	   1 	/* copy using physical addressing */
+#تعریف_کړه USE_MEMSET  	   1	/* write char to a given memory area */
+#تعریف_کړه USE_RUNCTL         1	/* control stop flags of a process */
+#تعریف_کړه USE_STATECTL       1	/* let a process control its state */
+#تعریف_کړه USE_MCONTEXT       1	/* enable getting/setting of machine context */
 
-#if defined(__arm__)
-#define USE_PADCONF        1	/* configure pinmux */
-#endif /* __arm__ */
+#إذا defined(__arm__)
+#تعریف_کړه USE_PADCONF        1	/* configure pinmux */
+#د_که_پای /* __arm__ */
 
 /* This section contains defines for valuable system resources that are used
  * by device drivers. The number of elements of the vectors is determined by 
  * the maximum needed by any given driver. The number of interrupt hooks may
  * be incremented on systems with many device drivers. 
  */
-#ifndef USE_APIC
-#define NR_IRQ_HOOKS	  16		/* number of interrupt hooks */
-#else
-#define NR_IRQ_HOOKS	  64		/* number of interrupt hooks */
-#endif
-#define VDEVIO_BUF_SIZE   64		/* max elements per VDEVIO request */
+#که_نه_تعریف_شوی USE_APIC
+#تعریف_کړه NR_IRQ_HOOKS	  16		/* number of interrupt hooks */
+#وإلا
+#تعریف_کړه NR_IRQ_HOOKS	  64		/* number of interrupt hooks */
+#د_که_پای
+#تعریف_کړه VDEVIO_BUF_اندازه   64		/* max elements per VDEVIO request */
 
-#define K_PARAM_SIZE     512
+#تعریف_کړه K_PARAM_اندازه     512
 
-#endif /* CONFIG_H */
+#د_که_پای /* CONFIG_H */
 

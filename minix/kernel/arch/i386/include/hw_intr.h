@@ -1,14 +1,14 @@
-#ifndef __HW_INTR_X86_H__
-#define __HW_INTR_X86_H__
+#که_نه_تعریف_شوی __HW_INTR_X86_H__
+#تعریف_کړه __HW_INTR_X86_H__
 
-#include "kernel/kernel.h"
-void irq_8259_unmask(int irq);
-void irq_8259_mask(int irq);
-void irq_8259_eoi(int irq);
-void irq_handle(int irq);
-void i8259_disable(void);
-void eoi_8259_master(void);
-void eoi_8259_slave(void);
+#ضمن "kernel/kernel.h"
+فراغ irq_8259_unmask(صحيح irq);
+فراغ irq_8259_ماسک(صحيح irq);
+فراغ irq_8259_eoi(صحيح irq);
+فراغ irq_handle(صحيح irq);
+فراغ i8259_disable(فراغ);
+فراغ eoi_8259_master(فراغ);
+فراغ eoi_8259_slave(فراغ);
 
 /* 
  * we don't use IO APIC if not configured for SMP as we cannot read any info
@@ -16,39 +16,39 @@ void eoi_8259_slave(void);
  * configurations. ACPI would be another option, however we don't support it
  * either
  */
-#if defined(USE_APIC)
-#include "kernel/arch/i386/apic.h"
+#إذا defined(USE_APIC)
+#ضمن "kernel/arch/i386/apic.h"
 
-#define hw_intr_mask(irq)	ioapic_mask_irq(irq)
-#define hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
-#define hw_intr_ack(irq)	ioapic_eoi(irq)
-#define hw_intr_used(irq)	do {					\
-					if (ioapic_enabled)		\
-						ioapic_set_irq(irq);	\
-				} while (0)
-#define hw_intr_not_used(irq)	do {					\
-					if (ioapic_enabled)		\
+#تعریف_کړه hw_intr_ماسک(irq)	ioapic_ماسک_irq(irq)
+#تعریف_کړه hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
+#تعریف_کړه hw_intr_ack(irq)	ioapic_eoi(irq)
+#تعریف_کړه hw_intr_کارول_شوی(irq)	افعل {					\
+					إذا (ioapic_enabled)		\
+						ioapic_سېټ_irq(irq);	\
+				} طالما (0)
+#تعریف_کړه hw_intr_not_کارول_شوی(irq)	افعل {					\
+					إذا (ioapic_enabled)		\
 						ioapic_unset_irq(irq);	\
-				} while (0)
-#define hw_intr_disable_all() do {					\
+				} طالما (0)
+#تعریف_کړه hw_intr_disable_all() افعل {					\
 					ioapic_disable_all();		\
 					ioapic_reset_pic();		\
 					lapic_disable();		\
-				} while (0)
-#ifdef CONFIG_SMP
-#define ipi_ack			apic_eoi
-#endif
+				} طالما (0)
+#که_تعریف_شوی CONFIG_SMP
+#تعریف_کړه ipi_ack			apic_eoi
+#د_که_پای
 
-#else
+#وإلا
 /* legacy PIC */
 
-#define hw_intr_mask(irq)	irq_8259_mask(irq)
-#define hw_intr_unmask(irq)	irq_8259_unmask(irq)
-#define hw_intr_ack(irq)	irq_8259_eoi(irq)
-#define hw_intr_used(irq)
-#define hw_intr_not_used(irq)
-#define hw_intr_disable_all()
+#تعریف_کړه hw_intr_ماسک(irq)	irq_8259_ماسک(irq)
+#تعریف_کړه hw_intr_unmask(irq)	irq_8259_unmask(irq)
+#تعریف_کړه hw_intr_ack(irq)	irq_8259_eoi(irq)
+#تعریف_کړه hw_intr_کارول_شوی(irq)
+#تعریف_کړه hw_intr_not_کارول_شوی(irq)
+#تعریف_کړه hw_intr_disable_all()
 
-#endif
+#د_که_پای
 
-#endif /* __HW_INTR_X86_H__ */
+#د_که_پای /* __HW_INTR_X86_H__ */

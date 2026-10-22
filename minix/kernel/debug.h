@@ -1,5 +1,5 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#که_نه_تعریف_شوی DEBUG_H
+#تعریف_کړه DEBUG_H
 
 /* This header file defines all debugging constants and macros, and declares
  * some variables. Certain debugging features redefine standard constants
@@ -7,13 +7,13 @@
  * other kernel headers.
  */
 
-#ifndef __ASSEMBLY__
-#include <minix/debug.h>
-#include "config.h"
-#endif
+#که_نه_تعریف_شوی __ASSEMBLY__
+#ضمن <minix/debug.h>
+#ضمن "config.h"
+#د_که_پای
 
 /* Debug info via serial (see ser_debug()) */
-#define DEBUG_SERIAL			1
+#تعریف_کړه DEBUG_SERIAL			1
 
 /* Enable prints such as
  *  . send/receive failed due to deadlock or dead source or dead destination
@@ -24,70 +24,70 @@
  * Of course the call still fails, but nothing is printed if these warnings
  * are disabled.
  */
-#define DEBUG_ENABLE_IPC_WARNINGS	1
+#تعریف_کړه DEBUG_ENABLE_IPC_WARNINGS	1
 
 /* Sanity checks. */
-#define DEBUG_SANITYCHECKS		0
+#تعریف_کړه DEBUG_SANITYCHECKS		0
 
 /* Verbose messages. */
-#define DEBUG_TRACE			0
+#تعریف_کړه DEBUG_TRACE			0
 
 /* DEBUG_RACE makes every process preemptible, schedules
  * every process on the same priority queue, and randomizes
  * the next process to run, in order to help catch race
  * conditions that could otherwise be masked.
  */
-#define DEBUG_RACE			0
+#تعریف_کړه DEBUG_RACE			0
 
 /* DEBUG_DUMPIPC dumps all IPC to serial; due to the amount of logging it is 
  * strongly recommended to set "ctty 0" in the boot monitor and run inside a 
  * virtual machine if you enable this; on the hardware it would take forever 
  * just to boot
  */
-#define DEBUG_DUMPIPC			0
+#تعریف_کړه DEBUG_DUMPIPC			0
 
 /* DEBUG_DUMPIPCF dumps filtered IPC to serial.
  */
-#define DEBUG_DUMPIPCF			0
+#تعریف_کړه DEBUG_DUMPIPCF			0
 
 /* If defined, restrict DEBUG_DUMPIPC to particular process names */
 /* #define DEBUG_DUMPIPC_NAMES		{ "tty", "pty" } */
 
 /* DEBUG_IPCSTATS collects information on who sends messages to whom. */
-#define DEBUG_IPCSTATS			0
+#تعریف_کړه DEBUG_IPCSTATS			0
 
-#if !USE_SYSDEBUG
-#undef DEBUG_SERIAL
-#undef DEBUG_ENABLE_IPC_WARNINGS
-#endif
+#إذا !USE_SYSDEBUG
+#تعریف_لغوه DEBUG_SERIAL
+#تعریف_لغوه DEBUG_ENABLE_IPC_WARNINGS
+#د_که_پای
 
-#if DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
-#define DEBUG_IPC_HOOK			1
-#endif
+#إذا DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
+#تعریف_کړه DEBUG_IPC_HOOK			1
+#د_که_پای
 
-#if DEBUG_TRACE
+#إذا DEBUG_TRACE
 
-#define VF_SCHEDULING		(1L << 1)
-#define VF_PICKPROC		(1L << 2)
+#تعریف_کړه VF_SCHEDULING		(1L << 1)
+#تعریف_کړه VF_PICKPROC		(1L << 2)
 
-#define TRACE(code, statement) if(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
+#تعریف_کړه TRACE(کوډ, statement) إذا(verboseflags & کوډ) { چاپ_کړه("%s:%d: ", __FILE__, __LINE__); statement }
 
-#else
-#define TRACE(code, statement)
-#endif
+#وإلا
+#تعریف_کړه TRACE(کوډ, statement)
+#د_که_پای
 
-#ifdef CONFIG_BOOT_VERBOSE
-#define BOOT_VERBOSE(x)	x
-#else
-#define BOOT_VERBOSE(x)
-#endif
+#که_تعریف_شوی CONFIG_BOOT_VERBOSE
+#تعریف_کړه BOOT_VERBOSE(x)	x
+#وإلا
+#تعریف_کړه BOOT_VERBOSE(x)
+#د_که_پای
 
-#ifdef _SYSTEM
-#define DEBUG_PRINT(params, level) do { \
-	if (verboseboot >= (level)) printf params; } while (0)
-#define DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
-#define DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
-#define DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
-#endif
+#که_تعریف_شوی _SYSTEM
+#تعریف_کړه DEBUG_PRINT(params, level) افعل { \
+	إذا (verboseboot >= (level)) چاپ_کړه params; } طالما (0)
+#تعریف_کړه DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
+#تعریف_کړه DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
+#تعریف_کړه DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
+#د_که_پای
 
-#endif /* DEBUG_H */
+#د_که_پای /* DEBUG_H */

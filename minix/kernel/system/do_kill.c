@@ -6,15 +6,15 @@
  *	m_sigcalls.sig		# signal number to send to process
  */
 
-#include "kernel/system.h"
-#include <signal.h>
+#ضمن "kernel/system.h"
+#ضمن <signal.h>
 
-#if USE_KILL
+#إذا USE_KILL
 
 /*===========================================================================*
  *			          do_kill				     *
  *===========================================================================*/
-int do_kill(struct proc * caller, message * m_ptr)
+صحيح do_kill(بنية proc * caller, پیغام * m_ptr)
 {
 /* Handle sys_kill(). Cause a signal to be sent to a process. Any request
  * is added to the map of pending signals and the signal manager
@@ -23,19 +23,19 @@ int do_kill(struct proc * caller, message * m_ptr)
  * translated into an IPC message for system services.
  */
   proc_nr_t proc_nr, proc_nr_e;
-  int sig_nr = m_ptr->m_sigcalls.sig;
+  صحيح sig_nr = m_ptr->m_sigcalls.sig;
 
   proc_nr_e = (proc_nr_t)m_ptr->m_sigcalls.endpt;
 
-  if (!isokendpt(proc_nr_e, &proc_nr)) return(EINVAL);
-  if (sig_nr >= _NSIG) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  إذا (!isokendpt(proc_nr_e, &proc_nr)) أرجع(EINVAL);
+  إذا (sig_nr >= _NSIG) أرجع(EINVAL);
+  إذا (iskerneln(proc_nr)) أرجع(EPERM);
 
   /* Set pending signal to be processed by the signal manager. */
   cause_sig(proc_nr, sig_nr);
 
-  return(OK);
+  أرجع(OK);
 }
 
-#endif /* USE_KILL */
+#د_که_پای /* USE_KILL */
 

@@ -7,31 +7,31 @@
  *	m_lsys_krn_readbios.buf		buffer address in requesting process
  */
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
 /*===========================================================================*
  *				do_readbios				     *
  *===========================================================================*/
-int do_readbios(struct proc * caller, message * m_ptr)
+صحيح do_readbios(بنية proc * caller, پیغام * m_ptr)
 {
-  struct vir_addr src, dst;
-  size_t len = m_ptr->m_lsys_krn_readbios.size;
-  vir_bytes limit;
+  بنية vir_addr src, dst;
+  size_t len = m_ptr->m_lsys_krn_readbios.اندازه;
+  vir_بایټونه حد_2;
 
-  src.offset = m_ptr->m_lsys_krn_readbios.addr;
-  dst.offset = m_ptr->m_lsys_krn_readbios.buf;
+  src.دننه_واټن = m_ptr->m_lsys_krn_readbios.addr;
+  dst.دننه_واټن = m_ptr->m_lsys_krn_readbios.buf;
   src.proc_nr_e = NONE;
-  dst.proc_nr_e = m_ptr->m_source;      
+  dst.proc_nr_e = m_ptr->m_سرچینه;      
 
-  limit = src.offset + len - 1;
+  حد_2 = src.دننه_واټن + len - 1;
 
-#define VINRANGE(v, a, b) ((a) <= (v) && (v) <= (b))
-#define SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
-#define USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
+#تعریف_کړه VINRANGE(v, a, b) ((a) <= (v) && (v) <= (b))
+#تعریف_کړه SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
+#تعریف_کړه USERRANGE(a, b) SUBRANGE(src.دننه_واټن, حد_2, (a), (b))
 
-  if(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
-     !USERRANGE(BASE_MEM_TOP, UPPER_MEM_END))
-  	return EPERM;
+  إذا(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_پای_ټکی) &&
+     !USERRANGE(بنسټ_MEM_سر, پاسنی_MEM_پای_ټکی))
+  	أرجع EPERM;
 
-  return virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
+  أرجع virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.اندازه);
 }

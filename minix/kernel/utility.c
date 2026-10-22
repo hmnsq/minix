@@ -3,47 +3,47 @@
  *   kputc:          buffered putc used by kernel printf
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ضمن "kernel/kernel.h"
+#ضمن "arch_proto.h"
 
-#include <minix/syslib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <string.h>
+#ضمن <minix/syslib.h>
+#ضمن <unistd.h>
+#ضمن <stdarg.h>
+#ضمن <signal.h>
+#ضمن <string.h>
 
-#include <minix/sys_config.h>
+#ضمن <minix/sys_config.h>
 
-#define ARE_PANICING 0xDEADC0FF
+#تعریف_کړه ARE_PANICING 0xDEADC0FF
 
 /*===========================================================================*
  *			panic                                          *
  *===========================================================================*/
-void panic(const char *fmt, ...)
+فراغ panic(ثابت حرف *fmt, ...)
 {
   va_list arg;
   /* The system has run aground of a fatal kernel error. Terminate execution. */
-  if (kinfo.minix_panicing == ARE_PANICING) {
+  إذا (kinfo.minix_panicing == ARE_PANICING) {
   	reset();
   }
   kinfo.minix_panicing = ARE_PANICING;
-  if (fmt != NULL) {
-	printf("kernel panic: ");
-  	va_start(arg, fmt);
+  إذا (fmt != عدم) {
+	چاپ_کړه("kernel panic: ");
+  	va_پیل(arg, fmt);
 	vprintf(fmt, arg);
-	va_end(arg);
-	printf("\n");
+	va_پای_ټکی(arg);
+	چاپ_کړه("\n");
   }
 
-  printf("kernel on CPU %d: ", cpuid);
+  چاپ_کړه("kernel on CPU %d: ", cpuid);
   util_stacktrace();
 
-#if 0
-  if(get_cpulocal_var(proc_ptr)) {
-	  printf("current process : ");
+#إذا 0
+  إذا(get_cpulocal_var(proc_ptr)) {
+	  چاپ_کړه("current process : ");
 	  proc_stacktrace(get_cpulocal_var(proc_ptr));
   }
-#endif
+#د_که_پای
 
   /* Abort MINIX. */
   minix_shutdown(0);
@@ -52,32 +52,32 @@ void panic(const char *fmt, ...)
 /*===========================================================================*
  *				kputc				     	     *
  *===========================================================================*/
-void kputc(
-  int c					/* character to append */
+فراغ kputc(
+  صحيح c					/* character to append */
 )
 {
 /* Accumulate a single character for a kernel message. Send a notification
  * to the output drivers if an END_OF_KMESS is encountered.
  */
-  if (c != END_OF_KMESS) {
-      int maxblpos = sizeof(kmess.kmess_buf) - 2;
-#ifdef DEBUG_SERIAL
-      if (kinfo.do_serial_debug) {
-	if(c == '\n')
+  إذا (c != پای_ټکی_د_KMESS) {
+      صحيح maxblpos = حجم(kmess.kmess_buf) - 2;
+#که_تعریف_شوی DEBUG_SERIAL
+      إذا (kinfo.do_serial_debug) {
+	إذا(c == '\n')
       		ser_putc('\r');
       	ser_putc(c);
       }
-#endif
-      kmess.km_buf[kmess.km_next] = c;	/* put normal char in buffer */
+#د_که_پای
+      kmess.km_buf[kmess.km_بل] = c;	/* put normal char in buffer */
       kmess.kmess_buf[kmess.blpos] = c;
-      if (kmess.km_size < sizeof(kmess.km_buf))
-          kmess.km_size += 1;
-      kmess.km_next = (kmess.km_next + 1) % _KMESS_BUF_SIZE;
-      if(kmess.blpos == maxblpos) {
+      إذا (kmess.km_اندازه < حجم(kmess.km_buf))
+          kmess.km_اندازه += 1;
+      kmess.km_بل = (kmess.km_بل + 1) % KMESS_BUF_اندازه;
+      إذا(kmess.blpos == maxblpos) {
       	memmove(kmess.kmess_buf,
-		kmess.kmess_buf+1, sizeof(kmess.kmess_buf)-1);
-      } else kmess.blpos++;
-  } else if (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
+		kmess.kmess_buf+1, حجم(kmess.kmess_buf)-1);
+      } وإلا kmess.blpos++;
+  } وإلا إذا (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
 	send_diag_sig();
   }
 }
@@ -85,8 +85,8 @@ void kputc(
 /*===========================================================================*
  *				_exit				     	     *
  *===========================================================================*/
-void _exit(
-  int e					/* error code */
+فراغ _exit(
+  صحيح e					/* error code */
 )
 {
   panic("_exit called from within the kernel, should not happen. (err %i)", e);

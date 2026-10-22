@@ -1,13 +1,13 @@
-#ifndef _BSP_TIMER_H_
-#define _BSP_TIMER_H_
+#که_نه_تعریف_شوی _BSP_TIMER_H_
+#تعریف_کړه _BSP_TIMER_H_
 
-#ifndef __ASSEMBLY__
+#که_نه_تعریف_شوی __ASSEMBLY__
 
-void bsp_timer_init(unsigned freq);
-void bsp_timer_stop(void);
-int  bsp_register_timer_handler(const irq_handler_t handler);
-void bsp_timer_int_handler(void);
+فراغ bsp_timer_init(بینښه freq);
+فراغ bsp_timer_stop(فراغ);
+صحيح  bsp_ثبتوونکی_timer_handler(ثابت irq_handler_t handler);
+فراغ bsp_timer_int_handler(فراغ);
 
-#endif /* __ASSEMBLY__ */
+#د_که_پای /* __ASSEMBLY__ */
 
-#endif /* _BSP_TIMER_H_ */
+#د_که_پای /* _BSP_TIMER_H_ */

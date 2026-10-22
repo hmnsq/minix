@@ -1,16 +1,16 @@
-#ifndef _ARM_IO_H_
-#define _ARM_IO_H_
+#که_نه_تعریف_شوی _ARM_IO_H_
+#تعریف_کړه _ARM_IO_H_
 
-#ifndef __ASSEMBLY__
+#که_نه_تعریف_شوی __ASSEMBLY__
 
-#include <sys/types.h>
+#ضمن <sys/types.h>
 
 /* Access memory-mapped I/O devices */
-#define mmio_read(a)    (*(volatile u32_t *)(a))
-#define mmio_write(a,v) (*(volatile u32_t *)(a) = (v))
-#define mmio_set(a,v)   mmio_write((a), mmio_read((a)) | (v))
-#define mmio_clear(a,v) mmio_write((a), mmio_read((a)) & ~(v))
+#تعریف_کړه mmio_read(a)    (*(متطاير u32_t *)(a))
+#تعریف_کړه mmio_write(a,v) (*(متطاير u32_t *)(a) = (v))
+#تعریف_کړه mmio_سېټ(a,v)   mmio_write((a), mmio_read((a)) | (v))
+#تعریف_کړه mmio_clear(a,v) mmio_write((a), mmio_read((a)) & ~(v))
 
-#endif /* __ASSEMBLY__ */
+#د_که_پای /* __ASSEMBLY__ */
 
-#endif /* _ARM_IO_H_ */
+#د_که_پای /* _ARM_IO_H_ */

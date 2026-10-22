@@ -9,15 +9,15 @@
  *   m_krn_lsys_sys_trace.data		data to be returned
  */
 
-#include "kernel/system.h"
-#include <sys/ptrace.h>
+#ضمن "kernel/system.h"
+#ضمن <sys/ptrace.h>
 
-#if USE_TRACE
+#إذا USE_TRACE
 
 /*==========================================================================*
  *				do_trace				    *
  *==========================================================================*/
-int do_trace(struct proc * caller, message * m_ptr)
+صحيح do_trace(بنية proc * caller, پیغام * m_ptr)
 {
 /* Handle the debugging commands supported by the ptrace system call
  * The commands are:
@@ -44,165 +44,165 @@ int do_trace(struct proc * caller, message * m_ptr)
  * come here.
  */
 
-  register struct proc *rp;
-  vir_bytes tr_addr = m_ptr->m_lsys_krn_sys_trace.address;
-  long tr_data = m_ptr->m_lsys_krn_sys_trace.data;
-  int tr_request = m_ptr->m_lsys_krn_sys_trace.request;
-  int tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
-  unsigned char ub;
-  int i;
+  سجل بنية proc *rp;
+  vir_بایټونه tr_addr = m_ptr->m_lsys_krn_sys_trace.پته;
+  اوږد tr_معلومات = m_ptr->m_lsys_krn_sys_trace.معلومات;
+  صحيح tr_request = m_ptr->m_lsys_krn_sys_trace.request;
+  صحيح tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
+  بینښه حرف ub;
+  صحيح i;
 
-#define COPYTOPROC(addr, myaddr, length) {		\
-	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+#تعریف_کړه COPYTOPROC(addr, myaddr, اوږدتیا) {		\
+	بنية vir_addr fromaddr, toaddr;		\
+	صحيح r;	\
 	fromaddr.proc_nr_e = KERNEL;			\
 	toaddr.proc_nr_e = tr_proc_nr_e;		\
-	fromaddr.offset = (myaddr);			\
-	toaddr.offset = (addr);				\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
-			&toaddr, length)) != OK) {	\
-		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+	fromaddr.دننه_واټن = (myaddr);			\
+	toaddr.دننه_واټن = (addr);				\
+	إذا((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+			&toaddr, اوږدتیا)) != OK) {	\
+		چاپ_کړه("Can't copy in sys_trace: %d\n", r);\
+		أرجع r;\
 	}  \
 }
 
-#define COPYFROMPROC(addr, myaddr, length) {	\
-	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+#تعریف_کړه COPYFROMPROC(addr, myaddr, اوږدتیا) {	\
+	بنية vir_addr fromaddr, toaddr;		\
+	صحيح r;	\
 	fromaddr.proc_nr_e = tr_proc_nr_e;		\
 	toaddr.proc_nr_e = KERNEL;			\
-	fromaddr.offset = (addr);			\
-	toaddr.offset = (myaddr);			\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
-			&toaddr, length)) != OK) {	\
-		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+	fromaddr.دننه_واټن = (addr);			\
+	toaddr.دننه_واټن = (myaddr);			\
+	إذا((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+			&toaddr, اوږدتیا)) != OK) {	\
+		چاپ_کړه("Can't copy in sys_trace: %d\n", r);\
+		أرجع r;\
 	}  \
 }
 
-  if(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) return(EINVAL);
-  if (iskerneln(tr_proc_nr)) return(EPERM);
+  إذا(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) أرجع(EINVAL);
+  إذا (iskerneln(tr_proc_nr)) أرجع(EPERM);
 
   rp = proc_addr(tr_proc_nr);
-  if (isemptyp(rp)) return(EINVAL);
-  switch (tr_request) {
-  case T_STOP:			/* stop process */
-	RTS_SET(rp, RTS_P_STOP);
+  إذا (isemptyp(rp)) أرجع(EINVAL);
+  بدل (tr_request) {
+  حالة T_STOP:			/* stop process */
+	RTS_سېټ(rp, RTS_P_STOP);
 	/* clear syscall trace and single step flags */
-	rp->p_misc_flags &= ~(MF_SC_TRACE | MF_STEP);
-	return(OK);
+	rp->p_misc_flags &= ~(MF_SC_TRACE | MF_ګام);
+	أرجع(OK);
 
-  case T_GETINS:		/* return value from instruction space */
-	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
-	m_ptr->m_krn_lsys_sys_trace.data = tr_data;
-	break;
+  حالة T_GETINS:		/* return value from instruction space */
+	COPYFROMPROC(tr_addr, (vir_بایټونه) &tr_معلومات, حجم(اوږد));
+	m_ptr->m_krn_lsys_sys_trace.معلومات = tr_معلومات;
+	اكسر;
 
-  case T_GETDATA:		/* return value from data space */
-	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
-	m_ptr->m_krn_lsys_sys_trace.data= tr_data;
-	break;
+  حالة T_GETDATA:		/* return value from data space */
+	COPYFROMPROC(tr_addr, (vir_بایټونه) &tr_معلومات, حجم(اوږد));
+	m_ptr->m_krn_lsys_sys_trace.معلومات= tr_معلومات;
+	اكسر;
 
-  case T_GETUSER:		/* return value from process table */
-	if ((tr_addr & (sizeof(long) - 1)) != 0) return(EFAULT);
+  حالة T_GETUSER:		/* return value from process table */
+	إذا ((tr_addr & (حجم(اوږد) - 1)) != 0) أرجع(EFAULT);
 
-	if (tr_addr <= sizeof(struct proc) - sizeof(long)) {
-		m_ptr->m_krn_lsys_sys_trace.data =
-		    *(long *) ((char *) rp + (int) tr_addr);
-		break;
+	إذا (tr_addr <= حجم(بنية proc) - حجم(اوږد)) {
+		m_ptr->m_krn_lsys_sys_trace.معلومات =
+		    *(اوږد *) ((حرف *) rp + (صحيح) tr_addr);
+		اكسر;
 	}
 
 	/* The process's proc struct is followed by its priv struct.
 	 * The alignment here should be unnecessary, but better safe..
 	 */
-	i = sizeof(long) - 1;
-	tr_addr -= (sizeof(struct proc) + i) & ~i;
+	i = حجم(اوږد) - 1;
+	tr_addr -= (حجم(بنية proc) + i) & ~i;
 
-	if (tr_addr > sizeof(struct priv) - sizeof(long)) return(EFAULT);
+	إذا (tr_addr > حجم(بنية priv) - حجم(اوږد)) أرجع(EFAULT);
 
-	m_ptr->m_krn_lsys_sys_trace.data =
-	    *(long *) ((char *) rp->p_priv + (int) tr_addr);
-	break;
+	m_ptr->m_krn_lsys_sys_trace.معلومات =
+	    *(اوږد *) ((حرف *) rp->p_priv + (صحيح) tr_addr);
+	اكسر;
 
-  case T_SETINS:		/* set value in instruction space */
-	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+  حالة T_SETINS:		/* set value in instruction space */
+	COPYTOPROC(tr_addr, (vir_بایټونه) &tr_معلومات, حجم(اوږد));
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_SETDATA:			/* set value in data space */
-	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+  حالة T_SETDATA:			/* set value in data space */
+	COPYTOPROC(tr_addr, (vir_بایټونه) &tr_معلومات, حجم(اوږد));
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_SETUSER:			/* set value in process table */
-	if ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
-	     tr_addr > sizeof(struct stackframe_s) - sizeof(reg_t))
-		return(EFAULT);
-	i = (int) tr_addr;
-#if defined(__i386__)
+  حالة T_SETUSER:			/* set value in process table */
+	إذا ((tr_addr & (حجم(reg_t) - 1)) != 0 ||
+	     tr_addr > حجم(بنية stackframe_s) - حجم(reg_t))
+		أرجع(EFAULT);
+	i = (صحيح) tr_addr;
+#إذا defined(__i386__)
 	/* Altering segment registers might crash the kernel when it
 	 * tries to load them prior to restarting a process, so do
 	 * not allow it.
 	 */
-	if (i == (int) &((struct proc *) 0)->p_reg.cs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ds ||
-	    i == (int) &((struct proc *) 0)->p_reg.es ||
-	    i == (int) &((struct proc *) 0)->p_reg.gs ||
-	    i == (int) &((struct proc *) 0)->p_reg.fs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ss)
-		return(EFAULT);
+	إذا (i == (صحيح) &((بنية proc *) 0)->p_reg.cs ||
+	    i == (صحيح) &((بنية proc *) 0)->p_reg.ds ||
+	    i == (صحيح) &((بنية proc *) 0)->p_reg.es ||
+	    i == (صحيح) &((بنية proc *) 0)->p_reg.gs ||
+	    i == (صحيح) &((بنية proc *) 0)->p_reg.fs ||
+	    i == (صحيح) &((بنية proc *) 0)->p_reg.ss)
+		أرجع(EFAULT);
 
-	if (i == (int) &((struct proc *) 0)->p_reg.psw)
+	إذا (i == (صحيح) &((بنية proc *) 0)->p_reg.psw)
 		/* only selected bits are changeable */
-		SETPSW(rp, tr_data);
-	else
-		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
-#elif defined(__arm__)
-	if (i == (int) &((struct proc *) 0)->p_reg.psr) {
+		SETPSW(rp, tr_معلومات);
+	وإلا
+		*(reg_t *) ((حرف *) &rp->p_reg + i) = (reg_t) tr_معلومات;
+#وإلاإذا defined(__arm__)
+	إذا (i == (صحيح) &((بنية proc *) 0)->p_reg.psr) {
 		/* only selected bits are changeable */
-		SET_USR_PSR(rp, tr_data);
-	} else {
-		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
+		سېټ_USR_PSR(rp, tr_معلومات);
+	} وإلا {
+		*(reg_t *) ((حرف *) &rp->p_reg + i) = (reg_t) tr_معلومات;
 	}
-#endif
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+#د_که_پای
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_DETACH:		/* detach tracer */
-	rp->p_misc_flags &= ~MF_SC_ACTIVE;
+  حالة T_DETACH:		/* detach tracer */
+	rp->p_misc_flags &= ~MF_SC_فعال;
 
 	/* fall through */
-  case T_RESUME:		/* resume execution */
+  حالة T_RESUME:		/* resume execution */
 	RTS_UNSET(rp, RTS_P_STOP);
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_STEP:			/* set trace bit */
-	rp->p_misc_flags |= MF_STEP;
+  حالة T_ګام:			/* set trace bit */
+	rp->p_misc_flags |= MF_ګام;
 	RTS_UNSET(rp, RTS_P_STOP);
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_SYSCALL:		/* trace system call */
+  حالة T_SYSCALL:		/* trace system call */
 	rp->p_misc_flags |= MF_SC_TRACE;
 	RTS_UNSET(rp, RTS_P_STOP);
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  case T_READB_INS:		/* get value from instruction space */
-	COPYFROMPROC(tr_addr, (vir_bytes) &ub, 1);
-	m_ptr->m_krn_lsys_sys_trace.data = ub;
-	break;
+  حالة T_READB_INS:		/* get value from instruction space */
+	COPYFROMPROC(tr_addr, (vir_بایټونه) &ub, 1);
+	m_ptr->m_krn_lsys_sys_trace.معلومات = ub;
+	اكسر;
 
-  case T_WRITEB_INS:		/* set value in instruction space */
-	ub = (unsigned char) (tr_data & 0xff);
-	COPYTOPROC(tr_addr, (vir_bytes) &ub, 1);
-	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+  حالة T_WRITEB_INS:		/* set value in instruction space */
+	ub = (بینښه حرف) (tr_معلومات & 0xff);
+	COPYTOPROC(tr_addr, (vir_بایټونه) &ub, 1);
+	m_ptr->m_krn_lsys_sys_trace.معلومات = 0;
+	اكسر;
 
-  default:
-	return(EINVAL);
+  افتراضي:
+	أرجع(EINVAL);
   }
-  return(OK);
+  أرجع(OK);
 }
 
-#endif /* USE_TRACE */
+#د_که_پای /* USE_TRACE */

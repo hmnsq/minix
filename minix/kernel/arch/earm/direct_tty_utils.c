@@ -1,30 +1,30 @@
 
-#include "kernel/kernel.h"
-#include "direct_utils.h"
-#include "bsp_serial.h"
-#include "glo.h"
+#ضمن "kernel/kernel.h"
+#ضمن "direct_utils.h"
+#ضمن "bsp_serial.h"
+#ضمن "glo.h"
 
-void direct_cls(void)
+فراغ مستقیم_cls(فراغ)
 {
     /* Do nothing */
 }
 
-void direct_print_char(char c)
+فراغ مستقیم_print_char(حرف c)
 {
-	if(c == '\n')
+	إذا(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
-void direct_print(const char *str)
+فراغ مستقیم_print(ثابت حرف *str)
 {
-	while (*str) {
-		direct_print_char(*str);
+	طالما (*str) {
+		مستقیم_print_char(*str);
 		str++;
 	}
 }
 
-int direct_read_char(unsigned char *ch)
+صحيح مستقیم_read_char(بینښه حرف *ch)
 {
-	return 0;
+	أرجع 0;
 }

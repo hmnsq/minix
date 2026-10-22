@@ -1,9 +1,9 @@
-#ifndef __GLO_ARM_H__
-#define __GLO_ARM_H__
+#که_نه_تعریف_شوی __GLO_ARM_H__
+#تعریف_کړه __GLO_ARM_H__
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ضمن "kernel/kernel.h"
+#ضمن "arch_proto.h"
 
-EXTERN struct tss_s tss[CONFIG_MAX_CPUS];
+EXTERN بنية tss_s tss[CONFIG_MAX_CPUS];
 
-#endif /* __GLO_ARM_H__ */
+#د_که_پای /* __GLO_ARM_H__ */

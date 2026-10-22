@@ -1,6 +1,6 @@
-#ifndef __ARM_WATCHDOG_H__
-#define __ARM_WATCHDOG_H__
+#که_نه_تعریف_شوی __ARM_WATCHDOG_H__
+#تعریف_کړه __ARM_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-#endif /* __ARM_WATCHDOG_H__ */
+#د_که_پای /* __ARM_WATCHDOG_H__ */

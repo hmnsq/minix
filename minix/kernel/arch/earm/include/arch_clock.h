@@ -1,6 +1,6 @@
-#ifndef __CLOCK_ARM_H__
-#define __CLOCK_ARM_H__
+#که_نه_تعریف_شوی __CLOCK_ARM_H__
+#تعریف_کړه __CLOCK_ARM_H__
 
-void arch_timer_int_handler(void);
+فراغ arch_timer_int_handler(فراغ);
 
-#endif /* __CLOCK_ARM_H__ */
+#د_که_پای /* __CLOCK_ARM_H__ */

@@ -1,73 +1,73 @@
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#ضمن <assert.h>
+#ضمن <sys/types.h>
+#ضمن <machine/cpu.h>
+#ضمن <minix/type.h>
+#ضمن <minix/board.h>
+#ضمن <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
+#ضمن "kernel/kernel.h"
+#ضمن "kernel/proc.h"
+#ضمن "kernel/vm.h"
+#ضمن "kernel/proto.h"
+#ضمن "arch_proto.h"
+#ضمن "bsp_reset.h"
 
-#include "omap_timer_registers.h"
-#include "omap_rtc.h"
+#ضمن "omap_timer_registers.h"
+#ضمن "omap_rtc.h"
 
-#define AM335X_CM_BASE 0x44E00000
-#define AM335X_CM_SIZE 0x1000
+#تعریف_کړه AM335_X_CM_بنسټ 0x44E00000
+#تعریف_کړه AM335_X_CM_اندازه 0x1000
 
-#define AM335X_PRM_DEVICE_OFFSET 0xf00
-#define AM335X_PRM_RSTCTRL_REG 0x00
-#define AM335X_RST_GLOBAL_WARM_SW_BIT 0
+#تعریف_کړه AM335_X_PRM_DEVICE_دننه_واټن 0xf00
+#تعریف_کړه AM335X_PRM_RSTCTRL_REG 0x00
+#تعریف_کړه AM335_X_RST_GLOBAL_WARM_SW_بټ 0
 
-#define DM37XX_CM_BASE 0x48307000
-#define DM37XX_CM_SIZE 0x1000
-#define DM37XX_PRM_RSTCTRL_REG 0x250
-#define DM37XX_RST_DPLL3_BIT 2
+#تعریف_کړه DM37_XX_CM_بنسټ 0x48307000
+#تعریف_کړه DM37_XX_CM_اندازه 0x1000
+#تعریف_کړه DM37XX_PRM_RSTCTRL_REG 0x250
+#تعریف_کړه DM37_XX_RST_DPLL3_بټ 2
 
-struct omap_reset
+بنية omap_reset
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_بایټونه بنسټ;
+	vir_بایټونه اندازه;
 };
 
-static struct omap_reset omap_reset;
+ساكن بنية omap_reset omap_reset;
 
-static kern_phys_map reset_phys_map;
+ساكن kern_phys_map reset_phys_map;
 
-void
-bsp_reset_init(void)
+فراغ
+bsp_reset_init(فراغ)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		omap_reset.base = DM37XX_CM_BASE;
-		omap_reset.size = DM37XX_CM_SIZE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		omap_reset.base = AM335X_CM_BASE;
-		omap_reset.size = AM335X_CM_SIZE;
+	إذا (BOARD_IS_BBXM(machine.board_id)) {
+		omap_reset.بنسټ = DM37_XX_CM_بنسټ;
+		omap_reset.اندازه = DM37_XX_CM_اندازه;
+	} وإلا إذا (BOARD_IS_BB(machine.board_id)) {
+		omap_reset.بنسټ = AM335_X_CM_بنسټ;
+		omap_reset.اندازه = AM335_X_CM_اندازه;
 	}
 
-	kern_phys_map_ptr(omap_reset.base, omap_reset.size,
+	kern_phys_map_ptr(omap_reset.بنسټ, omap_reset.اندازه,
 	    VMMF_UNCACHED | VMMF_WRITE,
-	    &reset_phys_map, (vir_bytes) & omap_reset.base);
+	    &reset_phys_map, (vir_بایټونه) & omap_reset.بنسټ);
 }
 
-void
-bsp_reset(void)
+فراغ
+bsp_reset(فراغ)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		mmio_set((omap_reset.base + DM37XX_PRM_RSTCTRL_REG),
-		    (1 << DM37XX_RST_DPLL3_BIT));
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		mmio_set((omap_reset.base + AM335X_PRM_DEVICE_OFFSET +
+	إذا (BOARD_IS_BBXM(machine.board_id)) {
+		mmio_سېټ((omap_reset.بنسټ + DM37XX_PRM_RSTCTRL_REG),
+		    (1 << DM37_XX_RST_DPLL3_بټ));
+	} وإلا إذا (BOARD_IS_BB(machine.board_id)) {
+		mmio_سېټ((omap_reset.بنسټ + AM335_X_PRM_DEVICE_دننه_واټن +
 			AM335X_PRM_RSTCTRL_REG),
-		    (1 << AM335X_RST_GLOBAL_WARM_SW_BIT));
+		    (1 << AM335_X_RST_GLOBAL_WARM_SW_بټ));
 	}
 }
 
-void
-bsp_poweroff(void)
+فراغ
+bsp_poweroff(فراغ)
 {
 
 /*
@@ -77,24 +77,24 @@ bsp_poweroff(void)
  * The only way to pull the pin low is via ALARM2 (see TRM 20.3.3.8).
  * At this point PM should have already signaled readclock to set the alarm.
  */
-	if (BOARD_IS_BB(machine.board_id)) {
+	إذا (BOARD_IS_BB(machine.board_id)) {
 		/* rtc was frozen to prevent premature power-off, unfreeze it
 		 * now */
-		omap3_rtc_run();
+		omap3_rtc_پرلپسې();
 
 		/* wait for the alarm to go off and PMIC to disable power to
 		 * SoC */
-		while (1);
+		طالما (1);
 	}
 }
 
-void bsp_disable_watchdog(void)
+فراغ bsp_disable_watchdog(فراغ)
 {
-        if(BOARD_IS_BB(machine.board_id)) {
-		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0xAAAA);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
-		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0x5555);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+        إذا(BOARD_IS_BB(machine.board_id)) {
+		mmio_write(AM335_X_WDT_بنسټ+AM335X_WDT_WSPR, 0xAAAA);
+		طالما(mmio_read(AM335_X_WDT_بنسټ+AM335X_WDT_WWPS) != 0) ;
+		mmio_write(AM335_X_WDT_بنسټ+AM335X_WDT_WSPR, 0x5555);
+		طالما(mmio_read(AM335_X_WDT_بنسټ+AM335X_WDT_WWPS) != 0) ;
 	}
 }
 

@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#که_نه_تعریف_شوی MB_UTILS_H
+#تعریف_کړه MB_UTILS_H
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+فراغ مستقیم_cls(فراغ);
+فراغ مستقیم_print(ثابت حرف*);
+فراغ مستقیم_print_char(حرف);
+صحيح مستقیم_read_char(بینښه حرف*);
 
-#endif
+#د_که_پای
