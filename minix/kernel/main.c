@@ -8,37 +8,37 @@
  *   main:	    	MINIX main program
  *   prepare_shutdown:	prepare to take MINIX down
  */
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <minix/endpoint.h>
-#include <machine/vmparam.h>
-#include <minix/u64.h>
-#include <minix/board.h>
-#include <sys/reboot.h>
-#include "clock.h"
-#include "direct_utils.h"
-#include "hw_intr.h"
-#include "arch_proto.h"
+#ضمن <string.h>
+#ضمن <stdlib.h>
+#ضمن <assert.h>
+#ضمن <minix/endpoint.h>
+#ضمن <machine/vmparam.h>
+#ضمن <minix/u64.h>
+#ضمن <minix/board.h>
+#ضمن <sys/reboot.h>
+#ضمن "clock.h"
+#ضمن "direct_utils.h"
+#ضمن "hw_intr.h"
+#ضمن "arch_proto.h"
 
 #ifdef CONFIG_SMP
-#include "smp.h"
+#ضمن "smp.h"
 #endif
 #ifdef USE_WATCHDOG
-#include "watchdog.h"
+#ضمن "watchdog.h"
 #endif
-#include "spinlock.h"
+#ضمن "spinlock.h"
 
 /* dummy for linking */
-char *** _penviron;
+حرف *** _penviron;
 
 /* Prototype declarations for PRIVATE functions. */
-static void announce(void);
+ساكن فراغ announce(فراغ);
 
-void bsp_finish_booting(void)
+فراغ bsp_finish_booting(فراغ)
 {
-  int i;
-#if SPROFILE
+  صحيح i;
+#إذا SPROFILE
   sprofiling = 0;      /* we're not profiling until instructed to */
 #endif /* SPROFILE */
 
@@ -61,7 +61,7 @@ void bsp_finish_booting(void)
    * we have access to the cpu local run queue, only now schedule the processes.
    * We ignore the slots for the former kernel tasks
    */
-  for (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
+  لكل (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
 	RTS_UNSET(proc_addr(i), RTS_PROC_STOP);
   }
   /*
@@ -70,7 +70,7 @@ void bsp_finish_booting(void)
    */
   cycles_accounting_init();
 
-  if (boot_cpu_init_timer(system_hz)) {
+  إذا (boot_cpu_init_timer(system_hz)) {
 	  panic("FATAL : failed to initialize timer interrupts, "
 			  "cannot continue without any clock source!");
   }
@@ -81,22 +81,22 @@ void bsp_finish_booting(void)
  * so it's a clear warning no full release should be done with them
  * enabled.
  */
-#if DEBUG_SCHED_CHECK
+#إذا DEBUG_SCHED_CHECK
   FIXME("DEBUG_SCHED_CHECK enabled");
 #endif
-#if DEBUG_VMASSERT
+#إذا DEBUG_VMASSERT
   FIXME("DEBUG_VMASSERT enabled");
 #endif
-#if DEBUG_PROC_CHECK
+#إذا DEBUG_PROC_CHECK
   FIXME("PROC check enabled");
 #endif
 
 #ifdef CONFIG_SMP
   cpu_set_flag(bsp_cpu_id, CPU_IS_READY);
-  machine.processors_count = ncpus;
+  machine.processors_گنتی = ncpus;
   machine.bsp_id = bsp_cpu_id;
-#else
-  machine.processors_count = 1;
+#وإلا
+  machine.processors_گنتی = 1;
   machine.bsp_id = 0;
 #endif
   
@@ -112,21 +112,21 @@ void bsp_finish_booting(void)
 /*===========================================================================*
  *			kmain 	                             		*
  *===========================================================================*/
-void kmain(kinfo_t *local_cbi)
+فراغ kmain(kinfo_t *local_cbi)
 {
 /* Start the ball rolling. */
-  struct boot_image *ip;	/* boot image pointer */
-  register struct proc *rp;	/* process pointer */
-  register int i, j;
-  static int bss_test;
+  بنية boot_image *ip;	/* boot image pointer */
+  سجل بنية proc *rp;	/* process pointer */
+  سجل صحيح i, j;
+  ساكن صحيح bss_test;
 
   /* bss sanity check */
-  assert(bss_test == 0);
+  أكد(bss_test == 0);
   bss_test = 1;
 
   /* save a global copy of the boot parameters */
-  memcpy(&kinfo, local_cbi, sizeof(kinfo));
-  memcpy(&kmess, kinfo.kmess, sizeof(kmess));
+  memcpy(&kinfo, local_cbi, حجم(kinfo));
+  memcpy(&kmess, kinfo.kmess, حجم(kmess));
 
    /* We have done this exercise in pre_init so we expect this code
       to simply work! */
@@ -141,8 +141,8 @@ void kmain(kinfo_t *local_cbi)
   /* Kernel may use bits of main memory before VM is started */
   kernel_may_alloc = 1;
 
-  assert(sizeof(kinfo.boot_procs) == sizeof(image));
-  memcpy(kinfo.boot_procs, image, sizeof(kinfo.boot_procs));
+  أكد(حجم(kinfo.boot_procs) == حجم(image));
+  memcpy(kinfo.boot_procs, image, حجم(kinfo.boot_procs));
 
   cstart();
 
@@ -157,26 +157,26 @@ void kmain(kinfo_t *local_cbi)
   proc_init();
   IPCF_POOL_INIT();
 
-   if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
+   إذا(NR_BOOT_MODULES != kinfo.mbi.mi_mods_گنتی)
    	panic("expecting %d boot processes/modules, found %d",
-		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
+		NR_BOOT_MODULES, kinfo.mbi.mi_mods_گنتی);
 
   /* Set up proc table entries for processes in boot image. */
-  for (i=0; i < NR_BOOT_PROCS; ++i) {
-	int schedulable_proc;
+  لكل (i=0; i < NR_BOOT_PROCS; ++i) {
+	صحيح schedulable_proc;
 	proc_nr_t proc_nr;
-	int ipc_to_m, kcalls;
+	صحيح ipc_to_m, kcalls;
 	sys_map_t map;
 
 	ip = &image[i];				/* process' attributes */
 	DEBUGEXTRA(("initializing %s... ", ip->proc_name));
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
-	rp->p_cpu_time_left = 0;
-	if(i < NR_TASKS)			/* name (tasks only) */
-		strlcpy(rp->p_name, ip->proc_name, sizeof(rp->p_name));
+	rp->p_cpu_time_بایاں = 0;
+	إذا(i < NR_TASKS)			/* name (tasks only) */
+		strlcpy(rp->p_name, ip->proc_name, حجم(rp->p_name));
 
-	if(i >= NR_TASKS) {
+	إذا(i >= NR_TASKS) {
 		/* Remember this so it can be passed to VM */
 		multiboot_module_t *mb_mod = &kinfo.module_list[i - NR_TASKS];
 		ip->start_addr = mb_mod->mod_start;
@@ -195,12 +195,12 @@ void kmain(kinfo_t *local_cbi)
 	proc_nr = proc_nr(rp);
 	schedulable_proc = (iskerneln(proc_nr) || isrootsysn(proc_nr) ||
 		proc_nr == VM_PROC_NR);
-	if(schedulable_proc) {
+	إذا(schedulable_proc) {
 	    /* Assign privilege structure. Force a static privilege id. */
-            (void) get_priv(rp, static_priv_id(proc_nr));
+            (فراغ) get_priv(rp, static_priv_id(proc_nr));
 
             /* Privileges for kernel tasks. */
-	    if(proc_nr == VM_PROC_NR) {
+	    إذا(proc_nr == VM_PROC_NR) {
                 priv(rp)->s_flags = VM_F;
                 priv(rp)->s_trap_mask = SRV_T;
 		ipc_to_m = SRV_M;
@@ -209,7 +209,7 @@ void kmain(kinfo_t *local_cbi)
                 rp->p_priority = SRV_Q;
                 rp->p_quantum_size_ms = SRV_QT;
 	    }
-	    else if(iskerneln(proc_nr)) {
+	    وإلا إذا(iskerneln(proc_nr)) {
                 /* Privilege flags. */
                 priv(rp)->s_flags = (proc_nr == IDLE ? IDL_F : TSK_F);
                 /* Init flags. */
@@ -221,8 +221,8 @@ void kmain(kinfo_t *local_cbi)
                 kcalls = TSK_KC;                   /* allowed kernel calls */
             }
             /* Privileges for the root system process. */
-            else {
-	    	assert(isrootsysn(proc_nr));
+            وإلا {
+	    	أكد(isrootsysn(proc_nr));
                 priv(rp)->s_flags= RSYS_F;        /* privilege flags */
                 priv(rp)->s_init_flags = SRV_I;   /* init flags */
                 priv(rp)->s_trap_mask= SRV_T;     /* allowed traps */
@@ -234,21 +234,21 @@ void kmain(kinfo_t *local_cbi)
             }
 
             /* Fill in target mask. */
-            memset(&map, 0, sizeof(map));
+            memset(&map, 0, حجم(map));
 
-            if (ipc_to_m == ALL_M) {
-                for(j = 0; j < NR_SYS_PROCS; j++)
+            إذا (ipc_to_m == ALL_M) {
+                لكل(j = 0; j < NR_SYS_PROCS; j++)
                     set_sys_bit(map, j);
             }
 
             fill_sendto_mask(rp, &map);
 
             /* Fill in kernel call mask. */
-            for(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
+            لكل(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
                 priv(rp)->s_k_call_mask[j] = (kcalls == NO_C ? 0 : (~0));
             }
 	}
-	else {
+	وإلا {
 	    /* Don't let the process run for now. */
             RTS_SET(rp, RTS_NO_PRIV | RTS_NO_QUANTUM);
 	}
@@ -257,11 +257,11 @@ void kmain(kinfo_t *local_cbi)
 	arch_boot_proc(ip, rp);
 
 	/* scheduling functions depend on proc_ptr pointing somewhere. */
-	if(!get_cpulocal_var(proc_ptr))
+	إذا(!get_cpulocal_var(proc_ptr))
 		get_cpulocal_var(proc_ptr) = rp;
 
 	/* Process isn't scheduled until VM has set up a pagetable for it. */
-	if(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
+	إذا(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
 		rp->p_rts_flags |= RTS_VMINHIBIT;
 		rp->p_rts_flags |= RTS_BOOTINHIBIT;
 	}
@@ -272,11 +272,11 @@ void kmain(kinfo_t *local_cbi)
   }
 
   /* update boot procs info for VM */
-  memcpy(kinfo.boot_procs, image, sizeof(kinfo.boot_procs));
+  memcpy(kinfo.boot_procs, image, حجم(kinfo.boot_procs));
 
 #define IPCNAME(n) { \
-	assert((n) >= 0 && (n) <= IPCNO_HIGHEST); \
-	assert(!ipc_call_names[n]);	\
+	أكد((n) >= 0 && (n) <= IPCNO_HIGHEST); \
+	أكد(!ipc_call_names[n]);	\
 	ipc_call_names[n] = #n; \
 }
 
@@ -301,13 +301,13 @@ void kmain(kinfo_t *local_cbi)
   add_memmap(&kinfo, kinfo.bootstrap_start, kinfo.bootstrap_len);
 
 #ifdef CONFIG_SMP
-  if (config_no_apic) {
+  إذا (config_no_apic) {
 	  DEBUGBASIC(("APIC disabled, disables SMP, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else if (config_no_smp) {
+  } وإلا إذا (config_no_smp) {
 	  DEBUGBASIC(("SMP disabled, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else {
+  } وإلا {
 	  smp_init();
 	  /*
 	   * if smp_init() returns it means that it failed and we try to finish
@@ -315,7 +315,7 @@ void kmain(kinfo_t *local_cbi)
 	   */
 	  bsp_finish_booting();
   }
-#else
+#وإلا
   /* 
    * if configured for a single CPU, we are already on the kernel stack which we
    * are going to use everytime we execute kernel code. We finish booting and we
@@ -330,7 +330,7 @@ void kmain(kinfo_t *local_cbi)
 /*===========================================================================*
  *				announce				     *
  *===========================================================================*/
-static void announce(void)
+ساكن فراغ announce(فراغ)
 {
   /* Display the MINIX startup banner. */
   printf("\nMINIX %s. "
@@ -348,10 +348,10 @@ static void announce(void)
 /*===========================================================================*
  *				prepare_shutdown			     *
  *===========================================================================*/
-void prepare_shutdown(const int how)
+فراغ prepare_shutdown(ثابت صحيح how)
 {
 /* This function prepares to shutdown MINIX. */
-  static minix_timer_t shutdown_timer;
+  ساكن minix_timer_t shutdown_timer;
 
   /* Continue after 1 second, to give processes a chance to get scheduled to 
    * do shutdown work.  Set a watchog timer to call shutdown(). The timer 
@@ -365,7 +365,7 @@ void prepare_shutdown(const int how)
 /*===========================================================================*
  *				shutdown 				     *
  *===========================================================================*/
-void minix_shutdown(int how)
+فراغ minix_shutdown(صحيح how)
 {
 /* This function is called from prepare_shutdown or stop_sequence to bring 
  * down MINIX.
@@ -379,7 +379,7 @@ void minix_shutdown(int how)
    * such a state that we can perform the whole boot process once restarted from
    * monitor again
    */
-  if (ncpus > 1)
+  إذا (ncpus > 1)
 	  smp_shutdown_aps();
 #endif
   hw_intr_disable_all();
@@ -387,12 +387,12 @@ void minix_shutdown(int how)
 
   /* Show shutdown message */
   direct_cls();
-  if((how & RB_POWERDOWN) == RB_POWERDOWN)
+  إذا((how & RB_POWERDOWN) == RB_POWERDOWN)
 	direct_print("MINIX has halted and will now power off.\n");
-  else if(how & RB_HALT)
+  وإلا إذا(how & RB_HALT)
 	direct_print("MINIX has halted. "
 		     "It is safe to turn off your computer.\n");
-  else
+  وإلا
 	direct_print("MINIX will now reset.\n");
   arch_shutdown(how);
 }
@@ -400,26 +400,26 @@ void minix_shutdown(int how)
 /*===========================================================================*
  *				cstart					     *
  *===========================================================================*/
-void cstart(void)
+فراغ cstart(فراغ)
 {
 /* Perform system initializations prior to calling main(). Most settings are
  * determined with help of the environment strings passed by MINIX' loader.
  */
-  register char *value;				/* value in key=value pair */
+  سجل حرف *قدر;				/* value in key=value pair */
 
   /* low-level initialization */
   prot_init();
 
   /* determine verbosity */
-  if ((value = env_get(VERBOSEBOOTVARNAME)))
-	  verboseboot = atoi(value);
+  إذا ((قدر = env_get(VERBOSEBOOTVARNAME)))
+	  verboseboot = atoi(قدر);
 
   /* Initialize clock variables. */
   init_clock();
 
   /* Get memory parameters. */
-  value = env_get("ac_layout");
-  if(value && atoi(value)) {
+  قدر = env_get("ac_layout");
+  إذا(قدر && atoi(قدر)) {
         kinfo.user_sp = (vir_bytes) USR_STACKTOP_COMPACT;
         kinfo.user_end = (vir_bytes) USR_DATATOP_COMPACT;
   }
@@ -429,42 +429,42 @@ void cstart(void)
   /* Record miscellaneous information for user-space servers. */
   kinfo.nr_procs = NR_PROCS;
   kinfo.nr_tasks = NR_TASKS;
-  strlcpy(kinfo.release, OS_RELEASE, sizeof(kinfo.release));
-  strlcpy(kinfo.version, OS_VERSION, sizeof(kinfo.version));
+  strlcpy(kinfo.release, OS_RELEASE, حجم(kinfo.release));
+  strlcpy(kinfo.version, OS_VERSION, حجم(kinfo.version));
 
   /* Initialize various user-mapped structures. */
-  memset(&arm_frclock, 0, sizeof(arm_frclock));
+  memset(&arm_frclock, 0, حجم(arm_frclock));
 
-  memset(&kuserinfo, 0, sizeof(kuserinfo));
-  kuserinfo.kui_size = sizeof(kuserinfo);
+  memset(&kuserinfo, 0, حجم(kuserinfo));
+  kuserinfo.kui_size = حجم(kuserinfo);
   kuserinfo.kui_user_sp = kinfo.user_sp;
 
 #ifdef USE_APIC
-  value = env_get("no_apic");
-  if(value)
-	config_no_apic = atoi(value);
-  else
+  قدر = env_get("no_apic");
+  إذا(قدر)
+	config_no_apic = atoi(قدر);
+  وإلا
 	config_no_apic = 1;
-  value = env_get("apic_timer_x");
-  if(value)
-	config_apic_timer_x = atoi(value);
-  else
+  قدر = env_get("apic_timer_x");
+  إذا(قدر)
+	config_apic_timer_x = atoi(قدر);
+  وإلا
 	config_apic_timer_x = 1;
 #endif
 
 #ifdef USE_WATCHDOG
-  value = env_get("watchdog");
-  if (value)
-	  watchdog_enabled = atoi(value);
+  قدر = env_get("watchdog");
+  إذا (قدر)
+	  watchdog_enabled = atoi(قدر);
 #endif
 
 #ifdef CONFIG_SMP
-  if (config_no_apic)
+  إذا (config_no_apic)
 	  config_no_smp = 1;
-  value = env_get("no_smp");
-  if(value)
-	config_no_smp = atoi(value);
-  else
+  قدر = env_get("no_smp");
+  إذا(قدر)
+	config_no_smp = atoi(قدر);
+  وإلا
 	config_no_smp = 0;
 #endif
   DEBUGEXTRA(("intr_init(0)\n"));
@@ -478,36 +478,36 @@ void cstart(void)
  *				get_value				     *
  *===========================================================================*/
 
-char *get_value(
-  const char *params,			/* boot monitor parameters */
-  const char *name			/* key to look up */
+حرف *get_قدر(
+  ثابت حرف *params,			/* boot monitor parameters */
+  ثابت حرف *name			/* key to look up */
 )
 {
 /* Get environment value - kernel version of getenv to avoid setting up the
  * usual environment array.
  */
-  register const char *namep;
-  register char *envp;
+  سجل ثابت حرف *namep;
+  سجل حرف *envp;
 
-  for (envp = (char *) params; *envp != 0;) {
-	for (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
+  لكل (envp = (حرف *) params; *envp != 0;) {
+	لكل (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
 		;
-	if (*namep == '\0' && *envp == '=') return(envp + 1);
-	while (*envp++ != 0)
+	إذا (*namep == '\0' && *envp == '=') أرجع(envp + 1);
+	طالما (*envp++ != 0)
 		;
   }
-  return(NULL);
+  أرجع(عدم);
 }
 
 /*===========================================================================*
  *				env_get				     	*
  *===========================================================================*/
-char *env_get(const char *name)
+حرف *env_get(ثابت حرف *name)
 {
-	return get_value(kinfo.param_buf, name);
+	أرجع get_قدر(kinfo.param_buf, name);
 }
 
-void cpu_print_freq(unsigned cpu)
+فراغ cpu_print_freq(unsigned cpu)
 {
         u64_t freq;
 
@@ -515,8 +515,8 @@ void cpu_print_freq(unsigned cpu)
         DEBUGBASIC(("CPU %d freq %lu MHz\n", cpu, (unsigned long)(freq / 1000000)));
 }
 
-int is_fpu(void)
+صحيح is_fpu(فراغ)
 {
-        return get_cpulocal_var(fpu_presence);
+        أرجع get_cpulocal_var(fpu_presence);
 }
 
