@@ -5,10 +5,10 @@
  *	intr_init:	initialize the interrupt controller(s)
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include "hw_intr.h"
-#include <machine/cpu.h>
+#अन्तर्भाव "kernel/kernel.h"
+#अन्तर्भाव "arch_proto.h"
+#अन्तर्भाव "hw_intr.h"
+#अन्तर्भाव <machine/cpu.h>
 
 #define ICW1_AT         0x11	/* edge triggered, cascade, need ICW4 */
 #define ICW1_PC         0x13	/* edge triggered, no cascade, need ICW4 */
@@ -25,7 +25,7 @@
 /*===========================================================================*
  *				intr_init				     *
  *===========================================================================*/
-int intr_init(const int auto_eoi)
+पूर्णाङ्क intr_init(ध्रुव पूर्णाङ्क auto_eoi)
 {
 /* Initialize the 8259s, finishing with all interrupts disabled.  */
       outb( INT_CTL, ICW1_AT);
@@ -33,48 +33,48 @@ int intr_init(const int auto_eoi)
 					/* ICW2 for master */
       outb( INT_CTLMASK, (1 << CASCADE_IRQ));
 					/* ICW3 tells slaves */
-      if (auto_eoi)
+      यदि (auto_eoi)
           outb( INT_CTLMASK, ICW4_AT_AEOI_MASTER);
-      else
+      अन्यथा
           outb( INT_CTLMASK, ICW4_AT_MASTER);
       outb( INT_CTLMASK, ~(1 << CASCADE_IRQ)); /* IRQ 0-7 mask */
       outb( INT2_CTL, ICW1_AT);
       outb( INT2_CTLMASK, IRQ8_VECTOR);
 						/* ICW2 for slave */
       outb( INT2_CTLMASK, CASCADE_IRQ);	/* ICW3 is slave nr */
-      if (auto_eoi)
+      यदि (auto_eoi)
          outb( INT2_CTLMASK, ICW4_AT_AEOI_SLAVE);
-      else
+      अन्यथा
          outb( INT2_CTLMASK, ICW4_AT_SLAVE);
       outb( INT2_CTLMASK, ~0);		/* IRQ 8-15 mask */
 
-  return OK;
+  प्रत्यागम OK;
 }
 
-void irq_8259_unmask(const int irq)
+शून्य irq_8259_unmask(ध्रुव पूर्णाङ्क irq)
 {
-	const unsigned ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
+	ध्रुव अचिन्हित ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
 	outb(ctl_mask, inb(ctl_mask) & ~(1 << (irq & 0x7)));
 }
 
-void irq_8259_mask(const int irq)
+शून्य irq_8259_mask(ध्रुव पूर्णाङ्क irq)
 {
-	const unsigned ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
+	ध्रुव अचिन्हित ctl_mask = irq < 8 ? INT_CTLMASK : INT2_CTLMASK;
 	outb(ctl_mask, inb(ctl_mask) | (1 << (irq & 0x7)));
 }
 
 /* Disable 8259 - write 0xFF in OCW1 master and slave. */
-void i8259_disable(void)
+शून्य i8259_disable(शून्य)
 {
 	outb(INT2_CTLMASK, 0xFF);
 	outb(INT_CTLMASK, 0xFF);
 	inb(INT_CTLMASK);
 }
 
-void irq_8259_eoi(int irq)
+शून्य irq_8259_eoi(पूर्णाङ्क irq)
 {
-	if (irq < 8)
+	यदि (irq < 8)
 		eoi_8259_master();
-	else
+	अन्यथा
 		eoi_8259_slave();
 }
