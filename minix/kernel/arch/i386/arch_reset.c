@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#অন্তর্ভাব "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#অন্তর্ভাব <ctype.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <machine/cmos.h>
+#অন্তর্ভাব <machine/bios.h>
+#অন্তর্ভাব <machine/cpu.h>
+#অন্তর্ভাব <minix/cpufeature.h>
+#অন্তর্ভাব <sys/reboot.h>
+#অন্তর্ভাব <assert.h>
+#অন্তর্ভাব <signal.h>
 
-#include <minix/u64.h>
+#অন্তর্ভাব <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#অন্তর্ভাব "arch_proto.h"
+#অন্তর্ভাব "oxpcie.h"
+#অন্তর্ভাব "direct_utils.h"
 
 #ifdef USE_ACPI
-#include "acpi.h"
+#অন্তর্ভাব "acpi.h"
 #endif
 
 #define     KBCMDP          4       /* kbd controller port (O) */
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+পূর্ণসংখ্যা cpu_has_tsc;
 
-void
-reset(void)
+শূন্য
+reset(শূন্য)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        যদি (b != 0xff) {
+                যদি ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	যখন(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+স্থির __dead শূন্য
+halt(শূন্য)
 {
-	for ( ; ; )
+	জন্য ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+স্থির __dead শূন্য
+poweroff(শূন্য)
 {
-	const char *shutdown_str;
+	ধ্রুবক অক্ষর *shutdown_str;
 
 #ifdef USE_ACPI
 	acpi_poweroff();
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        যখন (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead শূন্য arch_shutdown(পূর্ণসংখ্যা how)
 {
-	unsigned char unused_ch;
+	unsigned অক্ষর unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	যখন(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	যদি(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		যদি (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		যখন (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	যদি((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	যদি(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		জন্য (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -151,20 +151,20 @@ __dead void arch_shutdown(int how)
 }
 
 #ifdef DEBUG_SERIAL
-void ser_putc(char c)
+শূন্য ser_putc(অক্ষর c)
 {
-        int i;
-        int lsr, thr;
+        পূর্ণসংখ্যা i;
+        পূর্ণসংখ্যা lsr, thr;
 
-#if CONFIG_OXPCIE
+#যদি CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#অন্যথা
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        জন্য (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                যদি (inb( lsr) & LSR_THRE)
+                        বিরতি;
         }
         outb( thr, c);
 #endif

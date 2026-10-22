@@ -6,15 +6,15 @@
  *	m_sigcalls.sig		# signal number to send to process
  */
 
-#include "kernel/system.h"
-#include <signal.h>
+#অন্তর্ভাব "kernel/system.h"
+#অন্তর্ভাব <signal.h>
 
-#if USE_KILL
+#যদি USE_KILL
 
 /*===========================================================================*
  *			          do_kill				     *
  *===========================================================================*/
-int do_kill(struct proc * caller, message * m_ptr)
+পূর্ণসংখ্যা do_kill(কাঠামো proc * caller, message * m_ptr)
 {
 /* Handle sys_kill(). Cause a signal to be sent to a process. Any request
  * is added to the map of pending signals and the signal manager
@@ -23,18 +23,18 @@ int do_kill(struct proc * caller, message * m_ptr)
  * translated into an IPC message for system services.
  */
   proc_nr_t proc_nr, proc_nr_e;
-  int sig_nr = m_ptr->m_sigcalls.sig;
+  পূর্ণসংখ্যা sig_nr = m_ptr->m_sigcalls.sig;
 
   proc_nr_e = (proc_nr_t)m_ptr->m_sigcalls.endpt;
 
-  if (!isokendpt(proc_nr_e, &proc_nr)) return(EINVAL);
-  if (sig_nr >= _NSIG) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  যদি (!isokendpt(proc_nr_e, &proc_nr)) ফেরত(EINVAL);
+  যদি (sig_nr >= _NSIG) ফেরত(EINVAL);
+  যদি (iskerneln(proc_nr)) ফেরত(EPERM);
 
   /* Set pending signal to be processed by the signal manager. */
   cause_sig(proc_nr, sig_nr);
 
-  return(OK);
+  ফেরত(OK);
 }
 
 #endif /* USE_KILL */

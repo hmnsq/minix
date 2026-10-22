@@ -1,24 +1,24 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include "kernel/clock.h"
+#অন্তর্ভাব "kernel/system.h"
+#অন্তর্ভাব <minix/endpoint.h>
+#অন্তর্ভাব "kernel/clock.h"
 
 /*===========================================================================*
  *				do_schedule				     *
  *===========================================================================*/
-int do_schedule(struct proc * caller, message * m_ptr)
+পূর্ণসংখ্যা do_schedule(কাঠামো proc * caller, message * m_ptr)
 {
-	struct proc *p;
-	int proc_nr;
-	int priority, quantum, cpu, niced;
+	কাঠামো proc *p;
+	পূর্ণসংখ্যা proc_nr;
+	পূর্ণসংখ্যা priority, quantum, cpu, niced;
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedule.endpoint, &proc_nr))
-		return EINVAL;
+	যদি (!isokendpt(m_ptr->m_lsys_krn_schedule.endpoint, &proc_nr))
+		ফেরত EINVAL;
 
 	p = proc_addr(proc_nr);
 
 	/* Only this process' scheduler can schedule it */
-	if (caller != p->p_scheduler)
-		return(EPERM);
+	যদি (caller != p->p_scheduler)
+		ফেরত(EPERM);
 
 	/* Try to schedule the process. */
 	priority = m_ptr->m_lsys_krn_schedule.priority;
@@ -26,5 +26,5 @@ int do_schedule(struct proc * caller, message * m_ptr)
 	cpu = m_ptr->m_lsys_krn_schedule.cpu;
 	niced = !!(m_ptr->m_lsys_krn_schedule.niced);
 
-	return sched_proc(p, priority, quantum, cpu, niced);
+	ফেরত sched_proc(p, priority, quantum, cpu, niced);
 }

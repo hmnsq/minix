@@ -8,16 +8,16 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#অন্তর্ভাব <assert.h>
 
-#include <minix/safecopies.h>
+#অন্তর্ভাব <minix/safecopies.h>
 
-#include "kernel/system.h"
+#অন্তর্ভাব "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+পূর্ণসংখ্যা do_safememset(কাঠামো proc *caller, message *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
@@ -25,33 +25,33 @@ int do_safememset(struct proc *caller, message *m_ptr) {
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
 	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
+	পূর্ণসংখ্যা pattern = m_ptr->SMS_PATTERN;
 	size_t len = (size_t)m_ptr->SMS_BYTES;
 
-	struct proc *dst_p;
+	কাঠামো proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	স্থির vir_bytes v_offset;
+	পূর্ণসংখ্যা r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	যদি (dst_endpt == NONE || caller_endpt == NONE)
+		ফেরত EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	যদি (!(dst_p = endpoint_lookup(dst_endpt)))
+		ফেরত EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
+	যদি (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
 		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+		ফেরত EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_offset, &v_offset, &new_granter, ফাঁকা);
 
-	if (r != OK) {
+	যদি (r != OK) {
 		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+		ফেরত r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	ফেরত vm_memset(caller, new_granter, v_offset, pattern, len);
 }

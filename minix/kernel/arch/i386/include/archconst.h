@@ -2,33 +2,33 @@
 #ifndef _I386_ACONST_H
 #define _I386_ACONST_H 1
 
-#include <machine/interrupt.h>
-#include <machine/memory.h>
+#অন্তর্ভাব <machine/interrupt.h>
+#অন্তর্ভাব <machine/memory.h>
 
 /* Constants for protected mode. */
 
 /* Table sizes. */
-#define IDT_SIZE 256	/* the table is set to it's maximal size */
+#define IDT_আকার 256	/* the table is set to it's maximal size */
 
 /* GDT layout (SYSENTER/SYSEXIT compliant) */
-#define KERN_CS_INDEX        1
-#define KERN_DS_INDEX        2
-#define USER_CS_INDEX        3
-#define USER_DS_INDEX        4
-#define LDT_INDEX            5
-#define TSS_INDEX_FIRST      6
-#define TSS_INDEX(cpu)       (TSS_INDEX_FIRST + (cpu)) /* per cpu kernel tss */
-#define GDT_SIZE             (TSS_INDEX(CONFIG_MAX_CPUS))	/* LDT descriptor */
+#define KERN_CS_সূচক        1
+#define KERN_DS_সূচক        2
+#define USER_CS_সূচক        3
+#define USER_DS_সূচক        4
+#define LDT_সূচক            5
+#define TSS_সূচক_FIRST      6
+#define TSS_সূচক(cpu)       (TSS_সূচক_FIRST + (cpu)) /* per cpu kernel tss */
+#define GDT_আকার             (TSS_সূচক(CONFIG_MAX_CPUS))	/* LDT descriptor */
 
 #define SEG_SELECTOR(i)          ((i)*8)
-#define KERN_CS_SELECTOR SEG_SELECTOR(KERN_CS_INDEX)
-#define KERN_DS_SELECTOR SEG_SELECTOR(KERN_DS_INDEX)
-#define USER_CS_SELECTOR (SEG_SELECTOR(USER_CS_INDEX) | USER_PRIVILEGE)
-#define USER_DS_SELECTOR (SEG_SELECTOR(USER_DS_INDEX) | USER_PRIVILEGE)
-#define LDT_SELECTOR SEG_SELECTOR(LDT_INDEX)
-#define TSS_SELECTOR(cpu)	SEG_SELECTOR(TSS_INDEX(cpu))
+#define KERN_CS_SELECTOR SEG_SELECTOR(KERN_CS_সূচক)
+#define KERN_DS_SELECTOR SEG_SELECTOR(KERN_DS_সূচক)
+#define USER_CS_SELECTOR (SEG_SELECTOR(USER_CS_সূচক) | USER_PRIVILEGE)
+#define USER_DS_SELECTOR (SEG_SELECTOR(USER_DS_সূচক) | USER_PRIVILEGE)
+#define LDT_SELECTOR SEG_SELECTOR(LDT_সূচক)
+#define TSS_SELECTOR(cpu)	SEG_SELECTOR(TSS_সূচক(cpu))
 
-#define DESC_SIZE	8
+#define DESC_আকার	8
 
 /* Privileges. */
 #define INTR_PRIVILEGE       0	/* kernel and interrupt handlers */
@@ -45,7 +45,7 @@
 #define COPROC_SEG_VECTOR    9	/* coprocessor segment overrun */
 #define INVAL_TSS_VECTOR    10	/* invalid TSS */
 #define SEG_NOT_VECTOR      11	/* segment not present */
-#define STACK_FAULT_VECTOR  12	/* stack exception */
+#define স্তূপ_FAULT_VECTOR  12	/* stack exception */
 #define PROTECTION_VECTOR   13	/* general protection */
 
 /* Selector bits. */
@@ -53,7 +53,7 @@
 #define RPL               0x03	/* requester privilege level */
 
 /* Base and limit sizes and shifts. */
-#define BASE_MIDDLE_SHIFT   16	/* shift for base --> base_middle */
+#define BASE_মধ্য_SHIFT   16	/* shift for base --> base_middle */
 
 /* Access-byte and type-byte bits. */
 #define PRESENT           0x80	/* set for descriptor present */
@@ -94,17 +94,17 @@
 
 /* Descriptor structure offsets. */
 #define DESC_GRANULARITY     6	/* to granularity byte */
-#define DESC_BASE_HIGH       7	/* to base_high */
+#define DESC_BASE_উপরের       7	/* to base_high */
 
 /* Type-byte bits. */
 #define DESC_386_BIT  0x08 /* 386 types are obtained by ORing with this */
 				/* LDT's and TASK_GATE's don't need it */
 
 /* Base and limit sizes and shifts. */ 
-#define BASE_HIGH_SHIFT     24  /* shift for base --> base_high */
+#define BASE_উপরের_SHIFT     24  /* shift for base --> base_high */
 #define BYTE_GRAN_MAX   0xFFFFFL   /* maximum size for byte granular segment */
 #define GRANULARITY_SHIFT   16  /* shift for limit --> granularity */
-#define OFFSET_HIGH_SHIFT   16  /* shift for (gate) offset --> offset_high */
+#define OFFSET_উপরের_SHIFT   16  /* shift for (gate) offset --> offset_high */
 #define PAGE_GRAN_SHIFT     12  /* extra shift for page granular limits */
 
 /* Granularity byte. */
@@ -112,7 +112,7 @@
 #define DEFAULT   	  0x40	/* set for 32-bit defaults (executable seg) */
 #define BIG       	  0x40	/* set for "BIG" (expand-down seg) */
 #define AVL        	  0x10	/* 0 for available */
-#define LIMIT_HIGH   	  0x0F	/* mask for high bits of limit */
+#define LIMIT_উপরের   	  0x0F	/* mask for high bits of limit */
 
 /* Program stack words and masks. */
 #define INIT_PSW      0x0200    /* initial psw */
@@ -146,7 +146,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define X86_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define X86_স্তূপ_শীর্ষ_RESERVED	(2 * আকার(reg_t))
 
 #define PG_ALLOCATEME ((phys_bytes)-1)
 

@@ -3,143 +3,143 @@
  * functions and sanity checking of the scheduling queues.
  */
 
-#include "kernel/kernel.h"
+#অন্তর্ভাব "kernel/kernel.h"
 
-#include <minix/callnr.h>
-#include <minix/u64.h>
-#include <limits.h>
-#include <string.h>
-#include <assert.h>
+#অন্তর্ভাব <minix/callnr.h>
+#অন্তর্ভাব <minix/u64.h>
+#অন্তর্ভাব <limits.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <assert.h>
 
 #define MAX_LOOP (NR_PROCS + NR_TASKS)
 
-int runqueues_ok_cpu(unsigned cpu)
+পূর্ণসংখ্যা runqueues_ok_cpu(unsigned cpu)
 {
-  int q, l = 0;
-  register struct proc *xp;
-  struct proc **rdy_head, **rdy_tail;
+  পূর্ণসংখ্যা q, l = 0;
+  নিবন্ধ কাঠামো proc *xp;
+  কাঠামো proc **rdy_শীর্ষ, **rdy_লেজ;
 
-  rdy_head = get_cpu_var(cpu, run_q_head);
-  rdy_tail = get_cpu_var(cpu, run_q_tail);
+  rdy_শীর্ষ = get_cpu_var(cpu, run_q_শীর্ষ);
+  rdy_লেজ = get_cpu_var(cpu, run_q_লেজ);
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+  জন্য (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
 	xp->p_found = 0;
-	if (l++ > MAX_LOOP) panic("check error");
+	যদি (l++ > MAX_LOOP) panic("check error");
   }
 
-  for (q=l=0; q < NR_SCHED_QUEUES; q++) {
-    if (rdy_head[q] && !rdy_tail[q]) {
+  জন্য (q=l=0; q < NR_SCHED_QUEUES; q++) {
+    যদি (rdy_শীর্ষ[q] && !rdy_লেজ[q]) {
 	printf("head but no tail in %d\n", q);
-	return 0;
+	ফেরত 0;
     }
-    if (!rdy_head[q] && rdy_tail[q]) {
+    যদি (!rdy_শীর্ষ[q] && rdy_লেজ[q]) {
 	printf("tail but no head in %d\n", q);
-	return 0;
+	ফেরত 0;
     }
-    if (rdy_tail[q] && rdy_tail[q]->p_nextready) {
+    যদি (rdy_লেজ[q] && rdy_লেজ[q]->p_nextready) {
 	printf("tail and tail->next not null in %d\n", q);
-	return 0;
+	ফেরত 0;
     }
-    for(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
-	const vir_bytes vxp = (vir_bytes) xp;
+    জন্য(xp = rdy_শীর্ষ[q]; xp; xp = xp->p_nextready) {
+	ধ্রুবক vir_bytes vxp = (vir_bytes) xp;
 	vir_bytes dxp;
-	if(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
+	যদি(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
   		printf("xp out of range\n");
-		return 0;
+		ফেরত 0;
 	}
 	dxp = vxp - (vir_bytes) BEG_PROC_ADDR;
-	if(dxp % sizeof(struct proc)) {
+	যদি(dxp % আকার(কাঠামো proc)) {
   		printf("xp not a real pointer");
-		return 0;
+		ফেরত 0;
 	}
-	if(!proc_ptr_ok(xp)) {
+	যদি(!proc_ptr_ok(xp)) {
   		printf("xp bogus pointer");
-		return 0;
+		ফেরত 0;
 	}
-	if (RTS_ISSET(xp, RTS_SLOT_FREE)) {
+	যদি (RTS_ISSET(xp, RTS_SLOT_FREE)) {
 		printf("scheduling error: dead proc q %d %d\n",
 			q, xp->p_endpoint);
-		return 0;
+		ফেরত 0;
 	}
-        if (!proc_is_runnable(xp)) {
+        যদি (!proc_is_runnable(xp)) {
 		printf("scheduling error: unready on runq %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		ফেরত 0;
         }
-        if (xp->p_priority != q) {
+        যদি (xp->p_priority != q) {
 		printf("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
 			q, xp->p_nr, xp->p_endpoint, xp->p_name);
-		return 0;
+		ফেরত 0;
 	}
-	if (xp->p_found) {
+	যদি (xp->p_found) {
 		printf("scheduling error: double sched q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		ফেরত 0;
 	}
 	xp->p_found = 1;
-	if (!xp->p_nextready && rdy_tail[q] != xp) {
+	যদি (!xp->p_nextready && rdy_লেজ[q] != xp) {
 		printf("sched err: last element not tail q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		ফেরত 0;
 	}
-	if (l++ > MAX_LOOP) {
+	যদি (l++ > MAX_LOOP) {
 		printf("loop in schedule queue?");
-		return 0;
+		ফেরত 0;
 	}
     }
   }	
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	if(!proc_ptr_ok(xp)) {
+  জন্য (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+	যদি(!proc_ptr_ok(xp)) {
 		printf("xp bogus pointer in proc table\n");
-		return 0;
+		ফেরত 0;
 	}
-	if (isemptyp(xp))
-		continue;
-	if(proc_is_runnable(xp) && !xp->p_found) {
+	যদি (isemptyp(xp))
+		চালু;
+	যদি(proc_is_runnable(xp) && !xp->p_found) {
 		printf("sched error: ready proc %d not on queue\n", xp->p_nr);
-		return 0;
+		ফেরত 0;
 	}
   }
 
   /* All is ok. */
-  return 1;
+  ফেরত 1;
 }
 
 #ifdef CONFIG_SMP
-static int runqueues_ok_all(void)
+স্থির পূর্ণসংখ্যা runqueues_ok_all(শূন্য)
 {
 	unsigned c;
 
-	for (c = 0 ; c < ncpus; c++) {
-		if (!runqueues_ok_cpu(c))
-			return 0;
+	জন্য (c = 0 ; c < ncpus; c++) {
+		যদি (!runqueues_ok_cpu(c))
+			ফেরত 0;
 	}
-	return 1;	
+	ফেরত 1;	
 }
 
-int runqueues_ok(void)
+পূর্ণসংখ্যা runqueues_ok(শূন্য)
 {
-	return runqueues_ok_all();
+	ফেরত runqueues_ok_all();
 }
 
-#else
+#অন্যথা
 
-int runqueues_ok(void)
+পূর্ণসংখ্যা runqueues_ok(শূন্য)
 {
-	return runqueues_ok_cpu(0);
+	ফেরত runqueues_ok_cpu(0);
 }
 
 
 #endif
 
-char *
-rtsflagstr(const u32_t flags)
+অক্ষর *
+rtsflagstr(ধ্রুবক u32_t flags)
 {
-	static char str[100];
+	স্থির অক্ষর str[100];
 	str[0] = '\0';
 
-#define FLAG(n) if(flags & n) { strlcat(str, #n " ", sizeof(str)); }
+#define FLAG(n) যদি(flags & n) { strlcat(str, #n " ", আকার(str)); }
 
 	FLAG(RTS_SLOT_FREE);
 	FLAG(RTS_PROC_STOP);
@@ -157,96 +157,96 @@ rtsflagstr(const u32_t flags)
 	FLAG(RTS_PREEMPTED);
 	FLAG(RTS_NO_QUANTUM);
 
-	return str;
+	ফেরত str;
 }
 
-char *
-miscflagstr(const u32_t flags)
+অক্ষর *
+miscflagstr(ধ্রুবক u32_t flags)
 {
-	static char str[100];
+	স্থির অক্ষর str[100];
 	str[0] = '\0';
 
 	FLAG(MF_REPLY_PEND);
 	FLAG(MF_DELIVERMSG);
 	FLAG(MF_KCALL_RESUME);
 
-	return str;
+	ফেরত str;
 }
 
-char *
-schedulerstr(struct proc *scheduler)
+অক্ষর *
+schedulerstr(কাঠামো proc *scheduler)
 {
-	if (scheduler != NULL)
+	যদি (scheduler != ফাঁকা)
 	{
-		return scheduler->p_name;
+		ফেরত scheduler->p_name;
 	}
 
-	return "KERNEL";
+	ফেরত "KERNEL";
 }
 
-static void
-print_proc_name(struct proc *pp)
+স্থির শূন্য
+print_proc_name(কাঠামো proc *pp)
 {
-	char *name = pp->p_name;
+	অক্ষর *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
 
-	if(name) {
+	যদি(name) {
 		printf("%s(%d)", name, ep);
 	}
-	else {
+	অন্যথা {
 		printf("%d", ep);
 	}
 }
 
-static void
+স্থির শূন্য
 print_endpoint(endpoint_t ep)
 {
-	int proc_nr;
-	struct proc *pp = NULL;
+	পূর্ণসংখ্যা proc_nr;
+	কাঠামো proc *pp = ফাঁকা;
 
-	switch(ep) {
-	case ANY:
+	নির্বাচন(ep) {
+	ক্ষেত্র ANY:
 		printf("ANY");
-	break;
-	case SELF:
+	বিরতি;
+	ক্ষেত্র SELF:
 		printf("SELF");
-	break;
-	case NONE:
+	বিরতি;
+	ক্ষেত্র NONE:
 		printf("NONE");
-	break;
-	default:
-		if(!isokendpt(ep, &proc_nr)) {
+	বিরতি;
+	পূর্বনির্ধারিত:
+		যদি(!isokendpt(ep, &proc_nr)) {
 			printf("??? %d\n", ep);
 		}
-		else {
+		অন্যথা {
 			pp = proc_addr(proc_nr);
-			if(isemptyp(pp)) {
+			যদি(isemptyp(pp)) {
 				printf("??? empty slot %d\n", proc_nr);
 			}
-			else {
+			অন্যথা {
 				print_proc_name(pp);
 			}
 		}
-	break;
+	বিরতি;
 	}
 }
 
-static void
-print_sigmgr(struct proc *pp)
+স্থির শূন্য
+print_sigmgr(কাঠামো proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
-	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
+	যদি(sig_mgr == NONE) { printf("no sigmgr"); ফেরত; }
 	printf("sigmgr ");
 	print_endpoint(sig_mgr);
-	if(bak_sig_mgr != NONE) {
+	যদি(bak_sig_mgr != NONE) {
 		printf(" / ");
 		print_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+শূন্য print_proc(কাঠামো proc *pp)
 {
 	endpoint_t dep;
 
@@ -256,9 +256,9 @@ void print_proc(struct proc *pp)
 		pp->p_priority, pp->p_user_time,
 		pp->p_sys_time, ex64hi(pp->p_cycles),
 		ex64lo(pp->p_cycles), pp->p_cpu,
-#if defined(__i386__)
+#যদি defined(__i386__)
 		pp->p_seg.p_cr3,
-#elif defined(__arm__)
+#নতুবা_যদি defined(__arm__)
 		pp->p_seg.p_ttbr,
 #endif
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
@@ -267,22 +267,22 @@ void print_proc(struct proc *pp)
 	print_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE) {
+	যদি(dep != NONE) {
 		printf(" blocked on: ");
 		print_endpoint(dep);
 	}
 	printf("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+স্থির শূন্য print_proc_depends(কাঠামো proc *pp, ধ্রুবক পূর্ণসংখ্যা level)
 {
-	struct proc *depproc = NULL;
+	কাঠামো proc *depproc = ফাঁকা;
 	endpoint_t dep;
-#define COL { int i; for(i = 0; i < level; i++) printf("> "); }
+#define COL { পূর্ণসংখ্যা i; জন্য(i = 0; i < level; i++) printf("> "); }
 
-	if(level >= NR_PROCS) {
+	যদি(level >= NR_PROCS) {
 		printf("loop??\n");
-		return;
+		ফেরত;
 	}
 
 	COL
@@ -294,27 +294,27 @@ static void print_proc_depends(struct proc *pp, const int level)
 
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE && dep != ANY) {
-		int procno;
-		if(isokendpt(dep, &procno)) {
+	যদি(dep != NONE && dep != ANY) {
+		পূর্ণসংখ্যা procno;
+		যদি(isokendpt(dep, &procno)) {
 			depproc = proc_addr(procno);
-			if(isemptyp(depproc))
-				depproc = NULL;
+			যদি(isemptyp(depproc))
+				depproc = ফাঁকা;
 		}
-		if (depproc)
+		যদি (depproc)
 			print_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+শূন্য print_proc_recursive(কাঠামো proc *pp)
 {
 	print_proc_depends(pp, 0);
 }
 
-#if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
-static const char *mtypename(int mtype, int *possible_callname)
+#যদি DEBUG_DUMPIPC || DEBUG_DUMPIPCF
+স্থির ধ্রুবক অক্ষর *mtypename(পূর্ণসংখ্যা mtype, পূর্ণসংখ্যা *possible_callname)
 {
-	char *callname = NULL, *errname = NULL;
+	অক্ষর *callname = ফাঁকা, *errname = ফাঁকা;
 	/* use generated file to recognize message types
 	 *
 	 * we try to match both error numbers and call numbers, as the
@@ -323,84 +323,84 @@ static const char *mtypename(int mtype, int *possible_callname)
 	 * whenever it might be a call number we tell the caller so the
 	 * call message fields can be decoded if known.
 	 */
-	switch(mtype) {
-#define IDENT(x) case x: callname = #x; *possible_callname = 1; break;
-#include "kernel/extracted-mtype.h"
+	নির্বাচন(mtype) {
+#define IDENT(x) ক্ষেত্র x: callname = #x; *possible_callname = 1; বিরতি;
+#অন্তর্ভাব "kernel/extracted-mtype.h"
 #undef IDENT
 	}
-	switch(mtype) {
-#define IDENT(x) case x: errname = #x; break;
-#include "kernel/extracted-errno.h"
+	নির্বাচন(mtype) {
+#define IDENT(x) ক্ষেত্র x: errname = #x; বিরতি;
+#অন্তর্ভাব "kernel/extracted-errno.h"
 #undef IDENT
 	}
 
 	/* no match */
-	if(!errname && !callname)
-		return NULL;
+	যদি(!errname && !callname)
+		ফেরত ফাঁকা;
 
 	/* 2 matches */
-	if(errname && callname) {
-		static char typename[100];
+	যদি(errname && callname) {
+		স্থির অক্ষর typename[100];
 		strcpy(typename, errname);
 		strcat(typename, " / ");
 		strcat(typename, callname);
-		return typename;
+		ফেরত typename;
 	}
 
-	if(errname) return errname;
+	যদি(errname) ফেরত errname;
 
-	assert(callname);
-	return callname;
+	প্রতিজ্ঞা(callname);
+	ফেরত callname;
 }
 
-static void printproc(struct proc *rp)
+স্থির শূন্য printproc(কাঠামো proc *rp)
 {
-	if (rp)
+	যদি (rp)
 		printf(" %s(%d)", rp->p_name, rp - proc);
-	else
+	অন্যথা
 		printf(" kernel");
 }
 
-static void printparam(const char *name, const void *data, size_t size)
+স্থির শূন্য printparam(ধ্রুবক অক্ষর *name, ধ্রুবক শূন্য *তথ্য, size_t আকার_2)
 {
 	printf(" %s=", name);
-	switch (size) {
-		case sizeof(char):	printf("%d", *(char *) data);	break;
-		case sizeof(short):	printf("%d", *(short *) data);	break;
-		case sizeof(int):	printf("%d", *(int *) data);	break;
-		default:		printf("(%u bytes)", size);	break;
+	নির্বাচন (আকার_2) {
+		ক্ষেত্র আকার(অক্ষর):	printf("%d", *(অক্ষর *) তথ্য);	বিরতি;
+		ক্ষেত্র আকার(short):	printf("%d", *(short *) তথ্য);	বিরতি;
+		ক্ষেত্র আকার(পূর্ণসংখ্যা):	printf("%d", *(পূর্ণসংখ্যা *) তথ্য);	বিরতি;
+		পূর্বনির্ধারিত:		printf("(%u bytes)", আকার_2);	বিরতি;
 	}
 }
 
 #ifdef DEBUG_DUMPIPC_NAMES
-static int namematch(char **names, int nnames, char *name)
+স্থির পূর্ণসংখ্যা namematch(অক্ষর **names, পূর্ণসংখ্যা nnames, অক্ষর *name)
 {
-	int i;
-	for(i = 0; i < nnames; i++)
-		if(!strcmp(names[i], name))
-			return 1;
-	return 0;
+	পূর্ণসংখ্যা i;
+	জন্য(i = 0; i < nnames; i++)
+		যদি(!strcmp(names[i], name))
+			ফেরত 1;
+	ফেরত 0;
 }
 #endif
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-	char operation, int printparams)
+শূন্য printmsg(message *বার্তা, কাঠামো proc *src, কাঠামো proc *dst,
+	অক্ষর operation, পূর্ণসংখ্যা printparams)
 {
-	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	ধ্রুবক অক্ষর *name;
+	পূর্ণসংখ্যা mtype = বার্তা->m_type, mightbecall = 0;
 
 #ifdef DEBUG_DUMPIPC_NAMES
   {
-	char *names[] = DEBUG_DUMPIPC_NAMES;
-	int nnames = sizeof(names)/sizeof(names[0]);
+	অক্ষর *names[] = DEBUG_DUMPIPC_NAMES;
+	পূর্ণসংখ্যা nnames = আকার(names)/আকার(names[0]);
 
 	/* skip printing messages for messages neither to
 	 * or from DEBUG_DUMPIPC_EP if it is defined; either
 	 * can be NULL to indicate kernel
 	 */
-	if(!(src && namematch(names, nnames, src->p_name)) &&
+	যদি(!(src && namematch(names, nnames, src->p_name)) &&
 	   !(dst && namematch(names, nnames, dst->p_name))) {
-		return;
+		ফেরত;
 	}
   }
 #endif
@@ -410,93 +410,93 @@ void printmsg(message *msg, struct proc *src, struct proc *dst,
 	printproc(src);
 	printproc(dst);
 	name = mtypename(mtype, &mightbecall);
-	if (name) {
+	যদি (name) {
 		printf(" %s(%d/0x%x)", name, mtype, mtype);
-	} else {
+	} অন্যথা {
 		printf(" %d/0x%x", mtype, mtype);
 	}
 
-	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
-#include "kernel/extracted-mfield.h"
+	যদি (mightbecall && printparams) {
+#define IDENT(x, y) যদি (mtype == x) printparam(#y, &বার্তা->y, আকার(বার্তা->y));
+#অন্তর্ভাব "kernel/extracted-mfield.h"
 #undef IDENT
 	}
 	printf("\n");
 }
 #endif
 
-#if DEBUG_IPCSTATS
+#যদি DEBUG_IPCSTATS
 #define IPCPROCS (NR_PROCS+1)	/* number of slots we need */
 #define KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
-static int messages[IPCPROCS][IPCPROCS];
+স্থির পূর্ণসংখ্যা messages[IPCPROCS][IPCPROCS];
 
 #define PRINTSLOTS 20
-static struct {
-	int src, dst, messages;
+স্থির কাঠামো {
+	পূর্ণসংখ্যা src, dst, messages;
 } winners[PRINTSLOTS];
-static int total, goodslots;
+স্থির পূর্ণসংখ্যা যোগ, goodslots;
 
-static void printstats(int ticks)
+স্থির শূন্য printstats(পূর্ণসংখ্যা ticks)
 {
-	int i;
-	for(i = 0; i < goodslots; i++) {
+	পূর্ণসংখ্যা i;
+	জন্য(i = 0; i < goodslots; i++) {
 #define name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
 #define persec(n) (system_hz*(n)/ticks)
-		char	*n1 = name(winners[i].src),
+		অক্ষর	*n1 = name(winners[i].src),
 			*n2 = name(winners[i].dst);
 		printf("%2d.  %8s -> %8s  %9d/s\n",
 			i, n1, n2, persec(winners[i].messages));
 	}
-	printf("total %d/s\n", persec(total));
+	printf("total %d/s\n", persec(যোগ));
 }
 
-static void sortstats(void)
+স্থির শূন্য sortstats(শূন্য)
 {
 	/* Print top message senders/receivers. */
-	int src_slot, dst_slot;
-	total = goodslots = 0;
-	for(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
-		for(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
-			int w = PRINTSLOTS, rem,
+	পূর্ণসংখ্যা src_slot, dst_slot;
+	যোগ = goodslots = 0;
+	জন্য(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
+		জন্য(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
+			পূর্ণসংখ্যা w = PRINTSLOTS, rem,
 				n = messages[src_slot][dst_slot];
-			total += n;
-			while(w > 0 && n > winners[w-1].messages)
+			যোগ += n;
+			যখন(w > 0 && n > winners[w-1].messages)
 				w--;
-			if(w >= PRINTSLOTS) continue;
+			যদি(w >= PRINTSLOTS) চালু;
 
 			/* This combination has beaten the current winners
 			 * and should be inserted at position 'w.'
 			 */
 			rem = PRINTSLOTS-w-1;
-			assert(rem >= 0);
-			assert(rem < PRINTSLOTS);
-			if(rem > 0) {
-				assert(w+1 <= PRINTSLOTS-1);
-				assert(w >= 0);
+			প্রতিজ্ঞা(rem >= 0);
+			প্রতিজ্ঞা(rem < PRINTSLOTS);
+			যদি(rem > 0) {
+				প্রতিজ্ঞা(w+1 <= PRINTSLOTS-1);
+				প্রতিজ্ঞা(w >= 0);
 				memmove(&winners[w+1], &winners[w],
-					rem*sizeof(winners[0]));
+					rem*আকার(winners[0]));
 			}
 			winners[w].src = src_slot;
 			winners[w].dst = dst_slot;
 			winners[w].messages = n;
-			if(goodslots < PRINTSLOTS) goodslots++;
+			যদি(goodslots < PRINTSLOTS) goodslots++;
 		}
 	}
 }
 
 #define proc2slot(p, s) { \
-	if(p) { s = p->p_nr; } \
-	else { s = KERNELIPC; } \
-	assert(s >= 0 && s < IPCPROCS); \
+	যদি(p) { s = p->p_nr; } \
+	অন্যথা { s = KERNELIPC; } \
+	প্রতিজ্ঞা(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+স্থির শূন্য statmsg(message *বার্তা, কাঠামো proc *srcp, কাঠামো proc *dstp)
 {
-	int src, dst, now, secs, dt;
-	static int lastprint;
+	পূর্ণসংখ্যা src, dst, now, secs, dt;
+	স্থির পূর্ণসংখ্যা lastprint;
 
 	/* Stat message. */
-	assert(src);
+	প্রতিজ্ঞা(src);
 	proc2slot(srcp, src);
 	proc2slot(dstp, dst);
 	messages[src][dst]++;
@@ -505,58 +505,58 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 	now = get_monotonic();
 	dt = now - lastprint;
 	secs = dt/system_hz;
-	if(secs >= 30) {
-		memset(winners, 0, sizeof(winners));
+	যদি(secs >= 30) {
+		memset(winners, 0, আকার(winners));
 		sortstats();
 		printstats(dt);
-		memset(messages, 0, sizeof(messages));
+		memset(messages, 0, আকার(messages));
 		lastprint = now;
 	}
 }
 #endif
 
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+#যদি DEBUG_IPC_HOOK
+শূন্য hook_ipc_msgkcall(message *বার্তা, কাঠামো proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
+#যদি DEBUG_DUMPIPC
+	printmsg(বার্তা, proc, ফাঁকা, 'k', 1);
 #endif
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+শূন্য hook_ipc_msgkresult(message *বার্তা, কাঠামো proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
+#যদি DEBUG_DUMPIPC
+	printmsg(বার্তা, ফাঁকা, proc, 'k', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
+#যদি DEBUG_IPCSTATS
+	statmsg(বার্তা, proc, ফাঁকা);
 #endif
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+শূন্য hook_ipc_msgrecv(message *বার্তা, কাঠামো proc *src, কাঠামো proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
+#যদি DEBUG_DUMPIPC
+	printmsg(বার্তা, src, dst, 'r', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
-#endif
-}
-
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
-{
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
+#যদি DEBUG_IPCSTATS
+	statmsg(বার্তা, src, dst);
 #endif
 }
 
-void hook_ipc_clear(struct proc *p)
+শূন্য hook_ipc_msgsend(message *বার্তা, কাঠামো proc *src, কাঠামো proc *dst)
 {
-#if DEBUG_IPCSTATS
-	int slot, i;
-	assert(p);
+#যদি DEBUG_DUMPIPC
+	printmsg(বার্তা, src, dst, 's', 1);
+#endif
+}
+
+শূন্য hook_ipc_clear(কাঠামো proc *p)
+{
+#যদি DEBUG_IPCSTATS
+	পূর্ণসংখ্যা slot, i;
+	প্রতিজ্ঞা(p);
 	proc2slot(p, slot);
-	for(i = 0; i < IPCPROCS; i++)
+	জন্য(i = 0; i < IPCPROCS; i++)
 		messages[slot][i] = messages[i][slot] = 0;
 #endif
 }

@@ -12,27 +12,27 @@
  *   m_krn_lsys_sys_vumap.pcount	(upon return: number of elements filled)
  */
 
-#include "kernel/system.h"
+#অন্তর্ভাব "kernel/system.h"
 
-#include <assert.h>
+#অন্তর্ভাব <assert.h>
 
 /*===========================================================================*
  *				do_vumap				     *
  *===========================================================================*/
-int do_vumap(struct proc *caller, message *m_ptr)
+পূর্ণসংখ্যা do_vumap(কাঠামো proc *caller, message *m_ptr)
 {
 /* Map a vector of grants or local virtual addresses to physical addresses.
  * Designed to be used by drivers to perform an efficient lookup of physical
  * addresses for the purpose of direct DMA from/to a remote process.
  */
   endpoint_t endpt, source, granter;
-  struct proc *procp;
-  struct vumap_vir vvec[MAPVEC_NR];
-  struct vumap_phys pvec[MAPVEC_NR];
+  কাঠামো proc *procp;
+  কাঠামো vumap_vir vvec[MAPVEC_NR];
+  কাঠামো vumap_phys pvec[MAPVEC_NR];
   vir_bytes vaddr, paddr, vir_addr;
   phys_bytes phys_addr;
-  int i, r, proc_nr, vcount, pcount, pmax, access;
-  size_t size, chunk, offset;
+  পূর্ণসংখ্যা i, r, proc_nr, vcount, pcount, pmax, access;
+  size_t আকার_2, chunk, offset;
 
   endpt = caller->p_endpoint;
 
@@ -45,43 +45,43 @@ int do_vumap(struct proc *caller, message *m_ptr)
   paddr = m_ptr->m_lsys_krn_sys_vumap.paddr;
   pmax = m_ptr->m_lsys_krn_sys_vumap.pmax;
 
-  if (vcount <= 0 || pmax <= 0)
-	return EINVAL;
+  যদি (vcount <= 0 || pmax <= 0)
+	ফেরত EINVAL;
 
-  if (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
-  if (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
+  যদি (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
+  যদি (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
 
   /* Convert access to safecopy access flags. */
-  switch (access) {
-  case VUA_READ:		access = CPF_READ; break;
-  case VUA_WRITE:		access = CPF_WRITE; break;
-  case VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; break;
-  default:			return EINVAL;
+  নির্বাচন (access) {
+  ক্ষেত্র VUA_READ:		access = CPF_READ; বিরতি;
+  ক্ষেত্র VUA_WRITE:		access = CPF_WRITE; বিরতি;
+  ক্ষেত্র VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; বিরতি;
+  পূর্বনির্ধারিত:			ফেরত EINVAL;
   }
 
   /* Copy in the vector of virtual addresses. */
-  size = vcount * sizeof(vvec[0]);
+  আকার_2 = vcount * আকার(vvec[0]);
 
-  if (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
-	return EFAULT;
+  যদি (তথ্য_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, আকার_2) != OK)
+	ফেরত EFAULT;
 
   pcount = 0;
 
   /* Go through the input entries, one at a time. Stop early in case the output
    * vector has filled up.
    */
-  for (i = 0; i < vcount && pcount < pmax; i++) {
-	size = vvec[i].vv_size;
-	if (size <= offset)
-		return EINVAL;
-	size -= offset;
+  জন্য (i = 0; i < vcount && pcount < pmax; i++) {
+	আকার_2 = vvec[i].vv_আকার;
+	যদি (আকার_2 <= offset)
+		ফেরত EINVAL;
+	আকার_2 -= offset;
 
-	if (source != SELF) {
-		r = verify_grant(source, endpt, vvec[i].vv_grant, size, access,
-			offset, &vir_addr, &granter, NULL);
-		if (r != OK)
-			return r;
-	} else {
+	যদি (source != SELF) {
+		r = verify_grant(source, endpt, vvec[i].vv_grant, আকার_2, access,
+			offset, &vir_addr, &granter, ফাঁকা);
+		যদি (r != OK)
+			ফেরত r;
+	} অন্যথা {
 		vir_addr = vvec[i].vv_addr + offset;
 		granter = endpt;
 	}
@@ -90,42 +90,42 @@ int do_vumap(struct proc *caller, message *m_ptr)
 	procp = proc_addr(proc_nr);
 
 	/* Each virtual range is made up of one or more physical ranges. */
-	while (size > 0 && pcount < pmax) {
-		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, size);
+	যখন (আকার_2 > 0 && pcount < pmax) {
+		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, আকার_2);
 
-		if (!chunk) {
+		যদি (!chunk) {
 			/* Try to get the memory allocated, unless the memory
 			 * is supposed to be there to be read from.
 			 */
-			if (access & CPF_READ)
-				return EFAULT;
+			যদি (access & CPF_READ)
+				ফেরত EFAULT;
 
 			/* This call may suspend the current call, or return an
 			 * error for a previous invocation.
 			 */
-			return vm_check_range(caller, procp, vir_addr, size, 1);
+			ফেরত vm_check_range(caller, procp, vir_addr, আকার_2, 1);
 		}
 
 		pvec[pcount].vp_addr = phys_addr;
-		pvec[pcount].vp_size = chunk;
+		pvec[pcount].vp_আকার = chunk;
 		pcount++;
 
 		vir_addr += chunk;
-		size -= chunk;
+		আকার_2 -= chunk;
 	}
 
 	offset = 0;
   }
 
   /* Copy out the resulting vector of physical addresses. */
-  assert(pcount > 0);
+  প্রতিজ্ঞা(pcount > 0);
 
-  size = pcount * sizeof(pvec[0]);
+  আকার_2 = pcount * আকার(pvec[0]);
 
-  r = data_copy_vmcheck(caller, KERNEL, (vir_bytes) pvec, endpt, paddr, size);
+  r = তথ্য_copy_vmcheck(caller, KERNEL, (vir_bytes) pvec, endpt, paddr, আকার_2);
 
-  if (r == OK)
+  যদি (r == OK)
 	m_ptr->m_krn_lsys_sys_vumap.pcount = pcount;
 
-  return r;
+  ফেরত r;
 }

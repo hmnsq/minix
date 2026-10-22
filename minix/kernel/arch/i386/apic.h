@@ -95,19 +95,19 @@
 
 #ifndef __ASSEMBLY__
 
-#include "kernel/kernel.h"
+#অন্তর্ভাব "kernel/kernel.h"
 
 EXTERN vir_bytes lapic_addr;
 EXTERN vir_bytes lapic_eoi_addr;
-EXTERN int ioapic_enabled;
-EXTERN int bsp_lapic_id;
+EXTERN পূর্ণসংখ্যা ioapic_enabled;
+EXTERN পূর্ণসংখ্যা bsp_lapic_id;
 
 #define MAX_NR_IOAPICS		32
 #define MAX_IOAPIC_IRQS		64
 
-EXTERN int ioapic_enabled;
+EXTERN পূর্ণসংখ্যা ioapic_enabled;
 
-struct io_apic {
+কাঠামো io_apic {
 	unsigned	id;
 	vir_bytes	addr; /* presently used address */
 	phys_bytes	paddr; /* where is it in phys space */
@@ -116,61 +116,61 @@ struct io_apic {
 	unsigned	gsi_base;
 };
 
-EXTERN struct io_apic io_apic[MAX_NR_IOAPICS];
+EXTERN কাঠামো io_apic io_apic[MAX_NR_IOAPICS];
 EXTERN unsigned nioapics;
 
 EXTERN u32_t lapic_addr_vaddr; /* we remember the virtual address here until we
 				  switch to paging */
 
-int lapic_enable(unsigned cpu);
-void ioapic_unmask_irq(unsigned irq);
-void ioapic_mask_irq(unsigned irq);
-void ioapic_reset_pic(void);
+পূর্ণসংখ্যা lapic_enable(unsigned cpu);
+শূন্য ioapic_unmask_irq(unsigned irq);
+শূন্য ioapic_mask_irq(unsigned irq);
+শূন্য ioapic_reset_pic(শূন্য);
 
-EXTERN int ioapic_enabled;
+EXTERN পূর্ণসংখ্যা ioapic_enabled;
 EXTERN unsigned nioapics;
 
-void lapic_microsec_sleep(unsigned count);
-void ioapic_disable_irqs(u32_t irqs);
-void ioapic_enable_irqs(u32_t irqs);
+শূন্য lapic_microsec_sleep(unsigned গুনতি);
+শূন্য ioapic_disable_irqs(u32_t irqs);
+শূন্য ioapic_enable_irqs(u32_t irqs);
 
-int lapic_enable(unsigned cpu);
-void lapic_disable(void);
+পূর্ণসংখ্যা lapic_enable(unsigned cpu);
+শূন্য lapic_disable(শূন্য);
 
-void ioapic_disable_all(void);
-int ioapic_enable_all(void);
+শূন্য ioapic_disable_all(শূন্য);
+পূর্ণসংখ্যা ioapic_enable_all(শূন্য);
 
-int detect_ioapics(void);
-void apic_idt_init(int reset);
+পূর্ণসংখ্যা detect_ioapics(শূন্য);
+শূন্য apic_idt_init(পূর্ণসংখ্যা reset);
 
 #ifdef CONFIG_SMP
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
-unsigned int apicid(void);
-void ioapic_set_id(u32_t addr, unsigned int id);
-#else
-int apic_single_cpu_init(void);
+পূর্ণসংখ্যা apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
+পূর্ণসংখ্যা apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
+unsigned পূর্ণসংখ্যা apicid(শূন্য);
+শূন্য ioapic_set_id(u32_t addr, unsigned পূর্ণসংখ্যা id);
+#অন্যথা
+পূর্ণসংখ্যা apic_single_cpu_init(শূন্য);
 #endif
 
-void lapic_set_timer_periodic(const unsigned freq);
-void lapic_set_timer_one_shot(const u32_t value);
-void lapic_stop_timer(void);
-void lapic_restart_timer(void);
+শূন্য lapic_set_timer_periodic(ধ্রুবক unsigned freq);
+শূন্য lapic_set_timer_one_shot(ধ্রুবক u32_t মান);
+শূন্য lapic_stop_timer(শূন্য);
+শূন্য lapic_restart_timer(শূন্য);
 
-void ioapic_set_irq(unsigned irq);
-void ioapic_unset_irq(unsigned irq);
+শূন্য ioapic_set_irq(unsigned irq);
+শূন্য ioapic_unset_irq(unsigned irq);
 
 /* signal the end of interrupt handler to apic */
-#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } while(0)
+#define apic_eoi() করো { *((অস্থির u32_t *) lapic_eoi_addr) = 0; } যখন(0)
 
-void ioapic_eoi(int irq);
+শূন্য ioapic_eoi(পূর্ণসংখ্যা irq);
 
-void dump_apic_irq_state(void);
+শূন্য dump_apic_irq_state(শূন্য);
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type);
+শূন্য apic_send_ipi(unsigned vector, unsigned cpu, পূর্ণসংখ্যা type);
 
-void apic_ipi_sched_intr(void);
-void apic_ipi_halt_intr(void);
+শূন্য apic_ipi_sched_intr(শূন্য);
+শূন্য apic_ipi_halt_intr(শূন্য);
 
 #define APIC_IPI_DEST			0
 #define APIC_IPI_SELF			1
@@ -187,14 +187,14 @@ void apic_ipi_halt_intr(void);
 	apic_send_ipi (vector, 0, APIC_IPI_TO_ALL_BUT_SELF);
 
 
-#include <minix/cpufeature.h>
+#অন্তর্ভাব <minix/cpufeature.h>
 
 #define cpu_feature_apic_on_chip() _cpufeature(_CPUF_I386_APIC_ON_CHIP)
 
-#define lapic_read(what)	(*((volatile u32_t *)((what))))
-#define lapic_write(what, data)	do {			\
-	(*((volatile u32_t *)((what)))) = data;		\
-} while(0)
+#define lapic_read(what)	(*((অস্থির u32_t *)((what))))
+#define lapic_write(what, তথ্য)	করো {			\
+	(*((অস্থির u32_t *)((what)))) = তথ্য;		\
+} যখন(0)
 
 #endif /* __ASSEMBLY__ */
 

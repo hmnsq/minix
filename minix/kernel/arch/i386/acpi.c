@@ -1,410 +1,410 @@
 
-#include <string.h>
+#অন্তর্ভাব <string.h>
 
-#include "acpi.h"
-#include "arch_proto.h"
+#অন্তর্ভাব "acpi.h"
+#অন্তর্ভাব "arch_proto.h"
 
-typedef int ((* acpi_read_t)(phys_bytes addr, void * buff, size_t size));
+প্রকারলেখ পূর্ণসংখ্যা ((* acpi_read_t)(phys_bytes addr, শূন্য * buff, size_t আকার_2));
 
-struct acpi_rsdp acpi_rsdp;
+কাঠামো acpi_rsdp acpi_rsdp;
 
-static acpi_read_t read_func;
+স্থির acpi_read_t read_func;
 
 #define MAX_RSDT	35 /* ACPI defines 35 signatures */
 #define SLP_EN_CODE	(1 << 13) /* ACPI SLP_EN_CODE code */
 #define AMI_PACKAGE_OP_CODE (0x12)
 #define AMI_NAME_OP_CODE (0x8)
 #define AMI_BYTE_PREFIX_CODE (0xA)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK (0xC0)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT (6)
-#define AMI_MIN_PACKAGE_LENGTH (1)
-#define AMI_NUM_ELEMENTS_LENGTH (1)
+#define AMI_PACKAGE_দৈর্ঘ্য_ENCODING_BITS_MASK (0xC0)
+#define AMI_PACKAGE_দৈর্ঘ্য_ENCODING_BITS_SHIFT (6)
+#define AMI_MIN_PACKAGE_দৈর্ঘ্য (1)
+#define AMI_অঙ্ক_ELEMENTS_দৈর্ঘ্য (1)
 #define AMI_SLP_TYPA_SHIFT (10)
 #define AMI_SLP_TYPB_SHIFT (10)
 #define AMI_S5_NAME_OP_OFFSET_1 (-1)
 #define AMI_S5_NAME_OP_OFFSET_2 (-2)
 #define AMI_S5_PACKAGE_OP_OFFSET (4)
-#define AMI_S5_PACKET_LENGTH_OFFSET (5)
+#define AMI_S5_PACKET_দৈর্ঘ্য_OFFSET (5)
 
-static struct acpi_rsdt {
-	struct acpi_sdt_header	hdr;
-	u32_t			data[MAX_RSDT];
+স্থির কাঠামো acpi_rsdt {
+	কাঠামো acpi_sdt_header	hdr;
+	u32_t			তথ্য[MAX_RSDT];
 } rsdt;
 	
-static struct {
-	char	signature [ACPI_SDT_SIGNATURE_LEN + 1];
-	size_t	length;
+স্থির কাঠামো {
+	অক্ষর	signature [ACPI_SDT_SIGNATURE_LEN + 1];
+	size_t	দৈর্ঘ্য;
 } sdt_trans[MAX_RSDT];
 
-static int sdt_count;
-static u16_t pm1a_cnt_blk = 0;
-static u16_t pm1b_cnt_blk = 0;
-static u16_t slp_typa = 0;
-static u16_t slp_typb = 0;
+স্থির পূর্ণসংখ্যা sdt_গুনতি;
+স্থির u16_t pm1a_cnt_blk = 0;
+স্থির u16_t pm1b_cnt_blk = 0;
+স্থির u16_t slp_typa = 0;
+স্থির u16_t slp_typb = 0;
 
-static int acpi_check_csum(struct acpi_sdt_header * tb, size_t size)
+স্থির পূর্ণসংখ্যা acpi_check_csum(কাঠামো acpi_sdt_header * tb, size_t আকার_2)
 {
-	u8_t total = 0;
-	int i;
-	for (i = 0; i < size; i++)
-		total += ((unsigned char *)tb)[i];
-	return total == 0 ? 0 : -1;
+	u8_t যোগ = 0;
+	পূর্ণসংখ্যা i;
+	জন্য (i = 0; i < আকার_2; i++)
+		যোগ += ((unsigned অক্ষর *)tb)[i];
+	ফেরত যোগ == 0 ? 0 : -1;
 }
 
-static int acpi_check_signature(const char * orig, const char * match)
+স্থির পূর্ণসংখ্যা acpi_check_signature(ধ্রুবক অক্ষর * orig, ধ্রুবক অক্ষর * match)
 {
-	return strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
+	ফেরত strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
 }
 
-static u32_t acpi_phys2vir(u32_t p)
+স্থির u32_t acpi_phys2vir(u32_t p)
 {
-	if(!vm_running) {
+	যদি(!vm_running) {
 		DEBUGEXTRA(("acpi: returning 0x%lx as vir addr\n", p));
-		return p;
+		ফেরত p;
 	}
 	panic("acpi: can't get virtual address of arbitrary physical address");
 }
 
-static int acpi_phys_copy(phys_bytes phys, void *target, size_t len)
+স্থির পূর্ণসংখ্যা acpi_phys_copy(phys_bytes phys, শূন্য *target, size_t len)
 {
-	if(!vm_running) {
-		memcpy(target, (void *) phys, len);
-		return 0;
+	যদি(!vm_running) {
+		memcpy(target, (শূন্য *) phys, len);
+		ফেরত 0;
 	}
 	panic("can't acpi_phys_copy with vm");
 }
 
-static int acpi_read_sdt_at(phys_bytes addr,
-				struct acpi_sdt_header * tb,
-				size_t size,
-				const char * name)
+স্থির পূর্ণসংখ্যা acpi_read_sdt_at(phys_bytes addr,
+				কাঠামো acpi_sdt_header * tb,
+				size_t আকার_2,
+				ধ্রুবক অক্ষর * name)
 {
-	struct acpi_sdt_header hdr;
+	কাঠামো acpi_sdt_header hdr;
 
 	/* if NULL is supplied, we only return the size of the table */
-	if (tb == NULL) {
-		if (read_func(addr, &hdr, sizeof(struct acpi_sdt_header))) {
+	যদি (tb == ফাঁকা) {
+		যদি (read_func(addr, &hdr, আকার(কাঠামো acpi_sdt_header))) {
 			printf("ERROR acpi cannot read %s header\n", name);
-			return -1;
+			ফেরত -1;
 		}
 
-		return hdr.length;
+		ফেরত hdr.দৈর্ঘ্য;
 	}
 
-	if (read_func(addr, tb, sizeof(struct acpi_sdt_header))) {
+	যদি (read_func(addr, tb, আকার(কাঠামো acpi_sdt_header))) {
 		printf("ERROR acpi cannot read %s header\n", name);
-		return -1;
+		ফেরত -1;
 	}
 
-	if (acpi_check_signature(tb->signature, name)) {
+	যদি (acpi_check_signature(tb->signature, name)) {
 		printf("ERROR acpi %s signature does not match\n", name);
-		return -1;
+		ফেরত -1;
 	}
 
-	if (size < tb->length) {
+	যদি (আকার_2 < tb->দৈর্ঘ্য) {
 		printf("ERROR acpi buffer too small for %s\n", name);
-		return -1;
+		ফেরত -1;
 	}
 
-	if (read_func(addr, tb, size)) {
+	যদি (read_func(addr, tb, আকার_2)) {
 		printf("ERROR acpi cannot read %s\n", name);
-		return -1;
+		ফেরত -1;
 	}
 
-	if (acpi_check_csum(tb, tb->length)) {
+	যদি (acpi_check_csum(tb, tb->দৈর্ঘ্য)) {
 		printf("ERROR acpi %s checksum does not match\n", name);
-		return -1;
+		ফেরত -1;
 	}
 
-	return tb->length;
+	ফেরত tb->দৈর্ঘ্য;
 }
 
-phys_bytes acpi_get_table_base(const char * name)
+phys_bytes acpi_get_table_base(ধ্রুবক অক্ষর * name)
 {
-	int i;
+	পূর্ণসংখ্যা i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	জন্য(i = 0; i < sdt_গুনতি; i++) {
+		যদি (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return (phys_bytes) rsdt.data[i];
+			ফেরত (phys_bytes) rsdt.তথ্য[i];
 	}
 
-	return (phys_bytes) NULL;
+	ফেরত (phys_bytes) ফাঁকা;
 }
 
-size_t acpi_get_table_length(const char * name)
+size_t acpi_get_table_দৈর্ঘ্য(ধ্রুবক অক্ষর * name)
 {
-	int i;
+	পূর্ণসংখ্যা i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	জন্য(i = 0; i < sdt_গুনতি; i++) {
+		যদি (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return sdt_trans[i].length;
+			ফেরত sdt_trans[i].দৈর্ঘ্য;
 	}
 
-	return 0;
+	ফেরত 0;
 }
 
-static void * acpi_madt_get_typed_item(struct acpi_madt_hdr * hdr,
-					unsigned char type,
+স্থির শূন্য * acpi_madt_get_typed_item(কাঠামো acpi_madt_hdr * hdr,
+					unsigned অক্ষর type,
 					unsigned idx)
 {
 	u8_t * t, * end;
-	int i;
+	পূর্ণসংখ্যা i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + আকার(কাঠামো acpi_madt_hdr);
+	end = (u8_t *) hdr + hdr->hdr.দৈর্ঘ্য;
 
 	i = 0;
-	while(t < end) {
-		if (type == ((struct acpi_madt_item_hdr *) t)->type) {
-			if (i == idx)
-				return t;
-			else
+	যখন(t < end) {
+		যদি (type == ((কাঠামো acpi_madt_item_hdr *) t)->type) {
+			যদি (i == idx)
+				ফেরত t;
+			অন্যথা
 				i++;
 		}
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+		t += ((কাঠামো acpi_madt_item_hdr *) t)->দৈর্ঘ্য;
 	}
 
-	return NULL;
+	ফেরত ফাঁকা;
 }
 
-#if 0
-static void * acpi_madt_get_item(struct acpi_madt_hdr * hdr,
+#যদি 0
+স্থির শূন্য * acpi_madt_get_item(কাঠামো acpi_madt_hdr * hdr,
 				unsigned idx)
 {
 	u8_t * t, * end;
-	int i;
+	পূর্ণসংখ্যা i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + আকার(কাঠামো acpi_madt_hdr);
+	end = (u8_t *) hdr + hdr->hdr.দৈর্ঘ্য;
 
-	for(i = 0 ; i <= idx && t < end; i++) {
-		if (i == idx)
-			return t;
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+	জন্য(i = 0 ; i <= idx && t < end; i++) {
+		যদি (i == idx)
+			ফেরত t;
+		t += ((কাঠামো acpi_madt_item_hdr *) t)->দৈর্ঘ্য;
 	}
 
-	return NULL;
+	ফেরত ফাঁকা;
 }
 #endif
 
-static int acpi_rsdp_test(void * buff)
+স্থির পূর্ণসংখ্যা acpi_rsdp_test(শূন্য * buff)
 {
-	struct acpi_rsdp * rsdp = (struct acpi_rsdp *) buff;
+	কাঠামো acpi_rsdp * rsdp = (কাঠামো acpi_rsdp *) buff;
 
-	if (!platform_tbl_checksum_ok(buff, 20))
-		return 0;
-	if (strncmp(rsdp->signature, "RSD PTR ", 8))
-		return 0;
+	যদি (!platform_tbl_checksum_ok(buff, 20))
+		ফেরত 0;
+	যদি (strncmp(rsdp->signature, "RSD PTR ", 8))
+		ফেরত 0;
 
-	return 1;
+	ফেরত 1;
 }
 
-static int get_acpi_rsdp(void)
+স্থির পূর্ণসংখ্যা get_acpi_rsdp(শূন্য)
 {
 	u16_t ebda;
 	/*
 	 * Read 40:0Eh - to find the starting address of the EBDA.
 	 */
-	acpi_phys_copy (0x40E, &ebda, sizeof(ebda));
-	if (ebda) {
+	acpi_phys_copy (0x40E, &ebda, আকার(ebda));
+	যদি (ebda) {
 		ebda <<= 4;
-		if(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
-					sizeof(acpi_rsdp), &machine.acpi_rsdp,
+		যদি(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
+					আকার(acpi_rsdp), &machine.acpi_rsdp,
 					acpi_rsdp_test))
-			return 1;
+			ফেরত 1;
 	} 
 
 	/* try BIOS read only mem space */
-	if(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
-				sizeof(acpi_rsdp), &machine.acpi_rsdp,
+	যদি(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
+				আকার(acpi_rsdp), &machine.acpi_rsdp,
 				acpi_rsdp_test))
-		return 1;
+		ফেরত 1;
 	
 	machine.acpi_rsdp = 0; /* RSDP cannot be found at this address therefore
 				  it is a valid negative value */
-	return 0;
+	ফেরত 0;
 }
 
-static void acpi_init_poweroff(void)
+স্থির শূন্য acpi_init_poweroff(শূন্য)
 {
-	u8_t *ptr = NULL;
-	u8_t *start = NULL;
-	u8_t *end = NULL;
-	struct acpi_fadt_header *fadt_header = NULL;
-	struct acpi_rsdt * dsdt_header = NULL;
-	char *msg = NULL;
+	u8_t *ptr = ফাঁকা;
+	u8_t *start = ফাঁকা;
+	u8_t *end = ফাঁকা;
+	কাঠামো acpi_fadt_header *fadt_header = ফাঁকা;
+	কাঠামো acpi_rsdt * dsdt_header = ফাঁকা;
+	অক্ষর *বার্তা = ফাঁকা;
 
 	/* Everything used here existed since ACPI spec 1.0 */
 	/* So we can safely use them */
-	fadt_header = (struct acpi_fadt_header *)
+	fadt_header = (কাঠামো acpi_fadt_header *)
 		acpi_phys2vir(acpi_get_table_base("FACP"));
-	if (fadt_header == NULL) {
-		msg = "Could not load FACP";
-		goto exit;
+	যদি (fadt_header == ফাঁকা) {
+		বার্তা = "Could not load FACP";
+		যাও exit;
 	}
 
-	dsdt_header = (struct acpi_rsdt *)
+	dsdt_header = (কাঠামো acpi_rsdt *)
 		acpi_phys2vir((phys_bytes) fadt_header->dsdt);
-	if (dsdt_header == NULL) {
-		msg = "Could not load DSDT";
-		goto exit;
+	যদি (dsdt_header == ফাঁকা) {
+		বার্তা = "Could not load DSDT";
+		যাও exit;
 	}
 
 	pm1a_cnt_blk = fadt_header->pm1a_cnt_blk;
 	pm1b_cnt_blk = fadt_header->pm1b_cnt_blk;
 
-	ptr = start = (u8_t *) dsdt_header->data;
-	end = start + dsdt_header->hdr.length - 4;
+	ptr = start = (u8_t *) dsdt_header->তথ্য;
+	end = start + dsdt_header->hdr.দৈর্ঘ্য - 4;
 
 	/* See http://forum.osdev.org/viewtopic.php?t=16990 */
 	/* for layout of \_S5 */
-	while (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
+	যখন (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
 		ptr++;
 
-	msg = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
-	if (ptr >= end || ptr == start)
-		goto exit;
+	বার্তা = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
+	যদি (ptr >= end || ptr == start)
+		যাও exit;
 
 	/* validate AML structure */
-	if (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
-		goto exit;
+	যদি (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
+		যাও exit;
 
-	if ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
+	যদি ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
 		(*(ptr + AMI_S5_NAME_OP_OFFSET_2) != AMI_NAME_OP_CODE ||
 		 *(ptr + AMI_S5_NAME_OP_OFFSET_2 + 1) != '\\')) &&
 		*(ptr + AMI_S5_NAME_OP_OFFSET_1) != AMI_NAME_OP_CODE)
-		goto exit;
+		যাও exit;
 
-	ptr += AMI_S5_PACKET_LENGTH_OFFSET;
-	if (ptr >= end)
-		goto exit;
+	ptr += AMI_S5_PACKET_দৈর্ঘ্য_OFFSET;
+	যদি (ptr >= end)
+		যাও exit;
 
 	/* package length */
-	ptr += ((*ptr & AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK) >>
-		AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT) +
-		AMI_MIN_PACKAGE_LENGTH + AMI_NUM_ELEMENTS_LENGTH;
-	if (ptr >= end)
-		goto exit;
+	ptr += ((*ptr & AMI_PACKAGE_দৈর্ঘ্য_ENCODING_BITS_MASK) >>
+		AMI_PACKAGE_দৈর্ঘ্য_ENCODING_BITS_SHIFT) +
+		AMI_MIN_PACKAGE_দৈর্ঘ্য + AMI_অঙ্ক_ELEMENTS_দৈর্ঘ্য;
+	যদি (ptr >= end)
+		যাও exit;
 
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	যদি (*ptr == AMI_BYTE_PREFIX_CODE)
 		ptr++; /* skip byte prefix */
 
 	slp_typa = (*ptr) << AMI_SLP_TYPA_SHIFT;
 
 	ptr++; /* move to SLP_TYPb */
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	যদি (*ptr == AMI_BYTE_PREFIX_CODE)
 		ptr++; /* skip byte prefix */
 
 	slp_typb = (*ptr) << AMI_SLP_TYPB_SHIFT;
 
-	msg = "poweroff initialized";
+	বার্তা = "poweroff initialized";
 
 exit:
-	if (msg) {
-		DEBUGBASIC(("acpi: %s\n", msg));
+	যদি (বার্তা) {
+		DEBUGBASIC(("acpi: %s\n", বার্তা));
 	}
 }
 
-void acpi_init(void)
+শূন্য acpi_init(শূন্য)
 {
-	int s, i;
+	পূর্ণসংখ্যা s, i;
 	read_func = acpi_phys_copy;
 
-	if (!get_acpi_rsdp()) {
+	যদি (!get_acpi_rsdp()) {
 		printf("WARNING : Cannot configure ACPI\n");
-		return;
+		ফেরত;
 	}
 	
-	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (struct acpi_sdt_header *) &rsdt,
-			sizeof(struct acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
+	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (কাঠামো acpi_sdt_header *) &rsdt,
+			আকার(কাঠামো acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
 
-	sdt_count = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
+	sdt_গুনতি = (s - আকার(কাঠামো acpi_sdt_header)) / আকার(u32_t);
 
-	for (i = 0; i < sdt_count; i++) {
-		struct acpi_sdt_header hdr;
-		int j;
-		if (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {
+	জন্য (i = 0; i < sdt_গুনতি; i++) {
+		কাঠামো acpi_sdt_header hdr;
+		পূর্ণসংখ্যা j;
+		যদি (read_func(rsdt.তথ্য[i], &hdr, আকার(কাঠামো acpi_sdt_header))) {
 			printf("ERROR acpi cannot read header at 0x%x\n",
-								rsdt.data[i]);
-			return;
+								rsdt.তথ্য[i]);
+			ফেরত;
 		}
 
-		for (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
+		জন্য (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
 			sdt_trans[i].signature[j] = hdr.signature[j];
 		sdt_trans[i].signature[ACPI_SDT_SIGNATURE_LEN] = '\0';
-		sdt_trans[i].length = hdr.length;
+		sdt_trans[i].দৈর্ঘ্য = hdr.দৈর্ঘ্য;
 	}
 
 	acpi_init_poweroff();
 }
 
-struct acpi_madt_ioapic * acpi_get_ioapic_next(void)
+কাঠামো acpi_madt_ioapic * acpi_get_ioapic_পরবর্তী(শূন্য)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	স্থির unsigned idx = 0;
+	স্থির কাঠামো acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_ioapic * ret;
+	কাঠামো acpi_madt_ioapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
+	যদি (idx == 0) {
+		madt_hdr = (কাঠামো acpi_madt_hdr *)
 			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+		যদি (madt_hdr == ফাঁকা)
+			ফেরত ফাঁকা;
 	}
 
-	ret = (struct acpi_madt_ioapic *)
+	ret = (কাঠামো acpi_madt_ioapic *)
 		acpi_madt_get_typed_item(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
-	if (ret)
+	যদি (ret)
 		idx++;
 
-	return ret;
+	ফেরত ret;
 }
 
-struct acpi_madt_lapic * acpi_get_lapic_next(void)
+কাঠামো acpi_madt_lapic * acpi_get_lapic_পরবর্তী(শূন্য)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	স্থির unsigned idx = 0;
+	স্থির কাঠামো acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_lapic * ret;
+	কাঠামো acpi_madt_lapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
+	যদি (idx == 0) {
+		madt_hdr = (কাঠামো acpi_madt_hdr *)
 			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+		যদি (madt_hdr == ফাঁকা)
+			ফেরত ফাঁকা;
 	}
 
-	for (;;) {
-		ret = (struct acpi_madt_lapic *)
+	জন্য (;;) {
+		ret = (কাঠামো acpi_madt_lapic *)
 			acpi_madt_get_typed_item(madt_hdr,
 					ACPI_MADT_TYPE_LAPIC, idx);
-		if (!ret)
-			break;
+		যদি (!ret)
+			বিরতি;
 
 		idx++;
 
 		/* report only usable CPUs */
-		if (ret->flags & 1)
-			break;
+		যদি (ret->flags & 1)
+			বিরতি;
 	}
 
-	return ret;
+	ফেরত ret;
 }
 
-void __k_unpaged_acpi_poweroff(void)
+শূন্য __k_unpaged_acpi_poweroff(শূন্য)
 {
 	/* NO OP poweroff symbol*/
 }
 
-void acpi_poweroff(void)
+শূন্য acpi_poweroff(শূন্য)
 {
-	if (pm1a_cnt_blk == 0) {
-		return;
+	যদি (pm1a_cnt_blk == 0) {
+		ফেরত;
 	}
 	outw(pm1a_cnt_blk, slp_typa | SLP_EN_CODE);
-	if (pm1b_cnt_blk != 0) {
+	যদি (pm1b_cnt_blk != 0) {
 		outw(pm1b_cnt_blk, slp_typb | SLP_EN_CODE);
 	}
 }

@@ -7,15 +7,15 @@
  *	m_lsys_krn_readbios.buf		buffer address in requesting process
  */
 
-#include "kernel/system.h"
+#অন্তর্ভাব "kernel/system.h"
 
 /*===========================================================================*
  *				do_readbios				     *
  *===========================================================================*/
-int do_readbios(struct proc * caller, message * m_ptr)
+পূর্ণসংখ্যা do_readbios(কাঠামো proc * caller, message * m_ptr)
 {
-  struct vir_addr src, dst;
-  size_t len = m_ptr->m_lsys_krn_readbios.size;
+  কাঠামো vir_addr src, dst;
+  size_t len = m_ptr->m_lsys_krn_readbios.আকার_2;
   vir_bytes limit;
 
   src.offset = m_ptr->m_lsys_krn_readbios.addr;
@@ -29,9 +29,9 @@ int do_readbios(struct proc * caller, message * m_ptr)
 #define SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
 #define USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
 
-  if(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
-     !USERRANGE(BASE_MEM_TOP, UPPER_MEM_END))
-  	return EPERM;
+  যদি(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
+     !USERRANGE(BASE_MEM_শীর্ষ, UPPER_MEM_END))
+  	ফেরত EPERM;
 
-  return virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
+  ফেরত virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.আকার_2);
 }

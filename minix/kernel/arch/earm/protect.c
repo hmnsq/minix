@@ -3,78 +3,78 @@
  * for local descriptors in the process table.
  */
 
-#include <assert.h>
-#include <string.h>
+#অন্তর্ভাব <assert.h>
+#অন্তর্ভাব <string.h>
 
-#include <machine/multiboot.h>
+#অন্তর্ভাব <machine/multiboot.h>
 
-#include "kernel/kernel.h"
+#অন্তর্ভাব "kernel/kernel.h"
 
-#include "archconst.h"
-#include "arch_proto.h"
+#অন্তর্ভাব "archconst.h"
+#অন্তর্ভাব "arch_proto.h"
 
-#include <sys/exec.h>
-#include <libexec.h>
+#অন্তর্ভাব <sys/exec.h>
+#অন্তর্ভাব <libexec.h>
 
-struct tss_s tss[CONFIG_MAX_CPUS];
-extern int exc_vector_table;
+কাঠামো tss_s tss[CONFIG_MAX_CPUS];
+বাহ্যিক পূর্ণসংখ্যা exc_vector_table;
 
-int prot_init_done = 0;
+পূর্ণসংখ্যা prot_init_done = 0;
 
-phys_bytes vir2phys(void *vir)
+phys_bytes vir2phys(শূন্য *vir)
 {
 	/* defined in kernel.lds */
-	extern char _kern_vir_base, _kern_phys_base;
+	বাহ্যিক অক্ষর _kern_vir_base, _kern_phys_base;
 	u32_t offset = (vir_bytes) &_kern_vir_base -
 	    (vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	ফেরত (phys_bytes)vir - offset;
 }
 
-int tss_init(unsigned cpu, void * kernel_stack)
+পূর্ণসংখ্যা tss_init(unsigned cpu, শূন্য * kernel_স্তূপ)
 {
 
-	struct tss_s * t = &tss[cpu];
+	কাঠামো tss_s * t = &tss[cpu];
 
 	/*
 	 * make space for process pointer and cpu id and point to the first
 	 * usable word
 	 */
-	t->sp0 = ((unsigned) kernel_stack) - ARM_STACK_TOP_RESERVED;
+	t->sp0 = ((unsigned) kernel_স্তূপ) - ARM_স্তূপ_শীর্ষ_RESERVED;
 	/*
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
 	 */
-	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
+	*((reg_t *)(t->sp0 + 1 * আকার(reg_t))) = cpu;
 
-	return 0;
+	ফেরত 0;
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(পূর্ণসংখ্যা pnr)
 {
-	int i;
+	পূর্ণসংখ্যা i;
 
-	assert(pnr >= 0);
+	প্রতিজ্ঞা(pnr >= 0);
 
 	/* Search for desired process in boot process
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	জন্য(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		পূর্ণসংখ্যা p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
-			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+		যদি(image[i].proc_nr == pnr) {
+			প্রতিজ্ঞা(p < MULTIBOOT_MAX_MODS);
+			প্রতিজ্ঞা(p < kinfo.mbi.mi_mods_গুনতি);
+			ফেরত &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+পূর্ণসংখ্যা booting_cpu = 0;
 
-void prot_init(void)
+শূন্য prot_init(শূন্য)
 {
 	/* tell the HW where we stored our vector table */
 	write_vbar((reg_t)&exc_vector_table);
@@ -92,33 +92,33 @@ void prot_init(void)
 	prot_init_done = 1;
 }
 
-static int alloc_for_vm = 0;
+স্থির পূর্ণসংখ্যা alloc_for_vm = 0;
 
-void arch_post_init(void)
+শূন্য arch_post_init(শূন্য)
 {
 	/* Let memory mapping code know what's going on at bootstrap time */
-	struct proc *vm;
+	কাঠামো proc *vm;
 	vm = proc_addr(VM_PROC_NR);
 	get_cpulocal_var(ptproc) = vm;
 	pg_info(&vm->p_seg.p_ttbr, &vm->p_seg.p_ttbr_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+স্থির পূর্ণসংখ্যা libexec_pg_alloc(কাঠামো exec_info *execi, vir_bytes vaddr, size_t len)
 {
 	pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
 	pg_load();
-	memset((char *) vaddr, 0, len);
+	memset((অক্ষর *) vaddr, 0, len);
 	alloc_for_vm += len;
-	return OK;
+	ফেরত OK;
 }
 
-void arch_boot_proc(struct boot_image *ip, struct proc *rp)
+শূন্য arch_boot_proc(কাঠামো boot_image *ip, কাঠামো proc *rp)
 {
 	multiboot_module_t *mod;
-	struct ps_strings *psp;
-	char *sp;
+	কাঠামো ps_strings *psp;
+	অক্ষর *sp;
 
-	if(rp->p_nr < 0) return;
+	যদি(rp->p_nr < 0) ফেরত;
 
 	mod = bootmod(rp->p_nr);
 
@@ -126,18 +126,18 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
-		struct exec_info execi;
+	যদি(rp->p_nr == VM_PROC_NR) {
+		কাঠামো exec_info execi;
 
-		memset(&execi, 0, sizeof(execi));
+		memset(&execi, 0, আকার(execi));
 
 		/* exec parameters */
-		execi.stack_high = kinfo.user_sp;
-		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
+		execi.স্তূপ_উপরের = kinfo.user_sp;
+		execi.স্তূপ_আকার = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
-		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
+		execi.hdr = (অক্ষর *) mod->mod_start; /* phys mem direct */
 		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
-		strlcpy(execi.progname, ip->proc_name, sizeof(execi.progname));
+		strlcpy(execi.progname, ip->proc_name, আকার(execi.progname));
 		execi.frame_len = 0;
 
 		/* callbacks for use in the kernel */
@@ -146,31 +146,31 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.allocmem_prealloc_junk = libexec_pg_alloc;
 		execi.allocmem_prealloc_cleared = libexec_pg_alloc;
 		execi.allocmem_ondemand = libexec_pg_alloc;
-		execi.clearproc = NULL;
+		execi.clearproc = ফাঁকা;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		যদি(libexec_load_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
-		sp -= sizeof(struct ps_strings);
-		psp = (struct ps_strings *) sp;
+		sp = (অক্ষর *)execi.স্তূপ_উপরের;
+		sp -= আকার(কাঠামো ps_strings);
+		psp = (কাঠামো ps_strings *) sp;
 
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (আকার(শূন্য *) + আকার(শূন্য *) + আকার(পূর্ণসংখ্যা));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (অক্ষর **)(sp + আকার(পূর্ণসংখ্যা));
 		psp->ps_nargvstr = 0;
-		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
+		psp->ps_envstr = psp->ps_argvstr + আকার(শূন্য *);
 		psp->ps_nenvstr = 0;
 
 		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+			execi.স্তূপ_উপরের - আকার(কাঠামো ps_strings),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */

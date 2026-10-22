@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#অন্তর্ভাব "kernel/system.h"
+#অন্তর্ভাব <minix/devio.h>
+#অন্তর্ভাব <minix/endpoint.h>
 
-#if USE_DEVIO
+#যদি USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+পূর্ণসংখ্যা do_devio(কাঠামো proc * caller, message * m_ptr)
 {
-    struct priv *privp;
+    কাঠামো priv *privp;
     port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    কাঠামো io_range *iorp;
+    পূর্ণসংখ্যা i, আকার_2, nr_io_range;
+    পূর্ণসংখ্যা io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    নির্বাচন (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	ক্ষেত্র _DIO_BYTE: আকার_2= 1; বিরতি;
+	ক্ষেত্র _DIO_WORD: আকার_2= 2; বিরতি;
+	ক্ষেত্র _DIO_LONG: আকার_2= 4; বিরতি;
+	পূর্বনির্ধারিত: আকার_2= 4; বিরতি;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    যদি (!privp)
     {
 	printf("no priv structure!\n");
-	goto doit;
+	যাও doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    যদি (privp->s_flags & CHECK_IO_PORT)
     {
 	port= m_ptr->m_lsys_krn_sys_devio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	জন্য (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		যদি (port >= iorp->ior_base && port+আকার_2-1 <= iorp->ior_limit)
+			বিরতি;
 	}
-	if (i >= nr_io_range)
+	যদি (i >= nr_io_range)
 	{
 			printf("do_devio: port 0x%x (size %d) not allowed\n",
-				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+				m_ptr->m_lsys_krn_sys_devio.port, আকার_2);
+		ফেরত EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    যদি (m_ptr->m_lsys_krn_sys_devio.port & (আকার_2-1))
     {
 		printf("do_devio: unaligned port 0x%x (size %d)\n",
-			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+			m_ptr->m_lsys_krn_sys_devio.port, আকার_2);
+	ফেরত EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    যদি (io_dir == DIO_প্রবেশ) { 
+      নির্বাচন (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
+        ক্ষেত্র _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.মান =
 			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		বিরতি;
+        ক্ষেত্র _DIO_WORD:
+		m_ptr->m_krn_lsys_sys_devio.মান =
 			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		বিরতি;
+        ক্ষেত্র _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.মান =
 			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+		বিরতি;
+    	পূর্বনির্ধারিত: ফেরত(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
+    } অন্যথা { 
+      নির্বাচন (io_type) {
+	ক্ষেত্র _DIO_BYTE:
 		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
+			m_ptr->m_lsys_krn_sys_devio.মান);
+		বিরতি;
+	ক্ষেত্র _DIO_WORD:
 		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
+			m_ptr->m_lsys_krn_sys_devio.মান);
+		বিরতি;
+	ক্ষেত্র _DIO_LONG:
 		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+			m_ptr->m_lsys_krn_sys_devio.মান);
+		বিরতি;
+    	পূর্বনির্ধারিত: ফেরত(EINVAL);
       } 
     }
-    return(OK);
+    ফেরত(OK);
 }
 
 #endif /* USE_DEVIO */

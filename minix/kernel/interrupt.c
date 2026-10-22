@@ -13,56 +13,56 @@
  *   disable_irq:     disable hook for IRQ.
  */
 
-#include <assert.h>
+#অন্তর্ভাব <assert.h>
 
-#include "kernel/kernel.h"
-#include "hw_intr.h"
+#অন্তর্ভাব "kernel/kernel.h"
+#অন্তর্ভাব "hw_intr.h"
 
 
 /* number of lists of IRQ hooks, one list per supported line. */
-static irq_hook_t* irq_handlers[NR_IRQ_VECTORS] = {0};
+স্থির irq_hook_t* irq_handlers[NR_IRQ_VECTORS] = {0};
 
 /*===========================================================================*
  *				put_irq_handler				     *
  *===========================================================================*/
 /* Register an interrupt handler.  */
-void put_irq_handler( irq_hook_t* hook, int irq,
-  const irq_handler_t handler)
+শূন্য put_irq_handler( irq_hook_t* hook, পূর্ণসংখ্যা irq,
+  ধ্রুবক irq_handler_t handler)
 {
-  int id;
-  irq_hook_t **line;
+  পূর্ণসংখ্যা id;
+  irq_hook_t **সারি;
   unsigned long bitmap;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS )
+  যদি( irq < 0 || irq >= NR_IRQ_VECTORS )
 	panic("invalid call to put_irq_handler: %d",  irq);
 
-  line = &irq_handlers[irq];
+  সারি = &irq_handlers[irq];
 
   bitmap = 0;
-  while ( *line != NULL ) {
-	if(hook == *line) return; /* extra initialization */
-	bitmap |= (*line)->id;	/* mark ids in use */
-	line = &(*line)->next;
+  যখন ( *সারি != ফাঁকা ) {
+	যদি(hook == *সারি) ফেরত; /* extra initialization */
+	bitmap |= (*সারি)->id;	/* mark ids in use */
+	সারি = &(*সারি)->পরবর্তী;
   }
 
   /* find the lowest id not in use */
-  for (id = 1; id != 0; id <<= 1)
-  	if (!(bitmap & id)) break;
+  জন্য (id = 1; id != 0; id <<= 1)
+  	যদি (!(bitmap & id)) বিরতি;
 
-  if(id == 0)
+  যদি(id == 0)
   	panic("Too many handlers for irq: %d",  irq);
   
-  hook->next = NULL;
+  hook->পরবর্তী = ফাঁকা;
   hook->handler = handler;
   hook->irq = irq;
   hook->id = id;
-  *line = hook;
+  *সারি = hook;
 
   /* And as last enable the irq at the hardware.
    *
    * Internal this activates the line or source of the given interrupt.
    */
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  যদি((irq_actids[hook->irq] &= ~hook->id) == 0) {
 	  hw_intr_used(irq);
 	  hw_intr_unmask(hook->irq);
   }
@@ -72,35 +72,35 @@ void put_irq_handler( irq_hook_t* hook, int irq,
  *				rm_irq_handler				     *
  *===========================================================================*/
 /* Unregister an interrupt handler.  */
-void rm_irq_handler( const irq_hook_t* hook ) {
-  const int irq = hook->irq; 
-  const int id = hook->id;
-  irq_hook_t **line;
+শূন্য rm_irq_handler( ধ্রুবক irq_hook_t* hook ) {
+  ধ্রুবক পূর্ণসংখ্যা irq = hook->irq; 
+  ধ্রুবক পূর্ণসংখ্যা id = hook->id;
+  irq_hook_t **সারি;
 
-  if( irq < 0 || irq >= NR_IRQ_VECTORS ) 
+  যদি( irq < 0 || irq >= NR_IRQ_VECTORS ) 
 	panic("invalid call to rm_irq_handler: %d",  irq);
 
   /* remove the hook  */
-  line = &irq_handlers[irq];
-  while( (*line) != NULL ) {
-	if((*line)->id == id) {
-		(*line) = (*line)->next;
-		if (irq_actids[irq] & id)
+  সারি = &irq_handlers[irq];
+  যখন( (*সারি) != ফাঁকা ) {
+	যদি((*সারি)->id == id) {
+		(*সারি) = (*সারি)->পরবর্তী;
+		যদি (irq_actids[irq] & id)
 			irq_actids[irq] &= ~id;
     	}
-    	else {
-		line = &(*line)->next;
+    	অন্যথা {
+		সারি = &(*সারি)->পরবর্তী;
     	}
   }
 
   /* Disable the irq if there are no other handlers registered.
    * If the irq is shared, reenable it if there is no active handler.
    */
-  if (irq_handlers[irq] == NULL) {
+  যদি (irq_handlers[irq] == ফাঁকা) {
 	hw_intr_mask(irq);
 	hw_intr_not_used(irq);
   }
-  else if (irq_actids[irq] == 0) {
+  অন্যথা যদি (irq_actids[irq] == 0) {
 	hw_intr_unmask(irq);
   }
 }
@@ -113,65 +113,65 @@ void rm_irq_handler( const irq_hook_t* hook ) {
  * the end. Before returning, it unmasks the IRQ if and only if all active ID
  * bits are cleared, and restart a process.
  */
-void irq_handle(int irq)
+শূন্য irq_handle(পূর্ণসংখ্যা irq)
 {
   irq_hook_t * hook;
 
   /* here we need not to get this IRQ until all the handlers had a say */
-  assert(irq >= 0 && irq < NR_IRQ_VECTORS);
+  প্রতিজ্ঞা(irq >= 0 && irq < NR_IRQ_VECTORS);
   hw_intr_mask(irq);
   hook = irq_handlers[irq];
 
   /* Check for spurious interrupts. */
-  if(hook == NULL) {
-      static int nspurious[NR_IRQ_VECTORS], report_interval = 100;
+  যদি(hook == ফাঁকা) {
+      স্থির পূর্ণসংখ্যা nspurious[NR_IRQ_VECTORS], report_interval = 100;
       nspurious[irq]++;
-      if(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
+      যদি(nspurious[irq] == 1 || !(nspurious[irq] % report_interval)) {
       	printf("irq_handle: spurious irq %d (count: %d); keeping masked\n",
 		irq, nspurious[irq]);
-	if(report_interval < INT_MAX/2)
+	যদি(report_interval < INT_MAX/2)
 		report_interval *= 2;
       }
-      return;
+      ফেরত;
   }
 
   /* Call list of handlers for an IRQ. */
-  while( hook != NULL ) {
+  যখন( hook != ফাঁকা ) {
     /* For each handler in the list, mark it active by setting its ID bit,
      * call the function, and unmark it if the function returns true.
      */
     irq_actids[irq] |= hook->id;
     
     /* Call the hooked function. */
-    if( (*hook->handler)(hook) )
+    যদি( (*hook->handler)(hook) )
       irq_actids[hook->irq] &= ~hook->id;
     
     /* Next hooked function. */
-    hook = hook->next;
+    hook = hook->পরবর্তী;
   }
 
   /* reenable the IRQ only if there is no active handler */
-  if (irq_actids[irq] == 0)
+  যদি (irq_actids[irq] == 0)
 	  hw_intr_unmask(irq);
 
   hw_intr_ack(irq);
 }
 
 /* Enable/Disable a interrupt line.  */
-void enable_irq(const irq_hook_t *hook)
+শূন্য enable_irq(ধ্রুবক irq_hook_t *hook)
 {
-  if((irq_actids[hook->irq] &= ~hook->id) == 0) {
+  যদি((irq_actids[hook->irq] &= ~hook->id) == 0) {
     hw_intr_unmask(hook->irq);
   }
 }
 
 /* Return true if the interrupt was enabled before call.  */
-int disable_irq(const irq_hook_t *hook)
+পূর্ণসংখ্যা disable_irq(ধ্রুবক irq_hook_t *hook)
 {
-  if(irq_actids[hook->irq] & hook->id)  /* already disabled */
-    return 0;
+  যদি(irq_actids[hook->irq] & hook->id)  /* already disabled */
+    ফেরত 0;
   irq_actids[hook->irq] |= hook->id;
   hw_intr_mask(hook->irq);
-  return TRUE;
+  ফেরত TRUE;
 }
 
