@@ -7,23 +7,23 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include <assert.h>
-#include <minix/type.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव <minix/type.h>
 
-#include "arch_proto.h"
+#अन्तर्भाव "arch_proto.h"
 
-static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
+स्थिर शून्य set_ttbr(संरचना proc *p, u32_t ttbr, u32_t *v)
 {
 	/* Set process TTBR. */
 	p->p_seg.p_ttbr = ttbr;
-	assert(p->p_seg.p_ttbr);
+	प्रतिज्ञा(p->p_seg.p_ttbr);
 	p->p_seg.p_ttbr_v = v;
-	if(p == get_cpulocal_var(ptproc)) {
+	यदि(p == get_cpulocal_var(ptproc)) {
 		write_ttbr0(p->p_seg.p_ttbr);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	यदि(p->p_nr == VM_PROC_NR) {
+		यदि (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -32,26 +32,26 @@ static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+पूर्णाङ्क arch_do_vmctl(
+  पञ्जिका message *m_ptr,	/* pointer to request message */
+  संरचना proc *p
 )
 {
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+  विकल्प(m_ptr->SVMCTL_PARAM) {
+	पक्ष VMCTL_GET_PDBR:
 		/* Get process page directory base reg (TTBR). */
-		m_ptr->SVMCTL_VALUE = p->p_seg.p_ttbr;
-		return OK;
-	case VMCTL_SETADDRSPACE:
+		m_ptr->SVMCTL_मान = p->p_seg.p_ttbr;
+		फर्काऊ OK;
+	पक्ष VMCTL_SETADDRSPACE:
 		set_ttbr(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		फर्काऊ OK;
+	पक्ष VMCTL_FLUSHTLB:
 	{
 		reload_ttbr0();
-		return OK;
+		फर्काऊ OK;
 	}
   }
 
-  printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  म_लिखो("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
+  फर्काऊ EINVAL;
 }

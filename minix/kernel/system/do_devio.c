@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव <minix/devio.h>
+#अन्तर्भाव <minix/endpoint.h>
 
-#if USE_DEVIO
+#यदि USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_devio(संरचना proc * caller, message * m_ptr)
 {
-    struct priv *privp;
+    संरचना priv *privp;
     port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    संरचना io_range *iorp;
+    पूर्णाङ्क i, size, nr_io_range;
+    पूर्णाङ्क io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    विकल्प (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	पक्ष _DIO_BYTE: size= 1; रोक;
+	पक्ष _DIO_WORD: size= 2; रोक;
+	पक्ष _DIO_LONG: size= 4; रोक;
+	स्वभाव: size= 4; रोक;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    यदि (!privp)
     {
-	printf("no priv structure!\n");
-	goto doit;
+	म_लिखो("no priv structure!\n");
+	गच्छ doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    यदि (privp->s_flags & CHECK_IO_PORT)
     {
 	port= m_ptr->m_lsys_krn_sys_devio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	लागि (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		यदि (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
+			रोक;
 	}
-	if (i >= nr_io_range)
+	यदि (i >= nr_io_range)
 	{
-			printf("do_devio: port 0x%x (size %d) not allowed\n",
+			म_लिखो("do_devio: port 0x%x (size %d) not allowed\n",
 				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+		फर्काऊ EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    यदि (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
     {
-		printf("do_devio: unaligned port 0x%x (size %d)\n",
+		म_लिखो("do_devio: unaligned port 0x%x (size %d)\n",
 			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+	फर्काऊ EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    यदि (io_dir == DIO_आगत) { 
+      विकल्प (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
+        पक्ष _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.मान =
 			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		रोक;
+        पक्ष _DIO_WORD:
+		m_ptr->m_krn_lsys_sys_devio.मान =
 			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		रोक;
+        पक्ष _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.मान =
 			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+		रोक;
+    	स्वभाव: फर्काऊ(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
+    } अन्यथा { 
+      विकल्प (io_type) {
+	पक्ष _DIO_BYTE:
 		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
+			m_ptr->m_lsys_krn_sys_devio.मान);
+		रोक;
+	पक्ष _DIO_WORD:
 		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
+			m_ptr->m_lsys_krn_sys_devio.मान);
+		रोक;
+	पक्ष _DIO_LONG:
 		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+			m_ptr->m_lsys_krn_sys_devio.मान);
+		रोक;
+    	स्वभाव: फर्काऊ(EINVAL);
       } 
     }
-    return(OK);
+    फर्काऊ(OK);
 }
 
 #endif /* USE_DEVIO */

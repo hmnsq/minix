@@ -29,46 +29,46 @@
  * nonempty lists. As shown above, this is not required with pointer pointers.
  */
 
-#include <stddef.h>
-#include <signal.h>
-#include <assert.h>
-#include <string.h>
+#अन्तर्भाव <stddef.h>
+#अन्तर्भाव <signal.h>
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव <string.h>
 
-#include "vm.h"
-#include "clock.h"
-#include "spinlock.h"
-#include "arch_proto.h"
+#अन्तर्भाव "vm.h"
+#अन्तर्भाव "clock.h"
+#अन्तर्भाव "spinlock.h"
+#अन्तर्भाव "arch_proto.h"
 
-#include <minix/syslib.h>
+#अन्तर्भाव <minix/syslib.h>
 
 /* Scheduling and message passing functions */
-static void idle(void);
+स्थिर शून्य idle(शून्य);
 /**
  * Made public for use in clock.c (for user-space scheduling)
 static int mini_send(struct proc *caller_ptr, endpoint_t dst_e, message
 	*m_ptr, int flags);
 */
-static int mini_receive(struct proc *caller_ptr, endpoint_t src,
-	message *m_buff_usr, int flags);
-static int mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+स्थिर पूर्णाङ्क mini_receive(संरचना proc *caller_ptr, endpoint_t src,
+	message *m_buff_usr, पूर्णाङ्क flags);
+स्थिर पूर्णाङ्क mini_senda(संरचना proc *caller_ptr, asynmsg_t *table, माप_प्रकार
 	size);
-static int deadlock(int function, register struct proc *caller,
+स्थिर पूर्णाङ्क deadlock(पूर्णाङ्क function, पञ्जिका संरचना proc *caller,
 	endpoint_t src_dst_e);
-static int try_async(struct proc *caller_ptr);
-static int try_one(endpoint_t receive_e, struct proc *src_ptr,
-	struct proc *dst_ptr);
-static struct proc * pick_proc(void);
-static void enqueue_head(struct proc *rp);
+स्थिर पूर्णाङ्क try_async(संरचना proc *caller_ptr);
+स्थिर पूर्णाङ्क try_one(endpoint_t receive_e, संरचना proc *src_ptr,
+	संरचना proc *dst_ptr);
+स्थिर संरचना proc * pick_proc(शून्य);
+स्थिर शून्य enqueue_head(संरचना proc *rp);
 
 /* all idles share the same idle_priv structure */
-static struct priv idle_priv;
+स्थिर संरचना priv idle_priv;
 
-static void set_idle_name(char * name, int n)
+स्थिर शून्य set_idle_name(वर्ण * name, पूर्णाङ्क n)
 {
-        int i, c;
-        int p_z = 0;
+        पूर्णाङ्क i, c;
+        पूर्णाङ्क p_z = 0;
 
-        if (n > 999) 
+        यदि (n > 999) 
                 n = 999; 
 
         name[0] = 'i'; 
@@ -76,13 +76,13 @@ static void set_idle_name(char * name, int n)
         name[2] = 'l'; 
         name[3] = 'e'; 
 
-        for (i = 4, c = 100; c > 0; c /= 10) {
-                int digit;
+        लागि (i = 4, c = 100; c > 0; c /= 10) {
+                पूर्णाङ्क digit;
 
                 digit = n / c;  
                 n -= digit * c;  
 
-                if (p_z || digit != 0 || c == 1) {
+                यदि (p_z || digit != 0 || c == 1) {
                         p_z = 1;
                         name[i++] = '0' + digit;
                 }   
@@ -97,48 +97,48 @@ static void set_idle_name(char * name, int n)
 #define PICK_HIGHERONLY	2
 
 #define BuildNotifyMessage(m_ptr, src, dst_ptr) \
-	memset((m_ptr), 0, sizeof(*(m_ptr)));				\
+	स_रखो((m_ptr), 0, परिमाण(*(m_ptr)));				\
 	(m_ptr)->m_type = NOTIFY_MESSAGE;				\
 	(m_ptr)->m_notify.timestamp = get_monotonic();		\
-	switch (src) {							\
-	case HARDWARE:							\
+	विकल्प (src) {							\
+	पक्ष HARDWARE:							\
 		(m_ptr)->m_notify.interrupts =			\
 			priv(dst_ptr)->s_int_pending;			\
 		priv(dst_ptr)->s_int_pending = 0;			\
-		break;							\
-	case SYSTEM:							\
-		memcpy(&(m_ptr)->m_notify.sigset,			\
+		रोक;							\
+	पक्ष SYSTEM:							\
+		स_नकल(&(m_ptr)->m_notify.sigset,			\
 			&priv(dst_ptr)->s_sig_pending,			\
-			sizeof(sigset_t));				\
+			परिमाण(sigset_t));				\
 		sigemptyset(&priv(dst_ptr)->s_sig_pending);		\
-		break;							\
+		रोक;							\
 	}
 
-static message m_notify_buff = { 0, NOTIFY_MESSAGE };
+स्थिर message m_notify_buff = { 0, NOTIFY_MESSAGE };
 
-void proc_init(void)
+शून्य proc_init(शून्य)
 {
-	struct proc * rp;
-	struct priv *sp;
-	int i;
+	संरचना proc * rp;
+	संरचना priv *sp;
+	पूर्णाङ्क i;
 
 	/* Clear the process table. Announce each slot as empty and set up
 	 * mappings for proc_addr() and proc_nr() macros. Do the same for the
 	 * table with privilege structures for the system processes. 
 	 */
-	for (rp = BEG_PROC_ADDR, i = -NR_TASKS; rp < END_PROC_ADDR; ++rp, ++i) {
+	लागि (rp = BEG_PROC_ADDR, i = -NR_TASKS; rp < END_PROC_ADDR; ++rp, ++i) {
 		rp->p_rts_flags = RTS_SLOT_FREE;/* initialize free slot */
 		rp->p_magic = PMAGIC;
 		rp->p_nr = i;			/* proc number from ptr */
 		rp->p_endpoint = _ENDPOINT(0, rp->p_nr); /* generation no. 0 */
-		rp->p_scheduler = NULL;		/* no user space scheduler */
+		rp->p_scheduler = रिक्त;		/* no user space scheduler */
 		rp->p_priority = 0;		/* no priority */
 		rp->p_quantum_size_ms = 0;	/* no quantum size */
 
 		/* arch-specific initialization */
 		arch_proc_reset(rp);
 	}
-	for (sp = BEG_PRIV_ADDR, i = 0; sp < END_PRIV_ADDR; ++sp, ++i) {
+	लागि (sp = BEG_PRIV_ADDR, i = 0; sp < END_PRIV_ADDR; ++sp, ++i) {
 		sp->s_proc_nr = NONE;		/* initialize as free */
 		sp->s_id = (sys_id_t) i;	/* priv structure index */
 		ppriv_addr[i] = sp;		/* priv ptr from number */
@@ -148,8 +148,8 @@ void proc_init(void)
 
 	idle_priv.s_flags = IDL_F;
 	/* initialize IDLE structures for every CPU */
-	for (i = 0; i < CONFIG_MAX_CPUS; i++) {
-		struct proc * ip = get_cpu_var_ptr(i, idle_proc);
+	लागि (i = 0; i < CONFIG_MAX_CPUS; i++) {
+		संरचना proc * ip = get_cpu_var_ptr(i, idle_proc);
 		ip->p_endpoint = IDLE;
 		ip->p_priv = &idle_priv;
 		/* must not let idle ever get scheduled */
@@ -158,7 +158,7 @@ void proc_init(void)
 	}
 }
 
-static void switch_address_space_idle(void)
+स्थिर शून्य switch_address_space_idle(शून्य)
 {
 #ifdef CONFIG_SMP
 	/*
@@ -173,9 +173,9 @@ static void switch_address_space_idle(void)
 /*===========================================================================*
  *				idle					     * 
  *===========================================================================*/
-static void idle(void)
+स्थिर शून्य idle(शून्य)
 {
-	struct proc * p;
+	संरचना proc * p;
 
 	/* This function is called whenever there is no work to do.
 	 * Halt the CPU, and measure how many timestamp counter ticks are
@@ -184,7 +184,7 @@ static void idle(void)
 	 */
 
 	p = get_cpulocal_var(proc_ptr) = get_cpulocal_var_ptr(idle_proc);
-	if (priv(p)->s_flags & BILLABLE)
+	यदि (priv(p)->s_flags & BILLABLE)
 		get_cpulocal_var(bill_ptr) = p;
 
 	switch_address_space_idle();
@@ -192,9 +192,9 @@ static void idle(void)
 #ifdef CONFIG_SMP
 	get_cpulocal_var(cpu_is_idle) = 1;
 	/* we don't need to keep time on APs as it is handled on the BSP */
-	if (cpuid != bsp_cpu_id)
+	यदि (cpuid != bsp_cpu_id)
 		stop_local_timer();
-	else
+	अन्यथा
 #endif
 	{
 		/*
@@ -206,17 +206,17 @@ static void idle(void)
 
 	/* start accounting for the idle time */
 	context_stop(proc_addr(KERNEL));
-#if !SPROFILE
+#यदि !SPROFILE
 	halt_cpu();
-#else
-	if (!sprofiling)
+#अन्यथा
+	यदि (!sprofiling)
 		halt_cpu();
-	else {
-		volatile int * v;
+	अन्यथा {
+		चञ्चल पूर्णाङ्क * v;
 
 		v = get_cpulocal_var_ptr(idle_interrupted);
 		interrupts_enable();
-		while (!*v)
+		जबसम्म (!*v)
 			arch_pause();
 		interrupts_disable();
 		*v = 0;
@@ -231,15 +231,15 @@ static void idle(void)
 /*===========================================================================*
  *                              vm_suspend                                *
  *===========================================================================*/
-void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag)
+शून्य vm_suspend(संरचना proc *caller, अचर संरचना proc *target,
+        अचर vir_bytes linaddr, अचर vir_bytes len, अचर पूर्णाङ्क type,
+        अचर पूर्णाङ्क writeflag)
 {
         /* This range is not OK for this process. Set parameters
          * of the request and notify VM about the pending request.
          */
-        assert(!RTS_ISSET(caller, RTS_VMREQUEST));
-        assert(!RTS_ISSET(target, RTS_VMREQUEST));
+        प्रतिज्ञा(!RTS_ISSET(caller, RTS_VMREQUEST));
+        प्रतिज्ञा(!RTS_ISSET(target, RTS_VMREQUEST));
 
         RTS_SET(caller, RTS_VMREQUEST);
 
@@ -251,8 +251,8 @@ void vm_suspend(struct proc *caller, const struct proc *target,
         caller->p_vmrequest.type = type;
 
         /* Connect caller on vmrequest wait queue. */
-        if(!(caller->p_vmrequest.nextrequestor = vmrequest))
-                if(OK != send_sig(VM_PROC_NR, SIGKMEM))
+        यदि(!(caller->p_vmrequest.nextrequestor = vmrequest))
+                यदि(OK != send_sig(VM_PROC_NR, SIGKMEM))
                         panic("send_sig failed");
         vmrequest = caller;
 }
@@ -260,34 +260,34 @@ void vm_suspend(struct proc *caller, const struct proc *target,
 /*===========================================================================*
  *                              delivermsg                                *
  *===========================================================================*/
-static void delivermsg(struct proc *rp)
+स्थिर शून्य delivermsg(संरचना proc *rp)
 {
-        assert(!RTS_ISSET(rp, RTS_VMREQUEST));
-        assert(rp->p_misc_flags & MF_DELIVERMSG);
-        assert(rp->p_delivermsg.m_source != NONE);
+        प्रतिज्ञा(!RTS_ISSET(rp, RTS_VMREQUEST));
+        प्रतिज्ञा(rp->p_misc_flags & MF_DELIVERMSG);
+        प्रतिज्ञा(rp->p_delivermsg.m_source != NONE);
 
-        if (copy_msg_to_user(&rp->p_delivermsg,
+        यदि (copy_सन्देश_to_user(&rp->p_delivermsg,
                                 (message *) rp->p_delivermsg_vir)) {
-                if(rp->p_misc_flags & MF_MSGFAILED) {
+                यदि(rp->p_misc_flags & MF_MSGFAILED) {
                         /* 2nd consecutive failure means this won't succeed */
-                        printf("WARNING wrong user pointer 0x%08lx from "
+                        म_लिखो("WARNING wrong user pointer 0x%08lx from "
                                 "process %s / %d\n",
                                 rp->p_delivermsg_vir,
                                 rp->p_name,
                                 rp->p_endpoint);
-                        cause_sig(rp->p_nr, SIGSEGV);
-                } else {
+                        cause_sig(rp->p_nr, संक_अंश);
+                } अन्यथा {
                         /* 1st failure means we have to ask VM to handle it */
                         vm_suspend(rp, rp, rp->p_delivermsg_vir,
-                                sizeof(message), VMSTYPE_DELIVERMSG, 1);
+                                परिमाण(message), VMSTYPE_DELIVERMSG, 1);
                         rp->p_misc_flags |= MF_MSGFAILED;
                 }
-        } else {
+        } अन्यथा {
                 /* Indicate message has been delivered; address is 'used'. */
                 rp->p_delivermsg.m_source = NONE;
                 rp->p_misc_flags &= ~(MF_DELIVERMSG|MF_MSGFAILED);
 
-                if(!(rp->p_misc_flags & MF_CONTEXT_SET)) {
+                यदि(!(rp->p_misc_flags & MF_CONTEXT_SET)) {
                         rp->p_reg.retreg = OK;
                 }
         }
@@ -296,14 +296,14 @@ static void delivermsg(struct proc *rp)
 /*===========================================================================*
  *				switch_to_user				     * 
  *===========================================================================*/
-void switch_to_user(void)
+शून्य switch_to_user(शून्य)
 {
 	/* This function is called an instant before proc_ptr is
 	 * to be scheduled again.
 	 */
-	struct proc * p;
+	संरचना proc * p;
 #ifdef CONFIG_SMP
-	int tlb_must_refresh = 0;
+	पूर्णाङ्क tlb_must_refresh = 0;
 #endif
 
 	p = get_cpulocal_var(proc_ptr);
@@ -311,20 +311,20 @@ void switch_to_user(void)
 	 * if the current process is still runnable check the misc flags and let
 	 * it run unless it becomes not runnable in the meantime
 	 */
-	if (proc_is_runnable(p))
-		goto check_misc_flags;
+	यदि (proc_is_runnable(p))
+		गच्छ check_misc_flags;
 	/*
 	 * if a process becomes not runnable while handling the misc flags, we
 	 * need to pick a new one here and start from scratch. Also if the
 	 * current process wasn't runnable, we pick a new one here
 	 */
 not_runnable_pick_new:
-	if (proc_is_preempted(p)) {
+	यदि (proc_is_preempted(p)) {
 		p->p_rts_flags &= ~RTS_PREEMPTED;
-		if (proc_is_runnable(p)) {
-			if (p->p_cpu_time_left)
+		यदि (proc_is_runnable(p)) {
+			यदि (p->p_cpu_time_बायाँ)
 				enqueue_head(p);
-			else
+			अन्यथा
 				enqueue(p);
 		}
 	}
@@ -335,7 +335,7 @@ not_runnable_pick_new:
 	 * timer interrupt the execution resumes here and we can pick another
 	 * process. If there is still nothing runnable we "schedule" IDLE again
 	 */
-	while (!(p = pick_proc())) {
+	जबसम्म (!(p = pick_proc())) {
 		idle();
 	}
 
@@ -343,32 +343,32 @@ not_runnable_pick_new:
 	get_cpulocal_var(proc_ptr) = p;
 
 #ifdef CONFIG_SMP
-	if (p->p_misc_flags & MF_FLUSH_TLB && get_cpulocal_var(ptproc) == p)
+	यदि (p->p_misc_flags & MF_FLUSH_TLB && get_cpulocal_var(ptproc) == p)
 		tlb_must_refresh = 1;
 #endif
 	switch_address_space(p);
 
 check_misc_flags:
 
-	assert(p);
-	assert(proc_is_runnable(p));
-	while (p->p_misc_flags &
+	प्रतिज्ञा(p);
+	प्रतिज्ञा(proc_is_runnable(p));
+	जबसम्म (p->p_misc_flags &
 		(MF_KCALL_RESUME | MF_DELIVERMSG |
 		 MF_SC_DEFER | MF_SC_TRACE | MF_SC_ACTIVE)) {
 
-		assert(proc_is_runnable(p));
-		if (p->p_misc_flags & MF_KCALL_RESUME) {
+		प्रतिज्ञा(proc_is_runnable(p));
+		यदि (p->p_misc_flags & MF_KCALL_RESUME) {
 			kernel_call_resume(p);
 		}
-		else if (p->p_misc_flags & MF_DELIVERMSG) {
-			TRACE(VF_SCHEDULING, printf("delivering to %s / %d\n",
+		अन्यथा यदि (p->p_misc_flags & MF_DELIVERMSG) {
+			TRACE(VF_SCHEDULING, म_लिखो("delivering to %s / %d\n",
 				p->p_name, p->p_endpoint););
 			delivermsg(p);
 		}
-		else if (p->p_misc_flags & MF_SC_DEFER) {
+		अन्यथा यदि (p->p_misc_flags & MF_SC_DEFER) {
 			/* Perform the system call that we deferred earlier. */
 
-			assert (!(p->p_misc_flags & MF_SC_ACTIVE));
+			प्रतिज्ञा (!(p->p_misc_flags & MF_SC_ACTIVE));
 
 			arch_do_syscall(p);
 
@@ -376,18 +376,18 @@ check_misc_flags:
 			 * not blocked sending a message after the system call,
 			 * inform PM.
 			 */
-			if ((p->p_misc_flags & MF_SIG_DELAY) &&
+			यदि ((p->p_misc_flags & MF_SIG_DELAY) &&
 					!RTS_ISSET(p, RTS_SENDING))
 				sig_delay_done(p);
 		}
-		else if (p->p_misc_flags & MF_SC_TRACE) {
+		अन्यथा यदि (p->p_misc_flags & MF_SC_TRACE) {
 			/* Trigger a system call leave event if this was a
 			 * system call. We must do this after processing the
 			 * other flags above, both for tracing correctness and
 			 * to be able to use 'break'.
 			 */
-			if (!(p->p_misc_flags & MF_SC_ACTIVE))
-				break;
+			यदि (!(p->p_misc_flags & MF_SC_ACTIVE))
+				रोक;
 
 			p->p_misc_flags &=
 				~(MF_SC_TRACE | MF_SC_ACTIVE);
@@ -397,52 +397,52 @@ check_misc_flags:
 			 */
 			cause_sig(proc_nr(p), SIGTRAP);
 		}
-		else if (p->p_misc_flags & MF_SC_ACTIVE) {
+		अन्यथा यदि (p->p_misc_flags & MF_SC_ACTIVE) {
 			/* If MF_SC_ACTIVE was set, remove it now:
 			 * we're leaving the system call.
 			 */
 			p->p_misc_flags &= ~MF_SC_ACTIVE;
 
-			break;
+			रोक;
 		}
 
 		/*
 		 * the selected process might not be runnable anymore. We have
 		 * to checkit and schedule another one
 		 */
-		if (!proc_is_runnable(p))
-			goto not_runnable_pick_new;
+		यदि (!proc_is_runnable(p))
+			गच्छ not_runnable_pick_new;
 	}
 	/*
 	 * check the quantum left before it runs again. We must do it only here
 	 * as we are sure that a possible out-of-quantum message to the
 	 * scheduler will not collide with the regular ipc
 	 */
-	if (!p->p_cpu_time_left)
+	यदि (!p->p_cpu_time_बायाँ)
 		proc_no_time(p);
 	/*
 	 * After handling the misc flags the selected process might not be
 	 * runnable anymore. We have to checkit and schedule another one
 	 */
-	if (!proc_is_runnable(p))
-		goto not_runnable_pick_new;
+	यदि (!proc_is_runnable(p))
+		गच्छ not_runnable_pick_new;
 
-	TRACE(VF_SCHEDULING, printf("cpu %d starting %s / %d "
+	TRACE(VF_SCHEDULING, म_लिखो("cpu %d starting %s / %d "
 				"pc 0x%08x\n",
 		cpuid, p->p_name, p->p_endpoint, p->p_reg.pc););
-#if DEBUG_TRACE
+#यदि DEBUG_TRACE
 	p->p_schedules++;
 #endif
 
 	p = arch_finish_switch_to_user();
-	assert(p->p_cpu_time_left);
+	प्रतिज्ञा(p->p_cpu_time_बायाँ);
 
 	context_stop(proc_addr(KERNEL));
 
 	/* If the process isn't the owner of FPU, enable the FPU exception */
-	if (get_cpulocal_var(fpu_owner) != p)
+	यदि (get_cpulocal_var(fpu_owner) != p)
 		enable_fpu_exception();
-	else
+	अन्यथा
 		disable_fpu_exception();
 
 	/* If MF_CONTEXT_SET is set, don't clobber process state within
@@ -450,14 +450,14 @@ check_misc_flags:
 	 */
 	p->p_misc_flags &= ~MF_CONTEXT_SET;
 
-#if defined(__i386__)
-  	assert(p->p_seg.p_cr3 != 0);
-#elif defined(__arm__)
-	assert(p->p_seg.p_ttbr != 0);
+#यदि defined(__i386__)
+  	प्रतिज्ञा(p->p_seg.p_cr3 != 0);
+#अथवायदि defined(__arm__)
+	प्रतिज्ञा(p->p_seg.p_ttbr != 0);
 #endif
 #ifdef CONFIG_SMP
-	if (p->p_misc_flags & MF_FLUSH_TLB) {
-		if (tlb_must_refresh)
+	यदि (p->p_misc_flags & MF_FLUSH_TLB) {
+		यदि (tlb_must_refresh)
 			refresh_tlb();
 		p->p_misc_flags &= ~MF_FLUSH_TLB;
 	}
@@ -476,71 +476,71 @@ check_misc_flags:
 /*
  * handler for all synchronous IPC calls
  */
-static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
-			int call_nr,	/* system call number and flags */
+स्थिर पूर्णाङ्क do_sync_ipc(संरचना proc * caller_ptr, /* who made the call */
+			पूर्णाङ्क call_nr,	/* system call number and flags */
 			endpoint_t src_dst_e,	/* src or dst of the call */
 			message *m_ptr)	/* users pointer to a message */
 {
-  int result;					/* the system call's result */
-  int src_dst_p;				/* Process slot number */
-  char *callname;
+  पूर्णाङ्क result;					/* the system call's result */
+  पूर्णाङ्क src_dst_p;				/* Process slot number */
+  वर्ण *callname;
 
   /* Check destination. RECEIVE is the only call that accepts ANY (in addition
    * to a real endpoint). The other calls (SEND, SENDREC, and NOTIFY) require an
    * endpoint to corresponds to a process. In addition, it is necessary to check
    * whether a process is allowed to send to a given destination.
    */
-  assert(call_nr != SENDA);
+  प्रतिज्ञा(call_nr != SENDA);
 
   /* Only allow non-negative call_nr values less than 32 */
-  if (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
+  यदि (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
       || !(callname = ipc_call_names[call_nr])) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: trap %d not allowed, caller %d, src_dst %d\n", 
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+      म_लिखो("sys_call: trap %d not allowed, caller %d, src_dst %d\n", 
           call_nr, proc_nr(caller_ptr), src_dst_e);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	फर्काऊ(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
-  if (src_dst_e == ANY)
+  यदि (src_dst_e == ANY)
   {
-	if (call_nr != RECEIVE)
+	यदि (call_nr != RECEIVE)
 	{
-#if 0
-		printf("sys_call: %s by %d with bad endpoint %d\n", 
+#यदि 0
+		म_लिखो("sys_call: %s by %d with bad endpoint %d\n", 
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-		return EINVAL;
+		फर्काऊ EINVAL;
 	}
-	src_dst_p = (int) src_dst_e;
+	src_dst_p = (पूर्णाङ्क) src_dst_e;
   }
-  else
+  अन्यथा
   {
 	/* Require a valid source and/or destination process. */
-	if(!isokendpt(src_dst_e, &src_dst_p)) {
-#if 0
-		printf("sys_call: %s by %d with bad endpoint %d\n", 
+	यदि(!isokendpt(src_dst_e, &src_dst_p)) {
+#यदि 0
+		म_लिखो("sys_call: %s by %d with bad endpoint %d\n", 
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-		return EDEADSRCDST;
+		फर्काऊ EDEADSRCDST;
 	}
 
 	/* If the call is to send to a process, i.e., for SEND, SENDNB,
 	 * SENDREC or NOTIFY, verify that the caller is allowed to send to
 	 * the given destination. 
 	 */
-	if (call_nr != RECEIVE)
+	यदि (call_nr != RECEIVE)
 	{
-		if (!may_send_to(caller_ptr, src_dst_p)) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-			printf(
+		यदि (!may_send_to(caller_ptr, src_dst_p)) {
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+			म_लिखो(
 			"sys_call: ipc mask denied %s from %d to %d\n",
 				callname,
 				caller_ptr->p_endpoint, src_dst_e);
 #endif
-			return(ECALLDENIED);	/* call denied by ipc mask */
+			फर्काऊ(ECALLDENIED);	/* call denied by ipc mask */
 		}
 	}
   }
@@ -549,74 +549,74 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
    * kernel may only be SENDREC, because tasks always reply and may not block 
    * if the caller doesn't do receive(). 
    */
-  if (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: %s not allowed, caller %d, src_dst %d\n", 
+  यदि (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+      म_लिखो("sys_call: %s not allowed, caller %d, src_dst %d\n", 
           callname, proc_nr(caller_ptr), src_dst_p);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	फर्काऊ(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
-  if (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: trap %s not allowed, caller %d, src_dst %d\n",
+  यदि (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+      म_लिखो("sys_call: trap %s not allowed, caller %d, src_dst %d\n",
            callname, proc_nr(caller_ptr), src_dst_e);
 #endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+	फर्काऊ(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
 
-  switch(call_nr) {
-  case SENDREC:
+  विकल्प(call_nr) {
+  पक्ष SENDREC:
 	/* A flag is set so that notifications cannot interrupt SENDREC. */
 	caller_ptr->p_misc_flags |= MF_REPLY_PEND;
 	/* fall through */
-  case SEND:			
+  पक्ष SEND:			
 	result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
-	if (call_nr == SEND || result != OK)
-		break;				/* done, or SEND failed */
+	यदि (call_nr == SEND || result != OK)
+		रोक;				/* done, or SEND failed */
 	/* fall through for SENDREC */
-  case RECEIVE:			
-	if (call_nr == RECEIVE) {
+  पक्ष RECEIVE:			
+	यदि (call_nr == RECEIVE) {
 		caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
 		IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
 	}
 	result = mini_receive(caller_ptr, src_dst_e, m_ptr, 0);
-	break;
-  case NOTIFY:
+	रोक;
+  पक्ष NOTIFY:
 	result = mini_notify(caller_ptr, src_dst_e);
-	break;
-  case SENDNB:
+	रोक;
+  पक्ष SENDNB:
         result = mini_send(caller_ptr, src_dst_e, m_ptr, NON_BLOCKING);
-        break;
-  default:
+        रोक;
+  स्वभाव:
 	result = EBADCALL;			/* illegal system call */
   }
 
   /* Now, return the result of the system call to the caller. */
-  return(result);
+  फर्काऊ(result);
 }
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3)
+पूर्णाङ्क do_ipc(reg_t r1, reg_t r2, reg_t r3)
 {
-  struct proc *const caller_ptr = get_cpulocal_var(proc_ptr);	/* get pointer to caller */
-  int call_nr = (int) r1;
+  संरचना proc *अचर caller_ptr = get_cpulocal_var(proc_ptr);	/* get pointer to caller */
+  पूर्णाङ्क call_nr = (पूर्णाङ्क) r1;
 
-  assert(!RTS_ISSET(caller_ptr, RTS_SLOT_FREE));
+  प्रतिज्ञा(!RTS_ISSET(caller_ptr, RTS_SLOT_FREE));
 
   /* bill kernel time to this process. */
   kbill_ipc = caller_ptr;
 
   /* If this process is subject to system call tracing, handle that first. */
-  if (caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) {
+  यदि (caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) {
 	/* Are we tracing this process, and is it the first sys_call entry? */
-	if ((caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) ==
+	यदि ((caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) ==
 							MF_SC_TRACE) {
 		/* We must notify the tracer before processing the actual
 		 * system call. If we don't, the tracer could not obtain the
 		 * input message. Postpone the entire system call.
 		 */
 		caller_ptr->p_misc_flags &= ~MF_SC_TRACE;
-		assert(!(caller_ptr->p_misc_flags & MF_SC_DEFER));
+		प्रतिज्ञा(!(caller_ptr->p_misc_flags & MF_SC_DEFER));
 		caller_ptr->p_misc_flags |= MF_SC_DEFER;
 		caller_ptr->p_defer.r1 = r1;
 		caller_ptr->p_defer.r2 = r2;
@@ -626,19 +626,19 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
 		cause_sig(proc_nr(caller_ptr), SIGTRAP);
 
 		/* Preserve the return register's value. */
-		return caller_ptr->p_reg.retreg;
+		फर्काऊ caller_ptr->p_reg.retreg;
 	}
 
 	/* If the MF_SC_DEFER flag is set, the syscall is now being resumed. */
 	caller_ptr->p_misc_flags &= ~MF_SC_DEFER;
 
-	assert (!(caller_ptr->p_misc_flags & MF_SC_ACTIVE));
+	प्रतिज्ञा (!(caller_ptr->p_misc_flags & MF_SC_ACTIVE));
 
 	/* Set a flag to allow reliable tracing of leaving the system call. */
 	caller_ptr->p_misc_flags |= MF_SC_ACTIVE;
   }
 
-  if(caller_ptr->p_misc_flags & MF_DELIVERMSG) {
+  यदि(caller_ptr->p_misc_flags & MF_DELIVERMSG) {
 	panic("sys_call: MF_DELIVERMSG on for %s / %d\n",
 		caller_ptr->p_name, caller_ptr->p_endpoint);
   }
@@ -651,26 +651,26 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
    *   - NOTIFY:  asynchronous call; deliver notification or mark pending
    *   - SENDA:   list of asynchronous send requests
    */
-  switch(call_nr) {
-  	case SENDREC:
-  	case SEND:			
-  	case RECEIVE:			
-  	case NOTIFY:
-  	case SENDNB:
+  विकल्प(call_nr) {
+  	पक्ष SENDREC:
+  	पक्ष SEND:			
+  	पक्ष RECEIVE:			
+  	पक्ष NOTIFY:
+  	पक्ष SENDNB:
   	{
   	    /* Process accounting for scheduling */
 	    caller_ptr->p_accounting.ipc_sync++;
 
-  	    return do_sync_ipc(caller_ptr, call_nr, (endpoint_t) r2,
+  	    फर्काऊ do_sync_ipc(caller_ptr, call_nr, (endpoint_t) r2,
 			    (message *) r3);
   	}
-  	case SENDA:
+  	पक्ष SENDA:
   	{
  	    /*
   	     * Get and check the size of the argument in bytes as it is a
   	     * table
   	     */
-  	    size_t msg_size = (size_t) r2;
+  	    माप_प्रकार सन्देश_size = (माप_प्रकार) r2;
   
   	    /* Process accounting for scheduling */
 	    caller_ptr->p_accounting.ipc_async++;
@@ -678,31 +678,31 @@ int do_ipc(reg_t r1, reg_t r2, reg_t r3)
   	    /* Limit size to something reasonable. An arbitrary choice is 16
   	     * times the number of process table entries.
   	     */
-  	    if (msg_size > 16*(NR_TASKS + NR_PROCS))
-	        return EDOM;
-  	    return mini_senda(caller_ptr, (asynmsg_t *) r3, msg_size);
+  	    यदि (सन्देश_size > 16*(NR_TASKS + NR_PROCS))
+	        फर्काऊ गलत_तर्क;
+  	    फर्काऊ mini_senda(caller_ptr, (asynmsg_t *) r3, सन्देश_size);
   	}
-  	case MINIX_KERNINFO:
+  	पक्ष MINIX_KERNINFO:
 	{
 		/* It might not be initialized yet. */
-	  	if(!minix_kerninfo_user) {
-			return EBADCALL;
+	  	यदि(!minix_kerninfo_user) {
+			फर्काऊ EBADCALL;
 		}
 
   		arch_set_secondary_ipc_return(caller_ptr, minix_kerninfo_user);
-  		return OK;
+  		फर्काऊ OK;
 	}
-  	default:
-	return EBADCALL;		/* illegal system call */
+  	स्वभाव:
+	फर्काऊ EBADCALL;		/* illegal system call */
   }
 }
 
 /*===========================================================================*
  *				deadlock				     * 
  *===========================================================================*/
-static int deadlock(
-  int function,				/* trap number */
-  register struct proc *cp,		/* pointer to caller */
+स्थिर पूर्णाङ्क deadlock(
+  पूर्णाङ्क function,				/* trap number */
+  पञ्जिका संरचना proc *cp,		/* pointer to caller */
   endpoint_t src_dst_e			/* src or dst process */
 )
 {
@@ -712,20 +712,20 @@ static int deadlock(
  * and RECEIVE to each other. If a deadlock is found, the group size is 
  * returned. Otherwise zero is returned. 
  */
-  register struct proc *xp;			/* process pointer */
-  int group_size = 1;				/* start with only caller */
-#if DEBUG_ENABLE_IPC_WARNINGS
-  static struct proc *processes[NR_PROCS + NR_TASKS];
+  पञ्जिका संरचना proc *xp;			/* process pointer */
+  पूर्णाङ्क group_size = 1;				/* start with only caller */
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+  स्थिर संरचना proc *processes[NR_PROCS + NR_TASKS];
   processes[0] = cp;
 #endif
 
-  while (src_dst_e != ANY) { 			/* check while process nr */
-      int src_dst_slot;
+  जबसम्म (src_dst_e != ANY) { 			/* check while process nr */
+      पूर्णाङ्क src_dst_slot;
       okendpt(src_dst_e, &src_dst_slot);
       xp = proc_addr(src_dst_slot);		/* follow chain of processes */
-      assert(proc_ptr_ok(xp));
-      assert(!RTS_ISSET(xp, RTS_SLOT_FREE));
-#if DEBUG_ENABLE_IPC_WARNINGS
+      प्रतिज्ञा(proc_ptr_ok(xp));
+      प्रतिज्ञा(!RTS_ISSET(xp, RTS_SLOT_FREE));
+#यदि DEBUG_ENABLE_IPC_WARNINGS
       processes[group_size] = xp;
 #endif
       group_size ++;				/* extra process in group */
@@ -733,79 +733,79 @@ static int deadlock(
       /* Check whether the last process in the chain has a dependency. If it 
        * has not, the cycle cannot be closed and we are done.
        */
-      if((src_dst_e = P_BLOCKEDON(xp)) == NONE)
-	return 0;
+      यदि((src_dst_e = P_BLOCKEDON(xp)) == NONE)
+	फर्काऊ 0;
 
       /* Now check if there is a cyclic dependency. For group sizes of two,  
        * a combination of SEND(REC) and RECEIVE is not fatal. Larger groups
        * or other combinations indicate a deadlock.  
        */
-      if (src_dst_e == cp->p_endpoint) {	/* possible deadlock */
-	  if (group_size == 2) {		/* caller and src_dst */
+      यदि (src_dst_e == cp->p_endpoint) {	/* possible deadlock */
+	  यदि (group_size == 2) {		/* caller and src_dst */
 	      /* The function number is magically converted to flags. */
-	      if ((xp->p_rts_flags ^ (function << 2)) & RTS_SENDING) { 
-	          return(0);			/* not a deadlock */
+	      यदि ((xp->p_rts_flags ^ (function << 2)) & RTS_SENDING) { 
+	          फर्काऊ(0);			/* not a deadlock */
 	      }
 	  }
-#if DEBUG_ENABLE_IPC_WARNINGS
+#यदि DEBUG_ENABLE_IPC_WARNINGS
 	  {
-		int i;
-		printf("deadlock between these processes:\n");
-		for(i = 0; i < group_size; i++) {
-			printf(" %10s ", processes[i]->p_name);
+		पूर्णाङ्क i;
+		म_लिखो("deadlock between these processes:\n");
+		लागि(i = 0; i < group_size; i++) {
+			म_लिखो(" %10s ", processes[i]->p_name);
 		}
-		printf("\n\n");
-		for(i = 0; i < group_size; i++) {
+		म_लिखो("\n\n");
+		लागि(i = 0; i < group_size; i++) {
 			print_proc(processes[i]);
 			proc_stacktrace(processes[i]);
 		}
 	  }
 #endif
-          return(group_size);			/* deadlock found */
+          फर्काऊ(group_size);			/* deadlock found */
       }
   }
-  return(0);					/* not a deadlock */
+  फर्काऊ(0);					/* not a deadlock */
 }
 
 /*===========================================================================*
  *				has_pending				     * 
  *===========================================================================*/
-static int has_pending(sys_map_t *map, int src_p, int asynm)
+स्थिर पूर्णाङ्क has_pending(sys_map_t *map, पूर्णाङ्क src_p, पूर्णाङ्क asynm)
 {
 /* Check to see if there is a pending message from the desired source
  * available.
  */
 
-  int src_id;
+  पूर्णाङ्क src_id;
   sys_id_t id = NULL_PRIV_ID;
 #ifdef CONFIG_SMP
-  struct proc * p;
+  संरचना proc * p;
 #endif
 
   /* Either check a specific bit in the mask map, or find the first bit set in
    * it (if any), depending on whether the receive was called on a specific
    * source endpoint.
    */
-  if (src_p != ANY) {
+  यदि (src_p != ANY) {
 	src_id = nr_to_id(src_p);
-	if (get_sys_bit(*map, src_id)) {
+	यदि (get_sys_bit(*map, src_id)) {
 #ifdef CONFIG_SMP
 		p = proc_addr(id_to_nr(src_id));
-		if (asynm && RTS_ISSET(p, RTS_VMINHIBIT))
+		यदि (asynm && RTS_ISSET(p, RTS_VMINHIBIT))
 			p->p_misc_flags |= MF_SENDA_VM_MISS;
-		else
+		अन्यथा
 #endif
 			id = src_id;
 	}
-  } else {
+  } अन्यथा {
 	/* Find a source with a pending message */
-	for (src_id = 0; src_id < NR_SYS_PROCS; src_id += BITCHUNK_BITS) {
-		if (get_sys_bits(*map, src_id) != 0) {
+	लागि (src_id = 0; src_id < NR_SYS_PROCS; src_id += BITCHUNK_BITS) {
+		यदि (get_sys_bits(*map, src_id) != 0) {
 #ifdef CONFIG_SMP
-			while (src_id < NR_SYS_PROCS) {
-				while (!get_sys_bit(*map, src_id)) {
-					if (src_id == NR_SYS_PROCS)
-						goto quit_search;
+			जबसम्म (src_id < NR_SYS_PROCS) {
+				जबसम्म (!get_sys_bit(*map, src_id)) {
+					यदि (src_id == NR_SYS_PROCS)
+						गच्छ quit_खोज;
 					src_id++;
 				}
 				p = proc_addr(id_to_nr(src_id));
@@ -816,49 +816,49 @@ static int has_pending(sys_map_t *map, int src_p, int asynm)
 				 * process as having pending async messages.
 				 * Skip it.
 				 */
-				if (asynm && RTS_ISSET(p, RTS_VMINHIBIT)) {
+				यदि (asynm && RTS_ISSET(p, RTS_VMINHIBIT)) {
 					p->p_misc_flags |= MF_SENDA_VM_MISS;
 					src_id++;
-				} else
-					goto quit_search;
+				} अन्यथा
+					गच्छ quit_खोज;
 			}
-#else
-			while (!get_sys_bit(*map, src_id)) src_id++;
-			goto quit_search;
+#अन्यथा
+			जबसम्म (!get_sys_bit(*map, src_id)) src_id++;
+			गच्छ quit_खोज;
 #endif
 		}
 	}
 
-quit_search:
-	if (src_id < NR_SYS_PROCS)	/* Found one */
+quit_खोज:
+	यदि (src_id < NR_SYS_PROCS)	/* Found one */
 		id = src_id;
   }
 
-  return(id);
+  फर्काऊ(id);
 }
 
 /*===========================================================================*
  *				has_pending_notify			     *
  *===========================================================================*/
-int has_pending_notify(struct proc * caller, int src_p)
+पूर्णाङ्क has_pending_notify(संरचना proc * caller, पूर्णाङ्क src_p)
 {
 	sys_map_t * map = &priv(caller)->s_notify_pending;
-	return has_pending(map, src_p, 0);
+	फर्काऊ has_pending(map, src_p, 0);
 }
 
 /*===========================================================================*
  *				has_pending_asend			     *
  *===========================================================================*/
-int has_pending_asend(struct proc * caller, int src_p)
+पूर्णाङ्क has_pending_asend(संरचना proc * caller, पूर्णाङ्क src_p)
 {
 	sys_map_t * map = &priv(caller)->s_asyn_pending;
-	return has_pending(map, src_p, 1);
+	फर्काऊ has_pending(map, src_p, 1);
 }
 
 /*===========================================================================*
  *				unset_notify_pending			     *
  *===========================================================================*/
-void unset_notify_pending(struct proc * caller, int src_p)
+शून्य unset_notify_pending(संरचना proc * caller, पूर्णाङ्क src_p)
 {
 	sys_map_t * map = &priv(caller)->s_notify_pending;
 	unset_sys_bit(*map, src_p);
@@ -867,42 +867,42 @@ void unset_notify_pending(struct proc * caller, int src_p)
 /*===========================================================================*
  *				mini_send				     * 
  *===========================================================================*/
-int mini_send(
-  register struct proc *caller_ptr,	/* who is trying to send a message? */
+पूर्णाङ्क mini_send(
+  पञ्जिका संरचना proc *caller_ptr,	/* who is trying to send a message? */
   endpoint_t dst_e,			/* to whom is message being sent? */
   message *m_ptr,			/* pointer to message buffer */
-  const int flags
+  अचर पूर्णाङ्क flags
 )
 {
 /* Send a message from 'caller_ptr' to 'dst'. If 'dst' is blocked waiting
  * for this message, copy the message to it and unblock 'dst'. If 'dst' is
  * not waiting at all, or is waiting for another source, queue 'caller_ptr'.
  */
-  register struct proc *dst_ptr;
-  register struct proc **xpp;
-  int dst_p;
+  पञ्जिका संरचना proc *dst_ptr;
+  पञ्जिका संरचना proc **xpp;
+  पूर्णाङ्क dst_p;
   dst_p = _ENDPOINT_P(dst_e);
   dst_ptr = proc_addr(dst_p);
 
-  if (RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT))
+  यदि (RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT))
   {
-	return EDEADSRCDST;
+	फर्काऊ EDEADSRCDST;
   }
 
   /* Check if 'dst' is blocked waiting for this message. The destination's 
    * RTS_SENDING flag may be set when its SENDREC call blocked while sending.  
    */
-  if (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, (vir_bytes)m_ptr, NULL)) {
-	int call;
+  यदि (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, (vir_bytes)m_ptr, रिक्त)) {
+	पूर्णाङ्क call;
 	/* Destination is indeed waiting for this message. */
-	assert(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));	
+	प्रतिज्ञा(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));	
 
-	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &dst_ptr->p_delivermsg))
-			return EFAULT;
-	} else {
+	यदि (!(flags & FROM_KERNEL)) {
+		यदि(copy_सन्देश_from_user(m_ptr, &dst_ptr->p_delivermsg))
+			फर्काऊ EFAULT;
+	} अन्यथा {
 		dst_ptr->p_delivermsg = *m_ptr;
-		IPC_STATUS_ADD_FLAGS(dst_ptr, IPC_FLG_MSG_FROM_KERNEL);
+		IPC_STATUS_ADD_FLAGS(dst_ptr, IPC_FLG_सन्देश_FROM_KERNEL);
 	}
 
 	dst_ptr->p_delivermsg.m_source = caller_ptr->p_endpoint;
@@ -912,30 +912,30 @@ int mini_send(
 		: (flags & NON_BLOCKING ? SENDNB : SEND));
 	IPC_STATUS_ADD_CALL(dst_ptr, call);
 
-	if (dst_ptr->p_misc_flags & MF_REPLY_PEND)
+	यदि (dst_ptr->p_misc_flags & MF_REPLY_PEND)
 		dst_ptr->p_misc_flags &= ~MF_REPLY_PEND;
 
 	RTS_UNSET(dst_ptr, RTS_RECEIVING);
 
-#if DEBUG_IPC_HOOK
+#यदि DEBUG_IPC_HOOK
 	hook_ipc_msgsend(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 	hook_ipc_msgrecv(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 #endif
-  } else {
-	if(flags & NON_BLOCKING) {
-		return(ENOTREADY);
+  } अन्यथा {
+	यदि(flags & NON_BLOCKING) {
+		फर्काऊ(ENOTREADY);
 	}
 
 	/* Check for a possible deadlock before actually blocking. */
-	if (deadlock(SEND, caller_ptr, dst_e)) {
-		return(ELOCKED);
+	यदि (deadlock(SEND, caller_ptr, dst_e)) {
+		फर्काऊ(ELOCKED);
 	}
 
 	/* Destination is not waiting.  Block and dequeue caller. */
-	if (!(flags & FROM_KERNEL)) {
-		if(copy_msg_from_user(m_ptr, &caller_ptr->p_sendmsg))
-			return EFAULT;
-	} else {
+	यदि (!(flags & FROM_KERNEL)) {
+		यदि(copy_सन्देश_from_user(m_ptr, &caller_ptr->p_sendmsg))
+			फर्काऊ EFAULT;
+	} अन्यथा {
 		caller_ptr->p_sendmsg = *m_ptr;
 		/*
 		 * we need to remember that this message is from kernel so we
@@ -949,46 +949,46 @@ int mini_send(
 	caller_ptr->p_sendto_e = dst_e;
 
 	/* Process is now blocked.  Put in on the destination's queue. */
-	assert(caller_ptr->p_q_link == NULL);
+	प्रतिज्ञा(caller_ptr->p_q_link == रिक्त);
 	xpp = &dst_ptr->p_caller_q;		/* find end of list */
-	while (*xpp) xpp = &(*xpp)->p_q_link;	
+	जबसम्म (*xpp) xpp = &(*xpp)->p_q_link;	
 	*xpp = caller_ptr;			/* add caller to end */
 
-#if DEBUG_IPC_HOOK
+#यदि DEBUG_IPC_HOOK
 	hook_ipc_msgsend(&caller_ptr->p_sendmsg, caller_ptr, dst_ptr);
 #endif
   }
-  return(OK);
+  फर्काऊ(OK);
 }
 
 /*===========================================================================*
  *				mini_receive				     * 
  *===========================================================================*/
-static int mini_receive(struct proc * caller_ptr,
+स्थिर पूर्णाङ्क mini_receive(संरचना proc * caller_ptr,
 			endpoint_t src_e, /* which message source is wanted */
 			message * m_buff_usr, /* pointer to message buffer */
-			const int flags)
+			अचर पूर्णाङ्क flags)
 {
 /* A process or task wants to get a message.  If a message is already queued,
  * acquire it and deblock the sender.  If no message from the desired source
  * is available block the caller.
  */
-  register struct proc **xpp;
-  int r, src_id, found, src_proc_nr, src_p;
+  पञ्जिका संरचना proc **xpp;
+  पूर्णाङ्क r, src_id, found, src_proc_nr, src_p;
   endpoint_t sender_e;
 
-  assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
+  प्रतिज्ञा(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
 
   /* This is where we want our message. */
   caller_ptr->p_delivermsg_vir = (vir_bytes) m_buff_usr;
 
-  if(src_e == ANY) src_p = ANY;
-  else
+  यदि(src_e == ANY) src_p = ANY;
+  अन्यथा
   {
 	okendpt(src_e, &src_p);
-	if (RTS_ISSET(proc_addr(src_p), RTS_NO_ENDPOINT))
+	यदि (RTS_ISSET(proc_addr(src_p), RTS_NO_ENDPOINT))
 	{
-		return EDEADSRCDST;
+		फर्काऊ EDEADSRCDST;
 	}
   }
 
@@ -997,33 +997,33 @@ static int mini_receive(struct proc * caller_ptr,
    * caller's RTS_SENDING flag may be set if SENDREC couldn't send. If it is
    * set, the process should be blocked.
    */
-  if (!RTS_ISSET(caller_ptr, RTS_SENDING)) {
+  यदि (!RTS_ISSET(caller_ptr, RTS_SENDING)) {
 
     /* Check if there are pending notifications, except for SENDREC. */
-    if (! (caller_ptr->p_misc_flags & MF_REPLY_PEND)) {
+    यदि (! (caller_ptr->p_misc_flags & MF_REPLY_PEND)) {
 
 	/* Check for pending notifications */
         src_id = has_pending_notify(caller_ptr, src_p);
         found = src_id != NULL_PRIV_ID;
-        if(found) {
+        यदि(found) {
             src_proc_nr = id_to_nr(src_id);		/* get source proc */
             sender_e = proc_addr(src_proc_nr)->p_endpoint;
         }
 
-        if (found && CANRECEIVE(src_e, sender_e, caller_ptr, 0,
+        यदि (found && CANRECEIVE(src_e, sender_e, caller_ptr, 0,
           &m_notify_buff)) {
 
-#if DEBUG_ENABLE_IPC_WARNINGS
-	    if(src_proc_nr == NONE) {
-		printf("mini_receive: sending notify from NONE\n");
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+	    यदि(src_proc_nr == NONE) {
+		म_लिखो("mini_receive: sending notify from NONE\n");
 	    }
 #endif
-	    assert(src_proc_nr != NONE);
+	    प्रतिज्ञा(src_proc_nr != NONE);
             unset_notify_pending(caller_ptr, src_id);	/* no longer pending */
 
             /* Found a suitable source, deliver the notification message. */
-	    assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));	
-	    assert(src_e == ANY || sender_e == src_e);
+	    प्रतिज्ञा(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));	
+	    प्रतिज्ञा(src_e == ANY || sender_e == src_e);
 
 	    /* assemble message */
 	    BuildNotifyMessage(&caller_ptr->p_delivermsg, src_proc_nr, caller_ptr);
@@ -1032,36 +1032,36 @@ static int mini_receive(struct proc * caller_ptr,
 
 	    IPC_STATUS_ADD_CALL(caller_ptr, NOTIFY);
 
-	    goto receive_done;
+	    गच्छ receive_done;
         }
     }
 
     /* Check for pending asynchronous messages */
-    if (has_pending_asend(caller_ptr, src_p) != NULL_PRIV_ID) {
-        if (src_p != ANY)
+    यदि (has_pending_asend(caller_ptr, src_p) != NULL_PRIV_ID) {
+        यदि (src_p != ANY)
 		r = try_one(src_e, proc_addr(src_p), caller_ptr);
-        else
+        अन्यथा
         	r = try_async(caller_ptr);
 
-	if (r == OK) {
+	यदि (r == OK) {
             IPC_STATUS_ADD_CALL(caller_ptr, SENDA);
-            goto receive_done;
+            गच्छ receive_done;
         }
     }
 
     /* Check caller queue. Use pointer pointers to keep code simple. */
     xpp = &caller_ptr->p_caller_q;
-    while (*xpp) {
-	struct proc * sender = *xpp;
+    जबसम्म (*xpp) {
+	संरचना proc * sender = *xpp;
 	endpoint_t sender_e = sender->p_endpoint;
 
-        if (CANRECEIVE(src_e, sender_e, caller_ptr, 0, &sender->p_sendmsg)) {
-            int call;
-	    assert(!RTS_ISSET(sender, RTS_SLOT_FREE));
-	    assert(!RTS_ISSET(sender, RTS_NO_ENDPOINT));
+        यदि (CANRECEIVE(src_e, sender_e, caller_ptr, 0, &sender->p_sendmsg)) {
+            पूर्णाङ्क call;
+	    प्रतिज्ञा(!RTS_ISSET(sender, RTS_SLOT_FREE));
+	    प्रतिज्ञा(!RTS_ISSET(sender, RTS_NO_ENDPOINT));
 
 	    /* Found acceptable message. Copy it and update status. */
-  	    assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
+  	    प्रतिज्ञा(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
 	    caller_ptr->p_delivermsg = sender->p_sendmsg;
 	    caller_ptr->p_delivermsg.m_source = sender->p_endpoint;
 	    caller_ptr->p_misc_flags |= MF_DELIVERMSG;
@@ -1074,21 +1074,21 @@ static int mini_receive(struct proc * caller_ptr,
 	     * if the message is originally from the kernel on behalf of this
 	     * process, we must send the status flags accordingly
 	     */
-	    if (sender->p_misc_flags & MF_SENDING_FROM_KERNEL) {
-		IPC_STATUS_ADD_FLAGS(caller_ptr, IPC_FLG_MSG_FROM_KERNEL);
+	    यदि (sender->p_misc_flags & MF_SENDING_FROM_KERNEL) {
+		IPC_STATUS_ADD_FLAGS(caller_ptr, IPC_FLG_सन्देश_FROM_KERNEL);
 		/* we can clean the flag now, not need anymore */
 		sender->p_misc_flags &= ~MF_SENDING_FROM_KERNEL;
 	    }
-	    if (sender->p_misc_flags & MF_SIG_DELAY)
+	    यदि (sender->p_misc_flags & MF_SIG_DELAY)
 		sig_delay_done(sender);
 
-#if DEBUG_IPC_HOOK
+#यदि DEBUG_IPC_HOOK
             hook_ipc_msgrecv(&caller_ptr->p_delivermsg, *xpp, caller_ptr);
 #endif
 		
             *xpp = sender->p_q_link;		/* remove from queue */
-	    sender->p_q_link = NULL;
-	    goto receive_done;
+	    sender->p_q_link = रिक्त;
+	    गच्छ receive_done;
 	}
 	xpp = &sender->p_q_link;		/* proceed to next */
     }
@@ -1097,41 +1097,41 @@ static int mini_receive(struct proc * caller_ptr,
   /* No suitable message is available or the caller couldn't send in SENDREC. 
    * Block the process trying to receive, unless the flags tell otherwise.
    */
-  if ( ! (flags & NON_BLOCKING)) {
+  यदि ( ! (flags & NON_BLOCKING)) {
       /* Check for a possible deadlock before actually blocking. */
-      if (deadlock(RECEIVE, caller_ptr, src_e)) {
-          return(ELOCKED);
+      यदि (deadlock(RECEIVE, caller_ptr, src_e)) {
+          फर्काऊ(ELOCKED);
       }
 
       caller_ptr->p_getfrom_e = src_e;		
       RTS_SET(caller_ptr, RTS_RECEIVING);
-      return(OK);
-  } else {
-	return(ENOTREADY);
+      फर्काऊ(OK);
+  } अन्यथा {
+	फर्काऊ(ENOTREADY);
   }
 
 receive_done:
-  if (caller_ptr->p_misc_flags & MF_REPLY_PEND)
+  यदि (caller_ptr->p_misc_flags & MF_REPLY_PEND)
 	  caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
-  return OK;
+  फर्काऊ OK;
 }
 
 /*===========================================================================*
  *				mini_notify				     * 
  *===========================================================================*/
-int mini_notify(
-  const struct proc *caller_ptr,	/* sender of the notification */
+पूर्णाङ्क mini_notify(
+  अचर संरचना proc *caller_ptr,	/* sender of the notification */
   endpoint_t dst_e			/* which process to notify */
 )
 {
-  register struct proc *dst_ptr;
-  int src_id;				/* source id for late delivery */
-  int dst_p;
+  पञ्जिका संरचना proc *dst_ptr;
+  पूर्णाङ्क src_id;				/* source id for late delivery */
+  पूर्णाङ्क dst_p;
 
-  if (!isokendpt(dst_e, &dst_p)) {
+  यदि (!isokendpt(dst_e, &dst_p)) {
 	util_stacktrace();
-	printf("mini_notify: bogus endpoint %d\n", dst_e);
-	return EDEADSRCDST;
+	म_लिखो("mini_notify: bogus endpoint %d\n", dst_e);
+	फर्काऊ EDEADSRCDST;
   }
 
   dst_ptr = proc_addr(dst_p);
@@ -1139,13 +1139,13 @@ int mini_notify(
   /* Check to see if target is blocked waiting for this message. A process 
    * can be both sending and receiving during a SENDREC system call.
    */
-  if (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, 0, &m_notify_buff) &&
+  यदि (WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr, 0, &m_notify_buff) &&
     !(dst_ptr->p_misc_flags & MF_REPLY_PEND)) {
       /* Destination is indeed waiting for a message. Assemble a notification 
        * message and deliver it. Copy from pseudo-source HARDWARE, since the
        * message is in the kernel's address space.
        */ 
-      assert(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));
+      प्रतिज्ञा(!(dst_ptr->p_misc_flags & MF_DELIVERMSG));
 
       BuildNotifyMessage(&dst_ptr->p_delivermsg, proc_nr(caller_ptr), dst_ptr);
       dst_ptr->p_delivermsg.m_source = caller_ptr->p_endpoint;
@@ -1154,7 +1154,7 @@ int mini_notify(
       IPC_STATUS_ADD_CALL(dst_ptr, NOTIFY);
       RTS_UNSET(dst_ptr, RTS_RECEIVING);
 
-      return(OK);
+      फर्काऊ(OK);
   } 
 
   /* Destination is not ready to receive the notification. Add it to the 
@@ -1163,53 +1163,53 @@ int mini_notify(
    */ 
   src_id = priv(caller_ptr)->s_id;
   set_sys_bit(priv(dst_ptr)->s_notify_pending, src_id); 
-  return(OK);
+  फर्काऊ(OK);
 }
 
 #define ASCOMPLAIN(caller, entry, field)	\
-	printf("kernel:%s:%d: asyn failed for %s in %s "	\
+	म_लिखो("kernel:%s:%d: asyn failed for %s in %s "	\
 	"(%d/%zu, tab 0x%lx)\n",__FILE__,__LINE__,	\
 field, caller->p_name, entry, priv(caller)->s_asynsize, priv(caller)->s_asyntab)
 
-#define A_RETR(entry) do {			\
-  if (data_copy(				\
-  		caller_ptr->p_endpoint, table_v + (entry)*sizeof(asynmsg_t),\
+#define A_RETR(entry) गर {			\
+  यदि (data_copy(				\
+  		caller_ptr->p_endpoint, table_v + (entry)*परिमाण(asynmsg_t),\
   		KERNEL, (vir_bytes) &tabent,	\
-  		sizeof(tabent)) != OK) {	\
+  		परिमाण(tabent)) != OK) {	\
   			ASCOMPLAIN(caller_ptr, entry, "message entry");	\
   			r = EFAULT;		\
-	                goto asyn_error; \
+	                गच्छ asyn_error; \
   }						\
-  else if(tabent.dst == SELF) { \
+  अन्यथा यदि(tabent.dst == SELF) { \
       tabent.dst = caller_ptr->p_endpoint; \
   } \
-  			 } while(0)
+  			 } जबसम्म(0)
 
-#define A_INSRT(entry) do {			\
-  if (data_copy(KERNEL, (vir_bytes) &tabent,	\
-  		caller_ptr->p_endpoint, table_v + (entry)*sizeof(asynmsg_t),\
-  		sizeof(tabent)) != OK) {	\
+#define A_INSRT(entry) गर {			\
+  यदि (data_copy(KERNEL, (vir_bytes) &tabent,	\
+  		caller_ptr->p_endpoint, table_v + (entry)*परिमाण(asynmsg_t),\
+  		परिमाण(tabent)) != OK) {	\
   			ASCOMPLAIN(caller_ptr, entry, "message entry");	\
 			/* Do NOT set r or goto asyn_error here! */ \
   }						\
-  			  } while(0)	
+  			  } जबसम्म(0)	
 
 /*===========================================================================*
  *				try_deliver_senda			     *
  *===========================================================================*/
-int try_deliver_senda(struct proc *caller_ptr,
+पूर्णाङ्क try_deliver_senda(संरचना proc *caller_ptr,
 				asynmsg_t *table,
-				size_t size)
+				माप_प्रकार size)
 {
-  int r, dst_p, done, do_notify;
-  unsigned int i;
-  unsigned flags;
+  पूर्णाङ्क r, dst_p, done, do_notify;
+  अचिन्हित पूर्णाङ्क i;
+  अचिन्हित flags;
   endpoint_t dst;
-  struct proc *dst_ptr;
-  struct priv *privp;
+  संरचना proc *dst_ptr;
+  संरचना priv *privp;
   asynmsg_t tabent;
-  const vir_bytes table_v = (vir_bytes) table;
-  message *m_ptr = NULL;
+  अचर vir_bytes table_v = (vir_bytes) table;
+  message *m_ptr = रिक्त;
 
   privp = priv(caller_ptr);
 
@@ -1218,7 +1218,7 @@ int try_deliver_senda(struct proc *caller_ptr,
   privp->s_asynsize = 0;
   privp->s_asynendpoint = caller_ptr->p_endpoint;
 
-  if (size == 0) return(OK);  /* Nothing to do, just return */
+  यदि (size == 0) फर्काऊ(OK);  /* Nothing to do, just return */
 
   /* Scan the table */
   do_notify = FALSE;
@@ -1230,12 +1230,12 @@ int try_deliver_senda(struct proc *caller_ptr,
    * (this check has been duplicated in sys_call but is left here
    * as a sanity check)
    */
-  if (size > 16*(NR_TASKS + NR_PROCS)) {
-    r = EDOM;
-    return r;
+  यदि (size > 16*(NR_TASKS + NR_PROCS)) {
+    r = गलत_तर्क;
+    फर्काऊ r;
   }
 
-  for (i = 0; i < size; i++) {
+  लागि (i = 0; i < size; i++) {
 	/* Process each entry in the table and store the result in the table.
 	 * If we're done handling a message, copy the result to the sender. */
 
@@ -1245,31 +1245,31 @@ int try_deliver_senda(struct proc *caller_ptr,
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue; /* Skip empty entries */
+	यदि (flags == 0) जारी; /* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR)) {
+	यदि(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR)) {
 		r = EINVAL;
-		goto asyn_error;
+		गच्छ asyn_error;
 	}
-	if (!(flags & AMF_VALID)) { /* Must contain message */
+	यदि (!(flags & AMF_VALID)) { /* Must contain message */
 		r = EINVAL;
-		goto asyn_error;
+		गच्छ asyn_error;
 	}
-	if (flags & AMF_DONE) continue;	/* Already done processing */
+	यदि (flags & AMF_DONE) जारी;	/* Already done processing */
 
 	r = OK;
-	if (!isokendpt(tabent.dst, &dst_p)) 
+	यदि (!isokendpt(tabent.dst, &dst_p)) 
 		r = EDEADSRCDST; /* Bad destination, report the error */
-	else if (iskerneln(dst_p)) 
+	अन्यथा यदि (iskerneln(dst_p)) 
 		r = ECALLDENIED; /* Asyn sends to the kernel are not allowed */
-	else if (!may_asynsend_to(caller_ptr, dst_p))
+	अन्यथा यदि (!may_asynsend_to(caller_ptr, dst_p))
 		r = ECALLDENIED; /* Send denied by IPC mask */
-	else 	/* r == OK */
+	अन्यथा 	/* r == OK */
 		dst_ptr = proc_addr(dst_p);
 
 	/* XXX: RTS_NO_ENDPOINT should be removed */
-	if (r == OK && RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT)) {
+	यदि (r == OK && RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT)) {
 		r = EDEADSRCDST;
 	}
 
@@ -1277,90 +1277,90 @@ int try_deliver_senda(struct proc *caller_ptr,
 	 * If AMF_NOREPLY is set, do not satisfy the receiving part of
 	 * a SENDREC.
 	 */
-	if (r == OK && WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr,
-	    (vir_bytes)&table[i].msg, NULL) &&
+	यदि (r == OK && WILLRECEIVE(caller_ptr->p_endpoint, dst_ptr,
+	    (vir_bytes)&table[i].सन्देश, रिक्त) &&
 	    (!(flags&AMF_NOREPLY) || !(dst_ptr->p_misc_flags&MF_REPLY_PEND))) {
 		/* Destination is indeed waiting for this message. */
-		dst_ptr->p_delivermsg = tabent.msg;
+		dst_ptr->p_delivermsg = tabent.सन्देश;
 		dst_ptr->p_delivermsg.m_source = caller_ptr->p_endpoint;
 		dst_ptr->p_misc_flags |= MF_DELIVERMSG;
 		IPC_STATUS_ADD_CALL(dst_ptr, SENDA);
 		RTS_UNSET(dst_ptr, RTS_RECEIVING);
-#if DEBUG_IPC_HOOK
+#यदि DEBUG_IPC_HOOK
 		hook_ipc_msgrecv(&dst_ptr->p_delivermsg, caller_ptr, dst_ptr);
 #endif
-	} else if (r == OK) {
+	} अन्यथा यदि (r == OK) {
 		/* Inform receiver that something is pending */
 		set_sys_bit(priv(dst_ptr)->s_asyn_pending, 
 			    priv(caller_ptr)->s_id); 
 		done = FALSE;
-		continue;
+		जारी;
 	} 
 
 	/* Store results */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY)
+	यदि (flags & AMF_NOTIFY)
 		do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR))
+	अन्यथा यदि (r != OK && (flags & AMF_NOTIFY_ERR))
 		do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to caller; ignore errors */
-	continue;
+	जारी;
 
 asyn_error:
-	if (dst != NONE)
-		printf("KERNEL senda error %d to %d\n", r, dst);
-	else
-		printf("KERNEL senda error %d\n", r);
+	यदि (dst != NONE)
+		म_लिखो("KERNEL senda error %d to %d\n", r, dst);
+	अन्यथा
+		म_लिखो("KERNEL senda error %d\n", r);
   }
 
-  if (do_notify) 
+  यदि (do_notify) 
 	mini_notify(proc_addr(ASYNCM), caller_ptr->p_endpoint);
 
-  if (!done) {
+  यदि (!done) {
 	privp->s_asyntab = (vir_bytes) table;
 	privp->s_asynsize = size;
   }
 
-  return(OK);
+  फर्काऊ(OK);
 }
 
 /*===========================================================================*
  *				mini_senda				     *
  *===========================================================================*/
-static int mini_senda(struct proc *caller_ptr, asynmsg_t *table, size_t size)
+स्थिर पूर्णाङ्क mini_senda(संरचना proc *caller_ptr, asynmsg_t *table, माप_प्रकार size)
 {
-  struct priv *privp;
+  संरचना priv *privp;
 
   privp = priv(caller_ptr);
-  if (!(privp->s_flags & SYS_PROC)) {
-	printf( "mini_senda: warning caller has no privilege structure\n");
-	return(EPERM);
+  यदि (!(privp->s_flags & SYS_PROC)) {
+	म_लिखो( "mini_senda: warning caller has no privilege structure\n");
+	फर्काऊ(EPERM);
   }
 
-  return try_deliver_senda(caller_ptr, table, size);
+  फर्काऊ try_deliver_senda(caller_ptr, table, size);
 }
 
 
 /*===========================================================================*
  *				try_async				     * 
  *===========================================================================*/
-static int try_async(struct proc * caller_ptr)
+स्थिर पूर्णाङ्क try_async(संरचना proc * caller_ptr)
 {
-  int r;
-  struct priv *privp;
-  struct proc *src_ptr;
+  पूर्णाङ्क r;
+  संरचना priv *privp;
+  संरचना proc *src_ptr;
   sys_map_t *map;
 
   map = &priv(caller_ptr)->s_asyn_pending;
 
   /* Try all privilege structures */
-  for (privp = BEG_PRIV_ADDR; privp < END_PRIV_ADDR; ++privp)  {
-	if (privp->s_proc_nr == NONE)
-		continue;
+  लागि (privp = BEG_PRIV_ADDR; privp < END_PRIV_ADDR; ++privp)  {
+	यदि (privp->s_proc_nr == NONE)
+		जारी;
 
-	if (!get_sys_bit(*map, privp->s_id)) 
-		continue;
+	यदि (!get_sys_bit(*map, privp->s_id)) 
+		जारी;
 
 	src_ptr = proc_addr(privp->s_proc_nr);
 
@@ -1369,48 +1369,48 @@ static int try_async(struct proc * caller_ptr)
 	 * Do not copy from a process which does not have a stable address space
 	 * due to VM fiddling with it
 	 */
-	if (RTS_ISSET(src_ptr, RTS_VMINHIBIT)) {
+	यदि (RTS_ISSET(src_ptr, RTS_VMINHIBIT)) {
 		src_ptr->p_misc_flags |= MF_SENDA_VM_MISS;
-		continue;
+		जारी;
 	}
 #endif
 
-	assert(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
-	if ((r = try_one(ANY, src_ptr, caller_ptr)) == OK)
-		return(r);
+	प्रतिज्ञा(!(caller_ptr->p_misc_flags & MF_DELIVERMSG));
+	यदि ((r = try_one(ANY, src_ptr, caller_ptr)) == OK)
+		फर्काऊ(r);
   }
 
-  return(ESRCH);
+  फर्काऊ(ESRCH);
 }
 
 
 /*===========================================================================*
  *				try_one					     *
  *===========================================================================*/
-static int try_one(endpoint_t receive_e, struct proc *src_ptr,
-    struct proc *dst_ptr)
+स्थिर पूर्णाङ्क try_one(endpoint_t receive_e, संरचना proc *src_ptr,
+    संरचना proc *dst_ptr)
 {
 /* Try to receive an asynchronous message from 'src_ptr' */
-  int r = EAGAIN, done, do_notify;
-  unsigned int flags, i;
-  size_t size;
+  पूर्णाङ्क r = EAGAIN, done, do_notify;
+  अचिन्हित पूर्णाङ्क flags, i;
+  माप_प्रकार size;
   endpoint_t dst, src_e;
-  struct proc *caller_ptr;
-  struct priv *privp;
+  संरचना proc *caller_ptr;
+  संरचना priv *privp;
   asynmsg_t tabent;
   vir_bytes table_v;
 
   privp = priv(src_ptr);
-  if (!(privp->s_flags & SYS_PROC)) return(EPERM);
+  यदि (!(privp->s_flags & SYS_PROC)) फर्काऊ(EPERM);
   size = privp->s_asynsize;
   table_v = privp->s_asyntab;
 
   /* Clear table pending message flag. We're done unless we're not. */
   unset_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
 
-  if (size == 0) return(EAGAIN);
-  if (privp->s_asynendpoint != src_ptr->p_endpoint) return EAGAIN;
-  if (!may_asynsend_to(src_ptr, proc_nr(dst_ptr))) return (ECALLDENIED);
+  यदि (size == 0) फर्काऊ(EAGAIN);
+  यदि (privp->s_asynendpoint != src_ptr->p_endpoint) फर्काऊ EAGAIN;
+  यदि (!may_asynsend_to(src_ptr, proc_nr(dst_ptr))) फर्काऊ (ECALLDENIED);
 
   caller_ptr = src_ptr;	/* Needed for A_ macros later on */
   src_e = src_ptr->p_endpoint;
@@ -1419,7 +1419,7 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
   do_notify = FALSE;
   done = TRUE;
 
-  for (i = 0; i < size; i++) {
+  लागि (i = 0; i < size; i++) {
   	/* Process each entry in the table and store the result in the table.
   	 * If we're done handling a message, copy the result to the sender.
   	 * Some checks done in mini_senda are duplicated here, as the sender
@@ -1431,14 +1431,14 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue;	/* Skip empty entries */
+	यदि (flags == 0) जारी;	/* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
+	यदि(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
 		r = EINVAL;
-	else if (!(flags & AMF_VALID)) /* Must contain message */
+	अन्यथा यदि (!(flags & AMF_VALID)) /* Must contain message */
 		r = EINVAL; 
-	else if (flags & AMF_DONE) continue; /* Already done processing */
+	अन्यथा यदि (flags & AMF_DONE) जारी; /* Already done processing */
 
 	/* Clear done flag. The sender is done sending when all messages in the
 	 * table are marked done or empty. However, we will know that only
@@ -1448,31 +1448,31 @@ static int try_one(endpoint_t receive_e, struct proc *src_ptr,
 	 */
 	done = FALSE;
 
-	if (r == EINVAL)
-		goto store_result;
+	यदि (r == EINVAL)
+		गच्छ store_result;
 
 	/* Message must be directed at receiving end */
-	if (dst != dst_ptr->p_endpoint) continue;
+	यदि (dst != dst_ptr->p_endpoint) जारी;
 
-	if (!CANRECEIVE(receive_e, src_e, dst_ptr,
-		table_v + i*sizeof(asynmsg_t) + offsetof(struct asynmsg,msg),
-		NULL)) {
-		continue;
+	यदि (!CANRECEIVE(receive_e, src_e, dst_ptr,
+		table_v + i*परिमाण(asynmsg_t) + दुरत्व(संरचना asynmsg,सन्देश),
+		रिक्त)) {
+		जारी;
 	}
 
 	/* If AMF_NOREPLY is set, then this message is not a reply to a
 	 * SENDREC and thus should not satisfy the receiving part of the
 	 * SENDREC. This message is to be delivered later.
 	 */
-	if ((flags & AMF_NOREPLY) && (dst_ptr->p_misc_flags & MF_REPLY_PEND)) 
-		continue;
+	यदि ((flags & AMF_NOREPLY) && (dst_ptr->p_misc_flags & MF_REPLY_PEND)) 
+		जारी;
 
 	/* Destination is ready to receive the message; deliver it */
 	r = OK;
-	dst_ptr->p_delivermsg = tabent.msg;
+	dst_ptr->p_delivermsg = tabent.सन्देश;
 	dst_ptr->p_delivermsg.m_source = src_ptr->p_endpoint;
 	dst_ptr->p_misc_flags |= MF_DELIVERMSG;
-#if DEBUG_IPC_HOOK
+#यदि DEBUG_IPC_HOOK
 	hook_ipc_msgrecv(&dst_ptr->p_delivermsg, src_ptr, dst_ptr);
 #endif
 
@@ -1483,45 +1483,45 @@ store_result:
 	 */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY) do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
+	यदि (flags & AMF_NOTIFY) do_notify = TRUE;
+	अन्यथा यदि (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to sender; ignore errors */
 
-	break;
+	रोक;
   }
 
-  if (do_notify) 
+  यदि (do_notify) 
 	mini_notify(proc_addr(ASYNCM), src_ptr->p_endpoint);
 
-  if (done) {
+  यदि (done) {
 	privp->s_asyntab = -1;
 	privp->s_asynsize = 0;
-  } else {
+  } अन्यथा {
 	set_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
   }
 
 asyn_error:
-  return(r);
+  फर्काऊ(r);
 }
 
 /*===========================================================================*
  *				cancel_async				     *
  *===========================================================================*/
-int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
+पूर्णाङ्क cancel_async(संरचना proc *src_ptr, संरचना proc *dst_ptr)
 {
 /* Cancel asynchronous messages from src to dst, because dst is not interested
  * in them (e.g., dst has been restarted) */
-  int done, do_notify;
-  unsigned int flags, i;
-  size_t size;
+  पूर्णाङ्क done, do_notify;
+  अचिन्हित पूर्णाङ्क flags, i;
+  माप_प्रकार size;
   endpoint_t dst;
-  struct proc *caller_ptr;
-  struct priv *privp;
+  संरचना proc *caller_ptr;
+  संरचना priv *privp;
   asynmsg_t tabent;
   vir_bytes table_v;
 
   privp = priv(src_ptr);
-  if (!(privp->s_flags & SYS_PROC)) return(EPERM);
+  यदि (!(privp->s_flags & SYS_PROC)) फर्काऊ(EPERM);
   size = privp->s_asynsize;
   table_v = privp->s_asyntab;
 
@@ -1530,8 +1530,8 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   privp->s_asynsize = 0;
   unset_sys_bit(priv(dst_ptr)->s_asyn_pending, privp->s_id);
 
-  if (size == 0) return(EAGAIN);
-  if (!may_send_to(src_ptr, proc_nr(dst_ptr))) return(ECALLDENIED);
+  यदि (size == 0) फर्काऊ(EAGAIN);
+  यदि (!may_send_to(src_ptr, proc_nr(dst_ptr))) फर्काऊ(ECALLDENIED);
 
   caller_ptr = src_ptr;	/* Needed for A_ macros later on */
 
@@ -1540,60 +1540,60 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   done = TRUE;
 
 
-  for (i = 0; i < size; i++) {
+  लागि (i = 0; i < size; i++) {
   	/* Process each entry in the table and store the result in the table.
   	 * If we're done handling a message, copy the result to the sender.
   	 * Some checks done in mini_senda are duplicated here, as the sender
   	 * could've altered the contents of the table in the mean time.
   	 */
 
-  	int r = EDEADSRCDST;	/* Cancel delivery due to dead dst */
+  	पूर्णाङ्क r = EDEADSRCDST;	/* Cancel delivery due to dead dst */
 
 	/* Copy message to kernel */
 	A_RETR(i);
 	flags = tabent.flags;
 	dst = tabent.dst;
 
-	if (flags == 0) continue;	/* Skip empty entries */
+	यदि (flags == 0) जारी;	/* Skip empty entries */
 
 	/* 'flags' field must contain only valid bits */
-	if(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
+	यदि(flags & ~(AMF_VALID|AMF_DONE|AMF_NOTIFY|AMF_NOREPLY|AMF_NOTIFY_ERR))
 		r = EINVAL;
-	else if (!(flags & AMF_VALID)) /* Must contain message */
+	अन्यथा यदि (!(flags & AMF_VALID)) /* Must contain message */
 		r = EINVAL; 
-	else if (flags & AMF_DONE) continue; /* Already done processing */
+	अन्यथा यदि (flags & AMF_DONE) जारी; /* Already done processing */
 
 	/* Message must be directed at receiving end */
-	if (dst != dst_ptr->p_endpoint) {
+	यदि (dst != dst_ptr->p_endpoint) {
 		done = FALSE;
-		continue;
+		जारी;
 	}
 
 	/* Store results for sender */
 	tabent.result = r;
 	tabent.flags = flags | AMF_DONE;
-	if (flags & AMF_NOTIFY) do_notify = TRUE;
-	else if (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
+	यदि (flags & AMF_NOTIFY) do_notify = TRUE;
+	अन्यथा यदि (r != OK && (flags & AMF_NOTIFY_ERR)) do_notify = TRUE;
 	A_INSRT(i);	/* Copy results to sender; ignore errors */
   }
 
-  if (do_notify) 
+  यदि (do_notify) 
 	mini_notify(proc_addr(ASYNCM), src_ptr->p_endpoint);
 
-  if (!done) {
+  यदि (!done) {
 	privp->s_asyntab = table_v;
 	privp->s_asynsize = size;
   }
 
 asyn_error:
-  return(OK);
+  फर्काऊ(OK);
 }
 
 /*===========================================================================*
  *				enqueue					     * 
  *===========================================================================*/
-void enqueue(
-  register struct proc *rp	/* this process is now runnable */
+शून्य enqueue(
+  पञ्जिका संरचना proc *rp	/* this process is now runnable */
 )
 {
 /* Add 'rp' to one of the queues of runnable processes.  This function is 
@@ -1604,37 +1604,37 @@ void enqueue(
  * This function can be used x-cpu as it always uses the queues of the cpu the
  * process is assigned to.
  */
-  int q = rp->p_priority;	 		/* scheduling queue to use */
-  struct proc **rdy_head, **rdy_tail;
+  पूर्णाङ्क q = rp->p_priority;	 		/* scheduling queue to use */
+  संरचना proc **rdy_head, **rdy_tail;
   
-  assert(proc_is_runnable(rp));
+  प्रतिज्ञा(proc_is_runnable(rp));
 
-  assert(q >= 0);
+  प्रतिज्ञा(q >= 0);
 
   rdy_head = get_cpu_var(rp->p_cpu, run_q_head);
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
   /* Now add the process to the queue. */
-  if (!rdy_head[q]) {		/* add to empty queue */
+  यदि (!rdy_head[q]) {		/* add to empty queue */
       rdy_head[q] = rdy_tail[q] = rp; 		/* create a new queue */
-      rp->p_nextready = NULL;		/* mark new end */
+      rp->p_nextready = रिक्त;		/* mark new end */
   } 
-  else {					/* add to tail of queue */
+  अन्यथा {					/* add to tail of queue */
       rdy_tail[q]->p_nextready = rp;		/* chain tail of queue */	
       rdy_tail[q] = rp;				/* set new queue tail */
-      rp->p_nextready = NULL;		/* mark new end */
+      rp->p_nextready = रिक्त;		/* mark new end */
   }
 
-  if (cpuid == rp->p_cpu) {
+  यदि (cpuid == rp->p_cpu) {
 	  /*
 	   * enqueueing a process with a higher priority than the current one,
 	   * it gets preempted. The current process must be preemptible. Testing
 	   * the priority also makes sure that a process does not preempt itself
 	   */
-	  struct proc * p;
+	  संरचना proc * p;
 	  p = get_cpulocal_var(proc_ptr);
-	  assert(p);
-	  if((p->p_priority > rp->p_priority) &&
+	  प्रतिज्ञा(p);
+	  यदि((p->p_priority > rp->p_priority) &&
 			  (priv(p)->s_flags & PREEMPTIBLE))
 		  RTS_SET(p, RTS_PREEMPTED); /* calls dequeue() */
   }
@@ -1644,7 +1644,7 @@ void enqueue(
    * the time is off, we need to wake up that cpu and let it schedule this new
    * process
    */
-  else if (get_cpu_var(rp->p_cpu, cpu_is_idle)) {
+  अन्यथा यदि (get_cpu_var(rp->p_cpu, cpu_is_idle)) {
 	  smp_schedule(rp->p_cpu);
   }
 #endif
@@ -1653,8 +1653,8 @@ void enqueue(
   read_tsc_64(&(get_cpulocal_var(proc_ptr)->p_accounting.enter_queue));
 
 
-#if DEBUG_SANITYCHECKS
-  assert(runqueues_ok_local());
+#यदि DEBUG_SANITYCHECKS
+  प्रतिज्ञा(runqueues_ok_local());
 #endif
 }
 
@@ -1667,32 +1667,32 @@ void enqueue(
  * process on a run queue. We have to put this process back at the fron to be
  * fair
  */
-static void enqueue_head(struct proc *rp)
+स्थिर शून्य enqueue_head(संरचना proc *rp)
 {
-  const int q = rp->p_priority;	 		/* scheduling queue to use */
+  अचर पूर्णाङ्क q = rp->p_priority;	 		/* scheduling queue to use */
 
-  struct proc **rdy_head, **rdy_tail;
+  संरचना proc **rdy_head, **rdy_tail;
 
-  assert(proc_ptr_ok(rp));
-  assert(proc_is_runnable(rp));
+  प्रतिज्ञा(proc_ptr_ok(rp));
+  प्रतिज्ञा(proc_is_runnable(rp));
 
   /*
    * the process was runnable without its quantum expired when dequeued. A
    * process with no time left should have been handled else and differently
    */
-  assert(rp->p_cpu_time_left);
+  प्रतिज्ञा(rp->p_cpu_time_बायाँ);
 
-  assert(q >= 0);
+  प्रतिज्ञा(q >= 0);
 
 
   rdy_head = get_cpu_var(rp->p_cpu, run_q_head);
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
   /* Now add the process to the queue. */
-  if (!rdy_head[q]) {		/* add to empty queue */
+  यदि (!rdy_head[q]) {		/* add to empty queue */
 	rdy_head[q] = rdy_tail[q] = rp; 	/* create a new queue */
-	rp->p_nextready = NULL;			/* mark new end */
-  } else {					/* add to head of queue */
+	rp->p_nextready = रिक्त;			/* mark new end */
+  } अन्यथा {					/* add to head of queue */
 	rp->p_nextready = rdy_head[q];		/* chain head of queue */
 	rdy_head[q] = rp;			/* set new queue head */
   }
@@ -1705,15 +1705,15 @@ static void enqueue_head(struct proc *rp)
   rp->p_accounting.dequeues--;
   rp->p_accounting.preempted++;
 
-#if DEBUG_SANITYCHECKS
-  assert(runqueues_ok_local());
+#यदि DEBUG_SANITYCHECKS
+  प्रतिज्ञा(runqueues_ok_local());
 #endif
 }
 
 /*===========================================================================*
  *				dequeue					     * 
  *===========================================================================*/
-void dequeue(struct proc *rp)
+शून्य dequeue(संरचना proc *rp)
 /* this process is no longer runnable */
 {
 /* A process must be removed from the scheduling queues, for example, because
@@ -1723,18 +1723,18 @@ void dequeue(struct proc *rp)
  * This function can operate x-cpu as it always removes the process from the
  * queue of the cpu the process is currently assigned to.
  */
-  int q = rp->p_priority;		/* queue to use */
-  struct proc **xpp;			/* iterate over queue */
-  struct proc *prev_xp;
+  पूर्णाङ्क q = rp->p_priority;		/* queue to use */
+  संरचना proc **xpp;			/* iterate over queue */
+  संरचना proc *prev_xp;
   u64_t tsc, tsc_delta;
 
-  struct proc **rdy_tail;
+  संरचना proc **rdy_tail;
 
-  assert(proc_ptr_ok(rp));
-  assert(!proc_is_runnable(rp));
+  प्रतिज्ञा(proc_ptr_ok(rp));
+  प्रतिज्ञा(!proc_is_runnable(rp));
 
   /* Side-effect for kernel: check if the task's stack still is ok? */
-  assert (!iskernelp(rp) || *priv(rp)->s_stack_guard == STACK_GUARD);
+  प्रतिज्ञा (!iskernelp(rp) || *priv(rp)->s_थाक_guard == थाक_GUARD);
 
   rdy_tail = get_cpu_var(rp->p_cpu, run_q_tail);
 
@@ -1742,16 +1742,16 @@ void dequeue(struct proc *rp)
    * process if it is found. A process can be made unready even if it is not 
    * running by being sent a signal that kills it.
    */
-  prev_xp = NULL;				
-  for (xpp = get_cpu_var_ptr(rp->p_cpu, run_q_head[q]); *xpp;
+  prev_xp = रिक्त;				
+  लागि (xpp = get_cpu_var_ptr(rp->p_cpu, run_q_head[q]); *xpp;
 		  xpp = &(*xpp)->p_nextready) {
-      if (*xpp == rp) {				/* found process to remove */
+      यदि (*xpp == rp) {				/* found process to remove */
           *xpp = (*xpp)->p_nextready;		/* replace with next chain */
-          if (rp == rdy_tail[q]) {		/* queue tail removed */
+          यदि (rp == rdy_tail[q]) {		/* queue tail removed */
               rdy_tail[q] = prev_xp;		/* set new tail */
 	  }
 
-          break;
+          रोक;
       }
       prev_xp = *xpp;				/* save previous in chain */
   }
@@ -1763,7 +1763,7 @@ void dequeue(struct proc *rp)
   /* this is not all that accurate on virtual machines, especially with
      IO bound processes that only spend a short amount of time in the queue
      at a time. */
-  if (rp->p_accounting.enter_queue) {
+  यदि (rp->p_accounting.enter_queue) {
 	read_tsc_64(&tsc);
 	tsc_delta = tsc - rp->p_accounting.enter_queue;
 	rp->p_accounting.time_in_queue = rp->p_accounting.time_in_queue +
@@ -1774,15 +1774,15 @@ void dequeue(struct proc *rp)
   /* For ps(1), remember when the process was last dequeued. */
   rp->p_dequeued = get_monotonic();
 
-#if DEBUG_SANITYCHECKS
-  assert(runqueues_ok_local());
+#यदि DEBUG_SANITYCHECKS
+  प्रतिज्ञा(runqueues_ok_local());
 #endif
 }
 
 /*===========================================================================*
  *				pick_proc				     * 
  *===========================================================================*/
-static struct proc * pick_proc(void)
+स्थिर संरचना proc * pick_proc(शून्य)
 {
 /* Decide who to run now.  A new process is selected and returned.
  * When a billable process is selected, record it in 'bill_ptr', so that the 
@@ -1790,51 +1790,51 @@ static struct proc * pick_proc(void)
  *
  * This function always uses the run queues of the local cpu!
  */
-  register struct proc *rp;			/* process to run */
-  struct proc **rdy_head;
-  int q;				/* iterate over queues */
+  पञ्जिका संरचना proc *rp;			/* process to run */
+  संरचना proc **rdy_head;
+  पूर्णाङ्क q;				/* iterate over queues */
 
   /* Check each of the scheduling queues for ready processes. The number of
    * queues is defined in proc.h, and priorities are set in the task table.
    * If there are no processes ready to run, return NULL.
    */
   rdy_head = get_cpulocal_var(run_q_head);
-  for (q=0; q < NR_SCHED_QUEUES; q++) {	
-	if(!(rp = rdy_head[q])) {
-		TRACE(VF_PICKPROC, printf("cpu %d queue %d empty\n", cpuid, q););
-		continue;
+  लागि (q=0; q < NR_SCHED_QUEUES; q++) {	
+	यदि(!(rp = rdy_head[q])) {
+		TRACE(VF_PICKPROC, म_लिखो("cpu %d queue %d empty\n", cpuid, q););
+		जारी;
 	}
-	assert(proc_is_runnable(rp));
-	if (priv(rp)->s_flags & BILLABLE)	 	
+	प्रतिज्ञा(proc_is_runnable(rp));
+	यदि (priv(rp)->s_flags & BILLABLE)	 	
 		get_cpulocal_var(bill_ptr) = rp; /* bill for system time */
-	return rp;
+	फर्काऊ rp;
   }
-  return NULL;
+  फर्काऊ रिक्त;
 }
 
 /*===========================================================================*
  *				endpoint_lookup				     *
  *===========================================================================*/
-struct proc *endpoint_lookup(endpoint_t e)
+संरचना proc *endpoint_lookup(endpoint_t e)
 {
-	int n;
+	पूर्णाङ्क n;
 
-	if(!isokendpt(e, &n)) return NULL;
+	यदि(!isokendpt(e, &n)) फर्काऊ रिक्त;
 
-	return proc_addr(n);
+	फर्काऊ proc_addr(n);
 }
 
 /*===========================================================================*
  *				isokendpt_f				     *
  *===========================================================================*/
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char * file, int line, endpoint_t e, int * p,
-	const int fatalflag)
-#else
-int isokendpt_f(endpoint_t e, int * p, const int fatalflag)
+#यदि DEBUG_ENABLE_IPC_WARNINGS
+पूर्णाङ्क isokendpt_f(अचर वर्ण * file, पूर्णाङ्क पङ्क्ति, endpoint_t e, पूर्णाङ्क * p,
+	अचर पूर्णाङ्क fatalflag)
+#अन्यथा
+पूर्णाङ्क isokendpt_f(endpoint_t e, पूर्णाङ्क * p, अचर पूर्णाङ्क fatalflag)
 #endif
 {
-	int ok = 0;
+	पूर्णाङ्क ok = 0;
 	/* Convert an endpoint number into a process number.
 	 * Return nonzero if the process is alive with the corresponding
 	 * generation number, zero otherwise.
@@ -1850,19 +1850,19 @@ int isokendpt_f(endpoint_t e, int * p, const int fatalflag)
 	 */
 	*p = _ENDPOINT_P(e);
 	ok = 0;
-	if(isokprocn(*p) && !isemptyn(*p) && proc_addr(*p)->p_endpoint == e)
+	यदि(isokprocn(*p) && !isemptyn(*p) && proc_addr(*p)->p_endpoint == e)
 		ok = 1;
-	if(!ok && fatalflag)
+	यदि(!ok && fatalflag)
 		panic("invalid endpoint: %d",  e);
-	return ok;
+	फर्काऊ ok;
 }
 
-static void notify_scheduler(struct proc *p)
+स्थिर शून्य notify_scheduler(संरचना proc *p)
 {
 	message m_no_quantum;
-	int err;
+	पूर्णाङ्क err;
 
-	assert(!proc_kernel_scheduler(p));
+	प्रतिज्ञा(!proc_kernel_scheduler(p));
 
 	/* dequeue the process */
 	RTS_SET(p, RTS_NO_QUANTUM);
@@ -1884,32 +1884,32 @@ static void notify_scheduler(struct proc *p)
 	/* Reset accounting */
 	reset_proc_accounting(p);
 
-	if ((err = mini_send(p, p->p_scheduler->p_endpoint,
+	यदि ((err = mini_send(p, p->p_scheduler->p_endpoint,
 					&m_no_quantum, FROM_KERNEL))) {
 		panic("WARNING: Scheduling: mini_send returned %d\n", err);
 	}
 }
 
-void proc_no_time(struct proc * p)
+शून्य proc_no_time(संरचना proc * p)
 {
-	if (!proc_kernel_scheduler(p) && priv(p)->s_flags & PREEMPTIBLE) {
+	यदि (!proc_kernel_scheduler(p) && priv(p)->s_flags & PREEMPTIBLE) {
 		/* this dequeues the process */
 		notify_scheduler(p);
 	}
-	else {
+	अन्यथा {
 		/*
 		 * non-preemptible processes only need their quantum to
 		 * be renewed. In fact, they by pass scheduling
 		 */
-		p->p_cpu_time_left = ms_2_cpu_time(p->p_quantum_size_ms);
-#if DEBUG_RACE
+		p->p_cpu_time_बायाँ = ms_2_cpu_time(p->p_quantum_size_ms);
+#यदि DEBUG_RACE
 		RTS_SET(p, RTS_PREEMPTED);
 		RTS_UNSET(p, RTS_PREEMPTED);
 #endif
 	}
 }
 
-void reset_proc_accounting(struct proc *p)
+शून्य reset_proc_accounting(संरचना proc *p)
 {
   p->p_accounting.preempted = 0;
   p->p_accounting.ipc_sync  = 0;
@@ -1919,10 +1919,10 @@ void reset_proc_accounting(struct proc *p)
   p->p_accounting.enter_queue = 0;
 }
 	
-void copr_not_available_handler(void)
+शून्य copr_not_available_handler(शून्य)
 {
-	struct proc * p;
-	struct proc ** local_fpu_owner;
+	संरचना proc * p;
+	संरचना proc ** local_fpu_owner;
 	/*
 	 * Disable the FPU exception (both for the kernel and for the process
 	 * once it's scheduled), and initialize or restore the FPU state.
@@ -1934,8 +1934,8 @@ void copr_not_available_handler(void)
 
 	/* if FPU is not owned by anyone, do not store anything */
 	local_fpu_owner = get_cpulocal_var_ptr(fpu_owner);
-	if (*local_fpu_owner != NULL) {
-		assert(*local_fpu_owner != p);
+	यदि (*local_fpu_owner != रिक्त) {
+		प्रतिज्ञा(*local_fpu_owner != p);
 		save_local_fpu(*local_fpu_owner, FALSE /*retain*/);
 	}
 
@@ -1943,13 +1943,13 @@ void copr_not_available_handler(void)
 	 * restore the current process' state and let it run again, do not
 	 * schedule!
 	 */
-	if (restore_fpu(p) != OK) {
+	यदि (restore_fpu(p) != OK) {
 		/* Restoring FPU state failed. This is always the process's own
 		 * fault. Send a signal, and schedule another process instead.
 		 */
-		*local_fpu_owner = NULL;		/* release FPU */
-		cause_sig(proc_nr(p), SIGFPE);
-		return;
+		*local_fpu_owner = रिक्त;		/* release FPU */
+		cause_sig(proc_nr(p), संक_भ_त्रुटि);
+		फर्काऊ;
 	}
 
 	*local_fpu_owner = p;
@@ -1958,23 +1958,23 @@ void copr_not_available_handler(void)
 	NOT_REACHABLE;
 }
 
-void release_fpu(struct proc * p) {
-	struct proc ** fpu_owner_ptr;
+शून्य release_fpu(संरचना proc * p) {
+	संरचना proc ** fpu_owner_ptr;
 
 	fpu_owner_ptr = get_cpu_var_ptr(p->p_cpu, fpu_owner);
 
-	if (*fpu_owner_ptr == p)
-		*fpu_owner_ptr = NULL;
+	यदि (*fpu_owner_ptr == p)
+		*fpu_owner_ptr = रिक्त;
 }
 
-void ser_dump_proc(void)
+शून्य ser_dump_proc(शून्य)
 {
-        struct proc *pp;
+        संरचना proc *pp;
 
-        for (pp= BEG_PROC_ADDR; pp < END_PROC_ADDR; pp++)
+        लागि (pp= BEG_PROC_ADDR; pp < END_PROC_ADDR; pp++)
         {
-                if (isemptyp(pp))
-                        continue;
+                यदि (isemptyp(pp))
+                        जारी;
                 print_proc_recursive(pp);
         }
 }

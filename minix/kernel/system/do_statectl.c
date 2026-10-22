@@ -5,48 +5,48 @@
  *   m_lsys_krn_sys_statectl.request	(state control request)
  */
 
-#include "kernel/system.h"
+#अन्तर्भाव "kernel/system.h"
 
-#if USE_STATECTL
+#यदि USE_STATECTL
 
 /*===========================================================================*
  *			          do_statectl				     *
  *===========================================================================*/
-int do_statectl(struct proc * caller, message * m_ptr)
+पूर्णाङ्क do_statectl(संरचना proc * caller, message * m_ptr)
 {
 /* Handle sys_statectl(). A process has issued a state control request. */
 
-  switch(m_ptr->m_lsys_krn_sys_statectl.request)
+  विकल्प(m_ptr->m_lsys_krn_sys_statectl.request)
   {
-  case SYS_STATE_CLEAR_IPC_REFS:
+  पक्ष SYS_STATE_CLEAR_IPC_REFS:
 	/* Clear IPC references for all the processes communicating
 	 * with the caller.
 	 */
 	clear_ipc_refs(caller, EDEADSRCDST);
-	return(OK);
-  case SYS_STATE_SET_STATE_TABLE:
+	फर्काऊ(OK);
+  पक्ष SYS_STATE_SET_STATE_TABLE:
 	/* Set state table for the caller. */
 	priv(caller)->s_state_table = (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address;
 	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.length;
-	return(OK);
-  case SYS_STATE_ADD_IPC_BL_FILTER:
+	फर्काऊ(OK);
+  पक्ष SYS_STATE_ADD_IPC_BL_FILTER:
 	/* Add an IPC blacklist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_BLACKLIST,
+	फर्काऊ add_ipc_filter(caller, IPCF_BLACKLIST,
 	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
 	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_ADD_IPC_WL_FILTER:
+  पक्ष SYS_STATE_ADD_IPC_WL_FILTER:
 	/* Add an IPC whitelist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_WHITELIST,
+	फर्काऊ add_ipc_filter(caller, IPCF_WHITELIST,
 	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
 	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_CLEAR_IPC_FILTERS:
+  पक्ष SYS_STATE_CLEAR_IPC_FILTERS:
 	/* Clear any IPC filter for the caller. */
 	clear_ipc_filters(caller);
-	return OK;
-  default:
-	printf("do_statectl: bad request %d\n",
+	फर्काऊ OK;
+  स्वभाव:
+	म_लिखो("do_statectl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_statectl.request);
-	return EINVAL;
+	फर्काऊ EINVAL;
   }
 }
 
