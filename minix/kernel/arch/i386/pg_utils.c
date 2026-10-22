@@ -1,223 +1,223 @@
 
-#include <minix/cpufeature.h>
+#ضمن <minix/cpufeature.h>
 
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ضمن <assert.h>
+#ضمن "kernel/kernel.h"
+#ضمن "arch_proto.h"
 
-#include <string.h>
+#ضمن <string.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+خارجي حرف kern_vir_پایه, kern_phys_پایه, kern_اندازه;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+ساكن phys_بایتها kern_vir_شروع = (phys_بایتها) &kern_vir_پایه;
+ساكن phys_بایتها kern_phys_شروع = (phys_بایتها) &kern_phys_پایه;
+ساكن phys_بایتها kern_kernlen = (phys_بایتها) &kern_اندازه;
 
 /* page directory we can use to map things */
-static u32_t pagedir[1024]  __aligned(4096);
+ساكن u32_t pagedir[1024]  __aligned(4096);
 
-void print_memmap(kinfo_t *cbi)
+فراغ print_memmap(kinfo_t *cbi)
 {
-        int m;
-        assert(cbi->mmap_size < MAXMEMMAP);
-        for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
-                printf("%08lx-%08lx ",addr, endit);
+        صحيح m;
+        أكد(cbi->mmap_اندازه < MAXMEMMAP);
+        لكل(m = 0; m < cbi->mmap_اندازه; m++) {
+		phys_بایتها addr = cbi->memmap[m].mm_پایه_addr, endit = cbi->memmap[m].mm_پایه_addr + cbi->memmap[m].mm_درازی;
+                چاپ_کن("%08lx-%08lx ",addr, endit);
         }
-        printf("\nsize %08lx\n", cbi->mmap_size);
+        چاپ_کن("\nsize %08lx\n", cbi->mmap_اندازه);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+فراغ cut_memmap(kinfo_t *cbi, phys_بایتها شروع, phys_بایتها انتها)
 {
-        int m;
-        phys_bytes o;
+        صحيح m;
+        phys_بایتها o;
 
-        if((o=start % I386_PAGE_SIZE))
-                start -= o;
-        if((o=end % I386_PAGE_SIZE))
-                end += I386_PAGE_SIZE - o;
+        إذا((o=شروع % I386_صفحه_اندازه))
+                شروع -= o;
+        إذا((o=انتها % I386_صفحه_اندازه))
+                انتها += I386_صفحه_اندازه - o;
 
-	assert(kernel_may_alloc);
+	أكد(kernel_may_alloc);
 
-        for(m = 0; m < cbi->mmap_size; m++) {
-                phys_bytes substart = start, subend = end;
-                phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
-                        memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
+        لكل(m = 0; m < cbi->mmap_اندازه; m++) {
+                phys_بایتها substart = شروع, subend = انتها;
+                phys_بایتها memaddr = cbi->memmap[m].mm_پایه_addr,
+                        memend = cbi->memmap[m].mm_پایه_addr + cbi->memmap[m].mm_درازی;
 
                 /* adjust cut range to be a subset of the free memory */
-                if(substart < memaddr) substart = memaddr;
-                if(subend > memend) subend = memend;
-                if(substart >= subend) continue;
+                إذا(substart < memaddr) substart = memaddr;
+                إذا(subend > memend) subend = memend;
+                إذا(substart >= subend) استمر;
 
                 /* if there is any overlap, forget this one and add
                  * 1-2 subranges back
                  */
-                cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-                if(substart > memaddr)
-                        add_memmap(cbi, memaddr, substart-memaddr);
-                if(subend < memend)
-                        add_memmap(cbi, subend, memend-subend);
+                cbi->memmap[m].mm_پایه_addr = cbi->memmap[m].mm_درازی = 0;
+                إذا(substart > memaddr)
+                        جمع_کن_memmap(cbi, memaddr, substart-memaddr);
+                إذا(subend < memend)
+                        جمع_کن_memmap(cbi, subend, memend-subend);
         }
 }
 
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len)
+phys_بایتها alloc_پایینترین(kinfo_t *cbi, phys_بایتها len)
 {
 	/* Allocate the lowest physical page we have. */
-	int m;
-#define EMPTY 0xffffffff
-	phys_bytes lowest = EMPTY;
-	assert(len > 0);
-	len = roundup(len, I386_PAGE_SIZE);
+	صحيح m;
+#تعریف_کن خالی 0xffffffff
+	phys_بایتها پایینترین = خالی;
+	أكد(len > 0);
+	len = roundup(len, I386_صفحه_اندازه);
 
-	assert(kernel_may_alloc);
+	أكد(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
-		if(cbi->memmap[m].mm_length < len) continue;
-		if(cbi->memmap[m].mm_base_addr < lowest) lowest = cbi->memmap[m].mm_base_addr;
+	لكل(m = 0; m < cbi->mmap_اندازه; m++) {
+		إذا(cbi->memmap[m].mm_درازی < len) استمر;
+		إذا(cbi->memmap[m].mm_پایه_addr < پایینترین) پایینترین = cbi->memmap[m].mm_پایه_addr;
 	}
-	assert(lowest != EMPTY);
-	cut_memmap(cbi, lowest, len);
-	cbi->kernel_allocated_bytes_dynamic += len;
-	return lowest;
+	أكد(پایینترین != خالی);
+	cut_memmap(cbi, پایینترین, len);
+	cbi->kernel_allocated_بایتها_dynamic += len;
+	أرجع پایینترین;
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+فراغ جمع_کن_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-        int m;
-#define LIMIT 0xFFFFF000
+        صحيح m;
+#تعریف_کن حد 0xFFFFF000
         /* Truncate available memory at 4GB as the rest of minix
          * currently can't deal with any bigger.
          */
-        if(addr > LIMIT) return;
-        if(addr + len > LIMIT) {
-                len -= (addr + len - LIMIT);
+        إذا(addr > حد) أرجع;
+        إذا(addr + len > حد) {
+                len -= (addr + len - حد);
         }
-        assert(cbi->mmap_size < MAXMEMMAP);
-        if(len == 0) return;
-	addr = roundup(addr, I386_PAGE_SIZE);
-	len = rounddown(len, I386_PAGE_SIZE);
+        أكد(cbi->mmap_اندازه < MAXMEMMAP);
+        إذا(len == 0) أرجع;
+	addr = roundup(addr, I386_صفحه_اندازه);
+	len = rounddown(len, I386_صفحه_اندازه);
 
-	assert(kernel_may_alloc);
+	أكد(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
-		phys_bytes highmark;
-                if(cbi->memmap[m].mm_length) continue;
-                cbi->memmap[m].mm_base_addr = addr;
-                cbi->memmap[m].mm_length = len;
-                cbi->memmap[m].mm_type = MULTIBOOT_MEMORY_AVAILABLE;
-                if(m >= cbi->mmap_size)
-                        cbi->mmap_size = m+1;
+        لكل(m = 0; m < MAXMEMMAP; m++) {
+		phys_بایتها highmark;
+                إذا(cbi->memmap[m].mm_درازی) استمر;
+                cbi->memmap[m].mm_پایه_addr = addr;
+                cbi->memmap[m].mm_درازی = len;
+                cbi->memmap[m].mm_type = MULTIBOOT_حافظه_موجود;
+                إذا(m >= cbi->mmap_اندازه)
+                        cbi->mmap_اندازه = m+1;
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		إذا(highmark > cbi->mem_بالا_phys) {
+			cbi->mem_بالا_phys = highmark;
 		}
 
-                return;
+                أرجع;
         }
 
         panic("no available memmap slot");
 }
 
-u32_t *alloc_pagetable(phys_bytes *ph)
+u32_t *alloc_pagetable(phys_بایتها *ph)
 {
 	u32_t *ret;
-#define PG_PAGETABLES 6
-	static u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
-	assert(sizeof(pagetables[pt_inuse]) == I386_PAGE_SIZE);
+#تعریف_کن PG_PAGETABLES 6
+	ساكن u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
+	ساكن صحيح pt_inuse = 0;
+	إذا(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
+	أكد(حجم(pagetables[pt_inuse]) == I386_صفحه_اندازه);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	أرجع ret;
 }
 
-#define PAGE_KB (I386_PAGE_SIZE / 1024)
+#تعریف_کن صفحه_KB (I386_صفحه_اندازه / 1024)
 
-phys_bytes pg_alloc_page(kinfo_t *cbi)
+phys_بایتها pg_alloc_صفحه(kinfo_t *cbi)
 {
-	int m;
-	multiboot_memory_map_t *mmap;
+	صحيح m;
+	multiboot_حافظه_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	أكد(kernel_may_alloc);
 
-	for(m = cbi->mmap_size-1; m >= 0; m--) {
+	لكل(m = cbi->mmap_اندازه-1; m >= 0; m--) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) continue;
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % I386_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % I386_PAGE_SIZE));
+		إذا(!mmap->mm_درازی) استمر;
+		أكد(mmap->mm_درازی > 0);
+		أكد(!(mmap->mm_درازی % I386_صفحه_اندازه));
+		أكد(!(mmap->mm_پایه_addr % I386_صفحه_اندازه));
 
-		mmap->mm_length -= I386_PAGE_SIZE;
+		mmap->mm_درازی -= I386_صفحه_اندازه;
 
-                cbi->kernel_allocated_bytes_dynamic += I386_PAGE_SIZE;
+                cbi->kernel_allocated_بایتها_dynamic += I386_صفحه_اندازه;
 
-		return mmap->mm_base_addr + mmap->mm_length;
+		أرجع mmap->mm_پایه_addr + mmap->mm_درازی;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+فراغ pg_عنصر_خنثی(kinfo_t *cbi)
 {
 	uint32_t i;
-	phys_bytes phys;
+	phys_بایتها phys;
 
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	أكد(cbi->mem_بالا_phys);
 
         /* Set up an identity mapping page directory */
-        for(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
+        لكل(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
 		u32_t flags = I386_VM_PRESENT | I386_VM_BIGPAGE
 			| I386_VM_USER
 			| I386_VM_WRITE;
-                phys = i * I386_BIG_PAGE_SIZE;
-		if((cbi->mem_high_phys & I386_VM_ADDR_MASK_4MB)
-			<= (phys & I386_VM_ADDR_MASK_4MB)) {
+                phys = i * I386_BIG_صفحه_اندازه;
+		إذا((cbi->mem_بالا_phys & I386_VM_ADDR_ماسک_4_MB)
+			<= (phys & I386_VM_ADDR_ماسک_4_MB)) {
 			flags |= I386_VM_PWT | I386_VM_PCD;
 		}
                 pagedir[i] =  phys | flags;
         }
 }
 
-int pg_mapkernel(void)
+صحيح pg_mapkernel(فراغ)
 {
-	int pde;
-	u32_t mapped = 0, kern_phys = kern_phys_start;
+	صحيح pde;
+	u32_t mapped = 0, kern_phys = kern_phys_شروع;
 
-        assert(!(kern_vir_start % I386_BIG_PAGE_SIZE));
-        assert(!(kern_phys % I386_BIG_PAGE_SIZE));
-        pde = kern_vir_start / I386_BIG_PAGE_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
+        أكد(!(kern_vir_شروع % I386_BIG_صفحه_اندازه));
+        أكد(!(kern_phys % I386_BIG_صفحه_اندازه));
+        pde = kern_vir_شروع / I386_BIG_صفحه_اندازه; /* start pde */
+	طالما(mapped < kern_kernlen) {
 	        pagedir[pde] = kern_phys | I386_VM_PRESENT | 
 			I386_VM_BIGPAGE | I386_VM_WRITE;
-		mapped += I386_BIG_PAGE_SIZE;
-		kern_phys += I386_BIG_PAGE_SIZE;
+		mapped += I386_BIG_صفحه_اندازه;
+		kern_phys += I386_BIG_صفحه_اندازه;
 		pde++;
 	}
-	return pde;	/* free pde */
+	أرجع pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+فراغ vm_enable_paging(فراغ)
 {
         u32_t cr0, cr4;
-        int pgeok;
+        صحيح pgeok;
 
         pgeok = _cpufeature(_CPUF_I386_PGE);
 
-#ifdef PAE
-	if(_cpufeature(_CPUF_I386_PAE) == 0)
+#اگر_تعریف_شده PAE
+	إذا(_cpufeature(_CPUF_I386_PAE) == 0)
 		panic("kernel built with PAE support, CPU seems to lack PAE support?\n");
-#endif
+#پایان_اگر
 
         cr0= read_cr0();
         cr4= read_cr4();
 
 	/* The boot loader should have put us in protected mode. */
-	assert(cr0 & I386_CR0_PE);
+	أكد(cr0 & I386_CR0_PE);
 
         /* First clear PG and PGE flag, as PGE must be enabled after PG. */
         write_cr0(cr0 & ~I386_CR0_PG);
@@ -238,78 +238,78 @@ void vm_enable_paging(void)
         write_cr0(cr0);
 
         /* May we enable these features? */
-        if(pgeok)
+        إذا(pgeok)
                 cr4 |= I386_CR4_PGE;
 
         write_cr4(cr4);
 }
 
-phys_bytes pg_load(void)
+phys_بایتها pg_بارگیری(فراغ)
 {
-	phys_bytes phpagedir = vir2phys(pagedir);
+	phys_بایتها phpagedir = vir2phys(pagedir);
         write_cr3(phpagedir);
-	return phpagedir;
+	أرجع phpagedir;
 }
 
-void pg_clear(void)
+فراغ pg_clear(فراغ)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	memset(pagedir, 0, حجم(pagedir));
 }
 
-phys_bytes pg_rounddown(phys_bytes b)
+phys_بایتها pg_rounddown(phys_بایتها b)
 {
-	phys_bytes o;
-	if(!(o = b % I386_PAGE_SIZE))
-		return b;
-	return b  - o;
+	phys_بایتها o;
+	إذا(!(o = b % I386_صفحه_اندازه))
+		أرجع b;
+	أرجع b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+فراغ pg_map(phys_بایتها phys, vir_بایتها vaddr, vir_بایتها vaddr_انتها,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	ساكن صحيح mapped_pde = -1;
+	ساكن u32_t *pt = عدم;
+	صحيح pde, pte;
 
-	assert(kernel_may_alloc);
+	أكد(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % I386_PAGE_SIZE));
-	} else  {
-		assert((vaddr % I386_PAGE_SIZE) == (phys % I386_PAGE_SIZE));
+	إذا(phys == PG_ALLOCATEME) {
+		أكد(!(vaddr % I386_صفحه_اندازه));
+	} وإلا  {
+		أكد((vaddr % I386_صفحه_اندازه) == (phys % I386_صفحه_اندازه));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}	
-	assert(vaddr < kern_vir_start);
+	أكد(vaddr < kern_vir_شروع);
 
-	while(vaddr < vaddr_end) {
-		phys_bytes source = phys;
-		assert(!(vaddr % I386_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
-			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % I386_PAGE_SIZE));
+	طالما(vaddr < vaddr_انتها) {
+		phys_بایتها منبع = phys;
+		أكد(!(vaddr % I386_صفحه_اندازه));
+		إذا(phys == PG_ALLOCATEME) {
+			منبع = pg_alloc_صفحه(cbi);
+		} وإلا {
+			أكد(!(phys % I386_صفحه_اندازه));
 		}
-		assert(!(source % I386_PAGE_SIZE));
+		أكد(!(منبع % I386_صفحه_اندازه));
 		pde = I386_VM_PDE(vaddr);
 		pte = I386_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
-			phys_bytes ph;
+		إذا(mapped_pde < pde) {
+			phys_بایتها ph;
 			pt = alloc_pagetable(&ph);
-			pagedir[pde] = (ph & I386_VM_ADDR_MASK)
+			pagedir[pde] = (ph & I386_VM_ADDR_ماسک)
 		                | I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
 			mapped_pde = pde;
 		}
-		assert(pt);
-		pt[pte] = (source & I386_VM_ADDR_MASK) |
+		أكد(pt);
+		pt[pte] = (منبع & I386_VM_ADDR_ماسک) |
 			I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
-		vaddr += I386_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME)
-			phys += I386_PAGE_SIZE;
+		vaddr += I386_صفحه_اندازه;
+		إذا(phys != PG_ALLOCATEME)
+			phys += I386_صفحه_اندازه;
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+فراغ pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

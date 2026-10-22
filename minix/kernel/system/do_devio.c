@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#ضمن "kernel/system.h"
+#ضمن <minix/devio.h>
+#ضمن <minix/endpoint.h>
 
-#if USE_DEVIO
+#إذا USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+صحيح do_devio(بنية proc * caller, پیام * m_ptr)
 {
-    struct priv *privp;
-    port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    بنية priv *privp;
+    پورت_t پورت;
+    بنية io_range *iorp;
+    صحيح i, اندازه, nr_io_range;
+    صحيح io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    بدل (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	حالة _DIO_BYTE: اندازه= 1; اكسر;
+	حالة DIO_کلمه: اندازه= 2; اكسر;
+	حالة _DIO_LONG: اندازه= 4; اكسر;
+	افتراضي: اندازه= 4; اكسر;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    إذا (!privp)
     {
-	printf("no priv structure!\n");
-	goto doit;
+	چاپ_کن("no priv structure!\n");
+	اذهب doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    إذا (privp->s_flags & CHECK_IO_پورت)
     {
-	port= m_ptr->m_lsys_krn_sys_devio.port;
+	پورت= m_ptr->m_lsys_krn_sys_devio.پورت;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	لكل (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		إذا (پورت >= iorp->ior_پایه && پورت+اندازه-1 <= iorp->ior_حد)
+			اكسر;
 	}
-	if (i >= nr_io_range)
+	إذا (i >= nr_io_range)
 	{
-			printf("do_devio: port 0x%x (size %d) not allowed\n",
-				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+			چاپ_کن("do_devio: port 0x%x (size %d) not allowed\n",
+				m_ptr->m_lsys_krn_sys_devio.پورت, اندازه);
+		أرجع EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    إذا (m_ptr->m_lsys_krn_sys_devio.پورت & (اندازه-1))
     {
-		printf("do_devio: unaligned port 0x%x (size %d)\n",
-			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+		چاپ_کن("do_devio: unaligned port 0x%x (size %d)\n",
+			m_ptr->m_lsys_krn_sys_devio.پورت, اندازه);
+	أرجع EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    إذا (io_dir == DIO_درون_داد) { 
+      بدل (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+        حالة _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.مقدار =
+			inb(m_ptr->m_lsys_krn_sys_devio.پورت);
+		اكسر;
+        حالة DIO_کلمه:
+		m_ptr->m_krn_lsys_sys_devio.مقدار =
+			inw(m_ptr->m_lsys_krn_sys_devio.پورت);
+		اكسر;
+        حالة _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.مقدار =
+			inl(m_ptr->m_lsys_krn_sys_devio.پورت);
+		اكسر;
+    	افتراضي: أرجع(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
-		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
-		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
-		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+    } وإلا { 
+      بدل (io_type) {
+	حالة _DIO_BYTE:
+		outb(m_ptr->m_lsys_krn_sys_devio.پورت,
+			m_ptr->m_lsys_krn_sys_devio.مقدار);
+		اكسر;
+	حالة DIO_کلمه:
+		outw(m_ptr->m_lsys_krn_sys_devio.پورت,
+			m_ptr->m_lsys_krn_sys_devio.مقدار);
+		اكسر;
+	حالة _DIO_LONG:
+		outl(m_ptr->m_lsys_krn_sys_devio.پورت,
+			m_ptr->m_lsys_krn_sys_devio.مقدار);
+		اكسر;
+    	افتراضي: أرجع(EINVAL);
       } 
     }
-    return(OK);
+    أرجع(OK);
 }
 
-#endif /* USE_DEVIO */
+#پایان_اگر /* USE_DEVIO */

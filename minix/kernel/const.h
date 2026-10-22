@@ -1,53 +1,53 @@
 /* General macros and constants used by the kernel. */
-#ifndef CONST_H
-#define CONST_H
+#اگر_تعریف_نشده CONST_H
+#تعریف_کن CONST_H
 
-#include <minix/config.h>
-#include <minix/bitmap.h>
+#ضمن <minix/config.h>
+#ضمن <minix/bitmap.h>
 
-#include "debug.h"
+#ضمن "debug.h"
 
 /* Translate an endpoint number to a process number, return success. */
-#ifndef isokendpt
-#define isokendpt(e,p) isokendpt_d((e),(p),0)
-#define okendpt(e,p)   isokendpt_d((e),(p),1)
-#endif
+#اگر_تعریف_نشده isokendpt
+#تعریف_کن isokendpt(e,p) isokendpt_d((e),(p),0)
+#تعریف_کن okendpt(e,p)   isokendpt_d((e),(p),1)
+#پایان_اگر
 
 /* Constants used in virtual_copy(). Values must be 0 and 1, respectively. */
-#define _SRC_	0
-#define _DST_	1
+#تعریف_کن _SRC_	0
+#تعریف_کن _DST_	1
 
-#define get_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) & (1 << CHUNK_OFFSET(bit) ))
-#define get_sys_bits(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) )
-#define set_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) |= (1 << CHUNK_OFFSET(bit) ))
-#define unset_sys_bit(map,bit) \
-	( MAP_CHUNK((map).chunk,bit) &= ~(1 << CHUNK_OFFSET(bit) ))
+#تعریف_کن get_sys_بیت(map,بیت) \
+	( MAP_CHUNK((map).chunk,بیت) & (1 << CHUNK_جابه_جایی(بیت) ))
+#تعریف_کن get_sys_بیتها(map,بیت) \
+	( MAP_CHUNK((map).chunk,بیت) )
+#تعریف_کن مجموعه_sys_بیت(map,بیت) \
+	( MAP_CHUNK((map).chunk,بیت) |= (1 << CHUNK_جابه_جایی(بیت) ))
+#تعریف_کن unset_sys_بیت(map,بیت) \
+	( MAP_CHUNK((map).chunk,بیت) &= ~(1 << CHUNK_جابه_جایی(بیت) ))
 
 /* for kputc() */
-#define END_OF_KMESS	0
+#تعریف_کن انتها_از_KMESS	0
 
 /* User limits. */
-#ifndef USR_DATATOP
-#ifndef _MINIX_MAGIC
-#define USR_DATATOP 0xF0000000
-#else
-#define USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
-#endif
-#endif
+#اگر_تعریف_نشده USR_DATATOP
+#اگر_تعریف_نشده _MINIX_MAGIC
+#تعریف_کن USR_DATATOP 0xF0000000
+#وإلا
+#تعریف_کن USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
+#پایان_اگر
+#پایان_اگر
 
-#ifndef USR_STACKTOP
-#define USR_STACKTOP USR_DATATOP
-#endif
+#اگر_تعریف_نشده USR_STACKTOP
+#تعریف_کن USR_STACKTOP USR_DATATOP
+#پایان_اگر
 
-#ifndef USR_DATATOP_COMPACT
-#define USR_DATATOP_COMPACT USR_DATATOP
-#endif
+#اگر_تعریف_نشده USR_DATATOP_COMPACT
+#تعریف_کن USR_DATATOP_COMPACT USR_DATATOP
+#پایان_اگر
 
-#ifndef USR_STACKTOP_COMPACT
-#define USR_STACKTOP_COMPACT 0x50000000
-#endif
+#اگر_تعریف_نشده USR_STACKTOP_COMPACT
+#تعریف_کن USR_STACKTOP_COMPACT 0x50000000
+#پایان_اگر
 
-#endif /* CONST_H */
+#پایان_اگر /* CONST_H */

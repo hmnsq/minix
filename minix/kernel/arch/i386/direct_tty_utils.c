@@ -1,130 +1,130 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#ضمن <minix/minlib.h>
+#ضمن <minix/cpufeature.h>
+#ضمن <machine/partition.h>
+#ضمن "string.h"
+#ضمن "direct_utils.h"
+#ضمن "serial.h"
+#ضمن "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+ساكن صحيح print_سطر = 1, print_ستون = 1;
 
-#include <sys/video.h>
+#ضمن <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+خارجي حرف *video_mem;
+#تعریف_کن VIDOFFSET(سطر, ستون) ((سطر) * MULTIBOOT_CONSOLE_تعداد_ستون * 2 + (ستون) * 2)
+#تعریف_کن VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_سطرها-1,MULTIBOOT_CONSOLE_تعداد_ستون-1)
 
-void direct_put_char(char c, int line, int col) 
+فراغ مستقیم_put_char(حرف c, صحيح سطر, صحيح ستون) 
 {
-	int offset = VIDOFFSET(line, col);
-	video_mem[offset] = c;
-	video_mem[offset+1] = 0x07;	/* grey-on-black */
+	صحيح جابه_جایی = VIDOFFSET(سطر, ستون);
+	video_mem[جابه_جایی] = c;
+	video_mem[جابه_جایی+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+ساكن حرف مستقیم_get_char(صحيح سطر, صحيح ستون) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	أرجع video_mem[VIDOFFSET(سطر, ستون)];
 }
 
-void direct_cls(void)
+فراغ مستقیم_cls(فراغ)
 {
 	/* Clear screen */
-	int i,j;
+	صحيح i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
-			direct_put_char(' ', j, i);
+	لكل(i = 0; i < MULTIBOOT_CONSOLE_تعداد_ستون; i++)
+		لكل(j = 0; j < MULTIBOOT_CONSOLE_سطرها; j++)
+			مستقیم_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_سطر = print_ستون = 0;
 
 	/* Tell video hardware origin is 0. */
-	outb(C_6845+INDEX, VID_ORG);
-	outb(C_6845+DATA, 0);
-	outb(C_6845+INDEX, VID_ORG+1);
-	outb(C_6845+DATA, 0);
+	outb(C_6845+شاخص_2, VID_ORG);
+	outb(C_6845+داده_2, 0);
+	outb(C_6845+شاخص_2, VID_ORG+1);
+	outb(C_6845+داده_2, 0);
 }
 
-static void direct_scroll_up(int lines) 
+ساكن فراغ مستقیم_scroll_به_بالا(صحيح سطرها) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
-			direct_put_char(c, i, j);
+	صحيح i, j;
+	لكل (i = 0; i < MULTIBOOT_CONSOLE_سطرها; i++ ) {
+		لكل (j = 0; j < MULTIBOOT_CONSOLE_تعداد_ستون; j++ ) {
+			حرف c = 0;
+			إذا(i < MULTIBOOT_CONSOLE_سطرها-سطرها)
+				c = مستقیم_get_char(i + سطرها, j);
+			مستقیم_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_سطر-= سطرها;
 }
 
-void direct_print_char(char c)
+فراغ مستقیم_print_char(حرف c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	طالما (print_سطر >= MULTIBOOT_CONSOLE_سطرها)
+		مستقیم_scroll_به_بالا(1);
 
-#define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+#تعریف_کن TABWIDTH 8
+	إذا(c == '\t') {
+		إذا(print_ستون >= MULTIBOOT_CONSOLE_تعداد_ستون - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} وإلا {
+			افعل {
+				مستقیم_put_char(' ', print_سطر, print_ستون++);
+			} طالما(print_ستون % TABWIDTH);
+			أرجع;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
-		print_col = 0;
-		return;
+	إذا (c == '\n') {
+		طالما (print_ستون < MULTIBOOT_CONSOLE_تعداد_ستون)
+			مستقیم_put_char(' ', print_سطر, print_ستون++);
+		print_سطر++;
+		print_ستون = 0;
+		أرجع;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	مستقیم_put_char(c, print_سطر, print_ستون++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
-		print_col = 0;
+	إذا (print_ستون >= MULTIBOOT_CONSOLE_تعداد_ستون) {
+		print_سطر++;
+		print_ستون = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	طالما (print_سطر >= MULTIBOOT_CONSOLE_سطرها)
+		مستقیم_scroll_به_بالا(1);
 }
 
-void direct_print(const char *str)
+فراغ مستقیم_print(ثابت حرف *str)
 {
-	while (*str) {
-		direct_print_char(*str);
+	طالما (*str) {
+		مستقیم_print_char(*str);
 		str++;
 	}
 }
 
 /* Standard and AT keyboard.  (PS/2 MCA implies AT throughout.) */
-#define KEYBD		0x60	/* I/O port for keyboard data */
-#define KB_STATUS	0x64	/* I/O port for status on AT */
-#define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
-#define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
+#تعریف_کن KEYBD		0x60	/* I/O port for keyboard data */
+#تعریف_کن KB_وضعیت	0x64	/* I/O port for status on AT */
+#تعریف_کن KB_بیرون_پر	0x01	/* status bit set when keypress char pending */
+#تعریف_کن KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+صحيح مستقیم_read_char(بیعلامت حرف *ch)
 {
-	unsigned long sb;
+	بیعلامت دراز sb;
 
-	sb = inb(KB_STATUS);
+	sb = inb(KB_وضعیت);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	إذا (!(sb & KB_بیرون_پر)) {
+		أرجع 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	إذا (!(sb & KB_AUX_BYTE))
+		أرجع 1;
 
-	return 0;
+	أرجع 0;
 }
 

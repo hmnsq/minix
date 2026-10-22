@@ -1,18 +1,18 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#ضمن "kernel/system.h"
+#ضمن <minix/endpoint.h>
 
-#if USE_PADCONF
+#إذا USE_PADCONF
 
 /* get arch specific arch_padconf_set() */
-#include "bsp_padconf.h"
+#ضمن "bsp_padconf.h"
 
 /*===========================================================================*
  *                                do_padconf                                 *
  *===========================================================================*/
-int do_padconf(struct proc *caller_ptr, message *m_ptr)
+صحيح do_padconf(بنية proc *caller_ptr, پیام *m_ptr)
 {
-	return bsp_padconf_set(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_MASK,
-	    m_ptr->PADCONF_VALUE);
+	أرجع bsp_padconf_مجموعه(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_ماسک,
+	    m_ptr->PADCONF_مقدار);
 }
 
-#endif /* USE_PADCONF */
+#پایان_اگر /* USE_PADCONF */

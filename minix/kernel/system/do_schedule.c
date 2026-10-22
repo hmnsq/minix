@@ -1,30 +1,30 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include "kernel/clock.h"
+#ضمن "kernel/system.h"
+#ضمن <minix/endpoint.h>
+#ضمن "kernel/clock.h"
 
 /*===========================================================================*
  *				do_schedule				     *
  *===========================================================================*/
-int do_schedule(struct proc * caller, message * m_ptr)
+صحيح do_زمانبندی(بنية proc * caller, پیام * m_ptr)
 {
-	struct proc *p;
-	int proc_nr;
-	int priority, quantum, cpu, niced;
+	بنية proc *p;
+	صحيح proc_nr;
+	صحيح اولویت, برش_زمانی, cpu, niced;
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedule.endpoint, &proc_nr))
-		return EINVAL;
+	إذا (!isokendpt(m_ptr->m_lsys_krn_زمانبندی.endpoint, &proc_nr))
+		أرجع EINVAL;
 
 	p = proc_addr(proc_nr);
 
 	/* Only this process' scheduler can schedule it */
-	if (caller != p->p_scheduler)
-		return(EPERM);
+	إذا (caller != p->p_scheduler)
+		أرجع(EPERM);
 
 	/* Try to schedule the process. */
-	priority = m_ptr->m_lsys_krn_schedule.priority;
-	quantum = m_ptr->m_lsys_krn_schedule.quantum;
-	cpu = m_ptr->m_lsys_krn_schedule.cpu;
-	niced = !!(m_ptr->m_lsys_krn_schedule.niced);
+	اولویت = m_ptr->m_lsys_krn_زمانبندی.اولویت;
+	برش_زمانی = m_ptr->m_lsys_krn_زمانبندی.برش_زمانی;
+	cpu = m_ptr->m_lsys_krn_زمانبندی.cpu;
+	niced = !!(m_ptr->m_lsys_krn_زمانبندی.niced);
 
-	return sched_proc(p, priority, quantum, cpu, niced);
+	أرجع sched_proc(p, اولویت, برش_زمانی, cpu, niced);
 }

@@ -10,20 +10,20 @@
  *   m_krn_lsys_sys_times.real_ticks
  */
 
-#include "kernel/system.h"
+#ضمن "kernel/system.h"
 
-#include <minix/endpoint.h>
+#ضمن <minix/endpoint.h>
 
-#if USE_TIMES
+#إذا USE_TIMES
 
 /*===========================================================================*
  *				do_times				     *
  *===========================================================================*/
-int do_times(struct proc * caller, message * m_ptr)
+صحيح do_times(بنية proc * caller, پیام * m_ptr)
 {
 /* Handle sys_times().  Retrieve the accounting information. */
-  register const struct proc *rp;
-  int proc_nr;
+  سجل ثابت بنية proc *rp;
+  صحيح proc_nr;
   endpoint_t e_proc_nr;
 
   /* Insert the times needed by the SYS_TIMES kernel call in the message. 
@@ -32,15 +32,15 @@ int do_times(struct proc * caller, message * m_ptr)
    */
   e_proc_nr = (m_ptr->m_lsys_krn_sys_times.endpt == SELF) ?
       caller->p_endpoint : m_ptr->m_lsys_krn_sys_times.endpt;
-  if(e_proc_nr != NONE && isokendpt(e_proc_nr, &proc_nr)) {
+  إذا(e_proc_nr != NONE && isokendpt(e_proc_nr, &proc_nr)) {
       rp = proc_addr(proc_nr);
-      m_ptr->m_krn_lsys_sys_times.user_time   = rp->p_user_time;
-      m_ptr->m_krn_lsys_sys_times.system_time = rp->p_sys_time;
+      m_ptr->m_krn_lsys_sys_times.user_زمان   = rp->p_user_زمان;
+      m_ptr->m_krn_lsys_sys_times.system_زمان = rp->p_sys_زمان;
   }
   m_ptr->m_krn_lsys_sys_times.boot_ticks = get_monotonic();
   m_ptr->m_krn_lsys_sys_times.real_ticks = get_realtime();
-  m_ptr->m_krn_lsys_sys_times.boot_time = get_boottime();
-  return(OK);
+  m_ptr->m_krn_lsys_sys_times.boot_زمان = get_boottime();
+  أرجع(OK);
 }
 
-#endif /* USE_TIMES */
+#پایان_اگر /* USE_TIMES */

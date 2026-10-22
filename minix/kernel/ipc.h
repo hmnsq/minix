@@ -1,29 +1,29 @@
-#ifndef IPC_H
-#define IPC_H
+#اگر_تعریف_نشده IPC_H
+#تعریف_کن IPC_H
 
 /* This header file defines constants for MINIX inter-process communication.
  * These definitions are used in the file proc.c.
  */
-#include <minix/com.h>
-#include <minix/ipcconst.h>
+#ضمن <minix/com.h>
+#ضمن <minix/ipcconst.h>
 
 /* Masks and flags for system calls. */
-#define NON_BLOCKING    0x0080  /* do not block if target not ready */
-#define FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
+#تعریف_کن NON_BLOCKING    0x0080  /* do not block if target not ready */
+#تعریف_کن FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
 
-#define WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
+#تعریف_کن WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
 	((RTS_ISSET(dst_ptr, RTS_RECEIVING) && \
 	!RTS_ISSET(dst_ptr, RTS_SENDING)) && \
 	CANRECEIVE(dst_ptr->p_getfrom_e,src_e,dst_ptr,m_src_v,m_src_p))
 
-#define CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
+#تعریف_کن CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
 	(((receive_e) == ANY || (receive_e) == (src_e)) && \
-	(priv(dst_ptr)->s_ipcf == NULL || \
-	allow_ipc_filtered_msg(dst_ptr,src_e,m_src_v,m_src_p)))
+	(priv(dst_ptr)->s_ipcf == عدم || \
+	allow_ipc_filtered_پیام(dst_ptr,src_e,m_src_v,m_src_p)))
 
 /* IPC status code macros. */
-#define IPC_STATUS_GET(p)	((p)->p_reg.IPC_STATUS_REG)
-#define IPC_STATUS_CLEAR(p)	((p)->p_reg.IPC_STATUS_REG = 0)
+#تعریف_کن IPC_وضعیت_GET(p)	((p)->p_reg.IPC_وضعیت_REG)
+#تعریف_کن IPC_وضعیت_CLEAR(p)	((p)->p_reg.IPC_وضعیت_REG = 0)
 
 /*
  * XXX: the following check is used to set the status code only on RECEIVE.
@@ -37,14 +37,14 @@
  * A possible reliable solution is to improve our Posix signal handling
  * implementation and guarantee SENDREC atomicity w.r.t. the process context.
  */
-#define IPC_STATUS_ADD(p, m)	do { \
-        if(!((p)->p_misc_flags & MF_REPLY_PEND)) { \
-            (p)->p_reg.IPC_STATUS_REG |= (m); \
+#تعریف_کن IPC_وضعیت_جمع_کن(p, m)	افعل { \
+        إذا(!((p)->p_misc_flags & MF_پاسخ_PEND)) { \
+            (p)->p_reg.IPC_وضعیت_REG |= (m); \
         } \
-    } while(0)
-#define IPC_STATUS_ADD_CALL(p, call) \
-    IPC_STATUS_ADD(p, IPC_STATUS_CALL_TO(call))
-#define IPC_STATUS_ADD_FLAGS(p, flags) \
-    IPC_STATUS_ADD(p, IPC_STATUS_FLAGS(flags))
+    } طالما(0)
+#تعریف_کن IPC_وضعیت_جمع_کن_CALL(p, call) \
+    IPC_وضعیت_جمع_کن(p, IPC_وضعیت_CALL_مقصد(call))
+#تعریف_کن IPC_وضعیت_جمع_کن_FLAGS(p, flags) \
+    IPC_وضعیت_جمع_کن(p, IPC_وضعیت_FLAGS(flags))
 
-#endif /* IPC_H */
+#پایان_اگر /* IPC_H */

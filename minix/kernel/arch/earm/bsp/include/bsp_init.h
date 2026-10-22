@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#اگر_تعریف_نشده _BSP_INIT_H_
+#تعریف_کن _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+فراغ bsp_init(فراغ);
 
-#endif /* __BSP_INIT_H__ */
+#پایان_اگر /* __BSP_INIT_H__ */

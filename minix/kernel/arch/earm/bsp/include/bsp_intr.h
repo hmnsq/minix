@@ -1,12 +1,12 @@
-#ifndef _BSP_INTR_H_
-#define _BSP_INTR_H_
+#اگر_تعریف_نشده _BSP_INTR_H_
+#تعریف_کن _BSP_INTR_H_
 
-#ifndef __ASSEMBLY__
+#اگر_تعریف_نشده __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
-void bsp_irq_handle(void);
+فراغ bsp_irq_unmask(صحيح irq);
+فراغ bsp_irq_ماسک(صحيح irq);
+فراغ bsp_irq_handle(فراغ);
 
-#endif /* __ASSEMBLY__ */
+#پایان_اگر /* __ASSEMBLY__ */
 
-#endif /* _BSP_INTR_H_ */
+#پایان_اگر /* _BSP_INTR_H_ */
