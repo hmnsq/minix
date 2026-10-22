@@ -6,28 +6,28 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-#include <minix/safecopies.h>
-#include <machine/archtypes.h>
-#include <machine/signal.h>
-#include <machine/frame.h>
+#അന്തര്ഭാവ <minix/safecopies.h>
+#അന്തര്ഭാവ <machine/archtypes.h>
+#അന്തര്ഭാവ <machine/signal.h>
+#അന്തര്ഭാവ <machine/frame.h>
 
 /* Struct declarations. */
-struct proc;
-struct ipc_filter_s;
+ഘടന proc;
+ഘടന ipc_filter_s;
 
 /* clock.c */
-void init_clock(void);
-clock_t get_realtime(void);
-void set_realtime(clock_t);
-void set_adjtime_delta(int32_t);
-clock_t get_monotonic(void);
-void set_boottime(time_t);
-time_t get_boottime(void);
-void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, int arg);
-void reset_kernel_timer(minix_timer_t *tp);
-void ser_dump_proc(void);
+ശൂന്യം init_clock(ശൂന്യം);
+clock_t get_realtime(ശൂന്യം);
+ശൂന്യം set_realtime(clock_t);
+ശൂന്യം set_adjtime_delta(int32_t);
+clock_t get_monotonic(ശൂന്യം);
+ശൂന്യം set_boottime(time_t);
+time_t get_boottime(ശൂന്യം);
+ശൂന്യം set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, പൂർണ്ണസംഖ്യ arg);
+ശൂന്യം reset_kernel_timer(minix_timer_t *tp);
+ശൂന്യം ser_dump_proc(ശൂന്യം);
 
-void cycles_accounting_init(void);
+ശൂന്യം cycles_accounting_init(ശൂന്യം);
 /*
  * This functions start and stop accounting for process, kernel or idle cycles.
  * It inherently have to account for some kernel cycles for process too,
@@ -35,217 +35,217 @@ void cycles_accounting_init(void);
  * possible before returning to userspace. These function is architecture
  * dependent
  */
-void context_stop(struct proc * p);
+ശൂന്യം context_stop(ഘടന proc * p);
 /* this is a wrapper to make calling it from assembly easier */
-void context_stop_idle(void);
-void get_cpu_ticks(unsigned int cpu, uint64_t ticks[MINIX_CPUSTATES]);
-int restore_fpu(struct proc *);
-void save_fpu(struct proc *);
-void save_local_fpu(struct proc *, int retain);
-void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
+ശൂന്യം context_stop_idle(ശൂന്യം);
+ശൂന്യം get_cpu_ticks(unsigned പൂർണ്ണസംഖ്യ cpu, uint64_t ticks[MINIX_CPUSTATES]);
+പൂർണ്ണസംഖ്യ restore_fpu(ഘടന proc *);
+ശൂന്യം save_fpu(ഘടന proc *);
+ശൂന്യം save_local_fpu(ഘടന proc *, പൂർണ്ണസംഖ്യ retain);
+ശൂന്യം fpu_sigcontext(ഘടന proc *, ഘടന sigframe_sigcontext *fr, ഘടന
 	sigcontext *sc);
 
 /* main.c */
 #ifndef UNPAGED
 #define kmain __k_unpaged_kmain
 #endif
-void kmain(kinfo_t *cbi);
-void prepare_shutdown(int how);
-__dead void minix_shutdown(int how);
-void bsp_finish_booting(void);
+ശൂന്യം kmain(kinfo_t *cbi);
+ശൂന്യം prepare_shutdown(പൂർണ്ണസംഖ്യ how);
+__dead ശൂന്യം minix_shutdown(പൂർണ്ണസംഖ്യ how);
+ശൂന്യം bsp_finish_booting(ശൂന്യം);
 
 /* proc.c */
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3);
-void proc_init(void);
-int cancel_async(struct proc *src, struct proc *dst);
-int has_pending_notify(struct proc * caller, int src_p);
-int has_pending_asend(struct proc * caller, int src_p);
-void unset_notify_pending(struct proc * caller, int src_p);
-int mini_notify(const struct proc *src, endpoint_t dst);
-void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag);
-void enqueue(struct proc *rp);
-void dequeue(struct proc *rp);
-void switch_to_user(void);
-void arch_proc_reset(struct proc *rp);
-void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
-	int user, int restorestyle);
-struct proc * arch_finish_switch_to_user(void);
-struct proc *endpoint_lookup(endpoint_t ep);
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+പൂർണ്ണസംഖ്യ do_ipc(reg_t r1, reg_t r2, reg_t r3);
+ശൂന്യം proc_init(ശൂന്യം);
+പൂർണ്ണസംഖ്യ cancel_async(ഘടന proc *src, ഘടന proc *dst);
+പൂർണ്ണസംഖ്യ has_pending_notify(ഘടന proc * caller, പൂർണ്ണസംഖ്യ src_p);
+പൂർണ്ണസംഖ്യ has_pending_asend(ഘടന proc * caller, പൂർണ്ണസംഖ്യ src_p);
+ശൂന്യം unset_notify_pending(ഘടന proc * caller, പൂർണ്ണസംഖ്യ src_p);
+പൂർണ്ണസംഖ്യ mini_notify(സ്ഥിരം ഘടന proc *src, endpoint_t dst);
+ശൂന്യം vm_suspend(ഘടന proc *caller, സ്ഥിരം ഘടന proc *target,
+        സ്ഥിരം vir_bytes linaddr, സ്ഥിരം vir_bytes len, സ്ഥിരം പൂർണ്ണസംഖ്യ type,
+        സ്ഥിരം പൂർണ്ണസംഖ്യ writeflag);
+ശൂന്യം enqueue(ഘടന proc *rp);
+ശൂന്യം dequeue(ഘടന proc *rp);
+ശൂന്യം switch_to_user(ശൂന്യം);
+ശൂന്യം arch_proc_reset(ഘടന proc *rp);
+ശൂന്യം arch_proc_setcontext(ഘടന proc *rp, ഘടന stackframe_s *state,
+	പൂർണ്ണസംഖ്യ user, പൂർണ്ണസംഖ്യ restorestyle);
+ഘടന proc * arch_finish_switch_to_user(ശൂന്യം);
+ഘടന proc *endpoint_lookup(endpoint_t ep);
+#എങ്കിൽ DEBUG_ENABLE_IPC_WARNINGS
+പൂർണ്ണസംഖ്യ isokendpt_f(സ്ഥിരം അക്ഷരം *file, പൂർണ്ണസംഖ്യ വരി, endpoint_t e, പൂർണ്ണസംഖ്യ *p, പൂർണ്ണസംഖ്യ
 	f);
 #define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
-#else
-int isokendpt_f(endpoint_t e, int *p, int f);
+#അല്ലെങ്കിൽ
+പൂർണ്ണസംഖ്യ isokendpt_f(endpoint_t e, പൂർണ്ണസംഖ്യ *p, പൂർണ്ണസംഖ്യ f);
 #define isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
 #endif
-void proc_no_time(struct proc *p);
-void reset_proc_accounting(struct proc *p);
-void flag_account(struct proc *p, int flag);
-int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+ശൂന്യം proc_no_time(ഘടന proc *p);
+ശൂന്യം reset_proc_accounting(ഘടന proc *p);
+ശൂന്യം flag_account(ഘടന proc *p, പൂർണ്ണസംഖ്യ flag);
+പൂർണ്ണസംഖ്യ try_deliver_senda(ഘടന proc *caller_ptr, asynmsg_t *table, size_t
 	size);
 
 /* start.c */
-void cstart(void);
-char *env_get(const char *key);
+ശൂന്യം cstart(ശൂന്യം);
+അക്ഷരം *env_get(സ്ഥിരം അക്ഷരം *താക്കോൽ);
 
 /* system.c */
-int get_priv(register struct proc *rc, int proc_type);
-void set_sendto_bit(const struct proc *rc, int id);
-void unset_sendto_bit(const struct proc *rc, int id);
-void fill_sendto_mask(const struct proc *rc, sys_map_t *map);
-int send_sig(endpoint_t proc_nr, int sig_nr);
-void cause_sig(proc_nr_t proc_nr, int sig_nr);
-void sig_delay_done(struct proc *rp);
-void send_diag_sig(void);
-void kernel_call(message *m_user, struct proc * caller);
-void system_init(void);
-void clear_endpoint(struct proc *rc);
-void clear_ipc_refs(struct proc *rc, int caller_ret);
-void kernel_call_resume(struct proc *p);
-int sched_proc(struct proc *rp, int priority, int quantum, int cpu, int niced);
-int add_ipc_filter(struct proc *rp, int type,
+പൂർണ്ണസംഖ്യ get_priv(രജിസ്റ്റർ ഘടന proc *rc, പൂർണ്ണസംഖ്യ proc_type);
+ശൂന്യം set_sendto_bit(സ്ഥിരം ഘടന proc *rc, പൂർണ്ണസംഖ്യ id);
+ശൂന്യം unset_sendto_bit(സ്ഥിരം ഘടന proc *rc, പൂർണ്ണസംഖ്യ id);
+ശൂന്യം fill_sendto_mask(സ്ഥിരം ഘടന proc *rc, sys_map_t *map);
+പൂർണ്ണസംഖ്യ send_sig(endpoint_t proc_nr, പൂർണ്ണസംഖ്യ sig_nr);
+ശൂന്യം cause_sig(proc_nr_t proc_nr, പൂർണ്ണസംഖ്യ sig_nr);
+ശൂന്യം sig_delay_done(ഘടന proc *rp);
+ശൂന്യം send_diag_sig(ശൂന്യം);
+ശൂന്യം kernel_call(message *m_user, ഘടന proc * caller);
+ശൂന്യം system_init(ശൂന്യം);
+ശൂന്യം clear_endpoint(ഘടന proc *rc);
+ശൂന്യം clear_ipc_refs(ഘടന proc *rc, പൂർണ്ണസംഖ്യ caller_ret);
+ശൂന്യം kernel_call_resume(ഘടന proc *p);
+പൂർണ്ണസംഖ്യ sched_proc(ഘടന proc *rp, പൂർണ്ണസംഖ്യ priority, പൂർണ്ണസംഖ്യ quantum, പൂർണ്ണസംഖ്യ cpu, പൂർണ്ണസംഖ്യ niced);
+പൂർണ്ണസംഖ്യ add_ipc_filter(ഘടന proc *rp, പൂർണ്ണസംഖ്യ type,
     vir_bytes address, size_t length);
-void clear_ipc_filters(struct proc *rp);
-int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+ശൂന്യം clear_ipc_filters(ഘടന proc *rp);
+പൂർണ്ണസംഖ്യ check_ipc_filter(ഘടന ipc_filter_s *ipcf, പൂർണ്ണസംഖ്യ fill_flags);
+പൂർണ്ണസംഖ്യ allow_ipc_filtered_സന്ദേശം(ഘടന proc *rp, endpoint_t src_e,
     vir_bytes m_src_v, message *m_src_p);
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
-int priv_add_irq(struct proc *rp, int irq);
-int priv_add_io(struct proc *rp, struct io_range *ior);
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
+പൂർണ്ണസംഖ്യ allow_ipc_filtered_memreq(ഘടന proc *src_rp, ഘടന proc *dst_rp);
+പൂർണ്ണസംഖ്യ priv_add_irq(ഘടന proc *rp, പൂർണ്ണസംഖ്യ irq);
+പൂർണ്ണസംഖ്യ priv_add_io(ഘടന proc *rp, ഘടന io_range *ior);
+പൂർണ്ണസംഖ്യ priv_add_mem(ഘടന proc *rp, ഘടന minix_mem_range *memr);
 
 /* system/do_vtimer.c */
-void vtimer_check(struct proc *rp);
+ശൂന്യം vtimer_check(ഘടന proc *rp);
 
 /* interrupt.c */
-void put_irq_handler(irq_hook_t *hook, int irq, irq_handler_t handler);
-void rm_irq_handler(const irq_hook_t *hook);
-void enable_irq(const irq_hook_t *hook);
-int disable_irq(const irq_hook_t *hook);
+ശൂന്യം put_irq_handler(irq_hook_t *hook, പൂർണ്ണസംഖ്യ irq, irq_handler_t handler);
+ശൂന്യം rm_irq_handler(സ്ഥിരം irq_hook_t *hook);
+ശൂന്യം enable_irq(സ്ഥിരം irq_hook_t *hook);
+പൂർണ്ണസംഖ്യ disable_irq(സ്ഥിരം irq_hook_t *hook);
 
-void interrupts_enable(void);
-void interrupts_disable(void);
+ശൂന്യം interrupts_enable(ശൂന്യം);
+ശൂന്യം interrupts_disable(ശൂന്യം);
 
 /* debug.c */
-int runqueues_ok(void);
+പൂർണ്ണസംഖ്യ runqueues_ok(ശൂന്യം);
 #ifndef CONFIG_SMP
 #define runqueues_ok_local runqueues_ok
-#else
+#അല്ലെങ്കിൽ
 #define runqueues_ok_local() runqueues_ok_cpu(cpuid)
-int runqueues_ok_cpu(unsigned cpu);
+പൂർണ്ണസംഖ്യ runqueues_ok_cpu(unsigned cpu);
 #endif
-char *rtsflagstr(u32_t flags);
-char *miscflagstr(u32_t flags);
-char *schedulerstr(struct proc *scheduler);
+അക്ഷരം *rtsflagstr(u32_t flags);
+അക്ഷരം *miscflagstr(u32_t flags);
+അക്ഷരം *schedulerstr(ഘടന proc *scheduler);
 /* prints process information */
-void print_proc(struct proc *pp);
+ശൂന്യം print_proc(ഘടന proc *pp);
 /* prints the given process and recursively all processes it depends on */
-void print_proc_recursive(struct proc *pp);
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-    char operation, int printparams);
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgkcall(message *msg, struct proc *proc);
-void hook_ipc_msgkresult(message *msg, struct proc *proc);
-void hook_ipc_clear(struct proc *proc);
+ശൂന്യം print_proc_recursive(ഘടന proc *pp);
+ശൂന്യം printmsg(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst,
+    അക്ഷരം operation, പൂർണ്ണസംഖ്യ printparams);
+#എങ്കിൽ DEBUG_IPC_HOOK
+ശൂന്യം hook_ipc_msgrecv(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst);
+ശൂന്യം hook_ipc_msgsend(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst);
+ശൂന്യം hook_ipc_msgkcall(message *സന്ദേശം, ഘടന proc *proc);
+ശൂന്യം hook_ipc_msgkresult(message *സന്ദേശം, ഘടന proc *proc);
+ശൂന്യം hook_ipc_clear(ഘടന proc *proc);
 #endif
 
 /* system/do_safecopy.c */
-struct cp_sfinfo; /* external callers may only provide NULL */
-int verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, int,
-	vir_bytes, vir_bytes *, endpoint_t *, struct cp_sfinfo *);
+ഘടന cp_sfinfo; /* external callers may only provide NULL */
+പൂർണ്ണസംഖ്യ verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, പൂർണ്ണസംഖ്യ,
+	vir_bytes, vir_bytes *, endpoint_t *, ഘടന cp_sfinfo *);
 
 /* system/do_diagctl.c */
-int do_diagctl(struct proc * caller, message *m);
+പൂർണ്ണസംഖ്യ do_diagctl(ഘടന proc * caller, message *m);
 
-#if SPROFILE
+#എങ്കിൽ SPROFILE
 /* profile.c */
-void init_profile_clock(u32_t);
-void stop_profile_clock(void);
+ശൂന്യം init_profile_clock(u32_t);
+ശൂന്യം stop_profile_clock(ശൂന്യം);
 #endif
 
 /* functions defined in architecture-dependent files. */
-void prot_init(void);
-void arch_post_init(void);
-void arch_set_secondary_ipc_return(struct proc *, u32_t val);
+ശൂന്യം prot_init(ശൂന്യം);
+ശൂന്യം arch_post_init(ശൂന്യം);
+ശൂന്യം arch_set_secondary_ipc_return(ഘടന proc *, u32_t val);
 phys_bytes phys_copy(phys_bytes source, phys_bytes dest, phys_bytes
-	count);
-void phys_copy_fault(void);
-void phys_copy_fault_in_kernel(void);
-void memset_fault(void);
-void memset_fault_in_kernel(void);
+	എണ്ണം);
+ശൂന്യം phys_copy_fault(ശൂന്യം);
+ശൂന്യം phys_copy_fault_in_kernel(ശൂന്യം);
+ശൂന്യം memset_fault(ശൂന്യം);
+ശൂന്യം memset_fault_in_kernel(ശൂന്യം);
 #define virtual_copy(src, dst, bytes) \
-				virtual_copy_f(NULL, src, dst, bytes, 0)
+				virtual_copy_f(ശൂന്യ, src, dst, bytes, 0)
 #define virtual_copy_vmcheck(caller, src, dst, bytes) \
 				virtual_copy_f(caller, src, dst, bytes, 1)
-int virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
-	vir_addr *dst, vir_bytes bytes, int vmcheck);
-int data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
+പൂർണ്ണസംഖ്യ virtual_copy_f(ഘടന proc * caller, ഘടന vir_addr *src, ഘടന
+	vir_addr *dst, vir_bytes bytes, പൂർണ്ണസംഖ്യ vmcheck);
+പൂർണ്ണസംഖ്യ data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
 	vir_bytes to_addr, size_t bytes);
-int data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
+പൂർണ്ണസംഖ്യ data_copy_vmcheck(ഘടന proc *, endpoint_t from, vir_bytes
 	from_addr, endpoint_t to, vir_bytes to_addr, size_t bytes);
-phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
+phys_bytes umap_virtual(ഘടന proc* rp, പൂർണ്ണസംഖ്യ seg, vir_bytes vir_addr,
 	vir_bytes bytes);
 phys_bytes seg2phys(u16_t);
-int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
-int intr_init(int);
-void halt_cpu(void);
-void arch_init(void);
-void arch_boot_proc(struct boot_image *b, struct proc *p);
-void cpu_identify(void);
+പൂർണ്ണസംഖ്യ vm_memset(ഘടന proc *caller, endpoint_t who, phys_bytes dst,
+	പൂർണ്ണസംഖ്യ pattern, phys_bytes എണ്ണം);
+പൂർണ്ണസംഖ്യ intr_init(പൂർണ്ണസംഖ്യ);
+ശൂന്യം halt_cpu(ശൂന്യം);
+ശൂന്യം arch_init(ശൂന്യം);
+ശൂന്യം arch_boot_proc(ഘടന boot_image *b, ഘടന proc *p);
+ശൂന്യം cpu_identify(ശൂന്യം);
 /* arch dependent FPU initialization per CPU */
-void fpu_init(void);
+ശൂന്യം fpu_init(ശൂന്യം);
 /* returns true if pfu is present and initialized */
-int is_fpu(void);
-void ser_putc(char);
-__dead void arch_shutdown(int);
-void restore_user_context(struct proc * p);
-void read_tsc(u32_t *high, u32_t *low);
-int arch_init_profile_clock(u32_t freq);
-void arch_stop_profile_clock(void);
-void arch_ack_profile_clock(void);
-void do_ser_debug(void);
-int arch_get_params(char *parm, int max);
-void memory_init(void);
-void mem_clear_mapcache(void);
-void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
-int arch_do_vmctl(message *m_ptr, struct proc *p);
-int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
-	size_t count);
-void proc_stacktrace(struct proc *proc);
-int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
+പൂർണ്ണസംഖ്യ is_fpu(ശൂന്യം);
+ശൂന്യം ser_putc(അക്ഷരം);
+__dead ശൂന്യം arch_shutdown(പൂർണ്ണസംഖ്യ);
+ശൂന്യം restore_user_context(ഘടന proc * p);
+ശൂന്യം read_tsc(u32_t *മുകളിലെ, u32_t *താഴെയുള്ള);
+പൂർണ്ണസംഖ്യ arch_init_profile_clock(u32_t freq);
+ശൂന്യം arch_stop_profile_clock(ശൂന്യം);
+ശൂന്യം arch_ack_profile_clock(ശൂന്യം);
+ശൂന്യം do_ser_debug(ശൂന്യം);
+പൂർണ്ണസംഖ്യ arch_get_params(അക്ഷരം *parm, പൂർണ്ണസംഖ്യ max);
+ശൂന്യം memory_init(ശൂന്യം);
+ശൂന്യം mem_clear_mapcache(ശൂന്യം);
+ശൂന്യം arch_proc_init(ഘടന proc *pr, u32_t, u32_t, u32_t, അക്ഷരം *);
+പൂർണ്ണസംഖ്യ arch_do_vmctl(message *m_ptr, ഘടന proc *p);
+പൂർണ്ണസംഖ്യ vm_contiguous(സ്ഥിരം ഘടന proc *targetproc, vir_bytes vir_buf,
+	size_t എണ്ണം);
+ശൂന്യം proc_stacktrace(ഘടന proc *proc);
+പൂർണ്ണസംഖ്യ vm_lookup(സ്ഥിരം ഘടന proc *proc, vir_bytes മായാ, phys_bytes
 	*result, u32_t *ptent);
-size_t vm_lookup_range(const struct proc *proc,
+size_t vm_lookup_range(സ്ഥിരം ഘടന proc *proc,
        vir_bytes vir_addr, phys_bytes *phys_addr, size_t bytes);
-void arch_do_syscall(struct proc *proc);
-int arch_phys_map(int index, phys_bytes *addr, phys_bytes *len, int
+ശൂന്യം arch_do_syscall(ഘടന proc *proc);
+പൂർണ്ണസംഖ്യ arch_phys_map(പൂർണ്ണസംഖ്യ index, phys_bytes *addr, phys_bytes *len, പൂർണ്ണസംഖ്യ
 	*flags);
-int arch_phys_map_reply(int index, vir_bytes addr);
-reg_t arch_get_sp(struct proc *p);
-int arch_enable_paging(struct proc * caller);
-int vm_check_range(struct proc *caller,
-       struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
+പൂർണ്ണസംഖ്യ arch_phys_map_reply(പൂർണ്ണസംഖ്യ index, vir_bytes addr);
+reg_t arch_get_sp(ഘടന proc *p);
+പൂർണ്ണസംഖ്യ arch_enable_paging(ഘടന proc * caller);
+പൂർണ്ണസംഖ്യ vm_check_range(ഘടന proc *caller,
+       ഘടന proc *target, vir_bytes vir_addr, size_t bytes, പൂർണ്ണസംഖ്യ writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
-void switch_address_space(struct proc * p);
-void release_address_space(struct proc *pr);
+പൂർണ്ണസംഖ്യ copy_സന്ദേശം_from_user(message * user_mbuf, message * dst);
+പൂർണ്ണസംഖ്യ copy_സന്ദേശം_to_user(message * src, message * user_mbuf);
+ശൂന്യം switch_address_space(ഘടന proc * p);
+ശൂന്യം release_address_space(ഘടന proc *pr);
 
-void enable_fpu_exception(void);
-void disable_fpu_exception(void);
-void release_fpu(struct proc * p);
-void arch_pause(void);
-short cpu_load(void);
-void busy_delay_ms(int ms);
+ശൂന്യം enable_fpu_exception(ശൂന്യം);
+ശൂന്യം disable_fpu_exception(ശൂന്യം);
+ശൂന്യം release_fpu(ഘടന proc * p);
+ശൂന്യം arch_pause(ശൂന്യം);
+short cpu_load(ശൂന്യം);
+ശൂന്യം busy_delay_ms(പൂർണ്ണസംഖ്യ ms);
 
 /* utility.c */
-void cpu_print_freq(unsigned cpu);
+ശൂന്യം cpu_print_freq(unsigned cpu);
 #endif /* __kernel__ */
 
 #endif /* PROTO_H */

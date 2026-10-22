@@ -1,34 +1,34 @@
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
+#അന്തര്ഭാവ "arch_proto.h"
 
-#include "debugreg.h"
+#അന്തര്ഭാവ "debugreg.h"
 
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
+പൂർണ്ണസംഖ്യ breakpoint_set(phys_bytes linaddr, പൂർണ്ണസംഖ്യ bp, സ്ഥിരം പൂർണ്ണസംഖ്യ flags)
 {
 	unsigned long dr7, dr7flags;
 	
-	if (bp >= BREAKPOINT_COUNT)
-		return EINVAL;
+	എങ്കിൽ (bp >= BREAKPOINT_എണ്ണം)
+		തിരികെ EINVAL;
 	
 	/* convert flags */
 	dr7flags = 0;
-	switch (flags & BREAKPOINT_FLAG_RW_MASK) {
-		case BREAKPOINT_FLAG_RW_EXEC:  dr7flags |= DR7_RW_EXEC(bp);  break;
-		case BREAKPOINT_FLAG_RW_WRITE: dr7flags |= DR7_RW_WRITE(bp); break;
-		case BREAKPOINT_FLAG_RW_RW:    dr7flags |= DR7_RW_RW(bp);    break;
-		default: return EINVAL;			
+	തിരഞ്ഞെടുപ്പ് (flags & BREAKPOINT_FLAG_RW_MASK) {
+		അവസ്ഥ BREAKPOINT_FLAG_RW_EXEC:  dr7flags |= DR7_RW_EXEC(bp);  നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_RW_WRITE: dr7flags |= DR7_RW_WRITE(bp); നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_RW_RW:    dr7flags |= DR7_RW_RW(bp);    നിർത്തുക;
+		സ്ഥിരസ്ഥിതി: തിരികെ EINVAL;			
 	}
-	switch (flags & BREAKPOINT_FLAG_LEN_MASK) {
-		case BREAKPOINT_FLAG_LEN_1: dr7flags |= DR7_LN_1(bp); break;
-		case BREAKPOINT_FLAG_LEN_2: dr7flags |= DR7_LN_2(bp); break;
-		case BREAKPOINT_FLAG_LEN_4: dr7flags |= DR7_LN_4(bp); break;
-		default: return EINVAL;	
+	തിരഞ്ഞെടുപ്പ് (flags & BREAKPOINT_FLAG_LEN_MASK) {
+		അവസ്ഥ BREAKPOINT_FLAG_LEN_1: dr7flags |= DR7_LN_1(bp); നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_LEN_2: dr7flags |= DR7_LN_2(bp); നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_LEN_4: dr7flags |= DR7_LN_4(bp); നിർത്തുക;
+		സ്ഥിരസ്ഥിതി: തിരികെ EINVAL;	
 	}
-	switch (flags & BREAKPOINT_FLAG_MODE_MASK) {
-		case BREAKPOINT_FLAG_MODE_OFF: break;
-		case BREAKPOINT_FLAG_MODE_LOCAL: dr7flags |= DR7_L(bp); break;
-		case BREAKPOINT_FLAG_MODE_GLOBAL: dr7flags |= DR7_G(bp); break;
-		default: return EINVAL;	
+	തിരഞ്ഞെടുപ്പ് (flags & BREAKPOINT_FLAG_MODE_MASK) {
+		അവസ്ഥ BREAKPOINT_FLAG_MODE_OFF: നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_MODE_LOCAL: dr7flags |= DR7_L(bp); നിർത്തുക;
+		അവസ്ഥ BREAKPOINT_FLAG_MODE_GLOBAL: dr7flags |= DR7_G(bp); നിർത്തുക;
+		സ്ഥിരസ്ഥിതി: തിരികെ EINVAL;	
 	}
 	
 	/* disable breakpoint before setting address */
@@ -37,21 +37,21 @@ int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
 	ld_dr7(dr7);
 
 	/* need to set new breakpoint? */	
-	if ((flags & BREAKPOINT_FLAG_MODE_MASK) == BREAKPOINT_FLAG_MODE_OFF)
-		return 0;
+	എങ്കിൽ ((flags & BREAKPOINT_FLAG_MODE_MASK) == BREAKPOINT_FLAG_MODE_OFF)
+		തിരികെ 0;
 			
 	/* set breakpoint address */
-	switch (bp) {
-		case 0: ld_dr0(linaddr); break;
-		case 1: ld_dr1(linaddr); break;
-		case 2: ld_dr2(linaddr); break;
-		case 3: ld_dr3(linaddr); break;
-		default: panic("%s:%d: invalid breakpoint index", __FILE__,  __LINE__);
+	തിരഞ്ഞെടുപ്പ് (bp) {
+		അവസ്ഥ 0: ld_dr0(linaddr); നിർത്തുക;
+		അവസ്ഥ 1: ld_dr1(linaddr); നിർത്തുക;
+		അവസ്ഥ 2: ld_dr2(linaddr); നിർത്തുക;
+		അവസ്ഥ 3: ld_dr3(linaddr); നിർത്തുക;
+		സ്ഥിരസ്ഥിതി: panic("%s:%d: invalid breakpoint index", __FILE__,  __LINE__);
 	}
 	
 	/* set new flags */
 	dr7 |= dr7flags;
 	ld_dr7(dr7);
-	return 0;
+	തിരികെ 0;
 }
 

@@ -8,27 +8,27 @@
  *    Jorrit N. Herder <jnherder@cs.vu.nl>
  */
 
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#അന്തര്ഭാവ "kernel/system.h"
+#അന്തര്ഭാവ <minix/endpoint.h>
 
-#include "arch_proto.h"
+#അന്തര്ഭാവ "arch_proto.h"
 
 /*===========================================================================*
  *			        do_iopenable				     *
  *===========================================================================*/
-int do_iopenable(struct proc * caller, message * m_ptr)
+പൂർണ്ണസംഖ്യ do_iopenable(ഘടന proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  പൂർണ്ണസംഖ്യ proc_nr;
 
-#if 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
-  if (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
+#എങ്കിൽ 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
+  എങ്കിൽ (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
 	okendpt(caller->p_endpoint, &proc_nr);
-  } else if(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
-	return(EINVAL);
+  } അല്ലെങ്കിൽ എങ്കിൽ(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
+	തിരികെ(EINVAL);
   enable_iop(proc_addr(proc_nr));
-  return(OK);
-#else
-  return(EPERM);
+  തിരികെ(OK);
+#അല്ലെങ്കിൽ
+  തിരികെ(EPERM);
 #endif
 }
 

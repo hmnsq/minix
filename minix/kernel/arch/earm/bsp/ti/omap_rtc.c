@@ -5,52 +5,52 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <machine/cpu.h>
+#അന്തര്ഭാവ <minix/type.h>
+#അന്തര്ഭാവ <minix/board.h>
+#അന്തര്ഭാവ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
+#അന്തര്ഭാവ "kernel/proc.h"
+#അന്തര്ഭാവ "kernel/vm.h"
+#അന്തര്ഭാവ "kernel/proto.h"
+#അന്തര്ഭാവ "arch_proto.h"
+#അന്തര്ഭാവ "omap_rtc.h"
 
 #define RTC_SS_BASE 0x44e3e000
 #define RTC_SS_SIZE 0x1000
 #define RTC_CTRL_REG 0x40
 #define RTC_CTRL_RTC_STOP_BIT 0
 
-struct omap_rtc
+ഘടന omap_rtc
 {
 	vir_bytes base;
 	vir_bytes size;
 };
 
-static struct omap_rtc omap_rtc = {
+സ്ഥിതം ഘടന omap_rtc omap_rtc = {
 	.base = RTC_SS_BASE,
 	.size = RTC_SS_SIZE
 };
 
-static kern_phys_map rtc_phys_map;
+സ്ഥിതം kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+ശൂന്യം
+omap3_rtc_init(ശൂന്യം)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	എങ്കിൽ (BOARD_IS_BB(machine.board_id)) {
 		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
 		    (vir_bytes) & omap_rtc.base);
 	}
 }
 
-void
-omap3_rtc_run(void)
+ശൂന്യം
+omap3_rtc_run(ശൂന്യം)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	എങ്കിൽ (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
 		mmio_set((omap_rtc.base + RTC_CTRL_REG),
 		    (1 << RTC_CTRL_RTC_STOP_BIT));

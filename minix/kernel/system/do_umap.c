@@ -9,31 +9,31 @@
  *   m_lsys_krn_sys_umap.nr_bytes	(size of datastructure)
  */
 
-#include "kernel/system.h"
+#അന്തര്ഭാവ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#അന്തര്ഭാവ <minix/endpoint.h>
 
-#if USE_UMAP
+#എങ്കിൽ USE_UMAP
 
-#if ! USE_UMAP_REMOTE
+#എങ്കിൽ ! USE_UMAP_REMOTE
 #undef do_umap_remote
 #endif
 
 /*==========================================================================*
  *				do_umap					    *
  *==========================================================================*/
-int do_umap(struct proc * caller, message * m_ptr)
+പൂർണ്ണസംഖ്യ do_umap(ഘടന proc * caller, message * m_ptr)
 {
-  int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
-  int endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
+  പൂർണ്ണസംഖ്യ seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
+  പൂർണ്ണസംഖ്യ endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
 
   /* This call is a subset of umap_remote, it allows mapping virtual addresses
    * in the caller's address space and grants where the caller is specified as
    * grantee; after the security check we simply invoke do_umap_remote
    */
-  if (seg_index != MEM_GRANT && endpt != SELF) return EPERM;
+  എങ്കിൽ (seg_index != MEM_GRANT && endpt != SELF) തിരികെ EPERM;
   m_ptr->m_lsys_krn_sys_umap.dst_endpt = SELF;
-  return do_umap_remote(caller, m_ptr);
+  തിരികെ do_umap_remote(caller, m_ptr);
 }
 
 #endif /* USE_UMAP */

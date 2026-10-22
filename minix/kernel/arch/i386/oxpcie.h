@@ -1,9 +1,9 @@
 
-void oxpcie_set_vaddr(unsigned char *vaddr);
-void oxpcie_putc(char c);
-int oxpcie_in(void);
+ശൂന്യം oxpcie_set_vaddr(unsigned അക്ഷരം *vaddr);
+ശൂന്യം oxpcie_putc(അക്ഷരം c);
+പൂർണ്ണസംഖ്യ oxpcie_in(ശൂന്യം);
 
-#include "serial.h"
+#അന്തര്ഭാവ "serial.h"
 
 /* OXPCIe952 info */
 #define UART1BASE_550   0x1000

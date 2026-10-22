@@ -3,143 +3,143 @@
  * functions and sanity checking of the scheduling queues.
  */
 
-#include "kernel/kernel.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
 
-#include <minix/callnr.h>
-#include <minix/u64.h>
-#include <limits.h>
-#include <string.h>
-#include <assert.h>
+#അന്തര്ഭാവ <minix/callnr.h>
+#അന്തര്ഭാവ <minix/u64.h>
+#അന്തര്ഭാവ <limits.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <assert.h>
 
 #define MAX_LOOP (NR_PROCS + NR_TASKS)
 
-int runqueues_ok_cpu(unsigned cpu)
+പൂർണ്ണസംഖ്യ runqueues_ok_cpu(unsigned cpu)
 {
-  int q, l = 0;
-  register struct proc *xp;
-  struct proc **rdy_head, **rdy_tail;
+  പൂർണ്ണസംഖ്യ q, l = 0;
+  രജിസ്റ്റർ ഘടന proc *xp;
+  ഘടന proc **rdy_head, **rdy_tail;
 
   rdy_head = get_cpu_var(cpu, run_q_head);
   rdy_tail = get_cpu_var(cpu, run_q_tail);
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+  വേണ്ടി (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
 	xp->p_found = 0;
-	if (l++ > MAX_LOOP) panic("check error");
+	എങ്കിൽ (l++ > MAX_LOOP) panic("check error");
   }
 
-  for (q=l=0; q < NR_SCHED_QUEUES; q++) {
-    if (rdy_head[q] && !rdy_tail[q]) {
+  വേണ്ടി (q=l=0; q < NR_SCHED_QUEUES; q++) {
+    എങ്കിൽ (rdy_head[q] && !rdy_tail[q]) {
 	printf("head but no tail in %d\n", q);
-	return 0;
+	തിരികെ 0;
     }
-    if (!rdy_head[q] && rdy_tail[q]) {
+    എങ്കിൽ (!rdy_head[q] && rdy_tail[q]) {
 	printf("tail but no head in %d\n", q);
-	return 0;
+	തിരികെ 0;
     }
-    if (rdy_tail[q] && rdy_tail[q]->p_nextready) {
+    എങ്കിൽ (rdy_tail[q] && rdy_tail[q]->p_nextready) {
 	printf("tail and tail->next not null in %d\n", q);
-	return 0;
+	തിരികെ 0;
     }
-    for(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
-	const vir_bytes vxp = (vir_bytes) xp;
+    വേണ്ടി(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
+	സ്ഥിരം vir_bytes vxp = (vir_bytes) xp;
 	vir_bytes dxp;
-	if(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
+	എങ്കിൽ(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
   		printf("xp out of range\n");
-		return 0;
+		തിരികെ 0;
 	}
 	dxp = vxp - (vir_bytes) BEG_PROC_ADDR;
-	if(dxp % sizeof(struct proc)) {
+	എങ്കിൽ(dxp % വലുപ്പം(ഘടന proc)) {
   		printf("xp not a real pointer");
-		return 0;
+		തിരികെ 0;
 	}
-	if(!proc_ptr_ok(xp)) {
+	എങ്കിൽ(!proc_ptr_ok(xp)) {
   		printf("xp bogus pointer");
-		return 0;
+		തിരികെ 0;
 	}
-	if (RTS_ISSET(xp, RTS_SLOT_FREE)) {
+	എങ്കിൽ (RTS_ISSET(xp, RTS_SLOT_FREE)) {
 		printf("scheduling error: dead proc q %d %d\n",
 			q, xp->p_endpoint);
-		return 0;
+		തിരികെ 0;
 	}
-        if (!proc_is_runnable(xp)) {
+        എങ്കിൽ (!proc_is_runnable(xp)) {
 		printf("scheduling error: unready on runq %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		തിരികെ 0;
         }
-        if (xp->p_priority != q) {
+        എങ്കിൽ (xp->p_priority != q) {
 		printf("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
 			q, xp->p_nr, xp->p_endpoint, xp->p_name);
-		return 0;
+		തിരികെ 0;
 	}
-	if (xp->p_found) {
+	എങ്കിൽ (xp->p_found) {
 		printf("scheduling error: double sched q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		തിരികെ 0;
 	}
 	xp->p_found = 1;
-	if (!xp->p_nextready && rdy_tail[q] != xp) {
+	എങ്കിൽ (!xp->p_nextready && rdy_tail[q] != xp) {
 		printf("sched err: last element not tail q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		തിരികെ 0;
 	}
-	if (l++ > MAX_LOOP) {
+	എങ്കിൽ (l++ > MAX_LOOP) {
 		printf("loop in schedule queue?");
-		return 0;
+		തിരികെ 0;
 	}
     }
   }	
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	if(!proc_ptr_ok(xp)) {
+  വേണ്ടി (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+	എങ്കിൽ(!proc_ptr_ok(xp)) {
 		printf("xp bogus pointer in proc table\n");
-		return 0;
+		തിരികെ 0;
 	}
-	if (isemptyp(xp))
-		continue;
-	if(proc_is_runnable(xp) && !xp->p_found) {
+	എങ്കിൽ (isemptyp(xp))
+		തുടരുക;
+	എങ്കിൽ(proc_is_runnable(xp) && !xp->p_found) {
 		printf("sched error: ready proc %d not on queue\n", xp->p_nr);
-		return 0;
+		തിരികെ 0;
 	}
   }
 
   /* All is ok. */
-  return 1;
+  തിരികെ 1;
 }
 
 #ifdef CONFIG_SMP
-static int runqueues_ok_all(void)
+സ്ഥിതം പൂർണ്ണസംഖ്യ runqueues_ok_all(ശൂന്യം)
 {
 	unsigned c;
 
-	for (c = 0 ; c < ncpus; c++) {
-		if (!runqueues_ok_cpu(c))
-			return 0;
+	വേണ്ടി (c = 0 ; c < ncpus; c++) {
+		എങ്കിൽ (!runqueues_ok_cpu(c))
+			തിരികെ 0;
 	}
-	return 1;	
+	തിരികെ 1;	
 }
 
-int runqueues_ok(void)
+പൂർണ്ണസംഖ്യ runqueues_ok(ശൂന്യം)
 {
-	return runqueues_ok_all();
+	തിരികെ runqueues_ok_all();
 }
 
-#else
+#അല്ലെങ്കിൽ
 
-int runqueues_ok(void)
+പൂർണ്ണസംഖ്യ runqueues_ok(ശൂന്യം)
 {
-	return runqueues_ok_cpu(0);
+	തിരികെ runqueues_ok_cpu(0);
 }
 
 
 #endif
 
-char *
-rtsflagstr(const u32_t flags)
+അക്ഷരം *
+rtsflagstr(സ്ഥിരം u32_t flags)
 {
-	static char str[100];
+	സ്ഥിതം അക്ഷരം str[100];
 	str[0] = '\0';
 
-#define FLAG(n) if(flags & n) { strlcat(str, #n " ", sizeof(str)); }
+#define FLAG(n) എങ്കിൽ(flags & n) { strlcat(str, #n " ", വലുപ്പം(str)); }
 
 	FLAG(RTS_SLOT_FREE);
 	FLAG(RTS_PROC_STOP);
@@ -157,96 +157,96 @@ rtsflagstr(const u32_t flags)
 	FLAG(RTS_PREEMPTED);
 	FLAG(RTS_NO_QUANTUM);
 
-	return str;
+	തിരികെ str;
 }
 
-char *
-miscflagstr(const u32_t flags)
+അക്ഷരം *
+miscflagstr(സ്ഥിരം u32_t flags)
 {
-	static char str[100];
+	സ്ഥിതം അക്ഷരം str[100];
 	str[0] = '\0';
 
 	FLAG(MF_REPLY_PEND);
 	FLAG(MF_DELIVERMSG);
 	FLAG(MF_KCALL_RESUME);
 
-	return str;
+	തിരികെ str;
 }
 
-char *
-schedulerstr(struct proc *scheduler)
+അക്ഷരം *
+schedulerstr(ഘടന proc *scheduler)
 {
-	if (scheduler != NULL)
+	എങ്കിൽ (scheduler != ശൂന്യ)
 	{
-		return scheduler->p_name;
+		തിരികെ scheduler->p_name;
 	}
 
-	return "KERNEL";
+	തിരികെ "KERNEL";
 }
 
-static void
-print_proc_name(struct proc *pp)
+സ്ഥിതം ശൂന്യം
+print_proc_name(ഘടന proc *pp)
 {
-	char *name = pp->p_name;
+	അക്ഷരം *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
 
-	if(name) {
+	എങ്കിൽ(name) {
 		printf("%s(%d)", name, ep);
 	}
-	else {
+	അല്ലെങ്കിൽ {
 		printf("%d", ep);
 	}
 }
 
-static void
+സ്ഥിതം ശൂന്യം
 print_endpoint(endpoint_t ep)
 {
-	int proc_nr;
-	struct proc *pp = NULL;
+	പൂർണ്ണസംഖ്യ proc_nr;
+	ഘടന proc *pp = ശൂന്യ;
 
-	switch(ep) {
-	case ANY:
+	തിരഞ്ഞെടുപ്പ്(ep) {
+	അവസ്ഥ ANY:
 		printf("ANY");
-	break;
-	case SELF:
+	നിർത്തുക;
+	അവസ്ഥ SELF:
 		printf("SELF");
-	break;
-	case NONE:
+	നിർത്തുക;
+	അവസ്ഥ NONE:
 		printf("NONE");
-	break;
-	default:
-		if(!isokendpt(ep, &proc_nr)) {
+	നിർത്തുക;
+	സ്ഥിരസ്ഥിതി:
+		എങ്കിൽ(!isokendpt(ep, &proc_nr)) {
 			printf("??? %d\n", ep);
 		}
-		else {
+		അല്ലെങ്കിൽ {
 			pp = proc_addr(proc_nr);
-			if(isemptyp(pp)) {
+			എങ്കിൽ(isemptyp(pp)) {
 				printf("??? empty slot %d\n", proc_nr);
 			}
-			else {
+			അല്ലെങ്കിൽ {
 				print_proc_name(pp);
 			}
 		}
-	break;
+	നിർത്തുക;
 	}
 }
 
-static void
-print_sigmgr(struct proc *pp)
+സ്ഥിതം ശൂന്യം
+print_sigmgr(ഘടന proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
-	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
+	എങ്കിൽ(sig_mgr == NONE) { printf("no sigmgr"); തിരികെ; }
 	printf("sigmgr ");
 	print_endpoint(sig_mgr);
-	if(bak_sig_mgr != NONE) {
+	എങ്കിൽ(bak_sig_mgr != NONE) {
 		printf(" / ");
 		print_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+ശൂന്യം print_proc(ഘടന proc *pp)
 {
 	endpoint_t dep;
 
@@ -256,9 +256,9 @@ void print_proc(struct proc *pp)
 		pp->p_priority, pp->p_user_time,
 		pp->p_sys_time, ex64hi(pp->p_cycles),
 		ex64lo(pp->p_cycles), pp->p_cpu,
-#if defined(__i386__)
+#എങ്കിൽ defined(__i386__)
 		pp->p_seg.p_cr3,
-#elif defined(__arm__)
+#അല്ലെങ്കിലെങ്കിൽ defined(__arm__)
 		pp->p_seg.p_ttbr,
 #endif
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
@@ -267,22 +267,22 @@ void print_proc(struct proc *pp)
 	print_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE) {
+	എങ്കിൽ(dep != NONE) {
 		printf(" blocked on: ");
 		print_endpoint(dep);
 	}
 	printf("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+സ്ഥിതം ശൂന്യം print_proc_depends(ഘടന proc *pp, സ്ഥിരം പൂർണ്ണസംഖ്യ level)
 {
-	struct proc *depproc = NULL;
+	ഘടന proc *depproc = ശൂന്യ;
 	endpoint_t dep;
-#define COL { int i; for(i = 0; i < level; i++) printf("> "); }
+#define COL { പൂർണ്ണസംഖ്യ i; വേണ്ടി(i = 0; i < level; i++) printf("> "); }
 
-	if(level >= NR_PROCS) {
+	എങ്കിൽ(level >= NR_PROCS) {
 		printf("loop??\n");
-		return;
+		തിരികെ;
 	}
 
 	COL
@@ -294,27 +294,27 @@ static void print_proc_depends(struct proc *pp, const int level)
 
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE && dep != ANY) {
-		int procno;
-		if(isokendpt(dep, &procno)) {
+	എങ്കിൽ(dep != NONE && dep != ANY) {
+		പൂർണ്ണസംഖ്യ procno;
+		എങ്കിൽ(isokendpt(dep, &procno)) {
 			depproc = proc_addr(procno);
-			if(isemptyp(depproc))
-				depproc = NULL;
+			എങ്കിൽ(isemptyp(depproc))
+				depproc = ശൂന്യ;
 		}
-		if (depproc)
+		എങ്കിൽ (depproc)
 			print_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+ശൂന്യം print_proc_recursive(ഘടന proc *pp)
 {
 	print_proc_depends(pp, 0);
 }
 
-#if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
-static const char *mtypename(int mtype, int *possible_callname)
+#എങ്കിൽ DEBUG_DUMPIPC || DEBUG_DUMPIPCF
+സ്ഥിതം സ്ഥിരം അക്ഷരം *mtypename(പൂർണ്ണസംഖ്യ mtype, പൂർണ്ണസംഖ്യ *possible_callname)
 {
-	char *callname = NULL, *errname = NULL;
+	അക്ഷരം *callname = ശൂന്യ, *errname = ശൂന്യ;
 	/* use generated file to recognize message types
 	 *
 	 * we try to match both error numbers and call numbers, as the
@@ -323,84 +323,84 @@ static const char *mtypename(int mtype, int *possible_callname)
 	 * whenever it might be a call number we tell the caller so the
 	 * call message fields can be decoded if known.
 	 */
-	switch(mtype) {
-#define IDENT(x) case x: callname = #x; *possible_callname = 1; break;
-#include "kernel/extracted-mtype.h"
+	തിരഞ്ഞെടുപ്പ്(mtype) {
+#define IDENT(x) അവസ്ഥ x: callname = #x; *possible_callname = 1; നിർത്തുക;
+#അന്തര്ഭാവ "kernel/extracted-mtype.h"
 #undef IDENT
 	}
-	switch(mtype) {
-#define IDENT(x) case x: errname = #x; break;
-#include "kernel/extracted-errno.h"
+	തിരഞ്ഞെടുപ്പ്(mtype) {
+#define IDENT(x) അവസ്ഥ x: errname = #x; നിർത്തുക;
+#അന്തര്ഭാവ "kernel/extracted-errno.h"
 #undef IDENT
 	}
 
 	/* no match */
-	if(!errname && !callname)
-		return NULL;
+	എങ്കിൽ(!errname && !callname)
+		തിരികെ ശൂന്യ;
 
 	/* 2 matches */
-	if(errname && callname) {
-		static char typename[100];
+	എങ്കിൽ(errname && callname) {
+		സ്ഥിതം അക്ഷരം typename[100];
 		strcpy(typename, errname);
 		strcat(typename, " / ");
 		strcat(typename, callname);
-		return typename;
+		തിരികെ typename;
 	}
 
-	if(errname) return errname;
+	എങ്കിൽ(errname) തിരികെ errname;
 
-	assert(callname);
-	return callname;
+	പ്രതിജ്ഞാ(callname);
+	തിരികെ callname;
 }
 
-static void printproc(struct proc *rp)
+സ്ഥിതം ശൂന്യം printproc(ഘടന proc *rp)
 {
-	if (rp)
+	എങ്കിൽ (rp)
 		printf(" %s(%d)", rp->p_name, rp - proc);
-	else
+	അല്ലെങ്കിൽ
 		printf(" kernel");
 }
 
-static void printparam(const char *name, const void *data, size_t size)
+സ്ഥിതം ശൂന്യം printparam(സ്ഥിരം അക്ഷരം *name, സ്ഥിരം ശൂന്യം *data, size_t size)
 {
 	printf(" %s=", name);
-	switch (size) {
-		case sizeof(char):	printf("%d", *(char *) data);	break;
-		case sizeof(short):	printf("%d", *(short *) data);	break;
-		case sizeof(int):	printf("%d", *(int *) data);	break;
-		default:		printf("(%u bytes)", size);	break;
+	തിരഞ്ഞെടുപ്പ് (size) {
+		അവസ്ഥ വലുപ്പം(അക്ഷരം):	printf("%d", *(അക്ഷരം *) data);	നിർത്തുക;
+		അവസ്ഥ വലുപ്പം(short):	printf("%d", *(short *) data);	നിർത്തുക;
+		അവസ്ഥ വലുപ്പം(പൂർണ്ണസംഖ്യ):	printf("%d", *(പൂർണ്ണസംഖ്യ *) data);	നിർത്തുക;
+		സ്ഥിരസ്ഥിതി:		printf("(%u bytes)", size);	നിർത്തുക;
 	}
 }
 
 #ifdef DEBUG_DUMPIPC_NAMES
-static int namematch(char **names, int nnames, char *name)
+സ്ഥിതം പൂർണ്ണസംഖ്യ namematch(അക്ഷരം **names, പൂർണ്ണസംഖ്യ nnames, അക്ഷരം *name)
 {
-	int i;
-	for(i = 0; i < nnames; i++)
-		if(!strcmp(names[i], name))
-			return 1;
-	return 0;
+	പൂർണ്ണസംഖ്യ i;
+	വേണ്ടി(i = 0; i < nnames; i++)
+		എങ്കിൽ(!strcmp(names[i], name))
+			തിരികെ 1;
+	തിരികെ 0;
 }
 #endif
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-	char operation, int printparams)
+ശൂന്യം printmsg(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst,
+	അക്ഷരം operation, പൂർണ്ണസംഖ്യ printparams)
 {
-	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	സ്ഥിരം അക്ഷരം *name;
+	പൂർണ്ണസംഖ്യ mtype = സന്ദേശം->m_type, mightbecall = 0;
 
 #ifdef DEBUG_DUMPIPC_NAMES
   {
-	char *names[] = DEBUG_DUMPIPC_NAMES;
-	int nnames = sizeof(names)/sizeof(names[0]);
+	അക്ഷരം *names[] = DEBUG_DUMPIPC_NAMES;
+	പൂർണ്ണസംഖ്യ nnames = വലുപ്പം(names)/വലുപ്പം(names[0]);
 
 	/* skip printing messages for messages neither to
 	 * or from DEBUG_DUMPIPC_EP if it is defined; either
 	 * can be NULL to indicate kernel
 	 */
-	if(!(src && namematch(names, nnames, src->p_name)) &&
+	എങ്കിൽ(!(src && namematch(names, nnames, src->p_name)) &&
 	   !(dst && namematch(names, nnames, dst->p_name))) {
-		return;
+		തിരികെ;
 	}
   }
 #endif
@@ -410,39 +410,39 @@ void printmsg(message *msg, struct proc *src, struct proc *dst,
 	printproc(src);
 	printproc(dst);
 	name = mtypename(mtype, &mightbecall);
-	if (name) {
+	എങ്കിൽ (name) {
 		printf(" %s(%d/0x%x)", name, mtype, mtype);
-	} else {
+	} അല്ലെങ്കിൽ {
 		printf(" %d/0x%x", mtype, mtype);
 	}
 
-	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
-#include "kernel/extracted-mfield.h"
+	എങ്കിൽ (mightbecall && printparams) {
+#define IDENT(x, y) എങ്കിൽ (mtype == x) printparam(#y, &സന്ദേശം->y, വലുപ്പം(സന്ദേശം->y));
+#അന്തര്ഭാവ "kernel/extracted-mfield.h"
 #undef IDENT
 	}
 	printf("\n");
 }
 #endif
 
-#if DEBUG_IPCSTATS
+#എങ്കിൽ DEBUG_IPCSTATS
 #define IPCPROCS (NR_PROCS+1)	/* number of slots we need */
 #define KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
-static int messages[IPCPROCS][IPCPROCS];
+സ്ഥിതം പൂർണ്ണസംഖ്യ messages[IPCPROCS][IPCPROCS];
 
 #define PRINTSLOTS 20
-static struct {
-	int src, dst, messages;
+സ്ഥിതം ഘടന {
+	പൂർണ്ണസംഖ്യ src, dst, messages;
 } winners[PRINTSLOTS];
-static int total, goodslots;
+സ്ഥിതം പൂർണ്ണസംഖ്യ total, goodslots;
 
-static void printstats(int ticks)
+സ്ഥിതം ശൂന്യം printstats(പൂർണ്ണസംഖ്യ ticks)
 {
-	int i;
-	for(i = 0; i < goodslots; i++) {
+	പൂർണ്ണസംഖ്യ i;
+	വേണ്ടി(i = 0; i < goodslots; i++) {
 #define name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
 #define persec(n) (system_hz*(n)/ticks)
-		char	*n1 = name(winners[i].src),
+		അക്ഷരം	*n1 = name(winners[i].src),
 			*n2 = name(winners[i].dst);
 		printf("%2d.  %8s -> %8s  %9d/s\n",
 			i, n1, n2, persec(winners[i].messages));
@@ -450,53 +450,53 @@ static void printstats(int ticks)
 	printf("total %d/s\n", persec(total));
 }
 
-static void sortstats(void)
+സ്ഥിതം ശൂന്യം sortstats(ശൂന്യം)
 {
 	/* Print top message senders/receivers. */
-	int src_slot, dst_slot;
+	പൂർണ്ണസംഖ്യ src_slot, dst_slot;
 	total = goodslots = 0;
-	for(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
-		for(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
-			int w = PRINTSLOTS, rem,
+	വേണ്ടി(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
+		വേണ്ടി(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
+			പൂർണ്ണസംഖ്യ w = PRINTSLOTS, rem,
 				n = messages[src_slot][dst_slot];
 			total += n;
-			while(w > 0 && n > winners[w-1].messages)
+			ആകുമ്പോൾ(w > 0 && n > winners[w-1].messages)
 				w--;
-			if(w >= PRINTSLOTS) continue;
+			എങ്കിൽ(w >= PRINTSLOTS) തുടരുക;
 
 			/* This combination has beaten the current winners
 			 * and should be inserted at position 'w.'
 			 */
 			rem = PRINTSLOTS-w-1;
-			assert(rem >= 0);
-			assert(rem < PRINTSLOTS);
-			if(rem > 0) {
-				assert(w+1 <= PRINTSLOTS-1);
-				assert(w >= 0);
+			പ്രതിജ്ഞാ(rem >= 0);
+			പ്രതിജ്ഞാ(rem < PRINTSLOTS);
+			എങ്കിൽ(rem > 0) {
+				പ്രതിജ്ഞാ(w+1 <= PRINTSLOTS-1);
+				പ്രതിജ്ഞാ(w >= 0);
 				memmove(&winners[w+1], &winners[w],
-					rem*sizeof(winners[0]));
+					rem*വലുപ്പം(winners[0]));
 			}
 			winners[w].src = src_slot;
 			winners[w].dst = dst_slot;
 			winners[w].messages = n;
-			if(goodslots < PRINTSLOTS) goodslots++;
+			എങ്കിൽ(goodslots < PRINTSLOTS) goodslots++;
 		}
 	}
 }
 
 #define proc2slot(p, s) { \
-	if(p) { s = p->p_nr; } \
-	else { s = KERNELIPC; } \
-	assert(s >= 0 && s < IPCPROCS); \
+	എങ്കിൽ(p) { s = p->p_nr; } \
+	അല്ലെങ്കിൽ { s = KERNELIPC; } \
+	പ്രതിജ്ഞാ(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+സ്ഥിതം ശൂന്യം statmsg(message *സന്ദേശം, ഘടന proc *srcp, ഘടന proc *dstp)
 {
-	int src, dst, now, secs, dt;
-	static int lastprint;
+	പൂർണ്ണസംഖ്യ src, dst, now, secs, dt;
+	സ്ഥിതം പൂർണ്ണസംഖ്യ lastprint;
 
 	/* Stat message. */
-	assert(src);
+	പ്രതിജ്ഞാ(src);
 	proc2slot(srcp, src);
 	proc2slot(dstp, dst);
 	messages[src][dst]++;
@@ -505,58 +505,58 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 	now = get_monotonic();
 	dt = now - lastprint;
 	secs = dt/system_hz;
-	if(secs >= 30) {
-		memset(winners, 0, sizeof(winners));
+	എങ്കിൽ(secs >= 30) {
+		memset(winners, 0, വലുപ്പം(winners));
 		sortstats();
 		printstats(dt);
-		memset(messages, 0, sizeof(messages));
+		memset(messages, 0, വലുപ്പം(messages));
 		lastprint = now;
 	}
 }
 #endif
 
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+#എങ്കിൽ DEBUG_IPC_HOOK
+ശൂന്യം hook_ipc_msgkcall(message *സന്ദേശം, ഘടന proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
+#എങ്കിൽ DEBUG_DUMPIPC
+	printmsg(സന്ദേശം, proc, ശൂന്യ, 'k', 1);
 #endif
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+ശൂന്യം hook_ipc_msgkresult(message *സന്ദേശം, ഘടന proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
+#എങ്കിൽ DEBUG_DUMPIPC
+	printmsg(സന്ദേശം, ശൂന്യ, proc, 'k', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
+#എങ്കിൽ DEBUG_IPCSTATS
+	statmsg(സന്ദേശം, proc, ശൂന്യ);
 #endif
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+ശൂന്യം hook_ipc_msgrecv(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
+#എങ്കിൽ DEBUG_DUMPIPC
+	printmsg(സന്ദേശം, src, dst, 'r', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
-#endif
-}
-
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
-{
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
+#എങ്കിൽ DEBUG_IPCSTATS
+	statmsg(സന്ദേശം, src, dst);
 #endif
 }
 
-void hook_ipc_clear(struct proc *p)
+ശൂന്യം hook_ipc_msgsend(message *സന്ദേശം, ഘടന proc *src, ഘടന proc *dst)
 {
-#if DEBUG_IPCSTATS
-	int slot, i;
-	assert(p);
+#എങ്കിൽ DEBUG_DUMPIPC
+	printmsg(സന്ദേശം, src, dst, 's', 1);
+#endif
+}
+
+ശൂന്യം hook_ipc_clear(ഘടന proc *p)
+{
+#എങ്കിൽ DEBUG_IPCSTATS
+	പൂർണ്ണസംഖ്യ slot, i;
+	പ്രതിജ്ഞാ(p);
 	proc2slot(p, slot);
-	for(i = 0; i < IPCPROCS; i++)
+	വേണ്ടി(i = 0; i < IPCPROCS; i++)
 		messages[slot][i] = messages[i][slot] = 0;
 #endif
 }

@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#അന്തര്ഭാവ <unistd.h>
+#അന്തര്ഭാവ <ctype.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <machine/cpu.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <signal.h>
+#അന്തര്ഭാവ <machine/vm.h>
+#അന്തര്ഭാവ <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#അന്തര്ഭാവ <minix/board.h>
+#അന്തര്ഭാവ <sys/reboot.h>
 
-#include <minix/u64.h>
+#അന്തര്ഭാവ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#അന്തര്ഭാവ "archconst.h"
+#അന്തര്ഭാവ "arch_proto.h"
+#അന്തര്ഭാവ "bsp_reset.h"
+#അന്തര്ഭാവ "bsp_serial.h"
+#അന്തര്ഭാവ "kernel/proc.h"
+#അന്തര്ഭാവ "kernel/debug.h"
+#അന്തര്ഭാവ "direct_utils.h"
+#അന്തര്ഭാവ <machine/multiboot.h>
 
-void
-halt_cpu(void)
+ശൂന്യം
+halt_cpu(ശൂന്യം)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm അസ്ഥിര("dsb");
+	asm അസ്ഥിര("cpsie i");
+	asm അസ്ഥിര("wfi");
+	asm അസ്ഥിര("cpsid i");
 }
 
-void
-reset(void)
+ശൂന്യം
+reset(ശൂന്യം)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	ആകുമ്പോൾ (1);
 }
 
-void
-poweroff(void)
+ശൂന്യം
+poweroff(ശൂന്യം)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	ആകുമ്പോൾ (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead ശൂന്യം
+arch_shutdown(പൂർണ്ണസംഖ്യ how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	എങ്കിൽ((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	എങ്കിൽ(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		വേണ്ടി (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,12 +69,12 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	ആകുമ്പോൾ (1);
 }
 
 #ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+ശൂന്യം
+ser_putc(അക്ഷരം c)
 {
 	bsp_ser_putc(c);
 }

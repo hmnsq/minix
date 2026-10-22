@@ -1,33 +1,33 @@
 /* system dependent functions for use inside the whole kernel. */
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/portio.h>
-#include <minix/cpufeature.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
+#അന്തര്ഭാവ <unistd.h>
+#അന്തര്ഭാവ <ctype.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <machine/cmos.h>
+#അന്തര്ഭാവ <machine/bios.h>
+#അന്തര്ഭാവ <machine/cpu.h>
+#അന്തര്ഭാവ <minix/portio.h>
+#അന്തര്ഭാവ <minix/cpufeature.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <signal.h>
+#അന്തര്ഭാവ <machine/vm.h>
 
-#include <minix/u64.h>
+#അന്തര്ഭാവ <minix/u64.h>
 
-#include "archconst.h"
-#include "oxpcie.h"
+#അന്തര്ഭാവ "archconst.h"
+#അന്തര്ഭാവ "oxpcie.h"
 
-#include "glo.h"
+#അന്തര്ഭാവ "glo.h"
 
 #ifdef USE_APIC
-#include "apic.h"
+#അന്തര്ഭാവ "apic.h"
 #endif
 
 #ifdef USE_ACPI
-#include "acpi.h"
+#അന്തര്ഭാവ "acpi.h"
 #endif
 
-static int osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
+സ്ഥിതം പൂർണ്ണസംഖ്യ osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
 
 /* set MP and NE flags to handle FPU exceptions in native mode. */
 #define CR0_MP_NE	0x0022
@@ -36,19 +36,19 @@ static int osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
 /* set OSXMMEXCPT[bit 10] if we provide #XM handler. */
 #define CR4_OSXMMEXCPT	(1L<<10)
 
-void * k_stacks;
+ശൂന്യം * k_stacks;
 
-static void ser_debug(int c);
-static void ser_dump_vfs(void);
+സ്ഥിതം ശൂന്യം ser_debug(പൂർണ്ണസംഖ്യ c);
+സ്ഥിതം ശൂന്യം ser_dump_vfs(ശൂന്യം);
 
 #ifdef CONFIG_SMP
-static void ser_dump_proc_cpu(void);
+സ്ഥിതം ശൂന്യം ser_dump_proc_cpu(ശൂന്യം);
 #endif
-#if !CONFIG_OXPCIE
-static void ser_init(void);
+#എങ്കിൽ !CONFIG_OXPCIE
+സ്ഥിതം ശൂന്യം ser_init(ശൂന്യം);
 #endif
 
-void fpu_init(void)
+ശൂന്യം fpu_init(ശൂന്യം)
 {
 	unsigned short cw, sw;
 
@@ -56,63 +56,63 @@ void fpu_init(void)
 	sw = fnstsw();
 	fnstcw(&cw);
 
-	if((sw & 0xff) == 0 &&
+	എങ്കിൽ((sw & 0xff) == 0 &&
 	   (cw & 0x103f) == 0x3f) {
 		/* We have some sort of FPU, but don't check exact model.
 		 * Set CR0_NE and CR0_MP to handle fpu exceptions
 		 * in native mode. */
 		write_cr0(read_cr0() | CR0_MP_NE);
 		get_cpulocal_var(fpu_presence) = 1;
-		if(_cpufeature(_CPUF_I386_FXSR)) {
+		എങ്കിൽ(_cpufeature(_CPUF_I386_FXSR)) {
 			u32_t cr4 = read_cr4() | CR4_OSFXSR; /* Enable FXSR. */
 
 			/* OSXMMEXCPT if supported
 			 * FXSR feature can be available without SSE
 			 */
-			if(_cpufeature(_CPUF_I386_SSE))
+			എങ്കിൽ(_cpufeature(_CPUF_I386_SSE))
 				cr4 |= CR4_OSXMMEXCPT; 
 
 			write_cr4(cr4);
 			osfxsr_feature = 1;
-		} else {
+		} അല്ലെങ്കിൽ {
 			osfxsr_feature = 0;
 		}
-	} else {
+	} അല്ലെങ്കിൽ {
 		/* No FPU presents. */
 		get_cpulocal_var(fpu_presence) = 0;
                 osfxsr_feature = 0;
-                return;
+                തിരികെ;
         }
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+ശൂന്യം save_local_fpu(ഘടന proc *pr, പൂർണ്ണസംഖ്യ retain)
 {
-	char *state = pr->p_seg.fpu_state;
+	അക്ഷരം *state = pr->p_seg.fpu_state;
 
 	/* Save process FPU context. If the 'retain' flag is set, keep the FPU
 	 * state as is. If the flag is not set, the state is undefined upon
 	 * return, and the caller is responsible for reloading a proper state.
 	 */
 
-	if(!is_fpu())
-		return;
+	എങ്കിൽ(!is_fpu())
+		തിരികെ;
 
-	assert(state);
+	പ്രതിജ്ഞാ(state);
 
-	if(osfxsr_feature) {
+	എങ്കിൽ(osfxsr_feature) {
 		fxsave(state);
-	} else {
+	} അല്ലെങ്കിൽ {
 		fnsave(state);
-		if (retain)
-			(void) frstor(state);
+		എങ്കിൽ (retain)
+			(ശൂന്യം) frstor(state);
 	}
 }
 
-void save_fpu(struct proc *pr)
+ശൂന്യം save_fpu(ഘടന proc *pr)
 {
 #ifdef CONFIG_SMP
-	if (cpuid != pr->p_cpu) {
-		int stopped;
+	എങ്കിൽ (cpuid != pr->p_cpu) {
+		പൂർണ്ണസംഖ്യ stopped;
 
 		/* remember if the process was already stopped */
 		stopped = RTS_ISSET(pr, RTS_PROC_STOP);
@@ -125,14 +125,14 @@ void save_fpu(struct proc *pr)
 		 * process is kept block by the fact that the kernel cannot run
 		 * on its cpu
 		 */
-		if (!stopped)
+		എങ്കിൽ (!stopped)
 			RTS_UNSET(pr, RTS_PROC_STOP);
 
-		return;
+		തിരികെ;
 	}
 #endif
 
-	if (get_cpulocal_var(fpu_owner) == pr) {
+	എങ്കിൽ (get_cpulocal_var(fpu_owner) == pr) {
 		disable_fpu_exception();
 		save_local_fpu(pr, TRUE /*retain*/);
 	}
@@ -141,28 +141,28 @@ void save_fpu(struct proc *pr)
 /* reserve a chunk of memory for fpu state; every one has to
  * be FPUALIGN-aligned.
  */
-static char fpu_state[NR_PROCS][FPU_XFP_SIZE] __aligned(FPUALIGN);
+സ്ഥിതം അക്ഷരം fpu_state[NR_PROCS][FPU_XFP_SIZE] __aligned(FPUALIGN);
 
-void arch_proc_reset(struct proc *pr)
+ശൂന്യം arch_proc_reset(ഘടന proc *pr)
 {
-	char *v = NULL;
-	struct stackframe_s reg;
+	അക്ഷരം *v = ശൂന്യ;
+	ഘടന stackframe_s reg;
 
-	assert(pr->p_nr < NR_PROCS);
+	പ്രതിജ്ഞാ(pr->p_nr < NR_PROCS);
 
-	if(pr->p_nr >= 0) {
+	എങ്കിൽ(pr->p_nr >= 0) {
 		v = fpu_state[pr->p_nr];
 		/* verify alignment */
-		assert(!((vir_bytes)v % FPUALIGN));
+		പ്രതിജ്ഞാ(!((vir_bytes)v % FPUALIGN));
 		/* initialize state */
 		memset(v, 0, FPU_XFP_SIZE);
 	}
 
 	/* Clear process state. */
-        memset(&reg, 0, sizeof(pr->p_reg));
-        if(iskerneln(pr->p_nr))
+        memset(&reg, 0, വലുപ്പം(pr->p_reg));
+        എങ്കിൽ(iskerneln(pr->p_nr))
         	reg.psw = INIT_TASK_PSW;
-        else
+        അല്ലെങ്കിൽ
         	reg.psw = INIT_PSW;
 
 	pr->p_seg.fpu_state = v;
@@ -181,35 +181,35 @@ void arch_proc_reset(struct proc *pr)
 	arch_proc_setcontext(pr, &reg, 0, KTS_FULLCONTEXT);
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+ശൂന്യം arch_set_secondary_ipc_return(ഘടന proc *p, u32_t val)
 {
 	p->p_reg.bx = val;
 }
 
-int restore_fpu(struct proc *pr)
+പൂർണ്ണസംഖ്യ restore_fpu(ഘടന proc *pr)
 {
-	int failed;
-	char *state = pr->p_seg.fpu_state;
+	പൂർണ്ണസംഖ്യ failed;
+	അക്ഷരം *state = pr->p_seg.fpu_state;
 
-	assert(state);
+	പ്രതിജ്ഞാ(state);
 
-	if(!proc_used_fpu(pr)) {
+	എങ്കിൽ(!proc_used_fpu(pr)) {
 		fninit();
 		pr->p_misc_flags |= MF_FPU_INITIALIZED;
-	} else {
-		if(osfxsr_feature) {
+	} അല്ലെങ്കിൽ {
+		എങ്കിൽ(osfxsr_feature) {
 			failed = fxrstor(state);
-		} else {
+		} അല്ലെങ്കിൽ {
 			failed = frstor(state);
 		}
 
-		if (failed) return EINVAL;
+		എങ്കിൽ (failed) തിരികെ EINVAL;
 	}
 
-	return OK;
+	തിരികെ OK;
 }
 
-void cpu_identify(void)
+ശൂന്യം cpu_identify(ശൂന്യം)
 {
 	u32_t eax, ebx, ecx, edx;
 	unsigned cpu = cpuid;
@@ -217,46 +217,46 @@ void cpu_identify(void)
 	eax = 0;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
-	if (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
+	എങ്കിൽ (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
 			edx == INTEL_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_INTEL;
-	} else if (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
+	} അല്ലെങ്കിൽ എങ്കിൽ (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
 			edx == AMD_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_AMD;
-	} else
+	} അല്ലെങ്കിൽ
 		cpu_info[cpu].vendor = CPU_VENDOR_UNKNOWN;
 
-	if (eax == 0) 
-		return;
+	എങ്കിൽ (eax == 0) 
+		തിരികെ;
 
 	eax = 1;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
 	cpu_info[cpu].family = (eax >> 8) & 0xf;
-	if (cpu_info[cpu].family == 0xf)
+	എങ്കിൽ (cpu_info[cpu].family == 0xf)
 		cpu_info[cpu].family += (eax >> 20) & 0xff;
 	cpu_info[cpu].model = (eax >> 4) & 0xf;
-	if (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
+	എങ്കിൽ (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
 		cpu_info[cpu].model += ((eax >> 16) & 0xf) << 4 ;
 	cpu_info[cpu].stepping = eax & 0xf;
 	cpu_info[cpu].flags[0] = ecx;
 	cpu_info[cpu].flags[1] = edx;
 }
 
-void arch_init(void)
+ശൂന്യം arch_init(ശൂന്യം)
 {
-	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	k_stacks = (ശൂന്യം*) &k_stacks_start;
+	പ്രതിജ്ഞാ(!((vir_bytes) k_stacks % K_അട്ടി_SIZE));
 
 #ifndef CONFIG_SMP
 	/*
 	 * use stack 0 and cpu id 0 on a single processor machine, SMP
 	 * configuration does this in smp_init() for all cpus at once
 	 */
-	tss_init(0, get_k_stack_top(0));
+	tss_init(0, get_k_അട്ടി_മുകൾ(0));
 #endif
 
-#if !CONFIG_OXPCIE
+#എങ്കിൽ !CONFIG_OXPCIE
 	ser_init();
 #endif
 
@@ -264,54 +264,54 @@ void arch_init(void)
 	acpi_init();
 #endif
 
-#if defined(USE_APIC) && !defined(CONFIG_SMP)
-	if (config_no_apic) {
+#എങ്കിൽ defined(USE_APIC) && !defined(CONFIG_SMP)
+	എങ്കിൽ (config_no_apic) {
 		DEBUGBASIC(("APIC disabled, using legacy PIC\n"));
 	}
-	else if (!apic_single_cpu_init()) {
+	അല്ലെങ്കിൽ എങ്കിൽ (!apic_single_cpu_init()) {
 		DEBUGBASIC(("APIC not present, using legacy PIC\n"));
 	}
 #endif
 
 	/* Reserve some BIOS ranges */
 	cut_memmap(&kinfo, BIOS_MEM_BEGIN, BIOS_MEM_END);
-	cut_memmap(&kinfo, BASE_MEM_TOP, UPPER_MEM_END);
+	cut_memmap(&kinfo, BASE_MEM_മുകൾ, UPPER_MEM_END);
 }
 
 /*===========================================================================*
  *				do_ser_debug				     * 
  *===========================================================================*/
-void do_ser_debug(void)
+ശൂന്യം do_ser_debug(ശൂന്യം)
 {
 	u8_t c, lsr;
 
-#if CONFIG_OXPCIE
+#എങ്കിൽ CONFIG_OXPCIE
 	{
-		int oxin;
-		if((oxin = oxpcie_in()) >= 0)
+		പൂർണ്ണസംഖ്യ oxin;
+		എങ്കിൽ((oxin = oxpcie_in()) >= 0)
 		ser_debug(oxin);
 	}
 #endif
 
 	lsr= inb(COM1_LSR);
-	if (!(lsr & LSR_DR))
-		return;
+	എങ്കിൽ (!(lsr & LSR_DR))
+		തിരികെ;
 	c = inb(COM1_RBR);
 	ser_debug(c);
 }
 
-static void ser_dump_queue_cpu(unsigned cpu)
+സ്ഥിതം ശൂന്യം ser_dump_queue_cpu(unsigned cpu)
 {
-	int q;
-	struct proc ** rdy_head;
+	പൂർണ്ണസംഖ്യ q;
+	ഘടന proc ** rdy_head;
 	
 	rdy_head = get_cpu_var(cpu, run_q_head);
 
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		struct proc *p;
-		if(rdy_head[q])	 {
+	വേണ്ടി(q = 0; q < NR_SCHED_QUEUES; q++) {
+		ഘടന proc *p;
+		എങ്കിൽ(rdy_head[q])	 {
 			printf("%2d: ", q);
-			for(p = rdy_head[q]; p; p = p->p_nextready) {
+			വേണ്ടി(p = rdy_head[q]; p; p = p->p_nextready) {
 				printf("%s / %d  ", p->p_name, p->p_endpoint);
 			}
 			printf("\n");
@@ -319,28 +319,28 @@ static void ser_dump_queue_cpu(unsigned cpu)
 	}
 }
 
-static void ser_dump_queues(void)
+സ്ഥിതം ശൂന്യം ser_dump_queues(ശൂന്യം)
 {
 #ifdef CONFIG_SMP
 	unsigned cpu;
 
 	printf("--- run queues ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	വേണ്ടി (cpu = 0; cpu < ncpus; cpu++) {
 		printf("CPU %d :\n", cpu);
 		ser_dump_queue_cpu(cpu);
 	}
-#else
+#അല്ലെങ്കിൽ
 	ser_dump_queue_cpu(0);
 #endif
 }
 
 #ifdef CONFIG_SMP
-static void dump_bkl_usage(void)
+സ്ഥിതം ശൂന്യം dump_bkl_usage(ശൂന്യം)
 {
 	unsigned cpu;
 
 	printf("--- BKL usage ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	വേണ്ടി (cpu = 0; cpu < ncpus; cpu++) {
 		printf("cpu %3d kernel ticks 0x%x%08x bkl ticks 0x%x%08x succ %d tries %d\n", cpu,
 				ex64hi(kernel_ticks[cpu]),
 				ex64lo(kernel_ticks[cpu]),
@@ -350,73 +350,73 @@ static void dump_bkl_usage(void)
 	}
 }
 
-static void reset_bkl_usage(void)
+സ്ഥിതം ശൂന്യം reset_bkl_usage(ശൂന്യം)
 {
-	memset(kernel_ticks, 0, sizeof(kernel_ticks));
-	memset(bkl_ticks, 0, sizeof(bkl_ticks));
-	memset(bkl_tries, 0, sizeof(bkl_tries));
-	memset(bkl_succ, 0, sizeof(bkl_succ));
+	memset(kernel_ticks, 0, വലുപ്പം(kernel_ticks));
+	memset(bkl_ticks, 0, വലുപ്പം(bkl_ticks));
+	memset(bkl_tries, 0, വലുപ്പം(bkl_tries));
+	memset(bkl_succ, 0, വലുപ്പം(bkl_succ));
 }
 #endif
 
-static void ser_debug(const int c)
+സ്ഥിതം ശൂന്യം ser_debug(സ്ഥിരം പൂർണ്ണസംഖ്യ c)
 {
 	serial_debug_active = 1;
 
-	switch(c)
+	തിരഞ്ഞെടുപ്പ്(c)
 	{
-	case 'Q':
+	അവസ്ഥ 'Q':
 		minix_shutdown(0);
 		NOT_REACHABLE;
 #ifdef CONFIG_SMP
-	case 'B':
+	അവസ്ഥ 'B':
 		dump_bkl_usage();
-		break;
-	case 'b':
+		നിർത്തുക;
+	അവസ്ഥ 'b':
 		reset_bkl_usage();
-		break;
+		നിർത്തുക;
 #endif
-	case '1':
+	അവസ്ഥ '1':
 		ser_dump_proc();
-		break;
-	case '2':
+		നിർത്തുക;
+	അവസ്ഥ '2':
 		ser_dump_queues();
-		break;
+		നിർത്തുക;
 #ifdef CONFIG_SMP
-	case '4':
+	അവസ്ഥ '4':
 		ser_dump_proc_cpu();
-		break;
+		നിർത്തുക;
 #endif
-	case '5':
+	അവസ്ഥ '5':
 		ser_dump_vfs();
-		break;
-#if DEBUG_TRACE
+		നിർത്തുക;
+#എങ്കിൽ DEBUG_TRACE
 #define TOGGLECASE(ch, flag)				\
-	case ch: {					\
-		if(verboseflags & flag)	{		\
+	അവസ്ഥ ch: {					\
+		എങ്കിൽ(verboseflags & flag)	{		\
 			verboseflags &= ~flag;		\
 			printf("%s disabled\n", #flag);	\
-		} else {				\
+		} അല്ലെങ്കിൽ {				\
 			verboseflags |= flag;		\
 			printf("%s enabled\n", #flag);	\
 		}					\
-		break;					\
+		നിർത്തുക;					\
 		}
 	TOGGLECASE('8', VF_SCHEDULING)
 	TOGGLECASE('9', VF_PICKPROC)
 #endif
 #ifdef USE_APIC
-	case 'I':
+	അവസ്ഥ 'I':
 		dump_apic_irq_state();
-		break;
+		നിർത്തുക;
 #endif
 	}
 	serial_debug_active = 0;
 }
 
-#if DEBUG_SERIAL
+#എങ്കിൽ DEBUG_SERIAL
 
-static void ser_dump_vfs(void)
+സ്ഥിതം ശൂന്യം ser_dump_vfs(ശൂന്യം)
 {
 	/* Notify VFS it has to generate stack traces. Kernel can't do that as
 	 * it's not aware of user space threads.
@@ -425,16 +425,16 @@ static void ser_dump_vfs(void)
 }
 
 #ifdef CONFIG_SMP
-static void ser_dump_proc_cpu(void)
+സ്ഥിതം ശൂന്യം ser_dump_proc_cpu(ശൂന്യം)
 {
-	struct proc *pp;
+	ഘടന proc *pp;
 	unsigned cpu;
 
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	വേണ്ടി (cpu = 0; cpu < ncpus; cpu++) {
 		printf("CPU %d processes : \n", cpu);
-		for (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
-			if (isemptyp(pp) || pp->p_cpu != cpu)
-				continue;
+		വേണ്ടി (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
+			എങ്കിൽ (isemptyp(pp) || pp->p_cpu != cpu)
+				തുടരുക;
 			print_proc(pp);
 		}
 	}
@@ -443,11 +443,11 @@ static void ser_dump_proc_cpu(void)
 
 #endif /* DEBUG_SERIAL */
 
-#if SPROFILE
+#എങ്കിൽ SPROFILE
 
-int arch_init_profile_clock(const u32_t freq)
+പൂർണ്ണസംഖ്യ arch_init_profile_clock(സ്ഥിരം u32_t freq)
 {
-  int r;
+  പൂർണ്ണസംഖ്യ r;
   /* Set CMOS timer frequency. */
   outb(RTC_INDEX, RTC_REG_A);
   outb(RTC_IO, RTC_A_DV_OK | freq);
@@ -460,12 +460,12 @@ int arch_init_profile_clock(const u32_t freq)
   outb(RTC_INDEX, RTC_REG_C);
   inb(RTC_IO);
 
-  return CMOS_CLOCK_IRQ;
+  തിരികെ CMOS_CLOCK_IRQ;
 }
 
-void arch_stop_profile_clock(void)
+ശൂന്യം arch_stop_profile_clock(ശൂന്യം)
 {
-  int r;
+  പൂർണ്ണസംഖ്യ r;
   /* Disable CMOS timer interrupts. */
   outb(RTC_INDEX, RTC_REG_B);
   r = inb(RTC_IO);
@@ -473,7 +473,7 @@ void arch_stop_profile_clock(void)
   outb(RTC_IO, r & ~RTC_B_PIE);
 }
 
-void arch_ack_profile_clock(void)
+ശൂന്യം arch_ack_profile_clock(ശൂന്യം)
 {
   /* Mandatory read of CMOS register to re-enable timer interrupts. */
   outb(RTC_INDEX, RTC_REG_C);
@@ -482,25 +482,25 @@ void arch_ack_profile_clock(void)
 
 #endif
 
-void arch_do_syscall(struct proc *proc)
+ശൂന്യം arch_do_syscall(ഘടന proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
-  assert(proc == get_cpulocal_var(proc_ptr));
+  പ്രതിജ്ഞാ(proc == get_cpulocal_var(proc_ptr));
   /* Make the system call, for real this time. */
-  assert(proc->p_misc_flags & MF_SC_DEFER);
+  പ്രതിജ്ഞാ(proc->p_misc_flags & MF_SC_DEFER);
   proc->p_reg.retreg =
 	  do_ipc(proc->p_defer.r1, proc->p_defer.r2, proc->p_defer.r3);
 }
 
-struct proc * arch_finish_switch_to_user(void)
+ഘടന proc * arch_finish_switch_to_user(ശൂന്യം)
 {
-	char * stk;
-	struct proc * p;
+	അക്ഷരം * stk;
+	ഘടന proc * p;
 
 #ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
+	stk = (അക്ഷരം *)tss[cpuid].sp0;
+#അല്ലെങ്കിൽ
+	stk = (അക്ഷരം *)tss[0].sp0;
 #endif
 	/* set pointer to the process to run on the stack */
 	p = get_cpulocal_var(proc_ptr);
@@ -512,18 +512,18 @@ struct proc * arch_finish_switch_to_user(void)
         p->p_reg.psw |= IF_MASK;
 
 	/* Set TRACEBIT state properly. */
-	if(p->p_misc_flags & MF_STEP)
+	എങ്കിൽ(p->p_misc_flags & MF_STEP)
         	p->p_reg.psw |= TRACEBIT;
-	else
+	അല്ലെങ്കിൽ
         	p->p_reg.psw &= ~TRACEBIT;
 
-	return p;
+	തിരികെ p;
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trap_style)
+ശൂന്യം arch_proc_setcontext(ഘടന proc *p, ഘടന stackframe_s *state,
+	പൂർണ്ണസംഖ്യ isuser, പൂർണ്ണസംഖ്യ trap_style)
 {
-	if(isuser) {
+	എങ്കിൽ(isuser) {
 		/* Restore user bits of psw from sc, maintain system bits
 		 * from proc.
 		 */
@@ -532,9 +532,9 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	}
 
 	/* someone wants to totally re-initialize process state */
-	assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-		memcpy(&p->p_reg, state, sizeof(*state));
+	പ്രതിജ്ഞാ(വലുപ്പം(p->p_reg) == വലുപ്പം(*state));
+	എങ്കിൽ(state != &p->p_reg) {
+		memcpy(&p->p_reg, state, വലുപ്പം(*state));
 	}
 
 	/* further code is instructed to not touch the context
@@ -553,30 +553,30 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	 * not go well for the process (restored context will be ignored)
 	 * and the situation should be debugged.
 	 */
-	if(!(p->p_rts_flags)) {
+	എങ്കിൽ(!(p->p_rts_flags)) {
 		printf("WARNINIG: setting full context of runnable process\n");
 		print_proc(p);
 		util_stacktrace();
 	}
-	if(p->p_seg.p_kern_trap_style == KTS_NONE)
+	എങ്കിൽ(p->p_seg.p_kern_trap_style == KTS_NONE)
 		printf("WARNINIG: setting full context of out-of-kernel process\n");
 	p->p_seg.p_kern_trap_style = trap_style;
 }
 
-void restore_user_context(struct proc *p)
+ശൂന്യം restore_user_context(ഘടന proc *p)
 {
-	int trap_style = p->p_seg.p_kern_trap_style;
-#if 0
+	പൂർണ്ണസംഖ്യ trap_style = p->p_seg.p_kern_trap_style;
+#എങ്കിൽ 0
 #define TYPES 10
-	static int restores[TYPES], n = 0;
+	സ്ഥിതം പൂർണ്ണസംഖ്യ restores[TYPES], n = 0;
 
-	if(trap_style >= 0 && trap_style < TYPES)
+	എങ്കിൽ(trap_style >= 0 && trap_style < TYPES)
 		restores[trap_style]++;
 
-	if(!(n++ % 500000)) {
-		int t;
-		for(t = 0; t < TYPES; t++)
-			if(restores[t])
+	എങ്കിൽ(!(n++ % 500000)) {
+		പൂർണ്ണസംഖ്യ t;
+		വേണ്ടി(t = 0; t < TYPES; t++)
+			എങ്കിൽ(restores[t])
 				printf("%d: %d   ", t, restores[t]);
 		printf("\n");
 	}
@@ -584,26 +584,26 @@ void restore_user_context(struct proc *p)
 
 	p->p_seg.p_kern_trap_style = KTS_NONE;
 
-	if(trap_style == KTS_SYSENTER) {
+	എങ്കിൽ(trap_style == KTS_SYSENTER) {
 		restore_user_context_sysenter(p);
 		NOT_REACHABLE;
         }
 
-	if(trap_style == KTS_SYSCALL) {
+	എങ്കിൽ(trap_style == KTS_SYSCALL) {
 		restore_user_context_syscall(p);
 		NOT_REACHABLE;
 	}
 
-        switch(trap_style) {
-                case KTS_NONE:
+        തിരഞ്ഞെടുപ്പ്(trap_style) {
+                അവസ്ഥ KTS_NONE:
                         panic("no entry trap style known");
-                case KTS_INT_HARD:
-                case KTS_INT_UM:
-                case KTS_FULLCONTEXT:
-                case KTS_INT_ORIG:
+                അവസ്ഥ KTS_INT_HARD:
+                അവസ്ഥ KTS_INT_UM:
+                അവസ്ഥ KTS_FULLCONTEXT:
+                അവസ്ഥ KTS_INT_ORIG:
 			restore_user_context_int(p);
 			NOT_REACHABLE;
-                default:
+                സ്ഥിരസ്ഥിതി:
                         panic("unknown trap style recorded");
                         NOT_REACHABLE;
         }
@@ -611,61 +611,61 @@ void restore_user_context(struct proc *p)
         NOT_REACHABLE;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+ശൂന്യം fpu_sigcontext(ഘടന proc *pr, ഘടന sigframe_sigcontext *fr, ഘടന sigcontext *sc)
 {
-	int fp_error;
+	പൂർണ്ണസംഖ്യ fp_error;
 
-	if (osfxsr_feature) {
+	എങ്കിൽ (osfxsr_feature) {
 		fp_error = sc->sc_fpu_state.xfp_regs.fp_status &
 			~sc->sc_fpu_state.xfp_regs.fp_control;
-	} else {
+	} അല്ലെങ്കിൽ {
 		fp_error = sc->sc_fpu_state.fpu_regs.fp_status &
 			~sc->sc_fpu_state.fpu_regs.fp_control;
 	}
 
-	if (fp_error & 0x001) {      /* Invalid op */
+	എങ്കിൽ (fp_error & 0x001) {      /* Invalid op */
 		/*
 		 * swd & 0x240 == 0x040: Stack Underflow
 		 * swd & 0x240 == 0x240: Stack Overflow
 		 * User must clear the SF bit (0x40) if set
 		 */
 		fr->sf_code = FPE_FLTINV;
-	} else if (fp_error & 0x004) {
+	} അല്ലെങ്കിൽ എങ്കിൽ (fp_error & 0x004) {
 		fr->sf_code = FPE_FLTDIV; /* Divide by Zero */
-	} else if (fp_error & 0x008) {
+	} അല്ലെങ്കിൽ എങ്കിൽ (fp_error & 0x008) {
 		fr->sf_code = FPE_FLTOVF; /* Overflow */
-	} else if (fp_error & 0x012) {
+	} അല്ലെങ്കിൽ എങ്കിൽ (fp_error & 0x012) {
 		fr->sf_code = FPE_FLTUND; /* Denormal, Underflow */
-	} else if (fp_error & 0x020) {
+	} അല്ലെങ്കിൽ എങ്കിൽ (fp_error & 0x020) {
 		fr->sf_code = FPE_FLTRES; /* Precision */
-	} else {
+	} അല്ലെങ്കിൽ {
 		fr->sf_code = 0;  /* XXX - probably should be used for FPE_INTOVF or
 				  * FPE_INTDIV */
 	}
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(ഘടന proc *p) { തിരികെ p->p_reg.sp; }
 
-#if !CONFIG_OXPCIE
-static void ser_init(void)
+#എങ്കിൽ !CONFIG_OXPCIE
+സ്ഥിതം ശൂന്യം ser_init(ശൂന്യം)
 {
-	unsigned char lcr;
-	unsigned divisor;
+	unsigned അക്ഷരം lcr;
+	unsigned ഹാരകം;
 
 	/* keep BIOS settings if cttybaud is not set */
-	if (kinfo.serial_debug_baud <= 0) return;
+	എങ്കിൽ (kinfo.serial_debug_baud <= 0) തിരികെ;
 
 	/* set DLAB to make baud accessible */
 	lcr = LCR_8BIT | LCR_1STOP | LCR_NPAR;
 	outb(COM1_LCR, lcr | LCR_DLAB);
 
 	/* set baud rate */
-	divisor = UART_BASE_FREQ / kinfo.serial_debug_baud;
-	if (divisor < 1) divisor = 1;
-	if (divisor > 65535) divisor = 65535;
+	ഹാരകം = UART_BASE_FREQ / kinfo.serial_debug_baud;
+	എങ്കിൽ (ഹാരകം < 1) ഹാരകം = 1;
+	എങ്കിൽ (ഹാരകം > 65535) ഹാരകം = 65535;
 	
-	outb(COM1_DLL, divisor & 0xff);
-	outb(COM1_DLM, (divisor >> 8) & 0xff);
+	outb(COM1_DLL, ഹാരകം & 0xff);
+	outb(COM1_DLM, (ഹാരകം >> 8) & 0xff);
 
 	/* clear DLAB */
 	outb(COM1_LCR, lcr);

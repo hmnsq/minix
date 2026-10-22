@@ -3,10 +3,10 @@
 
 #ifndef __ASSEMBLY__
 
-void bsp_timer_init(unsigned freq);
-void bsp_timer_stop(void);
-int  bsp_register_timer_handler(const irq_handler_t handler);
-void bsp_timer_int_handler(void);
+ശൂന്യം bsp_timer_init(unsigned freq);
+ശൂന്യം bsp_timer_stop(ശൂന്യം);
+പൂർണ്ണസംഖ്യ  bsp_register_timer_handler(സ്ഥിരം irq_handler_t handler);
+ശൂന്യം bsp_timer_int_handler(ശൂന്യം);
 
 #endif /* __ASSEMBLY__ */
 

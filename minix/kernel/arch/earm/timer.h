@@ -2,6 +2,6 @@
 #ifndef _KERN_TIMER_H
 #define _KERN_TIMER_H
 
-#include "omap_timer.h"
+#അന്തര്ഭാവ "omap_timer.h"
 
 #endif

@@ -1,11 +1,11 @@
-#include <sys/types.h>
-#include "bsp_init.h"
-#include "bsp_padconf.h"
-#include "omap_rtc.h"
-#include "bsp_reset.h"
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "bsp_init.h"
+#അന്തര്ഭാവ "bsp_padconf.h"
+#അന്തര്ഭാവ "omap_rtc.h"
+#അന്തര്ഭാവ "bsp_reset.h"
 
-void
-bsp_init(void)
+ശൂന്യം
+bsp_init(ശൂന്യം)
 {
 
 	/* map memory for padconf */

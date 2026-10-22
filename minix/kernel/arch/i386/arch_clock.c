@@ -1,67 +1,67 @@
 /* i386-specific clock functions. */
 
-#include <machine/ports.h>
+#അന്തര്ഭാവ <machine/ports.h>
 
-#include "kernel/clock.h"
-#include "kernel/interrupt.h"
-#include <minix/u64.h>
+#അന്തര്ഭാവ "kernel/clock.h"
+#അന്തര്ഭാവ "kernel/interrupt.h"
+#അന്തര്ഭാവ <minix/u64.h>
 
-#include <sys/sched.h> /* for CP_*, CPUSTATES */
-#if CPUSTATES != MINIX_CPUSTATES
+#അന്തര്ഭാവ <sys/sched.h> /* for CP_*, CPUSTATES */
+#എങ്കിൽ CPUSTATES != MINIX_CPUSTATES
 /* If this breaks, the code in this file may have to be adapted accordingly. */
 #error "MINIX_CPUSTATES value is out of sync with NetBSD's!"
 #endif
 
 #ifdef USE_APIC
-#include "apic.h"
+#അന്തര്ഭാവ "apic.h"
 #endif
 
-#include "kernel/spinlock.h"
+#അന്തര്ഭാവ "kernel/spinlock.h"
 
 #ifdef CONFIG_SMP
-#include "kernel/smp.h"
+#അന്തര്ഭാവ "kernel/smp.h"
 #endif
 
 #define CLOCK_ACK_BIT   0x80    /* PS/2 clock interrupt acknowledge bit */
 
 /* Clock parameters. */
 #define COUNTER_FREQ (2*TIMER_FREQ) /* counter frequency using square wave */
-#define LATCH_COUNT     0x00    /* cc00xxxx, c = channel, x = any */
+#define LATCH_എണ്ണം     0x00    /* cc00xxxx, c = channel, x = any */
 #define SQUARE_WAVE     0x36    /* ccaammmb, a = access, m = mode, b = BCD */
                                 /*   11x11, 11 = LSB then MSB, x11 = sq wave */
 #define TIMER_FREQ  1193182    /* clock frequency for timer in PC and AT */
-#define TIMER_COUNT(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
+#define TIMER_എണ്ണം(freq) (TIMER_FREQ/(freq)) /* initial value for counter*/
 
-static irq_hook_t pic_timer_hook;		/* interrupt handler hook */
+സ്ഥിതം irq_hook_t pic_timer_hook;		/* interrupt handler hook */
 
-static unsigned probe_ticks;
-static u64_t tsc0, tsc1;
+സ്ഥിതം unsigned probe_ticks;
+സ്ഥിതം u64_t tsc0, tsc1;
 #define PROBE_TICKS	(system_hz / 10)
 
-static unsigned tsc_per_ms[CONFIG_MAX_CPUS];
-static unsigned tsc_per_tick[CONFIG_MAX_CPUS];
-static uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
+സ്ഥിതം unsigned tsc_per_ms[CONFIG_MAX_CPUS];
+സ്ഥിതം unsigned tsc_per_tick[CONFIG_MAX_CPUS];
+സ്ഥിതം uint64_t tsc_per_state[CONFIG_MAX_CPUS][CPUSTATES];
 
 /*===========================================================================*
  *				init_8235A_timer			     *
  *===========================================================================*/
-int init_8253A_timer(const unsigned freq)
+പൂർണ്ണസംഖ്യ init_8253A_timer(സ്ഥിരം unsigned freq)
 {
 	/* Initialize channel 0 of the 8253A timer to, e.g., 60 Hz,
 	 * and register the CLOCK task's interrupt handler to be run
 	 * on every clock tick.
 	 */
 	outb(TIMER_MODE, SQUARE_WAVE);  /* run continuously */
-	outb(TIMER0, (TIMER_COUNT(freq) & 0xff)); /* timer low byte */
-	outb(TIMER0, TIMER_COUNT(freq) >> 8); /* timer high byte */
+	outb(TIMER0, (TIMER_എണ്ണം(freq) & 0xff)); /* timer low byte */
+	outb(TIMER0, TIMER_എണ്ണം(freq) >> 8); /* timer high byte */
 
-	return OK;
+	തിരികെ OK;
 }
 
 /*===========================================================================*
  *				stop_8235A_timer			     *
  *===========================================================================*/
-void stop_8253A_timer(void)
+ശൂന്യം stop_8253A_timer(ശൂന്യം)
 {
 	/* Reset the clock to the BIOS rate. (For rebooting.) */
 	outb(TIMER_MODE, 0x36);
@@ -69,11 +69,11 @@ void stop_8253A_timer(void)
 	outb(TIMER0, 0);
 }
 
-void arch_timer_int_handler(void)
+ശൂന്യം arch_timer_int_handler(ശൂന്യം)
 {
 }
 
-static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
+സ്ഥിതം പൂർണ്ണസംഖ്യ calib_cpu_handler(irq_hook_t * UNUSED(hook))
 {
 	u64_t tsc;
 
@@ -81,19 +81,19 @@ static int calib_cpu_handler(irq_hook_t * UNUSED(hook))
 	read_tsc_64(&tsc);
 
 
-	if (probe_ticks == 1) {
+	എങ്കിൽ (probe_ticks == 1) {
 		tsc0 = tsc;
 	}
-	else if (probe_ticks == PROBE_TICKS) {
+	അല്ലെങ്കിൽ എങ്കിൽ (probe_ticks == PROBE_TICKS) {
 		tsc1 = tsc;
 	}
 
 	/* just in case we are in an SMP single cpu fallback mode */
 	BKL_UNLOCK();
-	return 1;
+	തിരികെ 1;
 }
 
-static void estimate_cpu_freq(void)
+സ്ഥിതം ശൂന്യം estimate_cpu_freq(ശൂന്യം)
 {
 	u64_t tsc_delta;
 	u64_t cpu_freq;
@@ -109,7 +109,7 @@ static void estimate_cpu_freq(void)
 	intr_enable();
 
 	/* loop for some time to get a sample */
-	while(probe_ticks < PROBE_TICKS) {
+	ആകുമ്പോൾ(probe_ticks < PROBE_TICKS) {
 		intr_enable();
 	}
 
@@ -128,18 +128,18 @@ static void estimate_cpu_freq(void)
 	BOOT_VERBOSE(cpu_print_freq(cpuid));
 }
 
-int init_local_timer(unsigned freq)
+പൂർണ്ണസംഖ്യ init_local_timer(unsigned freq)
 {
 #ifdef USE_APIC
 	/* if we know the address, lapic is enabled and we should use it */
-	if (lapic_addr) {
+	എങ്കിൽ (lapic_addr) {
 		unsigned cpu = cpuid;
 		tsc_per_ms[cpu] = (unsigned)(cpu_get_freq(cpu) / 1000);
 		tsc_per_tick[cpu] = (unsigned)(cpu_get_freq(cpu) / system_hz);
 		lapic_set_timer_one_shot(1000000 / system_hz);
-	} else {
+	} അല്ലെങ്കിൽ {
 		DEBUGBASIC(("Initiating legacy i8253 timer\n"));
-#else
+#അല്ലെങ്കിൽ
 	{
 #endif
 		init_8253A_timer(freq);
@@ -149,38 +149,38 @@ int init_local_timer(unsigned freq)
 		tsc_per_tick[0] = (unsigned)(cpu_get_freq(0) / system_hz);
 	}
 
-	return 0;
+	തിരികെ 0;
 }
 
-void stop_local_timer(void)
+ശൂന്യം stop_local_timer(ശൂന്യം)
 {
 #ifdef USE_APIC
-	if (lapic_addr) {
+	എങ്കിൽ (lapic_addr) {
 		lapic_stop_timer();
 		apic_eoi();
-	} else
+	} അല്ലെങ്കിൽ
 #endif
 	{
 		stop_8253A_timer();
 	}
 }
 
-void restart_local_timer(void)
+ശൂന്യം restart_local_timer(ശൂന്യം)
 {
 #ifdef USE_APIC
-	if (lapic_addr) {
+	എങ്കിൽ (lapic_addr) {
 		lapic_restart_timer();
 	}
 #endif
 }
 
-int register_local_timer_handler(const irq_handler_t handler)
+പൂർണ്ണസംഖ്യ register_local_timer_handler(സ്ഥിരം irq_handler_t handler)
 {
 #ifdef USE_APIC
-	if (lapic_addr) {
+	എങ്കിൽ (lapic_addr) {
 		/* Using APIC, it is configured in apic_idt_init() */
 		BOOT_VERBOSE(printf("Using LAPIC timer as tick source\n"));
-	} else
+	} അല്ലെങ്കിൽ
 #endif
 	{
 		/* Using PIC, Initialize the CLOCK's interrupt hook. */
@@ -190,10 +190,10 @@ int register_local_timer_handler(const irq_handler_t handler)
 		put_irq_handler(&pic_timer_hook, CLOCK_IRQ, handler);
 	}
 
-	return 0;
+	തിരികെ 0;
 }
 
-void cycles_accounting_init(void)
+ശൂന്യം cycles_accounting_init(ശൂന്യം)
 {
 #ifdef CONFIG_SMP
 	unsigned cpu = cpuid;
@@ -205,13 +205,13 @@ void cycles_accounting_init(void)
 	get_cpu_var(cpu, cpu_last_idle) = 0;
 }
 
-void context_stop(struct proc * p)
+ശൂന്യം context_stop(ഘടന proc * p)
 {
 	u64_t tsc, tsc_delta;
 	u64_t * __tsc_ctr_switch = get_cpulocal_var_ptr(tsc_ctr_switch);
-	unsigned int cpu, tpt, counter;
+	unsigned പൂർണ്ണസംഖ്യ cpu, tpt, counter;
 #ifdef CONFIG_SMP
-	int must_bkl_unlock = 0;
+	പൂർണ്ണസംഖ്യ must_bkl_unlock = 0;
 
 	cpu = cpuid;
 
@@ -223,7 +223,7 @@ void context_stop(struct proc * p)
 	 * If we stop accounting for KERNEL we must unlock the BKL. If account
 	 * for IDLE we must not hold the lock
 	 */
-	if (p == proc_addr(KERNEL)) {
+	എങ്കിൽ (p == proc_addr(KERNEL)) {
 		u64_t tmp;
 
 		read_tsc_64(&tsc);
@@ -231,7 +231,7 @@ void context_stop(struct proc * p)
 		kernel_ticks[cpu] = kernel_ticks[cpu] + tmp;
 		p->p_cycles = p->p_cycles + tmp;
 		must_bkl_unlock = 1;
-	} else {
+	} അല്ലെങ്കിൽ {
 		u64_t bkl_tsc;
 		atomic_t succ;
 		
@@ -263,7 +263,7 @@ void context_stop(struct proc * p)
 		smp_sched_handler();
 #endif
 	}
-#else
+#അല്ലെങ്കിൽ
 	read_tsc_64(&tsc);
 	p->p_cycles = p->p_cycles + tsc - *__tsc_ctr_switch;
 	cpu = 0;
@@ -271,14 +271,14 @@ void context_stop(struct proc * p)
 
 	tsc_delta = tsc - *__tsc_ctr_switch;
 
-	if (kbill_ipc) {
+	എങ്കിൽ (kbill_ipc) {
 		kbill_ipc->p_kipc_cycles += tsc_delta;
-		kbill_ipc = NULL;
+		kbill_ipc = ശൂന്യ;
 	}
 
-	if (kbill_kcall) {
+	എങ്കിൽ (kbill_kcall) {
 		kbill_kcall->p_kcall_cycles += tsc_delta;
-		kbill_kcall = NULL;
+		kbill_kcall = ശൂന്യ;
 	}
 
 	/*
@@ -294,7 +294,7 @@ void context_stop(struct proc * p)
 	tpt = tsc_per_tick[cpu];
 
 	p->p_tick_cycles += tsc_delta;
-	while (tpt > 0 && p->p_tick_cycles >= tpt) {
+	ആകുമ്പോൾ (tpt > 0 && p->p_tick_cycles >= tpt) {
 		p->p_tick_cycles -= tpt;
 
 		/*
@@ -311,29 +311,29 @@ void context_stop(struct proc * p)
 	 * process during its current quantum. Skip IDLE and other pseudo kernel
 	 * tasks, except for global accounting purposes.
 	 */
-	if (p->p_endpoint >= 0) {
+	എങ്കിൽ (p->p_endpoint >= 0) {
 		/* On MINIX3, the "system" counter covers system processes. */
-		if (p->p_priv != priv_addr(USER_PRIV_ID))
+		എങ്കിൽ (p->p_priv != priv_addr(USER_PRIV_ID))
 			counter = CP_SYS;
-		else if (p->p_misc_flags & MF_NICED)
+		അല്ലെങ്കിൽ എങ്കിൽ (p->p_misc_flags & MF_NICED)
 			counter = CP_NICE;
-		else
+		അല്ലെങ്കിൽ
 			counter = CP_USER;
 
-#if DEBUG_RACE
-		p->p_cpu_time_left = 0;
-#else
-		if (tsc_delta < p->p_cpu_time_left) {
-			p->p_cpu_time_left -= tsc_delta;
-		} else {
-			p->p_cpu_time_left = 0;
+#എങ്കിൽ DEBUG_RACE
+		p->p_cpu_time_ഇടത് = 0;
+#അല്ലെങ്കിൽ
+		എങ്കിൽ (tsc_delta < p->p_cpu_time_ഇടത്) {
+			p->p_cpu_time_ഇടത് -= tsc_delta;
+		} അല്ലെങ്കിൽ {
+			p->p_cpu_time_ഇടത് = 0;
 		}
 #endif
-	} else {
+	} അല്ലെങ്കിൽ {
 		/* On MINIX3, the "interrupts" counter covers the kernel. */
-		if (p->p_endpoint == IDLE)
+		എങ്കിൽ (p->p_endpoint == IDLE)
 			counter = CP_IDLE;
-		else
+		അല്ലെങ്കിൽ
 			counter = CP_INTR;
 	}
 
@@ -342,15 +342,15 @@ void context_stop(struct proc * p)
 	*__tsc_ctr_switch = tsc;
 
 #ifdef CONFIG_SMP
-	if(must_bkl_unlock) {
+	എങ്കിൽ(must_bkl_unlock) {
 		BKL_UNLOCK();
 	}
 #endif
 }
 
-void context_stop_idle(void)
+ശൂന്യം context_stop_idle(ശൂന്യം)
 {
-	int is_idle;
+	പൂർണ്ണസംഖ്യ is_idle;
 #ifdef CONFIG_SMP
 	unsigned cpu = cpuid;
 #endif
@@ -360,29 +360,29 @@ void context_stop_idle(void)
 
 	context_stop(get_cpulocal_var_ptr(idle_proc));
 
-	if (is_idle)
+	എങ്കിൽ (is_idle)
 		restart_local_timer();
-#if SPROFILE
-	if (sprofiling)
+#എങ്കിൽ SPROFILE
+	എങ്കിൽ (sprofiling)
 		get_cpulocal_var(idle_interrupted) = 1;
 #endif
 }
 
 u64_t ms_2_cpu_time(unsigned ms)
 {
-	return (u64_t)tsc_per_ms[cpuid] * ms;
+	തിരികെ (u64_t)tsc_per_ms[cpuid] * ms;
 }
 
 unsigned cpu_time_2_ms(u64_t cpu_time)
 {
-	return (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
+	തിരികെ (unsigned long)(cpu_time / tsc_per_ms[cpuid]);
 }
 
-short cpu_load(void)
+short cpu_load(ശൂന്യം)
 {
 	u64_t current_tsc, *current_idle;
 	u64_t tsc_delta, idle_delta, busy;
-	struct proc *idle;
+	ഘടന proc *idle;
 	short load;
 #ifdef CONFIG_SMP
 	unsigned cpu = cpuid;
@@ -398,7 +398,7 @@ short cpu_load(void)
 	current_idle = &idle->p_cycles; /* ptr to idle proc */
 
 	/* calculate load since last cpu_load invocation */
-	if (*last_tsc) {
+	എങ്കിൽ (*last_tsc) {
 		tsc_delta = current_tsc - *last_tsc;
 		idle_delta = *current_idle - *last_idle;
 
@@ -406,35 +406,35 @@ short cpu_load(void)
 		busy = busy * 100;
 		load = ex64lo(busy / tsc_delta);
 
-		if (load > 100)
+		എങ്കിൽ (load > 100)
 			load = 100;
-	} else
+	} അല്ലെങ്കിൽ
 		load = 0;
 
 	*last_tsc = current_tsc;
 	*last_idle = *current_idle;
-	return load;
+	തിരികെ load;
 }
 
-void busy_delay_ms(int ms)
+ശൂന്യം busy_delay_ms(പൂർണ്ണസംഖ്യ ms)
 {
 	u64_t cycles = ms_2_cpu_time(ms), tsc0, tsc, tsc1;
 	read_tsc_64(&tsc0);
 	tsc1 = tsc0 + cycles;
-	do { read_tsc_64(&tsc); } while(tsc < tsc1);
-	return;
+	ചെയ്യുക { read_tsc_64(&tsc); } ആകുമ്പോൾ(tsc < tsc1);
+	തിരികെ;
 }
 
 /*
  * Return the number of clock ticks spent in each of a predefined number of
  * CPU states.
  */
-void
-get_cpu_ticks(unsigned int cpu, uint64_t ticks[CPUSTATES])
+ശൂന്യം
+get_cpu_ticks(unsigned പൂർണ്ണസംഖ്യ cpu, uint64_t ticks[CPUSTATES])
 {
-	int i;
+	പൂർണ്ണസംഖ്യ i;
 
 	/* TODO: make this inter-CPU safe! */
-	for (i = 0; i < CPUSTATES; i++)
+	വേണ്ടി (i = 0; i < CPUSTATES; i++)
 		ticks[i] = tsc_per_state[cpu][i] / tsc_per_tick[cpu];
 }

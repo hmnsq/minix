@@ -8,16 +8,16 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#അന്തര്ഭാവ <assert.h>
 
-#include <minix/safecopies.h>
+#അന്തര്ഭാവ <minix/safecopies.h>
 
-#include "kernel/system.h"
+#അന്തര്ഭാവ "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+പൂർണ്ണസംഖ്യ do_safememset(ഘടന proc *caller, message *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
@@ -25,33 +25,33 @@ int do_safememset(struct proc *caller, message *m_ptr) {
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
 	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
+	പൂർണ്ണസംഖ്യ pattern = m_ptr->SMS_PATTERN;
 	size_t len = (size_t)m_ptr->SMS_BYTES;
 
-	struct proc *dst_p;
+	ഘടന proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	സ്ഥിതം vir_bytes v_offset;
+	പൂർണ്ണസംഖ്യ r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	എങ്കിൽ (dst_endpt == NONE || caller_endpt == NONE)
+		തിരികെ EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	എങ്കിൽ (!(dst_p = endpoint_lookup(dst_endpt)))
+		തിരികെ EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
+	എങ്കിൽ (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
 		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+		തിരികെ EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_offset, &v_offset, &new_granter, ശൂന്യ);
 
-	if (r != OK) {
+	എങ്കിൽ (r != OK) {
 		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+		തിരികെ r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	തിരികെ vm_memset(caller, new_granter, v_offset, pattern, len);
 }

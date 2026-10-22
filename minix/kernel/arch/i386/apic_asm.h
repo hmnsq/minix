@@ -3,77 +3,77 @@
 
 
 #ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+ശൂന്യം apic_hwint0(ശൂന്യം);
+ശൂന്യം apic_hwint1(ശൂന്യം);
+ശൂന്യം apic_hwint2(ശൂന്യം);
+ശൂന്യം apic_hwint3(ശൂന്യം);
+ശൂന്യം apic_hwint4(ശൂന്യം);
+ശൂന്യം apic_hwint5(ശൂന്യം);
+ശൂന്യം apic_hwint6(ശൂന്യം);
+ശൂന്യം apic_hwint7(ശൂന്യം);
+ശൂന്യം apic_hwint8(ശൂന്യം);
+ശൂന്യം apic_hwint9(ശൂന്യം);
+ശൂന്യം apic_hwint10(ശൂന്യം);
+ശൂന്യം apic_hwint11(ശൂന്യം);
+ശൂന്യം apic_hwint12(ശൂന്യം);
+ശൂന്യം apic_hwint13(ശൂന്യം);
+ശൂന്യം apic_hwint14(ശൂന്യം);
+ശൂന്യം apic_hwint15(ശൂന്യം);
+ശൂന്യം apic_hwint16(ശൂന്യം);
+ശൂന്യം apic_hwint17(ശൂന്യം);
+ശൂന്യം apic_hwint18(ശൂന്യം);
+ശൂന്യം apic_hwint19(ശൂന്യം);
+ശൂന്യം apic_hwint20(ശൂന്യം);
+ശൂന്യം apic_hwint21(ശൂന്യം);
+ശൂന്യം apic_hwint22(ശൂന്യം);
+ശൂന്യം apic_hwint23(ശൂന്യം);
+ശൂന്യം apic_hwint24(ശൂന്യം);
+ശൂന്യം apic_hwint25(ശൂന്യം);
+ശൂന്യം apic_hwint26(ശൂന്യം);
+ശൂന്യം apic_hwint27(ശൂന്യം);
+ശൂന്യം apic_hwint28(ശൂന്യം);
+ശൂന്യം apic_hwint29(ശൂന്യം);
+ശൂന്യം apic_hwint30(ശൂന്യം);
+ശൂന്യം apic_hwint31(ശൂന്യം);
+ശൂന്യം apic_hwint32(ശൂന്യം);
+ശൂന്യം apic_hwint33(ശൂന്യം);
+ശൂന്യം apic_hwint34(ശൂന്യം);
+ശൂന്യം apic_hwint35(ശൂന്യം);
+ശൂന്യം apic_hwint36(ശൂന്യം);
+ശൂന്യം apic_hwint37(ശൂന്യം);
+ശൂന്യം apic_hwint38(ശൂന്യം);
+ശൂന്യം apic_hwint39(ശൂന്യം);
+ശൂന്യം apic_hwint40(ശൂന്യം);
+ശൂന്യം apic_hwint41(ശൂന്യം);
+ശൂന്യം apic_hwint42(ശൂന്യം);
+ശൂന്യം apic_hwint43(ശൂന്യം);
+ശൂന്യം apic_hwint44(ശൂന്യം);
+ശൂന്യം apic_hwint45(ശൂന്യം);
+ശൂന്യം apic_hwint46(ശൂന്യം);
+ശൂന്യം apic_hwint47(ശൂന്യം);
+ശൂന്യം apic_hwint48(ശൂന്യം);
+ശൂന്യം apic_hwint49(ശൂന്യം);
+ശൂന്യം apic_hwint50(ശൂന്യം);
+ശൂന്യം apic_hwint51(ശൂന്യം);
+ശൂന്യം apic_hwint52(ശൂന്യം);
+ശൂന്യം apic_hwint53(ശൂന്യം);
+ശൂന്യം apic_hwint54(ശൂന്യം);
+ശൂന്യം apic_hwint55(ശൂന്യം);
+ശൂന്യം apic_hwint56(ശൂന്യം);
+ശൂന്യം apic_hwint57(ശൂന്യം);
+ശൂന്യം apic_hwint58(ശൂന്യം);
+ശൂന്യം apic_hwint59(ശൂന്യം);
+ശൂന്യം apic_hwint60(ശൂന്യം);
+ശൂന്യം apic_hwint61(ശൂന്യം);
+ശൂന്യം apic_hwint62(ശൂന്യം);
+ശൂന്യം apic_hwint63(ശൂന്യം);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+ശൂന്യം lapic_timer_int_handler(ശൂന്യം);
+ശൂന്യം apic_spurios_intr(ശൂന്യം);
+ശൂന്യം apic_error_intr(ശൂന്യം);
 
 #endif
 
@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN അക്ഷരം lapic_intr_dummy_handles_start;
+EXTERN അക്ഷരം lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */

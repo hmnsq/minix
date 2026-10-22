@@ -7,26 +7,26 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#അന്തര്ഭാവ "kernel/system.h"
+#അന്തര്ഭാവ <assert.h>
 
-#include "arch_proto.h"
+#അന്തര്ഭാവ "arch_proto.h"
 
-extern phys_bytes video_mem_vaddr;
+ബാഹ്യ phys_bytes video_mem_vaddr;
 
-extern char *video_mem;
+ബാഹ്യ അക്ഷരം *video_mem;
 
-static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
+സ്ഥിതം ശൂന്യം setcr3(ഘടന proc *p, u32_t cr3, u32_t *v)
 {
 	/* Set process CR3. */
 	p->p_seg.p_cr3 = cr3;
-	assert(p->p_seg.p_cr3);
+	പ്രതിജ്ഞാ(p->p_seg.p_cr3);
 	p->p_seg.p_cr3_v = v; 
-	if(p == get_cpulocal_var(ptproc)) {
+	എങ്കിൽ(p == get_cpulocal_var(ptproc)) {
 		write_cr3(p->p_seg.p_cr3);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	എങ്കിൽ(p->p_nr == VM_PROC_NR) {
+		എങ്കിൽ (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -35,33 +35,33 @@ static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+പൂർണ്ണസംഖ്യ arch_do_vmctl(
+  രജിസ്റ്റർ message *m_ptr,	/* pointer to request message */
+  ഘടന proc *p
 )
 {
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+  തിരഞ്ഞെടുപ്പ്(m_ptr->SVMCTL_PARAM) {
+	അവസ്ഥ VMCTL_GET_PDBR:
 		/* Get process page directory base reg (CR3). */
-		m_ptr->SVMCTL_VALUE = p->p_seg.p_cr3;
-		return OK;
-	case VMCTL_SETADDRSPACE:
+		m_ptr->SVMCTL_മൂല്യം = p->p_seg.p_cr3;
+		തിരികെ OK;
+	അവസ്ഥ VMCTL_SETADDRSPACE:
 		setcr3(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		തിരികെ OK;
+	അവസ്ഥ VMCTL_FLUSHTLB:
 	{
 		reload_cr3();
-		return OK;
+		തിരികെ OK;
 	}
-	case VMCTL_I386_INVLPG:
+	അവസ്ഥ VMCTL_I386_INVLPG:
 	{
-		i386_invlpg(m_ptr->SVMCTL_VALUE);
-		return OK;
+		i386_invlpg(m_ptr->SVMCTL_മൂല്യം);
+		തിരികെ OK;
 	}
   }
 
 
 
   printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  തിരികെ EINVAL;
 }

@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#അന്തര്ഭാവ "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#അന്തര്ഭാവ <ctype.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <machine/cmos.h>
+#അന്തര്ഭാവ <machine/bios.h>
+#അന്തര്ഭാവ <machine/cpu.h>
+#അന്തര്ഭാവ <minix/cpufeature.h>
+#അന്തര്ഭാവ <sys/reboot.h>
+#അന്തര്ഭാവ <assert.h>
+#അന്തര്ഭാവ <signal.h>
 
-#include <minix/u64.h>
+#അന്തര്ഭാവ <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#അന്തര്ഭാവ "arch_proto.h"
+#അന്തര്ഭാവ "oxpcie.h"
+#അന്തര്ഭാവ "direct_utils.h"
 
 #ifdef USE_ACPI
-#include "acpi.h"
+#അന്തര്ഭാവ "acpi.h"
 #endif
 
 #define     KBCMDP          4       /* kbd controller port (O) */
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+പൂർണ്ണസംഖ്യ cpu_has_tsc;
 
-void
-reset(void)
+ശൂന്യം
+reset(ശൂന്യം)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        എങ്കിൽ (b != 0xff) {
+                എങ്കിൽ ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	ആകുമ്പോൾ(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+സ്ഥിതം __dead ശൂന്യം
+halt(ശൂന്യം)
 {
-	for ( ; ; )
+	വേണ്ടി ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+സ്ഥിതം __dead ശൂന്യം
+poweroff(ശൂന്യം)
 {
-	const char *shutdown_str;
+	സ്ഥിരം അക്ഷരം *shutdown_str;
 
 #ifdef USE_ACPI
 	acpi_poweroff();
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        ആകുമ്പോൾ (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead ശൂന്യം arch_shutdown(പൂർണ്ണസംഖ്യ how)
 {
-	unsigned char unused_ch;
+	unsigned അക്ഷരം unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	ആകുമ്പോൾ(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	എങ്കിൽ(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		എങ്കിൽ (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		ആകുമ്പോൾ (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	എങ്കിൽ((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	എങ്കിൽ(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		വേണ്ടി (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -151,20 +151,20 @@ __dead void arch_shutdown(int how)
 }
 
 #ifdef DEBUG_SERIAL
-void ser_putc(char c)
+ശൂന്യം ser_putc(അക്ഷരം c)
 {
-        int i;
-        int lsr, thr;
+        പൂർണ്ണസംഖ്യ i;
+        പൂർണ്ണസംഖ്യ lsr, thr;
 
-#if CONFIG_OXPCIE
+#എങ്കിൽ CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#അല്ലെങ്കിൽ
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        വേണ്ടി (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                എങ്കിൽ (inb( lsr) & LSR_THRE)
+                        നിർത്തുക;
         }
         outb( thr, c);
 #endif

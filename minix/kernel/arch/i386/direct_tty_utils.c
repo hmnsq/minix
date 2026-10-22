@@ -1,43 +1,43 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#അന്തര്ഭാവ <minix/minlib.h>
+#അന്തര്ഭാവ <minix/cpufeature.h>
+#അന്തര്ഭാവ <machine/partition.h>
+#അന്തര്ഭാവ "string.h"
+#അന്തര്ഭാവ "direct_utils.h"
+#അന്തര്ഭാവ "serial.h"
+#അന്തര്ഭാവ "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+സ്ഥിതം പൂർണ്ണസംഖ്യ print_വരി = 1, print_col = 1;
 
-#include <sys/video.h>
+#അന്തര്ഭാവ <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+ബാഹ്യ അക്ഷരം *video_mem;
+#define VIDOFFSET(വരി, col) ((വരി) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_വരികൾ-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+ശൂന്യം direct_put_char(അക്ഷരം c, പൂർണ്ണസംഖ്യ വരി, പൂർണ്ണസംഖ്യ col) 
 {
-	int offset = VIDOFFSET(line, col);
+	പൂർണ്ണസംഖ്യ offset = VIDOFFSET(വരി, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+സ്ഥിതം അക്ഷരം direct_get_char(പൂർണ്ണസംഖ്യ വരി, പൂർണ്ണസംഖ്യ col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	തിരികെ video_mem[VIDOFFSET(വരി, col)];
 }
 
-void direct_cls(void)
+ശൂന്യം direct_cls(ശൂന്യം)
 {
 	/* Clear screen */
-	int i,j;
+	പൂർണ്ണസംഖ്യ i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	വേണ്ടി(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		വേണ്ടി(j = 0; j < MULTIBOOT_CONSOLE_വരികൾ; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_വരി = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,59 +46,59 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+സ്ഥിതം ശൂന്യം direct_scroll_up(പൂർണ്ണസംഖ്യ വരികൾ) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	പൂർണ്ണസംഖ്യ i, j;
+	വേണ്ടി (i = 0; i < MULTIBOOT_CONSOLE_വരികൾ; i++ ) {
+		വേണ്ടി (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			അക്ഷരം c = 0;
+			എങ്കിൽ(i < MULTIBOOT_CONSOLE_വരികൾ-വരികൾ)
+				c = direct_get_char(i + വരികൾ, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_വരി-= വരികൾ;
 }
 
-void direct_print_char(char c)
+ശൂന്യം direct_print_char(അക്ഷരം c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ആകുമ്പോൾ (print_വരി >= MULTIBOOT_CONSOLE_വരികൾ)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	എങ്കിൽ(c == '\t') {
+		എങ്കിൽ(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} അല്ലെങ്കിൽ {
+			ചെയ്യുക {
+				direct_put_char(' ', print_വരി, print_col++);
+			} ആകുമ്പോൾ(print_col % TABWIDTH);
+			തിരികെ;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	എങ്കിൽ (c == '\n') {
+		ആകുമ്പോൾ (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_വരി, print_col++);
+		print_വരി++;
 		print_col = 0;
-		return;
+		തിരികെ;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_വരി, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	എങ്കിൽ (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_വരി++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ആകുമ്പോൾ (print_വരി >= MULTIBOOT_CONSOLE_വരികൾ)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+ശൂന്യം direct_print(സ്ഥിരം അക്ഷരം *str)
 {
-	while (*str) {
+	ആകുമ്പോൾ (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+പൂർണ്ണസംഖ്യ direct_read_char(unsigned അക്ഷരം *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	എങ്കിൽ (!(sb & KB_OUT_FULL)) {
+		തിരികെ 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	എങ്കിൽ (!(sb & KB_AUX_BYTE))
+		തിരികെ 1;
 
-	return 0;
+	തിരികെ 0;
 }
 
