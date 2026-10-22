@@ -2,8 +2,8 @@
 #ifndef _I386_ACONST_H
 #define _I386_ACONST_H 1
 
-#include <machine/interrupt.h>
-#include <machine/memory.h>
+#ضمن <machine/interrupt.h>
+#ضمن <machine/memory.h>
 
 /* Constants for protected mode. */
 
@@ -45,7 +45,7 @@
 #define COPROC_SEG_VECTOR    9	/* coprocessor segment overrun */
 #define INVAL_TSS_VECTOR    10	/* invalid TSS */
 #define SEG_NOT_VECTOR      11	/* segment not present */
-#define STACK_FAULT_VECTOR  12	/* stack exception */
+#define مكدس_FAULT_VECTOR  12	/* stack exception */
 #define PROTECTION_VECTOR   13	/* general protection */
 
 /* Selector bits. */
@@ -53,7 +53,7 @@
 #define RPL               0x03	/* requester privilege level */
 
 /* Base and limit sizes and shifts. */
-#define BASE_MIDDLE_SHIFT   16	/* shift for base --> base_middle */
+#define BASE_وسط_SHIFT   16	/* shift for base --> base_middle */
 
 /* Access-byte and type-byte bits. */
 #define PRESENT           0x80	/* set for descriptor present */
@@ -94,17 +94,17 @@
 
 /* Descriptor structure offsets. */
 #define DESC_GRANULARITY     6	/* to granularity byte */
-#define DESC_BASE_HIGH       7	/* to base_high */
+#define DESC_BASE_أعلى       7	/* to base_high */
 
 /* Type-byte bits. */
 #define DESC_386_BIT  0x08 /* 386 types are obtained by ORing with this */
 				/* LDT's and TASK_GATE's don't need it */
 
 /* Base and limit sizes and shifts. */ 
-#define BASE_HIGH_SHIFT     24  /* shift for base --> base_high */
+#define BASE_أعلى_SHIFT     24  /* shift for base --> base_high */
 #define BYTE_GRAN_MAX   0xFFFFFL   /* maximum size for byte granular segment */
 #define GRANULARITY_SHIFT   16  /* shift for limit --> granularity */
-#define OFFSET_HIGH_SHIFT   16  /* shift for (gate) offset --> offset_high */
+#define OFFSET_أعلى_SHIFT   16  /* shift for (gate) offset --> offset_high */
 #define PAGE_GRAN_SHIFT     12  /* extra shift for page granular limits */
 
 /* Granularity byte. */
@@ -112,7 +112,7 @@
 #define DEFAULT   	  0x40	/* set for 32-bit defaults (executable seg) */
 #define BIG       	  0x40	/* set for "BIG" (expand-down seg) */
 #define AVL        	  0x10	/* 0 for available */
-#define LIMIT_HIGH   	  0x0F	/* mask for high bits of limit */
+#define LIMIT_أعلى   	  0x0F	/* mask for high bits of limit */
 
 /* Program stack words and masks. */
 #define INIT_PSW      0x0200    /* initial psw */
@@ -146,7 +146,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define X86_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define X86_مكدس_قمة_RESERVED	(2 * حجم(reg_t))
 
 #define PG_ALLOCATEME ((phys_bytes)-1)
 

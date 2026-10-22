@@ -6,7 +6,7 @@
 
 #define APIC_IRQ_HANDLER(irq)	\
 	push	$irq						;\
-	call	_C_LABEL(irq_handle)		/* intr_handle(irq) */	;\
+	نادي	_C_LABEL(irq_handle)		/* intr_handle(irq) */	;\
 	add	$4, %esp					;
 
 /*===========================================================================*/
@@ -20,7 +20,7 @@ ENTRY(apic_hwint##irq)							\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
 	push	%ebp							;\
-	call	_C_LABEL(context_stop)					;\
+	نادي	_C_LABEL(context_stop)					;\
 	add	$4, %esp						;\
 	movl	$0, %ebp	/* for stack trace */			;\
 	APIC_IRQ_HANDLER(irq)						;\
@@ -28,7 +28,7 @@ ENTRY(apic_hwint##irq)							\
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	نادي	_C_LABEL(context_stop_idle)				;\
 	APIC_IRQ_HANDLER(irq)						;\
 	CLEAR_IF(10*4(%esp))						;\
 	popa								;\
@@ -36,7 +36,7 @@ ENTRY(apic_hwint##irq)							\
 
 #define LAPIC_INTR_HANDLER(func)	\
 	movl	$func, %eax						;\
-	call	*%eax           /* call the actual handler */		;\
+	نادي	*%eax           /* نادي the actual handler */		;\
 	mov	_C_LABEL(lapic_eoi_addr), %eax	/* the end of handler*/	;\
 	movl	$0, (%eax)						;
 
@@ -49,7 +49,7 @@ ENTRY(apic_hwint##irq)							\
 									\
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
 	push	%ebp							;\
-	call	_C_LABEL(context_stop)					;\
+	نادي	_C_LABEL(context_stop)					;\
 	add	$4, %esp						;\
 	movl	$0, %ebp		/* for stack trace */		;\
 	LAPIC_INTR_HANDLER(func)					;\
@@ -57,7 +57,7 @@ ENTRY(apic_hwint##irq)							\
 	\
 0:	\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	نادي	_C_LABEL(context_stop_idle)				;\
 	LAPIC_INTR_HANDLER(func)					;\
 	CLEAR_IF(10*4(%esp))						;\
 	popa								;\
@@ -94,7 +94,7 @@ lapic_intr_dummy_handler_msg:
 #define lapic_intr_dummy_handler(vect)			\
 	pushl	$vect;					\
 	push	$lapic_intr_dummy_handler_msg;		\
-	call	_C_LABEL(panic);			\
+	نادي	_C_LABEL(panic);			\
 1:	jmp	1b; /* never return */
 
 #define LAPIC_INTR_DUMMY_HANDLER(vect)			\
