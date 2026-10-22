@@ -33,7 +33,7 @@
 #ifndef USR_DATATOP
 #ifndef _MINIX_MAGIC
 #define USR_DATATOP 0xF0000000
-#else
+#ᯀᯮᯝᯂᯪ
 #define USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
 #endif
 #endif
