@@ -1,43 +1,43 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#অন্তর্ভাব <minix/minlib.h>
+#অন্তর্ভাব <minix/cpufeature.h>
+#অন্তর্ভাব <machine/partition.h>
+#অন্তর্ভাব "string.h"
+#অন্তর্ভাব "direct_utils.h"
+#অন্তর্ভাব "serial.h"
+#অন্তর্ভাব "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+স্থির পূর্ণাঙ্ক print_সারি = 1, print_col = 1;
 
-#include <sys/video.h>
+#অন্তর্ভাব <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+বাহ্য বর্ণ *video_mem;
+#define VIDOFFSET(সারি, col) ((সারি) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_সারিগুলি-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+শূন্য direct_put_char(বর্ণ c, পূর্ণাঙ্ক সারি, পূর্ণাঙ্ক col) 
 {
-	int offset = VIDOFFSET(line, col);
+	পূর্ণাঙ্ক offset = VIDOFFSET(সারি, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+স্থির বর্ণ direct_get_char(পূর্ণাঙ্ক সারি, পূর্ণাঙ্ক col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	প্রত্যাগম video_mem[VIDOFFSET(সারি, col)];
 }
 
-void direct_cls(void)
+শূন্য direct_cls(শূন্য)
 {
 	/* Clear screen */
-	int i,j;
+	পূর্ণাঙ্ক i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	প্রতি(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		প্রতি(j = 0; j < MULTIBOOT_CONSOLE_সারিগুলি; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_সারি = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,59 +46,59 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+স্থির শূন্য direct_scroll_up(পূর্ণাঙ্ক সারিগুলি) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	পূর্ণাঙ্ক i, j;
+	প্রতি (i = 0; i < MULTIBOOT_CONSOLE_সারিগুলি; i++ ) {
+		প্রতি (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			বর্ণ c = 0;
+			যদি(i < MULTIBOOT_CONSOLE_সারিগুলি-সারিগুলি)
+				c = direct_get_char(i + সারিগুলি, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_সারি-= সারিগুলি;
 }
 
-void direct_print_char(char c)
+শূন্য direct_print_char(বর্ণ c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	যাবত্ (print_সারি >= MULTIBOOT_CONSOLE_সারিগুলি)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	যদি(c == '\t') {
+		যদি(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} অন্যথা {
+			কুরু {
+				direct_put_char(' ', print_সারি, print_col++);
+			} যাবত্(print_col % TABWIDTH);
+			প্রত্যাগম;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	যদি (c == '\n') {
+		যাবত্ (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_সারি, print_col++);
+		print_সারি++;
 		print_col = 0;
-		return;
+		প্রত্যাগম;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_সারি, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	যদি (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_সারি++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	যাবত্ (print_সারি >= MULTIBOOT_CONSOLE_সারিগুলি)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+শূন্য direct_print(ধ্রুব বর্ণ *str)
 {
-	while (*str) {
+	যাবত্ (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+পূর্ণাঙ্ক direct_read_char(unsigned বর্ণ *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	যদি (!(sb & KB_OUT_FULL)) {
+		প্রত্যাগম 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	যদি (!(sb & KB_AUX_BYTE))
+		প্রত্যাগম 1;
 
-	return 0;
+	প্রত্যাগম 0;
 }
 

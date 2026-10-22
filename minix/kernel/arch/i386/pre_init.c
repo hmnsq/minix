@@ -1,114 +1,114 @@
 
 #define UNPAGED 1	/* for proper kmain() prototype */
 
-#include <assert.h>
-#include <stdlib.h>
-#include <minix/minlib.h>
-#include <minix/board.h>
-#include <sys/reboot.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#অন্তর্ভাব <assert.h>
+#অন্তর্ভাব <stdlib.h>
+#অন্তর্ভাব <minix/minlib.h>
+#অন্তর্ভাব <minix/board.h>
+#অন্তর্ভাব <sys/reboot.h>
+#অন্তর্ভাব <machine/partition.h>
+#অন্তর্ভাব "string.h"
+#অন্তর্ভাব "direct_utils.h"
+#অন্তর্ভাব "serial.h"
+#অন্তর্ভাব "glo.h"
 
-#if USE_SYSDEBUG
+#যদি USE_SYSDEBUG
 #define MULTIBOOT_VERBOSE 1
 #endif
 
 /* to-be-built kinfo struct, diagnostics buffer */
 kinfo_t kinfo;
-struct kmessages kmessages;
+সংরচনা kmessages kmessages;
 
 /* pg_utils.c uses this; in this phase, there is a 1:1 mapping. */
-phys_bytes vir2phys(void *addr) { return (phys_bytes) addr; } 
+phys_bytes vir2phys(শূন্য *addr) { প্রত্যাগম (phys_bytes) addr; } 
 
 /* mb_utils.c uses this; we can reach it directly */
-char *video_mem = (char *) MULTIBOOT_VIDEO_BUFFER;
+বর্ণ *video_mem = (বর্ণ *) MULTIBOOT_VIDEO_BUFFER;
 
 /* String length used for mb_itoa */
 #define ITOA_BUFFER_SIZE 20
 
 /* Kernel may use memory */
-int kernel_may_alloc = 1;
+পূর্ণাঙ্ক kernel_may_alloc = 1;
 
-static int mb_set_param(char *bigbuf, char *name, char *value, kinfo_t *cbi) 
+স্থির পূর্ণাঙ্ক mb_set_param(বর্ণ *bigbuf, বর্ণ *name, বর্ণ *মান, kinfo_t *cbi) 
 {
-	char *p = bigbuf;
-	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
-	char *q;
-	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	বর্ণ *p = bigbuf;
+	বর্ণ *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
+	বর্ণ *q;
+	পূর্ণাঙ্ক namelen = strlen(name);
+	পূর্ণাঙ্ক valuelen = strlen(মান);
 
 	/* Some variables we recognize */
-	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	যদি(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
+	যদি(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(মান); }
 
 	/* Delete the item if already exists */
-	while (*p) {
-		if (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
+	যাবত্ (*p) {
+		যদি (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
 			q = p;
-			while (*q) q++;
-			for (q++; q < bufend; q++, p++)
+			যাবত্ (*q) q++;
+			প্রতি (q++; q < bufend; q++, p++)
 				*p = *q;
-			break;
+			ভঙ্গ;
 		}
-		while (*p++)
+		যাবত্ (*p++)
 			;
 		p++;
 	}
 	
-	for (p = bigbuf; p < bufend && (*p || *(p + 1)); p++)
+	প্রতি (p = bigbuf; p < bufend && (*p || *(p + 1)); p++)
 		;
-	if (p > bigbuf) p++;
+	যদি (p > bigbuf) p++;
 	
 	/* Make sure there's enough space for the new parameter */
-	if (p + namelen + valuelen + 3 > bufend)
-		return -1;
+	যদি (p + namelen + valuelen + 3 > bufend)
+		প্রত্যাগম -1;
 	
 	strcpy(p, name);
 	p[namelen] = '=';
-	strcpy(p + namelen + 1, value);
+	strcpy(p + namelen + 1, মান);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0;
-	return 0;
+	প্রত্যাগম 0;
 }
 
-int overlaps(multiboot_module_t *mod, int n, int cmp_mod)
+পূর্ণাঙ্ক overlaps(multiboot_module_t *mod, পূর্ণাঙ্ক n, পূর্ণাঙ্ক cmp_mod)
 {
 	multiboot_module_t *cmp = &mod[cmp_mod];
-	int m;
+	পূর্ণাঙ্ক m;
 
 #define INRANGE(mod, v) ((v) >= mod->mod_start && (v) < mod->mod_end)
 #define OVERLAP(mod1, mod2) (INRANGE(mod1, mod2->mod_start) || \
 			INRANGE(mod1, mod2->mod_end-1))
-	for(m = 0; m < n; m++) {
+	প্রতি(m = 0; m < n; m++) {
 		multiboot_module_t *thismod = &mod[m];
-		if(m == cmp_mod) continue;
-		if(OVERLAP(thismod, cmp))
-			return 1;
+		যদি(m == cmp_mod) অনুবর্ত;
+		যদি(OVERLAP(thismod, cmp))
+			প্রত্যাগম 1;
 	}
-	return 0;
+	প্রত্যাগম 0;
 }
 
-void get_parameters(u32_t ebx, kinfo_t *cbi) 
+শূন্য get_parameters(u32_t ebx, kinfo_t *cbi) 
 {
 	multiboot_memory_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
-	char *p;
-	extern char _kern_phys_base, _kern_vir_base, _kern_size,
+	পূর্ণাঙ্ক var_i,মান_i, m, k;
+	বর্ণ *p;
+	বাহ্য বর্ণ _kern_phys_base, _kern_vir_base, _kern_size,
 		_kern_unpaged_start, _kern_unpaged_end;
 	phys_bytes kernbase = (phys_bytes) &_kern_phys_base,
 		kernsize = (phys_bytes) &_kern_size;
 #define BUF 1024
-	static char cmdline[BUF];
+	স্থির বর্ণ cmdline[BUF];
 
 	/* get our own copy of the multiboot info struct and module list */
-	memcpy((void *) mbi, (void *) ebx, sizeof(*mbi));
+	memcpy((শূন্য *) mbi, (শূন্য *) ebx, পরিমাণ(*mbi));
 
 	/* Set various bits of info for the higher-level kernel. */
-	cbi->mem_high_phys = 0;
+	cbi->mem_উপরের_phys = 0;
 	cbi->user_sp = (vir_bytes) &_kern_vir_base;
 	cbi->vir_kern_start = (vir_bytes) &_kern_vir_base;
 	cbi->bootstrap_start = (vir_bytes) &_kern_unpaged_start;
@@ -121,33 +121,33 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	cbi->serial_debug_baud = 115200;
 
 	/* parse boot command line */
-	if (mbi->mi_flags & MULTIBOOT_INFO_HAS_CMDLINE) {
-		static char var[BUF];
-		static char value[BUF];
+	যদি (mbi->mi_flags & MULTIBOOT_INFO_HAS_CMDLINE) {
+		স্থির বর্ণ var[BUF];
+		স্থির বর্ণ মান[BUF];
 
 		/* Override values with cmdline argument */
-		memcpy(cmdline, (void *) mbi->mi_cmdline, BUF);
+		memcpy(cmdline, (শূন্য *) mbi->mi_cmdline, BUF);
 		p = cmdline;
-		while (*p) {
+		যাবত্ (*p) {
 			var_i = 0;
-			value_i = 0;
-			while (*p == ' ') p++;
-			if (!*p) break;
-			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1) 
+			মান_i = 0;
+			যাবত্ (*p == ' ') p++;
+			যদি (!*p) ভঙ্গ;
+			যাবত্ (*p && *p != '=' && *p != ' ' && var_i < BUF - 1) 
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
-			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) 
-				value[value_i++] = *p++ ;
-			value[value_i] = 0;
+			যদি (*p++ != '=') অনুবর্ত; /* skip if not name=value */
+			যাবত্ (*p && *p != ' ' && মান_i < BUF - 1) 
+				মান[মান_i++] = *p++ ;
+			মান[মান_i] = 0;
 			
-			mb_set_param(cbi->param_buf, var, value, cbi);
+			mb_set_param(cbi->param_buf, var, মান, cbi);
 		}
 	}
 
         /* let higher levels know what we are booting on */
-        mb_set_param(cbi->param_buf, ARCHVARNAME, (char *)get_board_arch_name(BOARD_ID_INTEL), cbi);
-	mb_set_param(cbi->param_buf, BOARDVARNAME,(char *)get_board_name(BOARD_ID_INTEL) , cbi);
+        mb_set_param(cbi->param_buf, ARCHVARNAME, (বর্ণ *)get_board_arch_name(BOARD_ID_INTEL), cbi);
+	mb_set_param(cbi->param_buf, BOARDVARNAME,(বর্ণ *)get_board_name(BOARD_ID_INTEL) , cbi);
 
 	/* move user stack/data down to leave a gap to catch kernel
 	 * stack overflow; and to distinguish kernel and user addresses
@@ -162,27 +162,27 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	kinfo.kernel_allocated_bytes = (phys_bytes) &_kern_size;
 	kinfo.kernel_allocated_bytes -= cbi->bootstrap_len;
 
-	assert(!(cbi->bootstrap_start % I386_PAGE_SIZE));
+	প্রতিজ্ঞা(!(cbi->bootstrap_start % I386_PAGE_SIZE));
 	cbi->bootstrap_len = rounddown(cbi->bootstrap_len, I386_PAGE_SIZE);
-	assert(mbi->mi_flags & MULTIBOOT_INFO_HAS_MODS);
-	assert(mbi->mi_mods_count < MULTIBOOT_MAX_MODS);
-	assert(mbi->mi_mods_count > 0);
-	memcpy(&cbi->module_list, (void *) mbi->mi_mods_addr,
-		mbi->mi_mods_count * sizeof(multiboot_module_t));
+	প্রতিজ্ঞা(mbi->mi_flags & MULTIBOOT_INFO_HAS_MODS);
+	প্রতিজ্ঞা(mbi->mi_mods_গুনতি < MULTIBOOT_MAX_MODS);
+	প্রতিজ্ঞা(mbi->mi_mods_গুনতি > 0);
+	memcpy(&cbi->module_list, (শূন্য *) mbi->mi_mods_addr,
+		mbi->mi_mods_গুনতি * পরিমাণ(multiboot_module_t));
 	
-	memset(cbi->memmap, 0, sizeof(cbi->memmap));
+	memset(cbi->memmap, 0, পরিমাণ(cbi->memmap));
 	/* mem_map has a variable layout */
-	if(mbi->mi_flags & MULTIBOOT_INFO_HAS_MMAP) {
+	যদি(mbi->mi_flags & MULTIBOOT_INFO_HAS_MMAP) {
 		cbi->mmap_size = 0;
-	        for (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
+	        প্রতি (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
        	     (unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;
        	       mmap = (multiboot_memory_map_t *) 
-		      	((unsigned long) mmap + mmap->mm_size + sizeof(mmap->mm_size))) {
-			if(mmap->mm_type != MULTIBOOT_MEMORY_AVAILABLE) continue;
+		      	((unsigned long) mmap + mmap->mm_size + পরিমাণ(mmap->mm_size))) {
+			যদি(mmap->mm_type != MULTIBOOT_MEMORY_AVAILABLE) অনুবর্ত;
 			add_memmap(cbi, mmap->mm_base_addr, mmap->mm_length);
 		}
-	} else {
-		assert(mbi->mi_flags & MULTIBOOT_INFO_HAS_MEMORY);
+	} অন্যথা {
+		প্রতিজ্ঞা(mbi->mi_flags & MULTIBOOT_INFO_HAS_MEMORY);
 		add_memmap(cbi, 0, mbi->mi_mem_lower*1024);
 		add_memmap(cbi, 0x100000, mbi->mi_mem_upper*1024);
 	}
@@ -191,19 +191,19 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 	 * with each other. Pretend the kernel is an extra module for a
 	 * second.
 	 */
-	k = mbi->mi_mods_count;
-	assert(k < MULTIBOOT_MAX_MODS);
+	k = mbi->mi_mods_গুনতি;
+	প্রতিজ্ঞা(k < MULTIBOOT_MAX_MODS);
 	cbi->module_list[k].mod_start = kernbase;
 	cbi->module_list[k].mod_end = kernbase + kernsize;
-	cbi->mods_with_kernel = mbi->mi_mods_count+1;
+	cbi->mods_with_kernel = mbi->mi_mods_গুনতি+1;
 	cbi->kern_mod = k;
 
-	for(m = 0; m < cbi->mods_with_kernel; m++) {
-#if 0
+	প্রতি(m = 0; m < cbi->mods_with_kernel; m++) {
+#যদি 0
 		printf("checking overlap of module %08lx-%08lx\n",
 		  cbi->module_list[m].mod_start, cbi->module_list[m].mod_end);
 #endif
-		if(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
+		যদি(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
 			panic("overlapping boot modules/kernel");
 		/* We cut out the bits of memory that we know are
 		 * occupied by the kernel and boot modules.
@@ -216,7 +216,7 @@ void get_parameters(u32_t ebx, kinfo_t *cbi)
 
 kinfo_t *pre_init(u32_t magic, u32_t ebx)
 {
-	assert(magic == MULTIBOOT_INFO_MAGIC);
+	প্রতিজ্ঞা(magic == MULTIBOOT_INFO_MAGIC);
 
 	/* Get our own copy boot params pointed to by ebx.
 	 * Here we find out whether we should do serial output.
@@ -234,10 +234,10 @@ kinfo_t *pre_init(u32_t magic, u32_t ebx)
 	vm_enable_paging();
 
 	/* Done, return boot info so it can be passed to kmain(). */
-	return &kinfo;
+	প্রত্যাগম &kinfo;
 }
 
-void send_diag_sig(void) { }
-void minix_shutdown(int how) { arch_shutdown(how); }
-void busy_delay_ms(int x) { }
-int raise(int sig) { panic("raise(%d)\n", sig); }
+শূন্য send_diag_sig(শূন্য) { }
+শূন্য minix_shutdown(পূর্ণাঙ্ক how) { arch_shutdown(how); }
+শূন্য busy_delay_ms(পূর্ণাঙ্ক x) { }
+পূর্ণাঙ্ক উত্থাপয(পূর্ণাঙ্ক sig) { panic("raise(%d)\n", sig); }

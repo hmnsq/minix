@@ -3,31 +3,31 @@
  *   kputc:          buffered putc used by kernel printf
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#অন্তর্ভাব "kernel/kernel.h"
+#অন্তর্ভাব "arch_proto.h"
 
-#include <minix/syslib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <string.h>
+#অন্তর্ভাব <minix/syslib.h>
+#অন্তর্ভাব <unistd.h>
+#অন্তর্ভাব <stdarg.h>
+#অন্তর্ভাব <signal.h>
+#অন্তর্ভাব <string.h>
 
-#include <minix/sys_config.h>
+#অন্তর্ভাব <minix/sys_config.h>
 
 #define ARE_PANICING 0xDEADC0FF
 
 /*===========================================================================*
  *			panic                                          *
  *===========================================================================*/
-void panic(const char *fmt, ...)
+শূন্য panic(ধ্রুব বর্ণ *fmt, ...)
 {
   va_list arg;
   /* The system has run aground of a fatal kernel error. Terminate execution. */
-  if (kinfo.minix_panicing == ARE_PANICING) {
+  যদি (kinfo.minix_panicing == ARE_PANICING) {
   	reset();
   }
   kinfo.minix_panicing = ARE_PANICING;
-  if (fmt != NULL) {
+  যদি (fmt != রিক্ত) {
 	printf("kernel panic: ");
   	va_start(arg, fmt);
 	vprintf(fmt, arg);
@@ -38,8 +38,8 @@ void panic(const char *fmt, ...)
   printf("kernel on CPU %d: ", cpuid);
   util_stacktrace();
 
-#if 0
-  if(get_cpulocal_var(proc_ptr)) {
+#যদি 0
+  যদি(get_cpulocal_var(proc_ptr)) {
 	  printf("current process : ");
 	  proc_stacktrace(get_cpulocal_var(proc_ptr));
   }
@@ -52,32 +52,32 @@ void panic(const char *fmt, ...)
 /*===========================================================================*
  *				kputc				     	     *
  *===========================================================================*/
-void kputc(
-  int c					/* character to append */
+শূন্য kputc(
+  পূর্ণাঙ্ক c					/* character to append */
 )
 {
 /* Accumulate a single character for a kernel message. Send a notification
  * to the output drivers if an END_OF_KMESS is encountered.
  */
-  if (c != END_OF_KMESS) {
-      int maxblpos = sizeof(kmess.kmess_buf) - 2;
+  যদি (c != END_OF_KMESS) {
+      পূর্ণাঙ্ক maxblpos = পরিমাণ(kmess.kmess_buf) - 2;
 #ifdef DEBUG_SERIAL
-      if (kinfo.do_serial_debug) {
-	if(c == '\n')
+      যদি (kinfo.do_serial_debug) {
+	যদি(c == '\n')
       		ser_putc('\r');
       	ser_putc(c);
       }
 #endif
       kmess.km_buf[kmess.km_next] = c;	/* put normal char in buffer */
       kmess.kmess_buf[kmess.blpos] = c;
-      if (kmess.km_size < sizeof(kmess.km_buf))
+      যদি (kmess.km_size < পরিমাণ(kmess.km_buf))
           kmess.km_size += 1;
       kmess.km_next = (kmess.km_next + 1) % _KMESS_BUF_SIZE;
-      if(kmess.blpos == maxblpos) {
+      যদি(kmess.blpos == maxblpos) {
       	memmove(kmess.kmess_buf,
-		kmess.kmess_buf+1, sizeof(kmess.kmess_buf)-1);
-      } else kmess.blpos++;
-  } else if (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
+		kmess.kmess_buf+1, পরিমাণ(kmess.kmess_buf)-1);
+      } অন্যথা kmess.blpos++;
+  } অন্যথা যদি (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
 	send_diag_sig();
   }
 }
@@ -85,8 +85,8 @@ void kputc(
 /*===========================================================================*
  *				_exit				     	     *
  *===========================================================================*/
-void _exit(
-  int e					/* error code */
+শূন্য _exit(
+  পূর্ণাঙ্ক e					/* error code */
 )
 {
   panic("_exit called from within the kernel, should not happen. (err %i)", e);

@@ -1,8 +1,8 @@
 #ifndef __SCONST_H__
 #define __SCONST_H__
 
-#include "kernel/const.h"
-#include "kernel/procoffsets.h"
+#অন্তর্ভাব "kernel/const.h"
+#অন্তর্ভাব "kernel/procoffsets.h"
 
 /*
  * offset to current process pointer right after trap, we assume we always have
@@ -76,13 +76,13 @@
 								\
 	cld /* set the direction flag to a known state */	;\
 								\
-	push	%ebp					;\
+	ঠেলো	%ebp					;\
 							;\
 	movl	(CURR_PROC_PTR + 4 + displ)(%esp), %ebp	;\
 							\
 	SAVE_GP_REGS(%ebp)				;\
         movl	$trapcode, P_KERN_TRAP_STYLE(%ebp)	;\
-	pop	%esi			/* get the orig %ebp and save it */ ;\
+	বের_করো	%esi			/* get the orig %ebp and save it */ ;\
 	mov	%esi, BPREG(%ebp)			;\
 							\
 	RESTORE_KERNEL_SEGS				;\

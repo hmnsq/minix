@@ -40,7 +40,7 @@ ENTRY(usermapped_ ## name ## _sysenter)					;\
 	/* !!! There is a dependency of proc_stacktrace()		;\
 	 * on this stack layout; it needs to find %ebp on it.		;\
 	 */								;\
-	SETARGS			/* call-specific register setup */	;\
+	SETARGS			/* আহ্বান-specific register setup */	;\
 	sysenter		/* disappear into kernel */		;\
 0:									;\
 	mov	%ebx, %ecx	/* return w. state mangled; save %ebx */;\
@@ -64,7 +64,7 @@ ENTRY(usermapped_ ## name ## _syscall)					;\
 	/* !!! There is a dependency of proc_stacktrace()		;\
 	 * on this stack layout; it needs to find %ebp on it.		;\
 	 */								;\
-	SETARGS			/* call-specific register setup */	;\
+	SETARGS			/* আহ্বান-specific register setup */	;\
 	movl	%ecx, %edx	/* %ecx is clobbered by SYSCALL */	;\
 	syscall			/* disappear into kernel */		;\
 	mov	%ebx, %ecx	/* return w. state mangled; save %ebx */;\

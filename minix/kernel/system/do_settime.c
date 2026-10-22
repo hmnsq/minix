@@ -8,30 +8,30 @@
  *   m_lsys_krn_sys_settime.nsec
  */
 
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include <time.h>
+#অন্তর্ভাব "kernel/system.h"
+#অন্তর্ভাব <minix/endpoint.h>
+#অন্তর্ভাব <time.h>
 
 /*===========================================================================*
  *				do_settime				     *
  *===========================================================================*/
-int do_settime(struct proc * caller, message * m_ptr)
+পূর্ণাঙ্ক do_settime(সংরচনা proc * caller, message * m_ptr)
 {
   clock_t newclock;
   int32_t ticks;
   time_t boottime, timediff, timediff_ticks;
 
   /* only realtime can change */
-  if (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
-	return EINVAL;
+  যদি (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
+	প্রত্যাগম EINVAL;
 
   /* user just wants to adjtime() */
-  if (m_ptr->m_lsys_krn_sys_settime.now == 0) {
+  যদি (m_ptr->m_lsys_krn_sys_settime.now == 0) {
 	/* convert delta value from seconds and nseconds to ticks */
 	ticks = (m_ptr->m_lsys_krn_sys_settime.sec * system_hz) +
 		(m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
 	set_adjtime_delta(ticks);
-	return(OK);
+	প্রত্যাগম(OK);
   } /* else user wants to set the time */
 
   boottime = get_boottime();
@@ -40,12 +40,12 @@ int do_settime(struct proc * caller, message * m_ptr)
   timediff_ticks = timediff * system_hz;
 
   /* prevent a negative value for realtime */
-  if (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
+  যদি (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
       timediff_ticks < LONG_MIN/2 || timediff_ticks > LONG_MAX/2) {
   	/* boottime was likely wrong, try to correct it. */
 	set_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
 	set_realtime(1);
-	return(OK);
+	প্রত্যাগম(OK);
   }
 
   /* calculate the new value of realtime in ticks */
@@ -54,5 +54,5 @@ int do_settime(struct proc * caller, message * m_ptr)
 
   set_realtime(newclock);
 
-  return(OK);
+  প্রত্যাগম(OK);
 }

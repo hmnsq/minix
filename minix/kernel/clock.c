@@ -12,20 +12,20 @@
  *   Sep 24, 2004   redesigned alarm timers  (Jorrit N. Herder)
  */
 
-#include <minix/endpoint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#অন্তর্ভাব <minix/endpoint.h>
+#অন্তর্ভাব <stdlib.h>
+#অন্তর্ভাব <string.h>
+#অন্তর্ভাব <assert.h>
 
-#include "clock.h"
+#অন্তর্ভাব "clock.h"
 
 #ifdef USE_WATCHDOG
-#include "watchdog.h"
+#অন্তর্ভাব "watchdog.h"
 #endif
 
 /* Function prototype for PRIVATE functions.
  */
-static void load_update(void);
+স্থির শূন্য load_update(শূন্য);
 
 /* The CLOCK's timers queue. The functions in <minix/timers.h> operate on this.
  * Each system process possesses a single synchronous alarm timer. If other
@@ -34,40 +34,40 @@ static void load_update(void);
  * via (re)set_kernel_timer().
  * When a timer expires its watchdog function is run by the CLOCK task.
  */
-static minix_timer_t *clock_timers;	/* queue of CLOCK timers */
+স্থির minix_timer_t *clock_timers;	/* queue of CLOCK timers */
 
 /* Number of ticks to adjust realtime by. A negative value implies slowing
  * down realtime, a positive value implies speeding it up.
  */
-static int32_t adjtime_delta = 0;
+স্থির int32_t adjtime_delta = 0;
 
 /*
  * Initialize the clock variables.
  */
-void
-init_clock(void)
+শূন্য
+init_clock(শূন্য)
 {
-	char *value;
+	বর্ণ *মান;
 
 	/* Initialize clock information structure. */
-	memset(&kclockinfo, 0, sizeof(kclockinfo));
+	memset(&kclockinfo, 0, পরিমাণ(kclockinfo));
 
 	/* Get clock tick frequency. */
-	value = env_get("hz");
-	if (value != NULL)
-		kclockinfo.hz = atoi(value);
-	if (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
+	মান = env_get("hz");
+	যদি (মান != রিক্ত)
+		kclockinfo.hz = atoi(মান);
+	যদি (মান == রিক্ত || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
 		kclockinfo.hz = DEFAULT_HZ;
 
 	/* Load average data initialization. */
-	memset(&kloadinfo, 0, sizeof(kloadinfo));
+	memset(&kloadinfo, 0, পরিমাণ(kloadinfo));
 }
 
 /*
  * The boot processor's timer interrupt handler. In addition to non-boot cpus
  * it keeps real time and notifies the clock task if need be.
  */
-int timer_int_handler(void)
+পূর্ণাঙ্ক timer_int_handler(শূন্য)
 {
 	/* Update user and system accounting times. Charge the current process
 	 * for user time. If the current process is not billable, that is, if a
@@ -76,7 +76,7 @@ int timer_int_handler(void)
 	 * user's system time.
 	 */
 
-	struct proc * p, * billp;
+	সংরচনা proc * p, * billp;
 
 	/* FIXME watchdog for slave cpus! */
 #ifdef USE_WATCHDOG
@@ -88,17 +88,17 @@ int timer_int_handler(void)
 	watchdog_local_timer_ticks++;
 #endif
 
-	if (cpu_is_bsp(cpuid)) {
+	যদি (cpu_is_bsp(cpuid)) {
 		kclockinfo.uptime++;
 
 		/* if adjtime_delta has ticks remaining, apply one to realtime.
 		 * limit changes to every other interrupt.
 		 */
-		if (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
+		যদি (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
 			/* go forward or stay behind */
 			kclockinfo.realtime += (adjtime_delta > 0) ? 2 : 0;
 			adjtime_delta += (adjtime_delta > 0) ? -1 : +1;
-		} else {
+		} অন্যথা {
 			kclockinfo.realtime++;
 		}
 	}
@@ -115,7 +115,7 @@ int timer_int_handler(void)
 
 	p->p_user_time++;
 
-	if (! (priv(p)->s_flags & BILLABLE)) {
+	যদি (! (priv(p)->s_flags & BILLABLE)) {
 		billp->p_sys_time++;
 	}
 
@@ -125,16 +125,16 @@ int timer_int_handler(void)
 	 * well.  If any of the timers expire, do_clocktick() will send out
 	 * signals.
 	 */
-	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
-		p->p_virt_left--;
+	যদি ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_বাম > 0)) {
+		p->p_virt_বাম--;
 	}
-	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
-		p->p_prof_left--;
+	যদি ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_বাম > 0)) {
+		p->p_prof_বাম--;
 	}
-	if (! (priv(p)->s_flags & BILLABLE) &&
+	যদি (! (priv(p)->s_flags & BILLABLE) &&
 			(billp->p_misc_flags & MF_PROF_TIMER) &&
-			(billp->p_prof_left > 0)) {
-		billp->p_prof_left--;
+			(billp->p_prof_বাম > 0)) {
+		billp->p_prof_বাম--;
 	}
 
 	/*
@@ -144,24 +144,24 @@ int timer_int_handler(void)
 	 */
 	vtimer_check(p);
 
-	if (p != billp)
+	যদি (p != billp)
 		vtimer_check(billp);
 
 	/* Update load average. */
 	load_update();
 
-	if (cpu_is_bsp(cpuid)) {
+	যদি (cpu_is_bsp(cpuid)) {
 		/*
 		 * If a timer expired, notify the clock task.  Keep in mind
 		 * that clock tick values may overflow, so we must only look at
 		 * relative differences, and only if there are timers at all.
 		 */
-		if (clock_timers != NULL &&
+		যদি (clock_timers != রিক্ত &&
 		    tmr_has_expired(clock_timers, kclockinfo.uptime))
-			tmrs_exptimers(&clock_timers, kclockinfo.uptime, NULL);
+			tmrs_exptimers(&clock_timers, kclockinfo.uptime, রিক্ত);
 
 #ifdef DEBUG_SERIAL
-		if (kinfo.do_serial_debug)
+		যদি (kinfo.do_serial_debug)
 			do_ser_debug();
 #endif
 
@@ -169,22 +169,22 @@ int timer_int_handler(void)
 
 	arch_timer_int_handler();
 
-	return(1);					/* reenable interrupts */
+	প্রত্যাগম(1);					/* reenable interrupts */
 }
 
 /*===========================================================================*
  *				get_realtime				     *
  *===========================================================================*/
-clock_t get_realtime(void)
+clock_t get_realtime(শূন্য)
 {
   /* Get and return the current wall time in ticks since boot. */
-  return(kclockinfo.realtime);
+  প্রত্যাগম(kclockinfo.realtime);
 }
 
 /*===========================================================================*
  *				set_realtime				     *
  *===========================================================================*/
-void set_realtime(clock_t newrealtime)
+শূন্য set_realtime(clock_t newrealtime)
 {
   kclockinfo.realtime = newrealtime;
 }
@@ -192,7 +192,7 @@ void set_realtime(clock_t newrealtime)
 /*===========================================================================*
  *				set_adjtime_delta			     *
  *===========================================================================*/
-void set_adjtime_delta(int32_t ticks)
+শূন্য set_adjtime_delta(int32_t ticks)
 {
   adjtime_delta = ticks;
 }
@@ -200,16 +200,16 @@ void set_adjtime_delta(int32_t ticks)
 /*===========================================================================*
  *				get_monotonic				     *
  *===========================================================================*/
-clock_t get_monotonic(void)
+clock_t get_monotonic(শূন্য)
 {
   /* Get and return the number of ticks since boot. */
-  return(kclockinfo.uptime);
+  প্রত্যাগম(kclockinfo.uptime);
 }
 
 /*===========================================================================*
  *				set_boottime				     *
  *===========================================================================*/
-void set_boottime(time_t newboottime)
+শূন্য set_boottime(time_t newboottime)
 {
   kclockinfo.boottime = newboottime;
 }
@@ -217,32 +217,32 @@ void set_boottime(time_t newboottime)
 /*===========================================================================*
  *				get_boottime				     *
  *===========================================================================*/
-time_t get_boottime(void)
+time_t get_boottime(শূন্য)
 {
   /* Get and return the number of seconds since the UNIX epoch. */
-  return(kclockinfo.boottime);
+  প্রত্যাগম(kclockinfo.boottime);
 }
 
 /*===========================================================================*
  *				set_kernel_timer			     *
  *===========================================================================*/
-void set_kernel_timer(
+শূন্য set_kernel_timer(
   minix_timer_t *tp,			/* pointer to timer structure */
   clock_t exp_time,			/* expiration monotonic time */
   tmr_func_t watchdog,			/* watchdog to be called */
-  int arg				/* argument for watchdog function */
+  পূর্ণাঙ্ক arg				/* argument for watchdog function */
 )
 {
 /* Insert the new timer in the active timers list. Always update the
  * next timeout time by setting it to the front of the active list.
  */
-  (void)tmrs_settimer(&clock_timers, tp, exp_time, watchdog, arg, NULL, NULL);
+  (শূন্য)tmrs_settimer(&clock_timers, tp, exp_time, watchdog, arg, রিক্ত, রিক্ত);
 }
 
 /*===========================================================================*
  *				reset_kernel_timer			     *
  *===========================================================================*/
-void reset_kernel_timer(
+শূন্য reset_kernel_timer(
   minix_timer_t *tp			/* pointer to timer structure */
 )
 {
@@ -250,19 +250,19 @@ void reset_kernel_timer(
  * active and expired lists. Always update the next timeout time by setting
  * it to the front of the active list.
  */
-  if (tmr_is_set(tp))
-	(void)tmrs_clrtimer(&clock_timers, tp, NULL, NULL);
+  যদি (tmr_is_set(tp))
+	(শূন্য)tmrs_clrtimer(&clock_timers, tp, রিক্ত, রিক্ত);
 }
 
 /*===========================================================================*
  *				load_update				     *
  *===========================================================================*/
-static void load_update(void)
+স্থির শূন্য load_update(শূন্য)
 {
 	u16_t slot;
-	int enqueued = 0, q;
-	struct proc *p;
-	struct proc **rdy_head;
+	পূর্ণাঙ্ক enqueued = 0, q;
+	সংরচনা proc *p;
+	সংরচনা proc **rdy_head;
 
 	/* Load average data is stored as a list of numbers in a circular
 	 * buffer. Each slot accumulates _LOAD_UNIT_SECS of samples of
@@ -272,15 +272,15 @@ static void load_update(void)
 	 */
 	slot = (kclockinfo.uptime / system_hz / _LOAD_UNIT_SECS) %
 	    _LOAD_HISTORY;
-	if(slot != kloadinfo.proc_last_slot) {
+	যদি(slot != kloadinfo.proc_last_slot) {
 		kloadinfo.proc_load_history[slot] = 0;
 		kloadinfo.proc_last_slot = slot;
 	}
 
 	rdy_head = get_cpulocal_var(run_q_head);
 	/* Cumulation. How many processes are ready now? */
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		for(p = rdy_head[q]; p != NULL; p = p->p_nextready) {
+	প্রতি(q = 0; q < NR_SCHED_QUEUES; q++) {
+		প্রতি(p = rdy_head[q]; p != রিক্ত; p = p->p_nextready) {
 			enqueued++;
 		}
 	}
@@ -291,22 +291,22 @@ static void load_update(void)
 	kloadinfo.last_clock = kclockinfo.uptime;
 }
 
-int boot_cpu_init_timer(unsigned freq)
+পূর্ণাঙ্ক boot_cpu_init_timer(unsigned freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	যদি (init_local_timer(freq))
+		প্রত্যাগম -1;
 
-	if (register_local_timer_handler(
+	যদি (register_local_timer_handler(
 				(irq_handler_t) timer_int_handler))
-		return -1;
+		প্রত্যাগম -1;
 
-	return 0;
+	প্রত্যাগম 0;
 }
 
-int app_cpu_init_timer(unsigned freq)
+পূর্ণাঙ্ক app_cpu_init_timer(unsigned freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	যদি (init_local_timer(freq))
+		প্রত্যাগম -1;
 
-	return 0;
+	প্রত্যাগম 0;
 }

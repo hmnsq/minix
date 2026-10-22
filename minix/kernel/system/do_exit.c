@@ -2,25 +2,25 @@
  *   m_type:	SYS_EXIT
  */
 
-#include "kernel/system.h"
+#অন্তর্ভাব "kernel/system.h"
 
-#include <signal.h>
+#অন্তর্ভাব <signal.h>
 
-#if USE_EXIT
+#যদি USE_EXIT
 
 /*===========================================================================*
  *				 do_exit				     *
  *===========================================================================*/
-int do_exit(struct proc * caller, message * m_ptr)
+পূর্ণাঙ্ক do_exit(সংরচনা proc * caller, message * m_ptr)
 {
 /* Handle sys_exit. A system process has requested to exit. Generate a
  * self-termination signal.
  */
-  int sig_nr = SIGABRT;
+  পূর্ণাঙ্ক sig_nr = SIGABRT;
 
   cause_sig(caller->p_nr, sig_nr);      /* send a signal to the caller */
 
-  return(EDONTREPLY);			/* don't reply */
+  প্রত্যাগম(EDONTREPLY);			/* don't reply */
 }
 
 #endif /* USE_EXIT */
