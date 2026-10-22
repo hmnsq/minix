@@ -19,11 +19,11 @@
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
 	  bsp_finish_booting();			\
-} while(0)
+} ꦱꦼꦢꦼꦭ(0)
 
-extern unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
+extern unsigned var_na cpuid2apicid[CONFIG_MAX_CPUS];
 
-#define barrier()	do { mfence(); } while(0)
+#define barrier()	do { mfence(); } ꦱꦼꦢꦼꦭ(0)
 
 #endif
 

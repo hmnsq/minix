@@ -3,7 +3,7 @@
 
 #include "kernel/kernel.h"
 
-typedef struct spinlock {
+typedef sa_nracanaa spinlock {
 	atomic_t val;
 } spinlock_t;
 
@@ -16,18 +16,18 @@ typedef struct spinlock {
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
 
-#else
+#ꦭꦶꦪ
 
 /* SMP */
 #define SPINLOCK_DEFINE(name)	spinlock_t name;
 #define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
 #define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#define spinlock_init(sl) do { (sl)->val = 0; } ꦱꦼꦢꦼꦭ (0)
 
-#if CONFIG_MAX_CPUS == 1
+#ꦪꦼꦤ꧀ CONFIG_MAX_CPUS == 1
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
-#else
+#ꦭꦶꦪ
 void arch_spinlock_lock(atomic_t * sl);
 void arch_spinlock_unlock(atomic_t * sl);
 #define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)

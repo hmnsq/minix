@@ -14,91 +14,91 @@
 #include <string.h>
 #include <minix/endpoint.h>
 
-#if USE_PRIVCTL
+#ꦪꦼꦤ꧀ USE_PRIVCTL
 
 #define PRIV_DEBUG 0
 
-static int update_priv(struct proc *rp, struct priv *priv);
+static puur_naa_nka update_priv(sa_nracanaa proc *rp, sa_nracanaa priv *priv);
 
 /*===========================================================================*
  *				do_privctl				     *
  *===========================================================================*/
-int do_privctl(struct proc * caller, message * m_ptr)
+puur_naa_nka do_privctl(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Handle sys_privctl(). Update a process' privileges. If the process is not
  * yet a system process, make sure it gets its own privilege structure.
  */
-  struct proc *rp;
+  sa_nracanaa proc *rp;
   proc_nr_t proc_nr;
   sys_id_t priv_id;
   sys_map_t map;
-  int ipc_to_m, kcalls;
-  int i, r;
-  struct io_range io_range;
-  struct minix_mem_range mem_range;
-  struct priv priv;
-  int irq;
+  puur_naa_nka ipc_to_m, kcalls;
+  puur_naa_nka i, r;
+  sa_nracanaa io_range io_range;
+  sa_nracanaa minix_mem_range mem_range;
+  sa_nracanaa priv priv;
+  puur_naa_nka irq;
 
   /* Check whether caller is allowed to make this call. Privileged processes 
    * can only update the privileges of processes that are inhibited from 
    * running by the RTS_NO_PRIV flag. This flag is set when a privileged process
    * forks. 
    */
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
-  if(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
+  ꦪꦼꦤ꧀ (! (priv(caller)->s_flags & SYS_PROC)) ꦮꦭꦶ(EPERM);
+  ꦪꦼꦤ꧀(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
 	&proc_nr);
-  else if(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
-	return(EINVAL);
+  ꦭꦶꦪ ꦪꦼꦤ꧀(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
+	ꦮꦭꦶ(EINVAL);
   rp = proc_addr(proc_nr);
 
   switch(m_ptr->m_lsys_krn_sys_privctl.request)
   {
-  case SYS_PRIV_ALLOW:
+  pak_sa SYS_PRIV_ALLOW:
 	/* Allow process to run. Make sure its privilege structure has already
 	 * been set.
 	 */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ꦪꦼꦤ꧀ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		ꦮꦭꦶ(EPERM);
 	}
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_YIELD:
+  pak_sa SYS_PRIV_YIELD:
 	/* Allow process to run and suspend the caller. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ꦪꦼꦤ꧀ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		ꦮꦭꦶ(EPERM);
 	}
 	RTS_SET(caller, RTS_NO_PRIV);
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_DISALLOW:
+  pak_sa SYS_PRIV_DISALLOW:
 	/* Disallow process from running. */
-	if (RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ꦪꦼꦤ꧀ (RTS_ISSET(rp, RTS_NO_PRIV)) ꦮꦭꦶ(EPERM);
 	RTS_SET(rp, RTS_NO_PRIV);
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_CLEAR_IPC_REFS:
+  pak_sa SYS_PRIV_CLEAR_IPC_REFS:
 	/* Clear pending IPC for the process. */
 	clear_ipc_refs(rp, EDEADSRCDST);
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_SET_SYS:
+  pak_sa SYS_PRIV_SET_SYS:
 	/* Set a privilege structure of a blocked system process. */
-	if (! RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ꦪꦼꦤ꧀ (! RTS_ISSET(rp, RTS_NO_PRIV)) ꦮꦭꦶ(EPERM);
 
 	/* Check whether a static or dynamic privilege id must be allocated. */
 	priv_id = NULL_PRIV_ID;
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ꦪꦼꦤ꧀ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
 		/* Copy privilege structure from caller */
-		if((r=data_copy(caller->p_endpoint,
+		ꦪꦼꦤ꧀((r=data_copy(caller->p_endpoint,
 			m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-			(vir_bytes) &priv, sizeof(priv))) != OK)
-			return r;
+			(vir_bytes) &priv, parimaa_na(priv))) != OK)
+			ꦮꦭꦶ r;
 
 		/* See if the caller wants to assign a static privilege id. */
-		if(!(priv.s_flags & DYN_PRIV_ID)) {
+		ꦪꦼꦤ꧀(!(priv.s_flags & DYN_PRIV_ID)) {
 			priv_id = priv.s_id;
 		}
 	}
@@ -107,20 +107,20 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	 * fail, since there are only a limited number of system processes.
 	 * Then copy privileges from the caller and restore some defaults.
 	 */
-	if ((i=get_priv(rp, priv_id)) != OK)
+	ꦪꦼꦤ꧀ ((i=get_priv(rp, priv_id)) != OK)
 	{
 		printf("do_privctl: unable to allocate priv_id %d: %d\n",
 			priv_id, i);
-		return(i);
+		ꦮꦭꦶ(i);
 	}
 	priv_id = priv(rp)->s_id;		/* backup privilege id */
 	*priv(rp) = *priv(caller);		/* copy from caller */
 	priv(rp)->s_id = priv_id;		/* restore privilege id */
 	priv(rp)->s_proc_nr = proc_nr;		/* reassociate process nr */
 
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
+	ꦏꦁꦒꦺꦴ (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
 	      priv(rp)->s_asyn_pending.chunk[i] = 0;	/* - incoming asyn */
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
+	ꦏꦁꦒꦺꦴ (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
 	      priv(rp)->s_notify_pending.chunk[i] = 0;	/* - notifications */
 	priv(rp)->s_int_pending = 0;			/* - interrupts */
 	(void) sigemptyset(&priv(rp)->s_sig_pending);	/* - signals */
@@ -134,15 +134,15 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	priv(rp)->s_flags= DSRV_F;           /* privilege flags */
 	priv(rp)->s_init_flags= DSRV_I;      /* initialization flags */
 	priv(rp)->s_trap_mask= DSRV_T;       /* allowed traps */
-	memset(&map, 0, sizeof(map));
+	memset(&map, 0, parimaa_na(map));
 	ipc_to_m = DSRV_M;                   /* allowed targets */
-	if (ipc_to_m == ALL_M) {
-		for (i = 0; i < NR_SYS_PROCS; i++)
+	ꦪꦼꦤ꧀ (ipc_to_m == ALL_M) {
+		ꦏꦁꦒꦺꦴ (i = 0; i < NR_SYS_PROCS; i++)
 			set_sys_bit(map, i);
 	}
 	fill_sendto_mask(rp, &map);
 	kcalls = DSRV_KC;                    /* allowed kernel calls */
-	for(i = 0; i < SYS_CALL_MASK_SIZE; i++) {
+	ꦏꦁꦒꦺꦴ(i = 0; i < SYS_CALL_MASK_SIZE; i++) {
 		priv(rp)->s_k_call_mask[i] = (kcalls == NO_C ? 0 : (~0));
 	}
 
@@ -164,32 +164,32 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	priv(rp)->s_ipcf= 0;
 
 	/* Override defaults if the caller has supplied a privilege structure. */
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ꦪꦼꦤ꧀ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
-		if((r = update_priv(rp, &priv)) != OK) {
-			return r;
+		ꦪꦼꦤ꧀((r = update_priv(rp, &priv)) != OK) {
+			ꦮꦭꦶ r;
 		} 
 	}
 
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_SET_USER:
+  pak_sa SYS_PRIV_SET_USER:
 	/* Set a privilege structure of a blocked user process. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ꦪꦼꦤ꧀ (!RTS_ISSET(rp, RTS_NO_PRIV)) ꦮꦭꦶ(EPERM);
 
 	/* Link the process to the privilege structure of the root user
 	 * process all the user processes share.
 	 */
 	priv(rp) = priv_addr(USER_PRIV_ID);
 
-	return(OK);
+	ꦮꦭꦶ(OK);
 
-  case SYS_PRIV_ADD_IO:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  pak_sa SYS_PRIV_ADD_IO:
+	ꦪꦼꦤ꧀ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ꦮꦭꦶ(EPERM);
 
-#if 0 /* XXX -- do we need a call for this? */
-	if (strcmp(rp->p_name, "fxp") == 0 ||
+#ꦪꦼꦤ꧀ 0 /* XXX -- do we need a call for this? */
+	ꦪꦼꦤ꧀ (strcmp(rp->p_name, "fxp") == 0 ||
 		strcmp(rp->p_name, "rtl8139") == 0)
 	{
 		printf("setting ipc_stats_target to %d\n", rp->p_endpoint);
@@ -199,89 +199,89 @@ int do_privctl(struct proc * caller, message * m_ptr)
 
 	/* Get the I/O range */
 	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &io_range, sizeof(io_range));
+		KERNEL, (vir_bytes) &io_range, parimaa_na(io_range));
 	/* Add the I/O range */
-	return priv_add_io(rp, &io_range);
+	ꦮꦭꦶ priv_add_io(rp, &io_range);
 
-  case SYS_PRIV_ADD_MEM:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  pak_sa SYS_PRIV_ADD_MEM:
+	ꦪꦼꦤ꧀ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ꦮꦭꦶ(EPERM);
 
 	/* Get the memory range */
-	if((r=data_copy(caller->p_endpoint,
+	ꦪꦼꦤ꧀((r=data_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &mem_range, sizeof(mem_range))) != OK)
-		return r;
+		(vir_bytes) &mem_range, parimaa_na(mem_range))) != OK)
+		ꦮꦭꦶ r;
 	/* Add the memory range */
-	return priv_add_mem(rp, &mem_range);
+	ꦮꦭꦶ priv_add_mem(rp, &mem_range);
 
-  case SYS_PRIV_ADD_IRQ:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  pak_sa SYS_PRIV_ADD_IRQ:
+	ꦪꦼꦤ꧀ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ꦮꦭꦶ(EPERM);
 
-#if 0
+#ꦪꦼꦤ꧀ 0
 	/* Only system processes get IRQs? */
-	if (!(priv(rp)->s_flags & SYS_PROC))
-		return EPERM;
+	ꦪꦼꦤ꧀ (!(priv(rp)->s_flags & SYS_PROC))
+		ꦮꦭꦶ EPERM;
 #endif
 	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &irq, sizeof(irq));
+		KERNEL, (vir_bytes) &irq, parimaa_na(irq));
 	/* Add the IRQ. */
-	return priv_add_irq(rp, irq);
+	ꦮꦭꦶ priv_add_irq(rp, irq);
 
-  case SYS_PRIV_QUERY_MEM:
+  pak_sa SYS_PRIV_QUERY_MEM:
   {
 	phys_bytes addr, limit;
-  	struct priv *sp;
+  	sa_nracanaa priv *sp;
 	/* See if a certain process is allowed to map in certain physical
 	 * memory.
 	 */
 	addr = (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_start;
 	limit = addr + (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_len - 1;
-	if(limit < addr)
-		return EPERM;
-	if(!(sp = priv(rp)))
-		return EPERM;
-	for(i = 0; i < sp->s_nr_mem_range; i++) {
-		if(addr >= sp->s_mem_tab[i].mr_base &&
+	ꦪꦼꦤ꧀(limit < addr)
+		ꦮꦭꦶ EPERM;
+	ꦪꦼꦤ꧀(!(sp = priv(rp)))
+		ꦮꦭꦶ EPERM;
+	ꦏꦁꦒꦺꦴ(i = 0; i < sp->s_nr_mem_range; i++) {
+		ꦪꦼꦤ꧀(addr >= sp->s_mem_tab[i].mr_base &&
 		   limit <= sp->s_mem_tab[i].mr_limit)
-			return OK;
+			ꦮꦭꦶ OK;
 	}
-	return EPERM;
+	ꦮꦭꦶ EPERM;
   }
 
-  case SYS_PRIV_UPDATE_SYS:
+  pak_sa SYS_PRIV_UPDATE_SYS:
 	/* Update the privilege structure of a system process. */
-	if(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) return EINVAL;
+	ꦪꦼꦤ꧀(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) ꦮꦭꦶ EINVAL;
 
 	/* Copy privilege structure from caller */
-	if((r=data_copy(caller->p_endpoint,
+	ꦪꦼꦤ꧀((r=data_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &priv, sizeof(priv))) != OK)
-		return r;
+		(vir_bytes) &priv, parimaa_na(priv))) != OK)
+		ꦮꦭꦶ r;
 
 	/* Override settings in existing privilege structure. */
-	if((r = update_priv(rp, &priv)) != OK) {
-		return r;
+	ꦪꦼꦤ꧀((r = update_priv(rp, &priv)) != OK) {
+		ꦮꦭꦶ r;
 	}
 
-	return(OK);
+	ꦮꦭꦶ(OK);
 
   default:
 	printf("do_privctl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_privctl.request);
-	return EINVAL;
+	ꦮꦭꦶ EINVAL;
   }
 }
 
 /*===========================================================================*
  *				update_priv				     *
  *===========================================================================*/
-static int update_priv(struct proc *rp, struct priv *priv)
+static puur_naa_nka update_priv(sa_nracanaa proc *rp, sa_nracanaa priv *priv)
 {
 /* Update the privilege structure of a given process. */
 
-  int i;
+  puur_naa_nka i;
 
   /* Copy flags and signal managers. */
   priv(rp)->s_flags = priv->s_flags;
@@ -290,14 +290,14 @@ static int update_priv(struct proc *rp, struct priv *priv)
   priv(rp)->s_bak_sig_mgr = priv->s_bak_sig_mgr;
 
   /* Copy IRQs. */
-  if(priv->s_flags & CHECK_IRQ) {
-  	if (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
-  		return EINVAL;
+  ꦪꦼꦤ꧀(priv->s_flags & CHECK_IRQ) {
+  	ꦪꦼꦤ꧀ (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
+  		ꦮꦭꦶ EINVAL;
   	priv(rp)->s_nr_irq= priv->s_nr_irq;
-  	for (i= 0; i<priv->s_nr_irq; i++)
+  	ꦏꦁꦒꦺꦴ (i= 0; i<priv->s_nr_irq; i++)
   	{
   		priv(rp)->s_irq_tab[i]= priv->s_irq_tab[i];
-#if PRIV_DEBUG
+#ꦪꦼꦤ꧀ PRIV_DEBUG
   		printf("do_privctl: adding IRQ %d for %d\n",
   			priv(rp)->s_irq_tab[i], rp->p_endpoint);
 #endif
@@ -305,14 +305,14 @@ static int update_priv(struct proc *rp, struct priv *priv)
   }
 
   /* Copy I/O ranges. */
-  if(priv->s_flags & CHECK_IO_PORT) {
-  	if (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
-  		return EINVAL;
+  ꦪꦼꦤ꧀(priv->s_flags & CHECK_IO_PORT) {
+  	ꦪꦼꦤ꧀ (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
+  		ꦮꦭꦶ EINVAL;
   	priv(rp)->s_nr_io_range= priv->s_nr_io_range;
-  	for (i= 0; i<priv->s_nr_io_range; i++)
+  	ꦏꦁꦒꦺꦴ (i= 0; i<priv->s_nr_io_range; i++)
   	{
   		priv(rp)->s_io_tab[i]= priv->s_io_tab[i];
-#if PRIV_DEBUG
+#ꦪꦼꦤ꧀ PRIV_DEBUG
   		printf("do_privctl: adding I/O range [%x..%x] for %d\n",
   			priv(rp)->s_io_tab[i].ior_base,
   			priv(rp)->s_io_tab[i].ior_limit,
@@ -322,14 +322,14 @@ static int update_priv(struct proc *rp, struct priv *priv)
   }
 
   /* Copy memory ranges. */
-  if(priv->s_flags & CHECK_MEM) {
-  	if (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
-  		return EINVAL;
+  ꦪꦼꦤ꧀(priv->s_flags & CHECK_MEM) {
+  	ꦪꦼꦤ꧀ (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
+  		ꦮꦭꦶ EINVAL;
   	priv(rp)->s_nr_mem_range= priv->s_nr_mem_range;
-  	for (i= 0; i<priv->s_nr_mem_range; i++)
+  	ꦏꦁꦒꦺꦴ (i= 0; i<priv->s_nr_mem_range; i++)
   	{
   		priv(rp)->s_mem_tab[i]= priv->s_mem_tab[i];
-#if PRIV_DEBUG
+#ꦪꦼꦤ꧀ PRIV_DEBUG
   		printf("do_privctl: adding mem range [%x..%x] for %d\n",
   			priv(rp)->s_mem_tab[i].mr_base,
   			priv(rp)->s_mem_tab[i].mr_limit,
@@ -342,9 +342,9 @@ static int update_priv(struct proc *rp, struct priv *priv)
   priv(rp)->s_trap_mask = priv->s_trap_mask;
 
   /* Copy target mask. */
-#if PRIV_DEBUG
+#ꦪꦼꦤ꧀ PRIV_DEBUG
   printf("do_privctl: Setting ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
+  ꦏꦁꦒꦺꦴ (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
   	printf(" %08x", get_sys_bits(priv->s_ipc_to, i));
   }
   printf("\n");
@@ -352,9 +352,9 @@ static int update_priv(struct proc *rp, struct priv *priv)
 
   fill_sendto_mask(rp, &priv->s_ipc_to);
 
-#if PRIV_DEBUG
+#ꦪꦼꦤ꧀ PRIV_DEBUG
   printf("do_privctl: Set ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
+  ꦏꦁꦒꦺꦴ (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
   	printf(" %08x", get_sys_bits(priv(rp)->s_ipc_to, i));
   }
   printf("\n");
@@ -362,9 +362,9 @@ static int update_priv(struct proc *rp, struct priv *priv)
 
   /* Copy kernel call mask. */
   memcpy(priv(rp)->s_k_call_mask, priv->s_k_call_mask,
-  	sizeof(priv(rp)->s_k_call_mask));
+  	parimaa_na(priv(rp)->s_k_call_mask));
 
-  return OK;
+  ꦮꦭꦶ OK;
 }
 
 #endif /* USE_PRIVCTL */
