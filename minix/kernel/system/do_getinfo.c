@@ -21,7 +21,7 @@
 #include "kernel/system.h"
 
 
-#if USE_GETINFO
+#если USE_GETINFO
 
 #include <minix/u64.h>
 #include <sys/resource.h>
@@ -31,12 +31,12 @@
  *===========================================================================*/
 static void update_idle_time(void)
 {
-	int i;
+	целое i;
 	struct proc * idl = proc_addr(IDLE);
 
 	idl->p_cycles = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+	для (i = 0; i < CONFIG_MAX_CPUS ; i++) {
 		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
 	}
 }
@@ -44,15 +44,15 @@ static void update_idle_time(void)
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+целое do_getinfo(struct proc * caller, message * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
   size_t length;
   vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
+  целое nr_e, nr, r;
+  целое wipe_rnd_bin = -1;
   struct proc *p;
   struct rusage r_usage;
 
@@ -107,7 +107,7 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     case GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+	если(!isokendpt(nr_e, &nr)) вернуть EINVAL; /* validate request */
         length = sizeof(struct proc);
         src_vir = (vir_bytes) proc_addr(nr);
         break;
@@ -115,7 +115,7 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     case GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        если(!isokendpt(nr_e, &nr)) вернуть EINVAL; /* validate request */
         length = sizeof(struct priv);
         src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
         break;
@@ -123,14 +123,14 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     case GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        если(!isokendpt(nr_e, &nr)) вернуть EINVAL; /* validate request */
         p = proc_addr(nr);
         length = sizeof(p->p_reg);
         src_vir = (vir_bytes) &p->p_reg;
         break;
     }
     case GET_WHOAMI: {
-	int len;
+	целое len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
 	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
 		sizeof(caller->p_name))-1;
@@ -138,7 +138,7 @@ int do_getinfo(struct proc * caller, message * m_ptr)
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	вернуть OK;
     }
     case GET_MONPARAMS: {
         src_vir = (vir_bytes) kinfo.param_buf;
@@ -147,10 +147,10 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     }
     case GET_RANDOMNESS: {		
         static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+	целое i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
+        для (i= 0; i<RANDOM_SOURCES; i++) {
   		krandom.bin[i].r_size = 0;	/* invalidate random data */
   		krandom.bin[i].r_next = 0;
 	}
@@ -159,15 +159,15 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     	break;
     }
     case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	целое bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
+	если(bin < 0 || bin >= RANDOM_SOURCES) {
 		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+		вернуть EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	если(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
+		вернуть ENOENT;
 
     	length = sizeof(krandom.bin[bin]);
     	src_vir = (vir_bytes) &krandom.bin[bin];
@@ -191,10 +191,10 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     }
     case GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	unsigned целое cpu;
+	cpu = (unsigned целое)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	если (cpu >= CONFIG_MAX_CPUS)
+		вернуть EINVAL;
 	get_cpu_ticks(cpu, ticks);
 	length = sizeof(ticks);
 	src_vir = (vir_bytes)ticks;
@@ -203,25 +203,25 @@ int do_getinfo(struct proc * caller, message * m_ptr)
     default:
 	printf("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        вернуть(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+  если (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
 	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+	вернуть (E2BIG);
 
   r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
 	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
 
-  if(r != OK) return r;
+  если(r != OK) вернуть r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+	если(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
 		krandom.bin[wipe_rnd_bin].r_size = 0;
 		krandom.bin[wipe_rnd_bin].r_next = 0;
 	}
 
-  return(OK);
+  вернуть(OK);
 }
 
 #endif /* USE_GETINFO */

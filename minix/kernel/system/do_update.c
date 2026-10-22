@@ -11,7 +11,7 @@
 #include <string.h>
 #include <assert.h>
 
-#if USE_UPDATE
+#если USE_UPDATE
 
 #define DEBUG 0
 
@@ -19,9 +19,9 @@
     (RTS_ISSET(p, RTS_NO_PRIV) || RTS_ISSET(p, RTS_SIG_PENDING) \
     || (RTS_ISSET(p, RTS_RECEIVING) && !RTS_ISSET(p, RTS_SENDING)))
 
-static int inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp);
-static int inherit_priv_io(struct proc *src_rp, struct proc *dst_rp);
-static int inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp);
+static целое inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp);
+static целое inherit_priv_io(struct proc *src_rp, struct proc *dst_rp);
+static целое inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp);
 static void abort_proc_ipc_send(struct proc *rp);
 static void adjust_proc_slot(struct proc *rp, struct proc *from_rp);
 static void adjust_priv_slot(struct priv *privp, struct priv
@@ -34,51 +34,51 @@ static void swap_memreq(struct proc *src_rp, struct proc *dst_rp);
 /*===========================================================================*
  *				do_update				     *
  *===========================================================================*/
-int do_update(struct proc * caller, message * m_ptr)
+целое do_update(struct proc * caller, message * m_ptr)
 {
 /* Handle sys_update(). Update a process into another by swapping their process
  * slots.
  */
   endpoint_t src_e, dst_e;
-  int src_p, dst_p, flags;
+  целое src_p, dst_p, flags;
   struct proc *src_rp, *dst_rp;
   struct priv *src_privp, *dst_privp;
   struct proc orig_src_proc;
   struct proc orig_dst_proc;
   struct priv orig_src_priv;
   struct priv orig_dst_priv;
-  int i, r;
+  целое i, r;
 
   /* Lookup slots for source and destination process. */
   flags = m_ptr->SYS_UPD_FLAGS;
   src_e = m_ptr->SYS_UPD_SRC_ENDPT;
-  if(!isokendpt(src_e, &src_p)) {
-      return EINVAL;
+  если(!isokendpt(src_e, &src_p)) {
+      вернуть EINVAL;
   }
   src_rp = proc_addr(src_p);
   src_privp = priv(src_rp);
-  if(!(src_privp->s_flags & SYS_PROC)) {
-      return EPERM;
+  если(!(src_privp->s_flags & SYS_PROC)) {
+      вернуть EPERM;
   }
 
   dst_e = m_ptr->SYS_UPD_DST_ENDPT;
-  if(!isokendpt(dst_e, &dst_p)) {
-      return EINVAL;
+  если(!isokendpt(dst_e, &dst_p)) {
+      вернуть EINVAL;
   }
   dst_rp = proc_addr(dst_p);
   dst_privp = priv(dst_rp);
-  if(!(dst_privp->s_flags & SYS_PROC)) {
-      return EPERM;
+  если(!(dst_privp->s_flags & SYS_PROC)) {
+      вернуть EPERM;
   }
 
   assert(!proc_is_runnable(src_rp) && !proc_is_runnable(dst_rp));
 
   /* Check if processes are updatable. */
-  if(!proc_is_updatable(src_rp) || !proc_is_updatable(dst_rp)) {
-      return EBUSY;
+  если(!proc_is_updatable(src_rp) || !proc_is_updatable(dst_rp)) {
+      вернуть EBUSY;
   }
 
-#if DEBUG
+#если DEBUG
   printf("do_update: updating %d (%s, %d, %d) into %d (%s, %d, %d)\n",
       src_rp->p_endpoint, src_rp->p_name, src_rp->p_nr, priv(src_rp)->s_proc_nr,
       dst_rp->p_endpoint, dst_rp->p_name, dst_rp->p_nr, priv(dst_rp)->s_proc_nr);
@@ -92,21 +92,21 @@ int do_update(struct proc * caller, message * m_ptr)
 
   /* Let destination inherit allowed IRQ, I/O ranges, and memory ranges. */
   r = inherit_priv_irq(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  если(r != OK) {
+      вернуть r;
   }
   r = inherit_priv_io(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  если(r != OK) {
+      вернуть r;
   }
   r = inherit_priv_mem(src_rp, dst_rp);
-  if(r != OK) {
-      return r;
+  если(r != OK) {
+      вернуть r;
   }
 
   /* Let destination inherit the target mask from source. */
-  for (i=0; i < NR_SYS_PROCS; i++) {
-      if (get_sys_bit(priv(src_rp)->s_ipc_to, i)) {
+  для (i=0; i < NR_SYS_PROCS; i++) {
+      если (get_sys_bit(priv(src_rp)->s_ipc_to, i)) {
           set_sendto_bit(dst_rp, i);
       }
   }
@@ -122,7 +122,7 @@ int do_update(struct proc * caller, message * m_ptr)
   adjust_asyn_table(priv(dst_rp), priv(src_rp));
 
   /* Abort any pending send() on rollback. */
-  if(flags & SYS_UPD_ROLLBACK) {
+  если(flags & SYS_UPD_ROLLBACK) {
       abort_proc_ipc_send(src_rp);
   }
 
@@ -146,7 +146,7 @@ int do_update(struct proc * caller, message * m_ptr)
   /* Swap VM request entries. */
   swap_memreq(src_rp, dst_rp);
 
-#if DEBUG
+#если DEBUG
   printf("do_update: updated %d (%s, %d, %d) into %d (%s, %d, %d)\n",
       src_rp->p_endpoint, src_rp->p_name, src_rp->p_nr, priv(src_rp)->s_proc_nr,
       dst_rp->p_endpoint, dst_rp->p_name, dst_rp->p_nr, priv(dst_rp)->s_proc_nr);
@@ -163,55 +163,55 @@ int do_update(struct proc * caller, message * m_ptr)
   bits_fill(dst_rp->p_stale_tlb, CONFIG_MAX_CPUS);
 #endif
 
-  return OK;
+  вернуть OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_irq 				     *
  *===========================================================================*/
-int inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp)
+целое inherit_priv_irq(struct proc *src_rp, struct proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_irq; i++) {
+  целое i, r;
+  для (i= 0; i<priv(src_rp)->s_nr_irq; i++) {
       r = priv_add_irq(dst_rp, priv(src_rp)->s_irq_tab[i]); 
-      if(r != OK) {
-          return r;
+      если(r != OK) {
+          вернуть r;
       }
   }
 
-  return OK;
+  вернуть OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_io 				     *
  *===========================================================================*/
- int inherit_priv_io(struct proc *src_rp, struct proc *dst_rp)
+ целое inherit_priv_io(struct proc *src_rp, struct proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_io_range; i++) {
+  целое i, r;
+  для (i= 0; i<priv(src_rp)->s_nr_io_range; i++) {
       r = priv_add_io(dst_rp, &(priv(src_rp)->s_io_tab[i])); 
-      if(r != OK) {
-          return r;
+      если(r != OK) {
+          вернуть r;
       }
   }
 
-  return OK;
+  вернуть OK;
 }
 
 /*===========================================================================*
  *			     inherit_priv_mem 				     *
  *===========================================================================*/
-int inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp)
+целое inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp)
 {
-  int i, r;
-  for (i= 0; i<priv(src_rp)->s_nr_mem_range; i++) {
+  целое i, r;
+  для (i= 0; i<priv(src_rp)->s_nr_mem_range; i++) {
       r = priv_add_mem(dst_rp, &(priv(src_rp)->s_mem_tab[i])); 
-      if(r != OK) {
-          return r;
+      если(r != OK) {
+          вернуть r;
       }
   }
 
-  return OK;
+  вернуть OK;
 }
 
 /*===========================================================================*
@@ -219,13 +219,13 @@ int inherit_priv_mem(struct proc *src_rp, struct proc *dst_rp)
  *===========================================================================*/
 void abort_proc_ipc_send(struct proc *rp)
 {
-  if(RTS_ISSET(rp, RTS_SENDING)) {
+  если(RTS_ISSET(rp, RTS_SENDING)) {
       struct proc **xpp;
       RTS_UNSET(rp, RTS_SENDING);
       rp->p_misc_flags &= ~MF_SENDING_FROM_KERNEL;
       xpp = &(proc_addr(_ENDPOINT_P(rp->p_sendto_e))->p_caller_q);
-      while (*xpp) {
-          if(*xpp == rp) {
+      пока (*xpp) {
+          если(*xpp == rp) {
               *xpp = rp->p_q_link;
               rp->p_q_link = NULL;
               break;
@@ -266,13 +266,13 @@ static void adjust_asyn_table(struct priv *src_privp, struct priv *dst_privp)
   endpoint_t src_e = proc_addr(src_privp->s_proc_nr)->p_endpoint;
   endpoint_t dst_e = proc_addr(dst_privp->s_proc_nr)->p_endpoint;
 
-  if(src_privp->s_asynsize > 0 && dst_privp->s_asynsize > 0 && src_privp->s_asynendpoint == dst_e) {
-      if(data_copy(src_e, src_privp->s_asyntab, dst_e, dst_privp->s_asyntab,
+  если(src_privp->s_asynsize > 0 && dst_privp->s_asynsize > 0 && src_privp->s_asynendpoint == dst_e) {
+      если(data_copy(src_e, src_privp->s_asyntab, dst_e, dst_privp->s_asyntab,
 	  src_privp->s_asynsize*sizeof(asynmsg_t)) != OK) {
 	  printf("Warning: unable to transfer asyn table from ep %d to ep %d\n",
 	      src_e, dst_e);
       }
-      else {
+      иначе {
           dst_privp->s_asynsize = src_privp->s_asynsize;
       }
   }
@@ -299,10 +299,10 @@ static void adjust_priv_slot(struct priv *privp, struct priv *from_privp)
 static void swap_proc_slot_pointer(struct proc **rpp, struct proc *src_rp,
     struct proc *dst_rp)
 {
-  if(*rpp == src_rp) {
+  если(*rpp == src_rp) {
       *rpp = dst_rp;
   }
-  else if(*rpp == dst_rp) {
+  иначе если(*rpp == dst_rp) {
       *rpp = src_rp;
   }
 }
@@ -317,17 +317,17 @@ static void swap_memreq(struct proc *src_rp, struct proc *dst_rp)
  */
   struct proc **rpp;
 
-  if (RTS_ISSET(src_rp, RTS_VMREQUEST) == RTS_ISSET(dst_rp, RTS_VMREQUEST))
-	return; /* nothing to do */
+  если (RTS_ISSET(src_rp, RTS_VMREQUEST) == RTS_ISSET(dst_rp, RTS_VMREQUEST))
+	вернуть; /* nothing to do */
 
-  for (rpp = &vmrequest; *rpp != NULL;
+  для (rpp = &vmrequest; *rpp != NULL;
      rpp = &(*rpp)->p_vmrequest.nextrequestor) {
-	if (*rpp == src_rp) {
+	если (*rpp == src_rp) {
 		dst_rp->p_vmrequest.nextrequestor =
 		    src_rp->p_vmrequest.nextrequestor;
 		*rpp = dst_rp;
 		break;
-	} else if (*rpp == dst_rp) {
+	} иначе если (*rpp == dst_rp) {
 		src_rp->p_vmrequest.nextrequestor =
 		    dst_rp->p_vmrequest.nextrequestor;
 		*rpp = src_rp;

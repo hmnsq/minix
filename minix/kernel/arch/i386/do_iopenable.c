@@ -16,19 +16,19 @@
 /*===========================================================================*
  *			        do_iopenable				     *
  *===========================================================================*/
-int do_iopenable(struct proc * caller, message * m_ptr)
+целое do_iopenable(struct proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  целое proc_nr;
 
-#if 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
-  if (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
+#если 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
+  если (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
 	okendpt(caller->p_endpoint, &proc_nr);
-  } else if(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
-	return(EINVAL);
+  } иначе если(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
+	вернуть(EINVAL);
   enable_iop(proc_addr(proc_nr));
-  return(OK);
-#else
-  return(EPERM);
+  вернуть(OK);
+#иначе
+  вернуть(EPERM);
 #endif
 }
 

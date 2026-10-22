@@ -99,13 +99,13 @@
 
 EXTERN vir_bytes lapic_addr;
 EXTERN vir_bytes lapic_eoi_addr;
-EXTERN int ioapic_enabled;
-EXTERN int bsp_lapic_id;
+EXTERN целое ioapic_enabled;
+EXTERN целое bsp_lapic_id;
 
 #define MAX_NR_IOAPICS		32
 #define MAX_IOAPIC_IRQS		64
 
-EXTERN int ioapic_enabled;
+EXTERN целое ioapic_enabled;
 
 struct io_apic {
 	unsigned	id;
@@ -122,34 +122,34 @@ EXTERN unsigned nioapics;
 EXTERN u32_t lapic_addr_vaddr; /* we remember the virtual address here until we
 				  switch to paging */
 
-int lapic_enable(unsigned cpu);
+целое lapic_enable(unsigned cpu);
 void ioapic_unmask_irq(unsigned irq);
 void ioapic_mask_irq(unsigned irq);
 void ioapic_reset_pic(void);
 
-EXTERN int ioapic_enabled;
+EXTERN целое ioapic_enabled;
 EXTERN unsigned nioapics;
 
 void lapic_microsec_sleep(unsigned count);
 void ioapic_disable_irqs(u32_t irqs);
 void ioapic_enable_irqs(u32_t irqs);
 
-int lapic_enable(unsigned cpu);
+целое lapic_enable(unsigned cpu);
 void lapic_disable(void);
 
 void ioapic_disable_all(void);
-int ioapic_enable_all(void);
+целое ioapic_enable_all(void);
 
-int detect_ioapics(void);
-void apic_idt_init(int reset);
+целое detect_ioapics(void);
+void apic_idt_init(целое reset);
 
 #ifdef CONFIG_SMP
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
-unsigned int apicid(void);
-void ioapic_set_id(u32_t addr, unsigned int id);
-#else
-int apic_single_cpu_init(void);
+целое apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
+целое apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
+unsigned целое apicid(void);
+void ioapic_set_id(u32_t addr, unsigned целое id);
+#иначе
+целое apic_single_cpu_init(void);
 #endif
 
 void lapic_set_timer_periodic(const unsigned freq);
@@ -161,13 +161,13 @@ void ioapic_set_irq(unsigned irq);
 void ioapic_unset_irq(unsigned irq);
 
 /* signal the end of interrupt handler to apic */
-#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } while(0)
+#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } пока(0)
 
-void ioapic_eoi(int irq);
+void ioapic_eoi(целое irq);
 
 void dump_apic_irq_state(void);
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type);
+void apic_send_ipi(unsigned vector, unsigned cpu, целое type);
 
 void apic_ipi_sched_intr(void);
 void apic_ipi_halt_intr(void);
@@ -194,7 +194,7 @@ void apic_ipi_halt_intr(void);
 #define lapic_read(what)	(*((volatile u32_t *)((what))))
 #define lapic_write(what, data)	do {			\
 	(*((volatile u32_t *)((what)))) = data;		\
-} while(0)
+} пока(0)
 
 #endif /* __ASSEMBLY__ */
 

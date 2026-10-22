@@ -40,7 +40,7 @@ static kern_phys_map rtc_phys_map;
 void
 omap3_rtc_init(void)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	если (BOARD_IS_BB(machine.board_id)) {
 		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
 		    (vir_bytes) & omap_rtc.base);
@@ -50,7 +50,7 @@ omap3_rtc_init(void)
 void
 omap3_rtc_run(void)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	если (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
 		mmio_set((omap_rtc.base + RTC_CTRL_REG),
 		    (1 << RTC_CTRL_RTC_STOP_BIT));

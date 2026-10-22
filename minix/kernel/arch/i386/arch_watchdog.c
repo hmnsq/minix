@@ -30,7 +30,7 @@ static void intel_arch_watchdog_init(const unsigned cpu)
 	 * lowest 31 bits writable :(
 	 */
 	cpuf = cpu_get_freq(cpu);
-	while (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
+	пока (ex64hi(cpuf) || ex64lo(cpuf) > 0x7fffffffU)
 		cpuf /= 2;
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->resetval = watchdog->watchdog_resetval = cpuf;
@@ -50,17 +50,17 @@ static void intel_arch_watchdog_reinit(const unsigned cpu)
 	ia32_msr_write(INTEL_MSR_PERFMON_CRT0, 0, ex64lo(watchdog->resetval));
 }
 
-int arch_watchdog_init(void)
+целое arch_watchdog_init(void)
 {
 	u32_t eax, ebx, ecx, edx;
 	unsigned cpu = cpuid;
 
-	if (!lapic_addr) {
+	если (!lapic_addr) {
 		printf("ERROR : Cannot use NMI watchdog if APIC is not enabled\n");
-		return -1;
+		вернуть -1;
 	}
 
-	if (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
+	если (cpu_info[cpu].vendor == CPU_VENDOR_INTEL) {
 		eax = 0xA;
 
 		_cpuid(&eax, &ebx, &ecx, &edx);
@@ -69,33 +69,33 @@ int arch_watchdog_init(void)
 		 * architectural performance counters. Some Intel CPUs don't have this
 		 * feature
 		 */
-		if (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
-			return -1;
-		if (!((((eax >> 8)) & 0xff) > 0))
-			return -1;
+		если (ebx & (1 << CPUID_UNHALTED_CORE_CYCLES_AVAILABLE))
+			вернуть -1;
+		если (!((((eax >> 8)) & 0xff) > 0))
+			вернуть -1;
 
 		watchdog = &intel_arch_watchdog;
-	} else if (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
-		if (cpu_info[cpu].family != 6 &&
+	} иначе если (cpu_info[cpu].vendor == CPU_VENDOR_AMD) {
+		если (cpu_info[cpu].family != 6 &&
 				cpu_info[cpu].family != 15 &&
 				cpu_info[cpu].family != 16 &&
 				cpu_info[cpu].family != 17)
-			return -1;
-		else
+			вернуть -1;
+		иначе
 			watchdog = &amd_watchdog;
-	} else
-		return -1;
+	} иначе
+		вернуть -1;
 
 	/* Setup PC overflow as NMI for watchdog, it is masked for now */
 	lapic_write(LAPIC_LVTPCR, APIC_ICR_INT_MASK | APIC_ICR_DM_NMI);
 	(void) lapic_read(LAPIC_LVTPCR);
 
 	/* double check if LAPIC is enabled */
-	if (lapic_addr && watchdog->init) {
+	если (lapic_addr && watchdog->init) {
 		watchdog->init(cpuid);
 	}
 
-	return 0;
+	вернуть 0;
 }
 
 void arch_watchdog_stop(void)
@@ -137,21 +137,21 @@ void arch_watchdog_lockup(const struct nmi_frame * frame)
 	panic("Kernel lockup");
 }
 
-int i386_watchdog_start(void)
+целое i386_watchdog_start(void)
 {
-	if (arch_watchdog_init()) {
+	если (arch_watchdog_init()) {
 		printf("WARNING watchdog initialization "
 				"failed! Disabled\n");
 		watchdog_enabled = 0;
-		return -1;
+		вернуть -1;
 	}
-	else
+	иначе
 		BOOT_VERBOSE(printf("Watchdog enabled\n"););
 
-	return 0;
+	вернуть 0;
 }
 
-static int intel_arch_watchdog_profile_init(const unsigned freq)
+static целое intel_arch_watchdog_profile_init(const unsigned freq)
 {
 	u64_t cpuf;
 
@@ -163,15 +163,15 @@ static int intel_arch_watchdog_profile_init(const unsigned freq)
 	 * if freq is too low and the cpu freq too high we may get in a range of
 	 * insane value which cannot be handled by the 31bit CPU perf counter
 	 */
-	if (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
+	если (ex64hi(cpuf) != 0 || ex64lo(cpuf) > 0x7fffffffU) {
 		printf("ERROR : nmi watchdog ticks exceed 31bits, use higher frequency\n");
-		return EINVAL;
+		вернуть EINVAL;
 	}
 
 	cpuf = make64(-ex64lo(cpuf), ex64hi(cpuf));
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	вернуть OK;
 }
 
 static struct arch_watchdog intel_arch_watchdog = {
@@ -215,7 +215,7 @@ static void amd_watchdog_reinit(const unsigned cpu)
 		       ex64hi(watchdog->resetval), ex64lo(watchdog->resetval));
 }
 
-static int amd_watchdog_profile_init(const unsigned freq)
+static целое amd_watchdog_profile_init(const unsigned freq)
 {
 	u64_t cpuf;
 
@@ -225,7 +225,7 @@ static int amd_watchdog_profile_init(const unsigned freq)
 
 	watchdog->profile_resetval = cpuf;
 
-	return OK;
+	вернуть OK;
 }
 
 static struct arch_watchdog amd_watchdog = {

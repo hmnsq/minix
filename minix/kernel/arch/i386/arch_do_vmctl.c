@@ -22,11 +22,11 @@ static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
 	p->p_seg.p_cr3 = cr3;
 	assert(p->p_seg.p_cr3);
 	p->p_seg.p_cr3_v = v; 
-	if(p == get_cpulocal_var(ptproc)) {
+	если(p == get_cpulocal_var(ptproc)) {
 		write_cr3(p->p_seg.p_cr3);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	если(p->p_nr == VM_PROC_NR) {
+		если (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -35,7 +35,7 @@ static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
+целое arch_do_vmctl(
   register message *m_ptr,	/* pointer to request message */
   struct proc *p
 )
@@ -44,24 +44,24 @@ int arch_do_vmctl(
 	case VMCTL_GET_PDBR:
 		/* Get process page directory base reg (CR3). */
 		m_ptr->SVMCTL_VALUE = p->p_seg.p_cr3;
-		return OK;
+		вернуть OK;
 	case VMCTL_SETADDRSPACE:
 		setcr3(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
+		вернуть OK;
 	case VMCTL_FLUSHTLB:
 	{
 		reload_cr3();
-		return OK;
+		вернуть OK;
 	}
 	case VMCTL_I386_INVLPG:
 	{
 		i386_invlpg(m_ptr->SVMCTL_VALUE);
-		return OK;
+		вернуть OK;
 	}
   }
 
 
 
   printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  вернуть EINVAL;
 }

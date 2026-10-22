@@ -9,19 +9,19 @@
 
 #include "kernel/system.h"
 
-#if USE_MEMSET
+#если USE_MEMSET
 
 /*===========================================================================*
  *				do_memset				     *
  *===========================================================================*/
-int do_memset(struct proc * caller, message * m_ptr)
+целое do_memset(struct proc * caller, message * m_ptr)
 {
 /* Handle sys_memset(). This writes a pattern into the specified memory. */
   vm_memset(caller, m_ptr->m_lsys_krn_sys_memset.process,
 	  m_ptr->m_lsys_krn_sys_memset.base,
 	  m_ptr->m_lsys_krn_sys_memset.pattern,
 	  m_ptr->m_lsys_krn_sys_memset.count);
-  return(OK);
+  вернуть(OK);
 }
 
 #endif /* USE_MEMSET */

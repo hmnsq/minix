@@ -11,20 +11,20 @@ void direct_cls(void)
 
 void direct_print_char(char c)
 {
-	if(c == '\n')
+	если(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
 void direct_print(const char *str)
 {
-	while (*str) {
+	пока (*str) {
 		direct_print_char(*str);
 		str++;
 	}
 }
 
-int direct_read_char(unsigned char *ch)
+целое direct_read_char(unsigned char *ch)
 {
-	return 0;
+	вернуть 0;
 }

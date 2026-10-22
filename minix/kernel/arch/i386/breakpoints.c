@@ -3,12 +3,12 @@
 
 #include "debugreg.h"
 
-int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
+целое breakpoint_set(phys_bytes linaddr, целое bp, const целое flags)
 {
 	unsigned long dr7, dr7flags;
 	
-	if (bp >= BREAKPOINT_COUNT)
-		return EINVAL;
+	если (bp >= BREAKPOINT_COUNT)
+		вернуть EINVAL;
 	
 	/* convert flags */
 	dr7flags = 0;
@@ -16,19 +16,19 @@ int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
 		case BREAKPOINT_FLAG_RW_EXEC:  dr7flags |= DR7_RW_EXEC(bp);  break;
 		case BREAKPOINT_FLAG_RW_WRITE: dr7flags |= DR7_RW_WRITE(bp); break;
 		case BREAKPOINT_FLAG_RW_RW:    dr7flags |= DR7_RW_RW(bp);    break;
-		default: return EINVAL;			
+		default: вернуть EINVAL;			
 	}
 	switch (flags & BREAKPOINT_FLAG_LEN_MASK) {
 		case BREAKPOINT_FLAG_LEN_1: dr7flags |= DR7_LN_1(bp); break;
 		case BREAKPOINT_FLAG_LEN_2: dr7flags |= DR7_LN_2(bp); break;
 		case BREAKPOINT_FLAG_LEN_4: dr7flags |= DR7_LN_4(bp); break;
-		default: return EINVAL;	
+		default: вернуть EINVAL;	
 	}
 	switch (flags & BREAKPOINT_FLAG_MODE_MASK) {
 		case BREAKPOINT_FLAG_MODE_OFF: break;
 		case BREAKPOINT_FLAG_MODE_LOCAL: dr7flags |= DR7_L(bp); break;
 		case BREAKPOINT_FLAG_MODE_GLOBAL: dr7flags |= DR7_G(bp); break;
-		default: return EINVAL;	
+		default: вернуть EINVAL;	
 	}
 	
 	/* disable breakpoint before setting address */
@@ -37,8 +37,8 @@ int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
 	ld_dr7(dr7);
 
 	/* need to set new breakpoint? */	
-	if ((flags & BREAKPOINT_FLAG_MODE_MASK) == BREAKPOINT_FLAG_MODE_OFF)
-		return 0;
+	если ((flags & BREAKPOINT_FLAG_MODE_MASK) == BREAKPOINT_FLAG_MODE_OFF)
+		вернуть 0;
 			
 	/* set breakpoint address */
 	switch (bp) {
@@ -52,6 +52,6 @@ int breakpoint_set(phys_bytes linaddr, int bp, const int flags)
 	/* set new flags */
 	dr7 |= dr7flags;
 	ld_dr7(dr7);
-	return 0;
+	вернуть 0;
 }
 

@@ -16,18 +16,18 @@ typedef struct spinlock {
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
 
-#else
+#иначе
 
 /* SMP */
 #define SPINLOCK_DEFINE(name)	spinlock_t name;
 #define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
 #define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#define spinlock_init(sl) do { (sl)->val = 0; } пока (0)
 
-#if CONFIG_MAX_CPUS == 1
+#если CONFIG_MAX_CPUS == 1
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
-#else
+#иначе
 void arch_spinlock_lock(atomic_t * sl);
 void arch_spinlock_unlock(atomic_t * sl);
 #define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)

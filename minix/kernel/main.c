@@ -37,8 +37,8 @@ static void announce(void);
 
 void bsp_finish_booting(void)
 {
-  int i;
-#if SPROFILE
+  целое i;
+#если SPROFILE
   sprofiling = 0;      /* we're not profiling until instructed to */
 #endif /* SPROFILE */
 
@@ -61,7 +61,7 @@ void bsp_finish_booting(void)
    * we have access to the cpu local run queue, only now schedule the processes.
    * We ignore the slots for the former kernel tasks
    */
-  for (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
+  для (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
 	RTS_UNSET(proc_addr(i), RTS_PROC_STOP);
   }
   /*
@@ -70,7 +70,7 @@ void bsp_finish_booting(void)
    */
   cycles_accounting_init();
 
-  if (boot_cpu_init_timer(system_hz)) {
+  если (boot_cpu_init_timer(system_hz)) {
 	  panic("FATAL : failed to initialize timer interrupts, "
 			  "cannot continue without any clock source!");
   }
@@ -81,13 +81,13 @@ void bsp_finish_booting(void)
  * so it's a clear warning no full release should be done with them
  * enabled.
  */
-#if DEBUG_SCHED_CHECK
+#если DEBUG_SCHED_CHECK
   FIXME("DEBUG_SCHED_CHECK enabled");
 #endif
-#if DEBUG_VMASSERT
+#если DEBUG_VMASSERT
   FIXME("DEBUG_VMASSERT enabled");
 #endif
-#if DEBUG_PROC_CHECK
+#если DEBUG_PROC_CHECK
   FIXME("PROC check enabled");
 #endif
 
@@ -95,7 +95,7 @@ void bsp_finish_booting(void)
   cpu_set_flag(bsp_cpu_id, CPU_IS_READY);
   machine.processors_count = ncpus;
   machine.bsp_id = bsp_cpu_id;
-#else
+#иначе
   machine.processors_count = 1;
   machine.bsp_id = 0;
 #endif
@@ -117,8 +117,8 @@ void kmain(kinfo_t *local_cbi)
 /* Start the ball rolling. */
   struct boot_image *ip;	/* boot image pointer */
   register struct proc *rp;	/* process pointer */
-  register int i, j;
-  static int bss_test;
+  register целое i, j;
+  static целое bss_test;
 
   /* bss sanity check */
   assert(bss_test == 0);
@@ -157,15 +157,15 @@ void kmain(kinfo_t *local_cbi)
   proc_init();
   IPCF_POOL_INIT();
 
-   if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
+   если(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
    	panic("expecting %d boot processes/modules, found %d",
 		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
 
   /* Set up proc table entries for processes in boot image. */
-  for (i=0; i < NR_BOOT_PROCS; ++i) {
-	int schedulable_proc;
+  для (i=0; i < NR_BOOT_PROCS; ++i) {
+	целое schedulable_proc;
 	proc_nr_t proc_nr;
-	int ipc_to_m, kcalls;
+	целое ipc_to_m, kcalls;
 	sys_map_t map;
 
 	ip = &image[i];				/* process' attributes */
@@ -173,10 +173,10 @@ void kmain(kinfo_t *local_cbi)
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
 	rp->p_cpu_time_left = 0;
-	if(i < NR_TASKS)			/* name (tasks only) */
+	если(i < NR_TASKS)			/* name (tasks only) */
 		strlcpy(rp->p_name, ip->proc_name, sizeof(rp->p_name));
 
-	if(i >= NR_TASKS) {
+	если(i >= NR_TASKS) {
 		/* Remember this so it can be passed to VM */
 		multiboot_module_t *mb_mod = &kinfo.module_list[i - NR_TASKS];
 		ip->start_addr = mb_mod->mod_start;
@@ -195,12 +195,12 @@ void kmain(kinfo_t *local_cbi)
 	proc_nr = proc_nr(rp);
 	schedulable_proc = (iskerneln(proc_nr) || isrootsysn(proc_nr) ||
 		proc_nr == VM_PROC_NR);
-	if(schedulable_proc) {
+	если(schedulable_proc) {
 	    /* Assign privilege structure. Force a static privilege id. */
             (void) get_priv(rp, static_priv_id(proc_nr));
 
             /* Privileges for kernel tasks. */
-	    if(proc_nr == VM_PROC_NR) {
+	    если(proc_nr == VM_PROC_NR) {
                 priv(rp)->s_flags = VM_F;
                 priv(rp)->s_trap_mask = SRV_T;
 		ipc_to_m = SRV_M;
@@ -209,7 +209,7 @@ void kmain(kinfo_t *local_cbi)
                 rp->p_priority = SRV_Q;
                 rp->p_quantum_size_ms = SRV_QT;
 	    }
-	    else if(iskerneln(proc_nr)) {
+	    иначе если(iskerneln(proc_nr)) {
                 /* Privilege flags. */
                 priv(rp)->s_flags = (proc_nr == IDLE ? IDL_F : TSK_F);
                 /* Init flags. */
@@ -221,7 +221,7 @@ void kmain(kinfo_t *local_cbi)
                 kcalls = TSK_KC;                   /* allowed kernel calls */
             }
             /* Privileges for the root system process. */
-            else {
+            иначе {
 	    	assert(isrootsysn(proc_nr));
                 priv(rp)->s_flags= RSYS_F;        /* privilege flags */
                 priv(rp)->s_init_flags = SRV_I;   /* init flags */
@@ -236,19 +236,19 @@ void kmain(kinfo_t *local_cbi)
             /* Fill in target mask. */
             memset(&map, 0, sizeof(map));
 
-            if (ipc_to_m == ALL_M) {
-                for(j = 0; j < NR_SYS_PROCS; j++)
+            если (ipc_to_m == ALL_M) {
+                для(j = 0; j < NR_SYS_PROCS; j++)
                     set_sys_bit(map, j);
             }
 
             fill_sendto_mask(rp, &map);
 
             /* Fill in kernel call mask. */
-            for(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
+            для(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
                 priv(rp)->s_k_call_mask[j] = (kcalls == NO_C ? 0 : (~0));
             }
 	}
-	else {
+	иначе {
 	    /* Don't let the process run for now. */
             RTS_SET(rp, RTS_NO_PRIV | RTS_NO_QUANTUM);
 	}
@@ -257,11 +257,11 @@ void kmain(kinfo_t *local_cbi)
 	arch_boot_proc(ip, rp);
 
 	/* scheduling functions depend on proc_ptr pointing somewhere. */
-	if(!get_cpulocal_var(proc_ptr))
+	если(!get_cpulocal_var(proc_ptr))
 		get_cpulocal_var(proc_ptr) = rp;
 
 	/* Process isn't scheduled until VM has set up a pagetable for it. */
-	if(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
+	если(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
 		rp->p_rts_flags |= RTS_VMINHIBIT;
 		rp->p_rts_flags |= RTS_BOOTINHIBIT;
 	}
@@ -301,13 +301,13 @@ void kmain(kinfo_t *local_cbi)
   add_memmap(&kinfo, kinfo.bootstrap_start, kinfo.bootstrap_len);
 
 #ifdef CONFIG_SMP
-  if (config_no_apic) {
+  если (config_no_apic) {
 	  DEBUGBASIC(("APIC disabled, disables SMP, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else if (config_no_smp) {
+  } иначе если (config_no_smp) {
 	  DEBUGBASIC(("SMP disabled, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else {
+  } иначе {
 	  smp_init();
 	  /*
 	   * if smp_init() returns it means that it failed and we try to finish
@@ -315,7 +315,7 @@ void kmain(kinfo_t *local_cbi)
 	   */
 	  bsp_finish_booting();
   }
-#else
+#иначе
   /* 
    * if configured for a single CPU, we are already on the kernel stack which we
    * are going to use everytime we execute kernel code. We finish booting and we
@@ -348,7 +348,7 @@ static void announce(void)
 /*===========================================================================*
  *				prepare_shutdown			     *
  *===========================================================================*/
-void prepare_shutdown(const int how)
+void prepare_shutdown(const целое how)
 {
 /* This function prepares to shutdown MINIX. */
   static minix_timer_t shutdown_timer;
@@ -365,7 +365,7 @@ void prepare_shutdown(const int how)
 /*===========================================================================*
  *				shutdown 				     *
  *===========================================================================*/
-void minix_shutdown(int how)
+void minix_shutdown(целое how)
 {
 /* This function is called from prepare_shutdown or stop_sequence to bring 
  * down MINIX.
@@ -379,7 +379,7 @@ void minix_shutdown(int how)
    * such a state that we can perform the whole boot process once restarted from
    * monitor again
    */
-  if (ncpus > 1)
+  если (ncpus > 1)
 	  smp_shutdown_aps();
 #endif
   hw_intr_disable_all();
@@ -387,12 +387,12 @@ void minix_shutdown(int how)
 
   /* Show shutdown message */
   direct_cls();
-  if((how & RB_POWERDOWN) == RB_POWERDOWN)
+  если((how & RB_POWERDOWN) == RB_POWERDOWN)
 	direct_print("MINIX has halted and will now power off.\n");
-  else if(how & RB_HALT)
+  иначе если(how & RB_HALT)
 	direct_print("MINIX has halted. "
 		     "It is safe to turn off your computer.\n");
-  else
+  иначе
 	direct_print("MINIX will now reset.\n");
   arch_shutdown(how);
 }
@@ -411,7 +411,7 @@ void cstart(void)
   prot_init();
 
   /* determine verbosity */
-  if ((value = env_get(VERBOSEBOOTVARNAME)))
+  если ((value = env_get(VERBOSEBOOTVARNAME)))
 	  verboseboot = atoi(value);
 
   /* Initialize clock variables. */
@@ -419,7 +419,7 @@ void cstart(void)
 
   /* Get memory parameters. */
   value = env_get("ac_layout");
-  if(value && atoi(value)) {
+  если(value && atoi(value)) {
         kinfo.user_sp = (vir_bytes) USR_STACKTOP_COMPACT;
         kinfo.user_end = (vir_bytes) USR_DATATOP_COMPACT;
   }
@@ -441,30 +441,30 @@ void cstart(void)
 
 #ifdef USE_APIC
   value = env_get("no_apic");
-  if(value)
+  если(value)
 	config_no_apic = atoi(value);
-  else
+  иначе
 	config_no_apic = 1;
   value = env_get("apic_timer_x");
-  if(value)
+  если(value)
 	config_apic_timer_x = atoi(value);
-  else
+  иначе
 	config_apic_timer_x = 1;
 #endif
 
 #ifdef USE_WATCHDOG
   value = env_get("watchdog");
-  if (value)
+  если (value)
 	  watchdog_enabled = atoi(value);
 #endif
 
 #ifdef CONFIG_SMP
-  if (config_no_apic)
+  если (config_no_apic)
 	  config_no_smp = 1;
   value = env_get("no_smp");
-  if(value)
+  если(value)
 	config_no_smp = atoi(value);
-  else
+  иначе
 	config_no_smp = 0;
 #endif
   DEBUGEXTRA(("intr_init(0)\n"));
@@ -489,14 +489,14 @@ char *get_value(
   register const char *namep;
   register char *envp;
 
-  for (envp = (char *) params; *envp != 0;) {
-	for (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
+  для (envp = (char *) params; *envp != 0;) {
+	для (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
 		;
-	if (*namep == '\0' && *envp == '=') return(envp + 1);
-	while (*envp++ != 0)
+	если (*namep == '\0' && *envp == '=') вернуть(envp + 1);
+	пока (*envp++ != 0)
 		;
   }
-  return(NULL);
+  вернуть(NULL);
 }
 
 /*===========================================================================*
@@ -504,7 +504,7 @@ char *get_value(
  *===========================================================================*/
 char *env_get(const char *name)
 {
-	return get_value(kinfo.param_buf, name);
+	вернуть get_value(kinfo.param_buf, name);
 }
 
 void cpu_print_freq(unsigned cpu)
@@ -515,8 +515,8 @@ void cpu_print_freq(unsigned cpu)
         DEBUGBASIC(("CPU %d freq %lu MHz\n", cpu, (unsigned long)(freq / 1000000)));
 }
 
-int is_fpu(void)
+целое is_fpu(void)
 {
-        return get_cpulocal_var(fpu_presence);
+        вернуть get_cpulocal_var(fpu_presence);
 }
 
