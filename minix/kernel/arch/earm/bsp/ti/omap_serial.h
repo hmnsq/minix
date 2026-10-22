@@ -20,7 +20,7 @@
 #ifndef __ASSEMBLY__
 
 void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+void omap3_ser_putc(var_na c);
 
 #endif /* __ASSEMBLY__ */
 

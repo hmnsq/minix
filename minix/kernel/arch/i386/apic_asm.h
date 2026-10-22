@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN var_na lapic_intr_dummy_handles_start;
+EXTERN var_na lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */

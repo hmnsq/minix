@@ -12,8 +12,8 @@
 #include <machine/frame.h>
 
 /* Struct declarations. */
-struct proc;
-struct ipc_filter_s;
+sa_nracanaa proc;
+sa_nracanaa ipc_filter_s;
 
 /* clock.c */
 void init_clock(void);
@@ -23,7 +23,7 @@ void set_adjtime_delta(int32_t);
 clock_t get_monotonic(void);
 void set_boottime(time_t);
 time_t get_boottime(void);
-void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, int arg);
+void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, ཧྲིལ arg);
 void reset_kernel_timer(minix_timer_t *tp);
 void ser_dump_proc(void);
 
@@ -35,14 +35,14 @@ void cycles_accounting_init(void);
  * possible before returning to userspace. These function is architecture
  * dependent
  */
-void context_stop(struct proc * p);
+void context_stop(sa_nracanaa proc * p);
 /* this is a wrapper to make calling it from assembly easier */
 void context_stop_idle(void);
-void get_cpu_ticks(unsigned int cpu, uint64_t ticks[MINIX_CPUSTATES]);
-int restore_fpu(struct proc *);
-void save_fpu(struct proc *);
-void save_local_fpu(struct proc *, int retain);
-void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
+void get_cpu_ticks(unsigned ཧྲིལ cpu, uint64_t ticks[MINIX_CPUSTATES]);
+ཧྲིལ restore_fpu(sa_nracanaa proc *);
+void save_fpu(sa_nracanaa proc *);
+void save_local_fpu(sa_nracanaa proc *, ཧྲིལ retain);
+void fpu_sigcontext(sa_nracanaa proc *, sa_nracanaa sigframe_sigcontext *fr, sa_nracanaa
 	sigcontext *sc);
 
 /* main.c */
@@ -50,120 +50,120 @@ void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
 #define kmain __k_unpaged_kmain
 #endif
 void kmain(kinfo_t *cbi);
-void prepare_shutdown(int how);
-__dead void minix_shutdown(int how);
+void prepare_shutdown(ཧྲིལ how);
+__dead void minix_shutdown(ཧྲིལ how);
 void bsp_finish_booting(void);
 
 /* proc.c */
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3);
+ཧྲིལ do_ipc(reg_t r1, reg_t r2, reg_t r3);
 void proc_init(void);
-int cancel_async(struct proc *src, struct proc *dst);
-int has_pending_notify(struct proc * caller, int src_p);
-int has_pending_asend(struct proc * caller, int src_p);
-void unset_notify_pending(struct proc * caller, int src_p);
-int mini_notify(const struct proc *src, endpoint_t dst);
-void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag);
-void enqueue(struct proc *rp);
-void dequeue(struct proc *rp);
+ཧྲིལ cancel_async(sa_nracanaa proc *src, sa_nracanaa proc *dst);
+ཧྲིལ has_pending_notify(sa_nracanaa proc * caller, ཧྲིལ src_p);
+ཧྲིལ has_pending_asend(sa_nracanaa proc * caller, ཧྲིལ src_p);
+void unset_notify_pending(sa_nracanaa proc * caller, ཧྲིལ src_p);
+ཧྲིལ mini_notify(const sa_nracanaa proc *src, endpoint_t dst);
+void vm_suspend(sa_nracanaa proc *caller, const sa_nracanaa proc *target,
+        const vir_bytes linaddr, const vir_bytes len, const ཧྲིལ type,
+        const ཧྲིལ writeflag);
+void enqueue(sa_nracanaa proc *rp);
+void dequeue(sa_nracanaa proc *rp);
 void switch_to_user(void);
-void arch_proc_reset(struct proc *rp);
-void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
-	int user, int restorestyle);
-struct proc * arch_finish_switch_to_user(void);
-struct proc *endpoint_lookup(endpoint_t ep);
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+void arch_proc_reset(sa_nracanaa proc *rp);
+void arch_proc_setcontext(sa_nracanaa proc *rp, sa_nracanaa stackframe_s *state,
+	ཧྲིལ user, ཧྲིལ restorestyle);
+sa_nracanaa proc * arch_finish_switch_to_user(void);
+sa_nracanaa proc *endpoint_lookup(endpoint_t ep);
+#གལ་ཏེ DEBUG_ENABLE_IPC_WARNINGS
+ཧྲིལ isokendpt_f(const var_na *file, ཧྲིལ line, endpoint_t e, ཧྲིལ *p, ཧྲིལ
 	f);
 #define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
-#else
-int isokendpt_f(endpoint_t e, int *p, int f);
+#དེ་མིན
+ཧྲིལ isokendpt_f(endpoint_t e, ཧྲིལ *p, ཧྲིལ f);
 #define isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
 #endif
-void proc_no_time(struct proc *p);
-void reset_proc_accounting(struct proc *p);
-void flag_account(struct proc *p, int flag);
-int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+void proc_no_time(sa_nracanaa proc *p);
+void reset_proc_accounting(sa_nracanaa proc *p);
+void flag_account(sa_nracanaa proc *p, ཧྲིལ flag);
+ཧྲིལ try_deliver_senda(sa_nracanaa proc *caller_ptr, asynmsg_t *table, size_t
 	size);
 
 /* start.c */
 void cstart(void);
-char *env_get(const char *key);
+var_na *env_get(const var_na *key);
 
 /* system.c */
-int get_priv(register struct proc *rc, int proc_type);
-void set_sendto_bit(const struct proc *rc, int id);
-void unset_sendto_bit(const struct proc *rc, int id);
-void fill_sendto_mask(const struct proc *rc, sys_map_t *map);
-int send_sig(endpoint_t proc_nr, int sig_nr);
-void cause_sig(proc_nr_t proc_nr, int sig_nr);
-void sig_delay_done(struct proc *rp);
+ཧྲིལ get_priv(pa_njikaa sa_nracanaa proc *rc, ཧྲིལ proc_type);
+void set_sendto_bit(const sa_nracanaa proc *rc, ཧྲིལ id);
+void unset_sendto_bit(const sa_nracanaa proc *rc, ཧྲིལ id);
+void fill_sendto_mask(const sa_nracanaa proc *rc, sys_map_t *map);
+ཧྲིལ send_sig(endpoint_t proc_nr, ཧྲིལ sig_nr);
+void cause_sig(proc_nr_t proc_nr, ཧྲིལ sig_nr);
+void sig_delay_done(sa_nracanaa proc *rp);
 void send_diag_sig(void);
-void kernel_call(message *m_user, struct proc * caller);
+void kernel_call(message *m_user, sa_nracanaa proc * caller);
 void system_init(void);
-void clear_endpoint(struct proc *rc);
-void clear_ipc_refs(struct proc *rc, int caller_ret);
-void kernel_call_resume(struct proc *p);
-int sched_proc(struct proc *rp, int priority, int quantum, int cpu, int niced);
-int add_ipc_filter(struct proc *rp, int type,
+void clear_endpoint(sa_nracanaa proc *rc);
+void clear_ipc_refs(sa_nracanaa proc *rc, ཧྲིལ caller_ret);
+void kernel_call_resume(sa_nracanaa proc *p);
+ཧྲིལ sched_proc(sa_nracanaa proc *rp, ཧྲིལ priority, ཧྲིལ quantum, ཧྲིལ cpu, ཧྲིལ niced);
+ཧྲིལ add_ipc_filter(sa_nracanaa proc *rp, ཧྲིལ type,
     vir_bytes address, size_t length);
-void clear_ipc_filters(struct proc *rp);
-int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+void clear_ipc_filters(sa_nracanaa proc *rp);
+ཧྲིལ check_ipc_filter(sa_nracanaa ipc_filter_s *ipcf, ཧྲིལ fill_flags);
+ཧྲིལ allow_ipc_filtered_msg(sa_nracanaa proc *rp, endpoint_t src_e,
     vir_bytes m_src_v, message *m_src_p);
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
-int priv_add_irq(struct proc *rp, int irq);
-int priv_add_io(struct proc *rp, struct io_range *ior);
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
+ཧྲིལ allow_ipc_filtered_memreq(sa_nracanaa proc *src_rp, sa_nracanaa proc *dst_rp);
+ཧྲིལ priv_add_irq(sa_nracanaa proc *rp, ཧྲིལ irq);
+ཧྲིལ priv_add_io(sa_nracanaa proc *rp, sa_nracanaa io_range *ior);
+ཧྲིལ priv_add_mem(sa_nracanaa proc *rp, sa_nracanaa minix_mem_range *memr);
 
 /* system/do_vtimer.c */
-void vtimer_check(struct proc *rp);
+void vtimer_check(sa_nracanaa proc *rp);
 
 /* interrupt.c */
-void put_irq_handler(irq_hook_t *hook, int irq, irq_handler_t handler);
+void put_irq_handler(irq_hook_t *hook, ཧྲིལ irq, irq_handler_t handler);
 void rm_irq_handler(const irq_hook_t *hook);
 void enable_irq(const irq_hook_t *hook);
-int disable_irq(const irq_hook_t *hook);
+ཧྲིལ disable_irq(const irq_hook_t *hook);
 
 void interrupts_enable(void);
 void interrupts_disable(void);
 
 /* debug.c */
-int runqueues_ok(void);
+ཧྲིལ runqueues_ok(void);
 #ifndef CONFIG_SMP
 #define runqueues_ok_local runqueues_ok
-#else
+#དེ་མིན
 #define runqueues_ok_local() runqueues_ok_cpu(cpuid)
-int runqueues_ok_cpu(unsigned cpu);
+ཧྲིལ runqueues_ok_cpu(unsigned cpu);
 #endif
-char *rtsflagstr(u32_t flags);
-char *miscflagstr(u32_t flags);
-char *schedulerstr(struct proc *scheduler);
+var_na *rtsflagstr(u32_t flags);
+var_na *miscflagstr(u32_t flags);
+var_na *schedulerstr(sa_nracanaa proc *scheduler);
 /* prints process information */
-void print_proc(struct proc *pp);
+void print_proc(sa_nracanaa proc *pp);
 /* prints the given process and recursively all processes it depends on */
-void print_proc_recursive(struct proc *pp);
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-    char operation, int printparams);
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgkcall(message *msg, struct proc *proc);
-void hook_ipc_msgkresult(message *msg, struct proc *proc);
-void hook_ipc_clear(struct proc *proc);
+void print_proc_recursive(sa_nracanaa proc *pp);
+void printmsg(message *msg, sa_nracanaa proc *src, sa_nracanaa proc *dst,
+    var_na operation, ཧྲིལ printparams);
+#གལ་ཏེ DEBUG_IPC_HOOK
+void hook_ipc_msgrecv(message *msg, sa_nracanaa proc *src, sa_nracanaa proc *dst);
+void hook_ipc_msgsend(message *msg, sa_nracanaa proc *src, sa_nracanaa proc *dst);
+void hook_ipc_msgkcall(message *msg, sa_nracanaa proc *proc);
+void hook_ipc_msgkresult(message *msg, sa_nracanaa proc *proc);
+void hook_ipc_clear(sa_nracanaa proc *proc);
 #endif
 
 /* system/do_safecopy.c */
-struct cp_sfinfo; /* external callers may only provide NULL */
-int verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, int,
-	vir_bytes, vir_bytes *, endpoint_t *, struct cp_sfinfo *);
+sa_nracanaa cp_sfinfo; /* external callers may only provide NULL */
+ཧྲིལ verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, ཧྲིལ,
+	vir_bytes, vir_bytes *, endpoint_t *, sa_nracanaa cp_sfinfo *);
 
 /* system/do_diagctl.c */
-int do_diagctl(struct proc * caller, message *m);
+ཧྲིལ do_diagctl(sa_nracanaa proc * caller, message *m);
 
-#if SPROFILE
+#གལ་ཏེ SPROFILE
 /* profile.c */
 void init_profile_clock(u32_t);
 void stop_profile_clock(void);
@@ -172,7 +172,7 @@ void stop_profile_clock(void);
 /* functions defined in architecture-dependent files. */
 void prot_init(void);
 void arch_post_init(void);
-void arch_set_secondary_ipc_return(struct proc *, u32_t val);
+void arch_set_secondary_ipc_return(sa_nracanaa proc *, u32_t val);
 phys_bytes phys_copy(phys_bytes source, phys_bytes dest, phys_bytes
 	count);
 void phys_copy_fault(void);
@@ -183,66 +183,66 @@ void memset_fault_in_kernel(void);
 				virtual_copy_f(NULL, src, dst, bytes, 0)
 #define virtual_copy_vmcheck(caller, src, dst, bytes) \
 				virtual_copy_f(caller, src, dst, bytes, 1)
-int virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
-	vir_addr *dst, vir_bytes bytes, int vmcheck);
-int data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
+ཧྲིལ virtual_copy_f(sa_nracanaa proc * caller, sa_nracanaa vir_addr *src, sa_nracanaa
+	vir_addr *dst, vir_bytes bytes, ཧྲིལ vmcheck);
+ཧྲིལ data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
 	vir_bytes to_addr, size_t bytes);
-int data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
+ཧྲིལ data_copy_vmcheck(sa_nracanaa proc *, endpoint_t from, vir_bytes
 	from_addr, endpoint_t to, vir_bytes to_addr, size_t bytes);
-phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
+phys_bytes umap_virtual(sa_nracanaa proc* rp, ཧྲིལ seg, vir_bytes vir_addr,
 	vir_bytes bytes);
 phys_bytes seg2phys(u16_t);
-int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
-int intr_init(int);
+ཧྲིལ vm_memset(sa_nracanaa proc *caller, endpoint_t who, phys_bytes dst,
+	ཧྲིལ pattern, phys_bytes count);
+ཧྲིལ intr_init(ཧྲིལ);
 void halt_cpu(void);
 void arch_init(void);
-void arch_boot_proc(struct boot_image *b, struct proc *p);
+void arch_boot_proc(sa_nracanaa boot_image *b, sa_nracanaa proc *p);
 void cpu_identify(void);
 /* arch dependent FPU initialization per CPU */
 void fpu_init(void);
 /* returns true if pfu is present and initialized */
-int is_fpu(void);
-void ser_putc(char);
-__dead void arch_shutdown(int);
-void restore_user_context(struct proc * p);
+ཧྲིལ is_fpu(void);
+void ser_putc(var_na);
+__dead void arch_shutdown(ཧྲིལ);
+void restore_user_context(sa_nracanaa proc * p);
 void read_tsc(u32_t *high, u32_t *low);
-int arch_init_profile_clock(u32_t freq);
+ཧྲིལ arch_init_profile_clock(u32_t freq);
 void arch_stop_profile_clock(void);
 void arch_ack_profile_clock(void);
 void do_ser_debug(void);
-int arch_get_params(char *parm, int max);
+ཧྲིལ arch_get_params(var_na *parm, ཧྲིལ max);
 void memory_init(void);
 void mem_clear_mapcache(void);
-void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
-int arch_do_vmctl(message *m_ptr, struct proc *p);
-int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
+void arch_proc_init(sa_nracanaa proc *pr, u32_t, u32_t, u32_t, var_na *);
+ཧྲིལ arch_do_vmctl(message *m_ptr, sa_nracanaa proc *p);
+ཧྲིལ vm_contiguous(const sa_nracanaa proc *targetproc, vir_bytes vir_buf,
 	size_t count);
-void proc_stacktrace(struct proc *proc);
-int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
+void proc_stacktrace(sa_nracanaa proc *proc);
+ཧྲིལ vm_lookup(const sa_nracanaa proc *proc, vir_bytes virtual, phys_bytes
 	*result, u32_t *ptent);
-size_t vm_lookup_range(const struct proc *proc,
+size_t vm_lookup_range(const sa_nracanaa proc *proc,
        vir_bytes vir_addr, phys_bytes *phys_addr, size_t bytes);
-void arch_do_syscall(struct proc *proc);
-int arch_phys_map(int index, phys_bytes *addr, phys_bytes *len, int
+void arch_do_syscall(sa_nracanaa proc *proc);
+ཧྲིལ arch_phys_map(ཧྲིལ index, phys_bytes *addr, phys_bytes *len, ཧྲིལ
 	*flags);
-int arch_phys_map_reply(int index, vir_bytes addr);
-reg_t arch_get_sp(struct proc *p);
-int arch_enable_paging(struct proc * caller);
-int vm_check_range(struct proc *caller,
-       struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
+ཧྲིལ arch_phys_map_reply(ཧྲིལ index, vir_bytes addr);
+reg_t arch_get_sp(sa_nracanaa proc *p);
+ཧྲིལ arch_enable_paging(sa_nracanaa proc * caller);
+ཧྲིལ vm_check_range(sa_nracanaa proc *caller,
+       sa_nracanaa proc *target, vir_bytes vir_addr, size_t bytes, ཧྲིལ writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
-void switch_address_space(struct proc * p);
-void release_address_space(struct proc *pr);
+ཧྲིལ copy_msg_from_user(message * user_mbuf, message * dst);
+ཧྲིལ copy_msg_to_user(message * src, message * user_mbuf);
+void switch_address_space(sa_nracanaa proc * p);
+void release_address_space(sa_nracanaa proc *pr);
 
 void enable_fpu_exception(void);
 void disable_fpu_exception(void);
-void release_fpu(struct proc * p);
+void release_fpu(sa_nracanaa proc * p);
 void arch_pause(void);
 short cpu_load(void);
-void busy_delay_ms(int ms);
+void busy_delay_ms(ཧྲིལ ms);
 
 /* utility.c */
 void cpu_print_freq(unsigned cpu);
