@@ -54,9 +54,9 @@ init_clock(void)
 
 	/* Get clock tick frequency. */
 	value = env_get("hz");
-	if (value != NULL)
+	ако (value != NULL)
 		kclockinfo.hz = atoi(value);
-	if (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
+	ако (value == NULL || kclockinfo.hz < 2 || kclockinfo.hz > 50000)
 		kclockinfo.hz = DEFAULT_HZ;
 
 	/* Load average data initialization. */
@@ -67,7 +67,7 @@ init_clock(void)
  * The boot processor's timer interrupt handler. In addition to non-boot cpus
  * it keeps real time and notifies the clock task if need be.
  */
-int timer_int_handler(void)
+цяло timer_int_handler(void)
 {
 	/* Update user and system accounting times. Charge the current process
 	 * for user time. If the current process is not billable, that is, if a
@@ -88,17 +88,17 @@ int timer_int_handler(void)
 	watchdog_local_timer_ticks++;
 #endif
 
-	if (cpu_is_bsp(cpuid)) {
+	ако (cpu_is_bsp(cpuid)) {
 		kclockinfo.uptime++;
 
 		/* if adjtime_delta has ticks remaining, apply one to realtime.
 		 * limit changes to every other interrupt.
 		 */
-		if (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
+		ако (adjtime_delta != 0 && kclockinfo.uptime & 0x1) {
 			/* go forward or stay behind */
 			kclockinfo.realtime += (adjtime_delta > 0) ? 2 : 0;
 			adjtime_delta += (adjtime_delta > 0) ? -1 : +1;
-		} else {
+		} иначе {
 			kclockinfo.realtime++;
 		}
 	}
@@ -115,7 +115,7 @@ int timer_int_handler(void)
 
 	p->p_user_time++;
 
-	if (! (priv(p)->s_flags & BILLABLE)) {
+	ако (! (priv(p)->s_flags & BILLABLE)) {
 		billp->p_sys_time++;
 	}
 
@@ -125,13 +125,13 @@ int timer_int_handler(void)
 	 * well.  If any of the timers expire, do_clocktick() will send out
 	 * signals.
 	 */
-	if ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
+	ако ((p->p_misc_flags & MF_VIRT_TIMER) && (p->p_virt_left > 0)) {
 		p->p_virt_left--;
 	}
-	if ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
+	ако ((p->p_misc_flags & MF_PROF_TIMER) && (p->p_prof_left > 0)) {
 		p->p_prof_left--;
 	}
-	if (! (priv(p)->s_flags & BILLABLE) &&
+	ако (! (priv(p)->s_flags & BILLABLE) &&
 			(billp->p_misc_flags & MF_PROF_TIMER) &&
 			(billp->p_prof_left > 0)) {
 		billp->p_prof_left--;
@@ -144,24 +144,24 @@ int timer_int_handler(void)
 	 */
 	vtimer_check(p);
 
-	if (p != billp)
+	ако (p != billp)
 		vtimer_check(billp);
 
 	/* Update load average. */
 	load_update();
 
-	if (cpu_is_bsp(cpuid)) {
+	ако (cpu_is_bsp(cpuid)) {
 		/*
 		 * If a timer expired, notify the clock task.  Keep in mind
 		 * that clock tick values may overflow, so we must only look at
 		 * relative differences, and only if there are timers at all.
 		 */
-		if (clock_timers != NULL &&
+		ако (clock_timers != NULL &&
 		    tmr_has_expired(clock_timers, kclockinfo.uptime))
 			tmrs_exptimers(&clock_timers, kclockinfo.uptime, NULL);
 
 #ifdef DEBUG_SERIAL
-		if (kinfo.do_serial_debug)
+		ако (kinfo.do_serial_debug)
 			do_ser_debug();
 #endif
 
@@ -169,7 +169,7 @@ int timer_int_handler(void)
 
 	arch_timer_int_handler();
 
-	return(1);					/* reenable interrupts */
+	върни(1);					/* reenable interrupts */
 }
 
 /*===========================================================================*
@@ -178,7 +178,7 @@ int timer_int_handler(void)
 clock_t get_realtime(void)
 {
   /* Get and return the current wall time in ticks since boot. */
-  return(kclockinfo.realtime);
+  върни(kclockinfo.realtime);
 }
 
 /*===========================================================================*
@@ -203,7 +203,7 @@ void set_adjtime_delta(int32_t ticks)
 clock_t get_monotonic(void)
 {
   /* Get and return the number of ticks since boot. */
-  return(kclockinfo.uptime);
+  върни(kclockinfo.uptime);
 }
 
 /*===========================================================================*
@@ -220,7 +220,7 @@ void set_boottime(time_t newboottime)
 time_t get_boottime(void)
 {
   /* Get and return the number of seconds since the UNIX epoch. */
-  return(kclockinfo.boottime);
+  върни(kclockinfo.boottime);
 }
 
 /*===========================================================================*
@@ -230,7 +230,7 @@ void set_kernel_timer(
   minix_timer_t *tp,			/* pointer to timer structure */
   clock_t exp_time,			/* expiration monotonic time */
   tmr_func_t watchdog,			/* watchdog to be called */
-  int arg				/* argument for watchdog function */
+  цяло arg				/* argument for watchdog function */
 )
 {
 /* Insert the new timer in the active timers list. Always update the
@@ -250,7 +250,7 @@ void reset_kernel_timer(
  * active and expired lists. Always update the next timeout time by setting
  * it to the front of the active list.
  */
-  if (tmr_is_set(tp))
+  ако (tmr_is_set(tp))
 	(void)tmrs_clrtimer(&clock_timers, tp, NULL, NULL);
 }
 
@@ -260,7 +260,7 @@ void reset_kernel_timer(
 static void load_update(void)
 {
 	u16_t slot;
-	int enqueued = 0, q;
+	цяло enqueued = 0, q;
 	struct proc *p;
 	struct proc **rdy_head;
 
@@ -272,15 +272,15 @@ static void load_update(void)
 	 */
 	slot = (kclockinfo.uptime / system_hz / _LOAD_UNIT_SECS) %
 	    _LOAD_HISTORY;
-	if(slot != kloadinfo.proc_last_slot) {
+	ако(slot != kloadinfo.proc_last_slot) {
 		kloadinfo.proc_load_history[slot] = 0;
 		kloadinfo.proc_last_slot = slot;
 	}
 
 	rdy_head = get_cpulocal_var(run_q_head);
 	/* Cumulation. How many processes are ready now? */
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		for(p = rdy_head[q]; p != NULL; p = p->p_nextready) {
+	за(q = 0; q < NR_SCHED_QUEUES; q++) {
+		за(p = rdy_head[q]; p != NULL; p = p->p_nextready) {
 			enqueued++;
 		}
 	}
@@ -291,22 +291,22 @@ static void load_update(void)
 	kloadinfo.last_clock = kclockinfo.uptime;
 }
 
-int boot_cpu_init_timer(unsigned freq)
+цяло boot_cpu_init_timer(unsigned freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	ако (init_local_timer(freq))
+		върни -1;
 
-	if (register_local_timer_handler(
+	ако (register_local_timer_handler(
 				(irq_handler_t) timer_int_handler))
-		return -1;
+		върни -1;
 
-	return 0;
+	върни 0;
 }
 
-int app_cpu_init_timer(unsigned freq)
+цяло app_cpu_init_timer(unsigned freq)
 {
-	if (init_local_timer(freq))
-		return -1;
+	ако (init_local_timer(freq))
+		върни -1;
 
-	return 0;
+	върни 0;
 }

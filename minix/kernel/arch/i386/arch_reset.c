@@ -25,7 +25,7 @@
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+цяло cpu_has_tsc;
 
 void
 reset(void)
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        ако (b != 0xff) {
+                ако ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,7 +74,7 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	докато(1) {
 		;
 	}
 }
@@ -82,7 +82,7 @@ reset(void)
 static __dead void
 halt(void)
 {
-	for ( ; ; )
+	за ( ; ; )
 		halt_cpu();
 }
 
@@ -96,7 +96,7 @@ poweroff(void)
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        докато (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead void arch_shutdown(цяло how)
 {
 	unsigned char unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	докато(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	ако(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		ако (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		докато (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ако((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ако(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		за (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -153,17 +153,17 @@ __dead void arch_shutdown(int how)
 #ifdef DEBUG_SERIAL
 void ser_putc(char c)
 {
-        int i;
-        int lsr, thr;
+        цяло i;
+        цяло lsr, thr;
 
-#if CONFIG_OXPCIE
+#ако CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#иначе
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        за (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
+                ако (inb( lsr) & LSR_THRE)
                         break;
         }
         outb( thr, c);

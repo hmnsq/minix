@@ -19,7 +19,7 @@
 /*===========================================================================*
  *				do_vumap				     *
  *===========================================================================*/
-int do_vumap(struct proc *caller, message *m_ptr)
+цяло do_vumap(struct proc *caller, message *m_ptr)
 {
 /* Map a vector of grants or local virtual addresses to physical addresses.
  * Designed to be used by drivers to perform an efficient lookup of physical
@@ -31,7 +31,7 @@ int do_vumap(struct proc *caller, message *m_ptr)
   struct vumap_phys pvec[MAPVEC_NR];
   vir_bytes vaddr, paddr, vir_addr;
   phys_bytes phys_addr;
-  int i, r, proc_nr, vcount, pcount, pmax, access;
+  цяло i, r, proc_nr, vcount, pcount, pmax, access;
   size_t size, chunk, offset;
 
   endpt = caller->p_endpoint;
@@ -45,43 +45,43 @@ int do_vumap(struct proc *caller, message *m_ptr)
   paddr = m_ptr->m_lsys_krn_sys_vumap.paddr;
   pmax = m_ptr->m_lsys_krn_sys_vumap.pmax;
 
-  if (vcount <= 0 || pmax <= 0)
-	return EINVAL;
+  ако (vcount <= 0 || pmax <= 0)
+	върни EINVAL;
 
-  if (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
-  if (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
+  ако (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
+  ако (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
 
   /* Convert access to safecopy access flags. */
   switch (access) {
   case VUA_READ:		access = CPF_READ; break;
   case VUA_WRITE:		access = CPF_WRITE; break;
   case VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; break;
-  default:			return EINVAL;
+  default:			върни EINVAL;
   }
 
   /* Copy in the vector of virtual addresses. */
   size = vcount * sizeof(vvec[0]);
 
-  if (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
-	return EFAULT;
+  ако (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
+	върни EFAULT;
 
   pcount = 0;
 
   /* Go through the input entries, one at a time. Stop early in case the output
    * vector has filled up.
    */
-  for (i = 0; i < vcount && pcount < pmax; i++) {
+  за (i = 0; i < vcount && pcount < pmax; i++) {
 	size = vvec[i].vv_size;
-	if (size <= offset)
-		return EINVAL;
+	ако (size <= offset)
+		върни EINVAL;
 	size -= offset;
 
-	if (source != SELF) {
+	ако (source != SELF) {
 		r = verify_grant(source, endpt, vvec[i].vv_grant, size, access,
 			offset, &vir_addr, &granter, NULL);
-		if (r != OK)
-			return r;
-	} else {
+		ако (r != OK)
+			върни r;
+	} иначе {
 		vir_addr = vvec[i].vv_addr + offset;
 		granter = endpt;
 	}
@@ -90,20 +90,20 @@ int do_vumap(struct proc *caller, message *m_ptr)
 	procp = proc_addr(proc_nr);
 
 	/* Each virtual range is made up of one or more physical ranges. */
-	while (size > 0 && pcount < pmax) {
+	докато (size > 0 && pcount < pmax) {
 		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, size);
 
-		if (!chunk) {
+		ако (!chunk) {
 			/* Try to get the memory allocated, unless the memory
 			 * is supposed to be there to be read from.
 			 */
-			if (access & CPF_READ)
-				return EFAULT;
+			ако (access & CPF_READ)
+				върни EFAULT;
 
 			/* This call may suspend the current call, or return an
 			 * error for a previous invocation.
 			 */
-			return vm_check_range(caller, procp, vir_addr, size, 1);
+			върни vm_check_range(caller, procp, vir_addr, size, 1);
 		}
 
 		pvec[pcount].vp_addr = phys_addr;
@@ -124,8 +124,8 @@ int do_vumap(struct proc *caller, message *m_ptr)
 
   r = data_copy_vmcheck(caller, KERNEL, (vir_bytes) pvec, endpt, paddr, size);
 
-  if (r == OK)
+  ако (r == OK)
 	m_ptr->m_krn_lsys_sys_vumap.pcount = pcount;
 
-  return r;
+  върни r;
 }

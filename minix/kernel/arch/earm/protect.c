@@ -17,9 +17,9 @@
 #include <libexec.h>
 
 struct tss_s tss[CONFIG_MAX_CPUS];
-extern int exc_vector_table;
+extern цяло exc_vector_table;
 
-int prot_init_done = 0;
+цяло prot_init_done = 0;
 
 phys_bytes vir2phys(void *vir)
 {
@@ -27,10 +27,10 @@ phys_bytes vir2phys(void *vir)
 	extern char _kern_vir_base, _kern_phys_base;
 	u32_t offset = (vir_bytes) &_kern_vir_base -
 	    (vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	върни (phys_bytes)vir - offset;
 }
 
-int tss_init(unsigned cpu, void * kernel_stack)
+цяло tss_init(unsigned cpu, void * kernel_stack)
 {
 
 	struct tss_s * t = &tss[cpu];
@@ -46,12 +46,12 @@ int tss_init(unsigned cpu, void * kernel_stack)
 	 */
 	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
 
-	return 0;
+	върни 0;
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(цяло pnr)
 {
-	int i;
+	цяло i;
 
 	assert(pnr >= 0);
 
@@ -59,20 +59,20 @@ multiboot_module_t *bootmod(int pnr)
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	за(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		цяло p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
+		ако(image[i].proc_nr == pnr) {
 			assert(p < MULTIBOOT_MAX_MODS);
 			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+			върни &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+цяло booting_cpu = 0;
 
 void prot_init(void)
 {
@@ -92,7 +92,7 @@ void prot_init(void)
 	prot_init_done = 1;
 }
 
-static int alloc_for_vm = 0;
+static цяло alloc_for_vm = 0;
 
 void arch_post_init(void)
 {
@@ -103,13 +103,13 @@ void arch_post_init(void)
 	pg_info(&vm->p_seg.p_ttbr, &vm->p_seg.p_ttbr_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+static цяло libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
 {
 	pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
 	pg_load();
 	memset((char *) vaddr, 0, len);
 	alloc_for_vm += len;
-	return OK;
+	върни OK;
 }
 
 void arch_boot_proc(struct boot_image *ip, struct proc *rp)
@@ -118,7 +118,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	struct ps_strings *psp;
 	char *sp;
 
-	if(rp->p_nr < 0) return;
+	ако(rp->p_nr < 0) върни;
 
 	mod = bootmod(rp->p_nr);
 
@@ -126,7 +126,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
+	ако(rp->p_nr == VM_PROC_NR) {
 		struct exec_info execi;
 
 		memset(&execi, 0, sizeof(execi));
@@ -149,7 +149,7 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.clearproc = NULL;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		ако(libexec_load_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
@@ -161,10 +161,10 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (sizeof(void *) + sizeof(void *) + sizeof(цяло));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (char **)(sp + sizeof(цяло));
 		psp->ps_nargvstr = 0;
 		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
 		psp->ps_nenvstr = 0;

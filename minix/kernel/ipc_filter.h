@@ -15,7 +15,7 @@
 #define IPCF_WHITELIST   2	/* whitelist filter type */
 
 /* IPC filter element macros. */
-EXTERN int _ipcf_nr;
+EXTERN цяло _ipcf_nr;
 #define IPCF_EL_CHECK(E) \
 	((((E)->flags & IPCF_MATCH_M_TYPE) || \
 	((E)->flags & IPCF_MATCH_M_SOURCE)) && \
@@ -41,9 +41,9 @@ EXTERN int _ipcf_nr;
 	(IPCF_EL_MATCH_M_TYPE(E,M) && IPCF_EL_MATCH_M_SOURCE(E,M))
 
 struct ipc_filter_s {
-  int type;
-  int num_elements;
-  int flags;
+  цяло type;
+  цяло num_elements;
+  цяло flags;
   struct ipc_filter_s *next;
   ipc_filter_el_t elements[IPCF_MAX_ELEMENTS];
 };
@@ -58,16 +58,16 @@ EXTERN ipc_filter_t ipc_filter_pool[IPCF_POOL_SIZE];
 #define IPCF_POOL_IS_FREE_SLOT(S) ((S)->type == IPCF_NONE)
 #define IPCF_POOL_ALLOCATE_SLOT(T,S) \
 	do { \
-		int i; \
+		цяло i; \
 		*(S) = NULL; \
-		for (i = 0; i < IPCF_POOL_SIZE; i++) { \
-			if (IPCF_POOL_IS_FREE_SLOT(&ipc_filter_pool[i])) { \
+		за (i = 0; i < IPCF_POOL_SIZE; i++) { \
+			ако (IPCF_POOL_IS_FREE_SLOT(&ipc_filter_pool[i])) { \
 				*(S) = &ipc_filter_pool[i]; \
 				(*(S))->type = T; \
 				break; \
 			} \
 		} \
-	} while(0)
+	} докато(0)
 #define IPCF_POOL_INIT(S) memset(&ipc_filter_pool,0,sizeof(ipc_filter_pool))
 
 #endif /* !IPC_FILTER_H */
