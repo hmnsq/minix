@@ -1,43 +1,43 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#ضمن <minix/minlib.h>
+#ضمن <minix/cpufeature.h>
+#ضمن <machine/partition.h>
+#ضمن "string.h"
+#ضمن "direct_utils.h"
+#ضمن "serial.h"
+#ضمن "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+ساكن صحيح print_باريس = 1, print_col = 1;
 
-#include <sys/video.h>
+#ضمن <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+خارجي حرف *video_mem;
+#define VIDOFFSET(باريس, col) ((باريس) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_باريس_سموا-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+فراغ direct_put_char(حرف c, صحيح باريس, صحيح col) 
 {
-	int offset = VIDOFFSET(line, col);
+	صحيح offset = VIDOFFSET(باريس, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+ساكن حرف direct_get_char(صحيح باريس, صحيح col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	أرجع video_mem[VIDOFFSET(باريس, col)];
 }
 
-void direct_cls(void)
+فراغ direct_cls(فراغ)
 {
 	/* Clear screen */
-	int i,j;
+	صحيح i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	لكل(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		لكل(j = 0; j < MULTIBOOT_CONSOLE_باريس_سموا; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_باريس = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,59 +46,59 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+ساكن فراغ direct_scroll_up(صحيح باريس_سموا) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	صحيح i, j;
+	لكل (i = 0; i < MULTIBOOT_CONSOLE_باريس_سموا; i++ ) {
+		لكل (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			حرف c = 0;
+			إذا(i < MULTIBOOT_CONSOLE_باريس_سموا-باريس_سموا)
+				c = direct_get_char(i + باريس_سموا, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_باريس-= باريس_سموا;
 }
 
-void direct_print_char(char c)
+فراغ direct_print_char(حرف c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	طالما (print_باريس >= MULTIBOOT_CONSOLE_باريس_سموا)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	إذا(c == '\t') {
+		إذا(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} وإلا {
+			افعل {
+				direct_put_char(' ', print_باريس, print_col++);
+			} طالما(print_col % TABWIDTH);
+			أرجع;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	إذا (c == '\n') {
+		طالما (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_باريس, print_col++);
+		print_باريس++;
 		print_col = 0;
-		return;
+		أرجع;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_باريس, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	إذا (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_باريس++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	طالما (print_باريس >= MULTIBOOT_CONSOLE_باريس_سموا)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+فراغ direct_print(ثابت حرف *str)
 {
-	while (*str) {
+	طالما (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+صحيح direct_read_char(unsigned حرف *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	إذا (!(sb & KB_OUT_FULL)) {
+		أرجع 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	إذا (!(sb & KB_AUX_BYTE))
+		أرجع 1;
 
-	return 0;
+	أرجع 0;
 }
 
