@@ -14,65 +14,65 @@
 
 #include <minix/endpoint.h>
 
-#if USE_UMAP || USE_UMAP_REMOTE
+#ຖ້າ USE_UMAP || USE_UMAP_REMOTE
 
-#if ! USE_UMAP_REMOTE
+#ຖ້າ ! USE_UMAP_REMOTE
 #undef do_umap_remote
 #endif
 
 /*==========================================================================*
  *				do_umap_remote				    *
  *==========================================================================*/
-int do_umap_remote(struct proc * caller, message * m_ptr)
+ຈຳນວນເຕັມ do_umap_remote(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Map virtual address to physical, for non-kernel processes. */
-  int seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
-  int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
+  ຈຳນວນເຕັມ seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
+  ຈຳນວນເຕັມ seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
   vir_bytes offset = m_ptr->m_lsys_krn_sys_umap.src_addr;
-  int count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
+  ຈຳນວນເຕັມ count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
   endpoint_t endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
   endpoint_t grantee = m_ptr->m_lsys_krn_sys_umap.dst_endpt;
-  int proc_nr, proc_nr_grantee;
+  ຈຳນວນເຕັມ proc_nr, proc_nr_grantee;
   phys_bytes phys_addr = 0, lin_addr = 0;
-  struct proc *targetpr;
+  sa_nracanaa proc *targetpr;
 
   /* Verify process number. */
-  if (endpt == SELF)
+  ຖ້າ (endpt == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if (! isokendpt(endpt, &proc_nr))
-		return(EINVAL);
+  ບໍ່ດັ່ງນັ້ນ
+	ຖ້າ (! isokendpt(endpt, &proc_nr))
+		ສົ່ງຄືນ(EINVAL);
   targetpr = proc_addr(proc_nr);
 
   /* Verify grantee endpoint */
-  if (grantee == SELF) {
+  ຖ້າ (grantee == SELF) {
 	grantee = caller->p_endpoint;
-  } else if (grantee == NONE ||
+  } ບໍ່ດັ່ງນັ້ນ ຖ້າ (grantee == NONE ||
 	grantee == ANY ||
 	seg_index != MEM_GRANT ||
 	!isokendpt(grantee, &proc_nr_grantee)) {
-	return EINVAL;
+	ສົ່ງຄືນ EINVAL;
   }
 
   /* See which mapping should be made. */
   switch(seg_type) {
-  case LOCAL_VM_SEG:
-    if(seg_index == MEM_GRANT) {
+  pak_sa LOCAL_VM_SEG:
+    ຖ້າ(seg_index == MEM_GRANT) {
 	vir_bytes newoffset;
 	endpoint_t newep;
-	int new_proc_nr;
+	ຈຳນວນເຕັມ new_proc_nr;
 	cp_grant_id_t grant = (cp_grant_id_t) offset;
 
-        if(verify_grant(targetpr->p_endpoint, grantee, grant, count,
+        ຖ້າ(verify_grant(targetpr->p_endpoint, grantee, grant, count,
                 0, 0, &newoffset, &newep, NULL) != OK) {
                 printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, count, caller->p_name);
 		proc_stacktrace(caller);
-                return EFAULT;
+                ສົ່ງຄືນ EFAULT;
         }
 
-        if(!isokendpt(newep, &new_proc_nr)) {
+        ຖ້າ(!isokendpt(newep, &new_proc_nr)) {
                 printf("SYSTEM: do_umap: isokendpt failed\n");
-                return EFAULT;
+                ສົ່ງຄືນ EFAULT;
         }
 
 	/* New lookup. */
@@ -81,42 +81,42 @@ int do_umap_remote(struct proc * caller, message * m_ptr)
 	seg_index = VIR_ADDR;
       }
 
-      if(seg_index == VIR_ADDR) {
+      ຖ້າ(seg_index == VIR_ADDR) {
         phys_addr = lin_addr = offset;
-      } else {
+      } ບໍ່ດັ່ງນັ້ນ {
 	printf("SYSTEM: bogus seg type 0x%lx\n", seg_index);
-	return EFAULT;
+	ສົ່ງຄືນ EFAULT;
       }
-      if(!lin_addr) {
+      ຖ້າ(!lin_addr) {
 	printf("SYSTEM:do_umap: umap_local failed\n");
-	return EFAULT;
+	ສົ່ງຄືນ EFAULT;
       }
-      if(vm_lookup(targetpr, lin_addr, &phys_addr, NULL) != OK) {
+      ຖ້າ(vm_lookup(targetpr, lin_addr, &phys_addr, NULL) != OK) {
 	printf("SYSTEM:do_umap: vm_lookup failed\n");
-	return EFAULT;
+	ສົ່ງຄືນ EFAULT;
       }
-      if(phys_addr == 0)
+      ຖ້າ(phys_addr == 0)
 	panic("vm_lookup returned zero physical address");
-      break;
+      bha_nga;
   default:
   	printf("umap: peculiar type\n");
-  	return EINVAL;
+  	ສົ່ງຄືນ EINVAL;
   }
 
-  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
+  ຖ້າ(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
 	printf("SYSTEM:do_umap: not contiguous\n");
-	return EFAULT;
+	ສົ່ງຄືນ EFAULT;
   }
 
   m_ptr->m_krn_lsys_sys_umap.dst_addr = phys_addr;
-  if(phys_addr == 0) {
+  ຖ້າ(phys_addr == 0) {
 	  printf("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
 		seg_type, caller->p_endpoint, caller->p_name,
 		caller->p_reg.pc, offset, phys_addr);
 	printf("caller stack: ");
 	proc_stacktrace(caller);
   }
-  return (phys_addr == 0) ? EFAULT: OK;
+  ສົ່ງຄືນ (phys_addr == 0) ? EFAULT: OK;
 }
 
 #endif /* USE_UMAP || USE_UMAP_REMOTE */

@@ -2,15 +2,15 @@
 #include "hw_intr.h"
 #include "bsp_intr.h"
 
-void hw_intr_mask(int irq){
+void hw_intr_mask(ຈຳນວນເຕັມ irq){
 	bsp_irq_mask(irq);
 }
 
-void hw_intr_unmask(int irq){
+void hw_intr_unmask(ຈຳນວນເຕັມ irq){
 	bsp_irq_unmask(irq);
 }
 
-void hw_intr_ack(int irq){};
-void hw_intr_used(int irq){};
-void hw_intr_not_used(int irq){};
+void hw_intr_ack(ຈຳນວນເຕັມ irq){};
+void hw_intr_used(ຈຳນວນເຕັມ irq){};
+void hw_intr_not_used(ຈຳນວນເຕັມ irq){};
 void hw_intr_disable_all(void){};

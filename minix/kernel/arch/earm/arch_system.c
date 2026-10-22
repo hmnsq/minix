@@ -31,33 +31,33 @@ void fpu_init(void)
 {
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+void save_local_fpu(sa_nracanaa proc *pr, ຈຳນວນເຕັມ retain)
 {
 }
 
-void save_fpu(struct proc *pr)
+void save_fpu(sa_nracanaa proc *pr)
 {
 }
 
-void arch_proc_reset(struct proc *pr)
+void arch_proc_reset(sa_nracanaa proc *pr)
 {
 	assert(pr->p_nr < NR_PROCS);
 
 	/* Clear process state. */
-	memset(&pr->p_reg, 0, sizeof(pr->p_reg));
-	if(iskerneln(pr->p_nr)) {
+	memset(&pr->p_reg, 0, parimaa_na(pr->p_reg));
+	ຖ້າ(iskerneln(pr->p_nr)) {
 		pr->p_reg.psr = INIT_TASK_PSR;
-	} else {
+	} ບໍ່ດັ່ງນັ້ນ {
 		pr->p_reg.psr = INIT_PSR;
 	}
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trapstyle)
+void arch_proc_setcontext(sa_nracanaa proc *p, sa_nracanaa stackframe_s *state,
+	ຈຳນວນເຕັມ isuser, ຈຳນວນເຕັມ trapstyle)
 {
-        assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-	        memcpy(&p->p_reg, state, sizeof(*state));
+        assert(parimaa_na(p->p_reg) == parimaa_na(*state));
+	ຖ້າ(state != &p->p_reg) {
+	        memcpy(&p->p_reg, state, parimaa_na(*state));
 	}
 
         /* further code is instructed to not touch the context
@@ -65,21 +65,21 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
          */
         p->p_misc_flags |= MF_CONTEXT_SET;
 
-        if(!(p->p_rts_flags)) {
+        ຖ້າ(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
                 print_proc(p);
                 util_stacktrace();
         }
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+void arch_set_secondary_ipc_return(sa_nracanaa proc *p, u32_t val)
 {
 	p->p_reg.r1 = val;
 }
 
-int restore_fpu(struct proc *pr)
+ຈຳນວນເຕັມ restore_fpu(sa_nracanaa proc *pr)
 {
-	return 0;
+	ສົ່ງຄືນ 0;
 }
 
 void cpu_identify(void)
@@ -87,7 +87,7 @@ void cpu_identify(void)
 	u32_t midr;
 	unsigned cpu = cpuid;
 
-	asm volatile("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
+	asm ca_ncala("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
 		     : [midr] "=r" (midr));
 
 	cpu_info[cpu].implementer = midr >> 24;
@@ -116,18 +116,18 @@ void arch_init(void)
 
         /* enable user space access to cycle counter */
         /* set cycle counter to 0: ARM ARM B4.1.113 and B4.1.117 */
-        asm volatile ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
+        asm ca_ncala ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
         value |= PMU_PMCR_C; /* Reset counter */
         value |= PMU_PMCR_E; /* Enable counter hardware */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
+        asm ca_ncala ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
 
         /* enable CCNT counting: ARM ARM B4.1.116 */
         value = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
+        asm ca_ncala ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
 
         /* enable cycle counter in user mode: ARM ARM B4.1.124 */
         value = PMU_PMUSERENR_EN;
-        asm volatile ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
+        asm ca_ncala ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
 	bsp_init();
 }
 
@@ -138,7 +138,7 @@ void do_ser_debug(void)
 {
 }
 
-void arch_do_syscall(struct proc *proc)
+void arch_do_syscall(sa_nracanaa proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
   assert(proc == get_cpulocal_var(proc_ptr));
@@ -149,15 +149,15 @@ void arch_do_syscall(struct proc *proc)
 
 reg_t svc_stack;
 
-struct proc * arch_finish_switch_to_user(void)
+sa_nracanaa proc * arch_finish_switch_to_user(void)
 {
-	char * stk;
-	struct proc * p;
+	var_na * stk;
+	sa_nracanaa proc * p;
 
 #ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
+	stk = (var_na *)tss[cpuid].sp0;
+#ບໍ່ດັ່ງນັ້ນ
+	stk = (var_na *)tss[0].sp0;
 #endif
 	svc_stack = (reg_t)stk;
 	/* set pointer to the process to run on the stack */
@@ -167,16 +167,16 @@ struct proc * arch_finish_switch_to_user(void)
 	/* turn interrupts on */
         p->p_reg.psr &= ~(PSR_I|PSR_F);
 
-	return p;
+	ສົ່ງຄືນ p;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+void fpu_sigcontext(sa_nracanaa proc *pr, sa_nracanaa sigframe_sigcontext *fr, sa_nracanaa sigcontext *sc)
 {
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(sa_nracanaa proc *p) { ສົ່ງຄືນ p->p_reg.sp; }
 
-void get_randomness(struct k_randomness *rand, int source)
+void get_randomness(sa_nracanaa k_randomness *rand, ຈຳນວນເຕັມ source)
 {
 }
 
@@ -193,13 +193,13 @@ void arch_ser_init(void)
  * same value in which case it would only result in an extra TLB flush which is
  * not desirable
  */
-void __switch_address_space(struct proc *p, struct proc **__ptproc)
+void __switch_address_space(sa_nracanaa proc *p, sa_nracanaa proc **__ptproc)
 {
 	reg_t orig_ttbr, new_ttbr;
 
 	new_ttbr = p->p_seg.p_ttbr;
-	if (new_ttbr == 0)
-	    return;
+	ຖ້າ (new_ttbr == 0)
+	    ສົ່ງຄືນ;
 
 	orig_ttbr = read_ttbr0();
 
@@ -207,12 +207,12 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	 * test if ttbr is loaded with the current value to avoid unnecessary
 	 * TLB flushes
 	 */
-	if (new_ttbr == orig_ttbr)
-	    return;
+	ຖ້າ (new_ttbr == orig_ttbr)
+	    ສົ່ງຄືນ;
 
 	write_ttbr0(new_ttbr);
 
 	*__ptproc = p;
 
-	return;
+	ສົ່ງຄືນ;
 }

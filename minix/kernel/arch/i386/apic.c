@@ -102,21 +102,21 @@
 #define	SPLHI				0xF
 
 
-struct io_apic io_apic[MAX_NR_IOAPICS];
+sa_nracanaa io_apic io_apic[MAX_NR_IOAPICS];
 unsigned nioapics;
 
-struct irq;
-typedef void (* eoi_method_t)(struct irq *);
+sa_nracanaa irq;
+typedef void (* eoi_method_t)(sa_nracanaa irq *);
 
-struct irq {
-	struct io_apic * 	ioa;
+sa_nracanaa irq {
+	sa_nracanaa io_apic * 	ioa;
 	unsigned		pin;
 	unsigned		vector;
 	eoi_method_t		eoi;
 	unsigned		state;
 };
 
-static struct irq io_apic_irq[NR_IRQ_VECTORS];
+static sa_nracanaa irq io_apic_irq[NR_IRQ_VECTORS];
 
 /* 
  * to make APIC work if SMP is not configured, we need to set the maximal number
@@ -141,13 +141,13 @@ static struct irq io_apic_irq[NR_IRQ_VECTORS];
 
 #define VERBOSE_APIC(x) x
 
-int ioapic_enabled;
+ຈຳນວນເຕັມ ioapic_enabled;
 u32_t lapic_addr_vaddr;
 vir_bytes lapic_addr;
 vir_bytes lapic_eoi_addr;
-int bsp_lapic_id;
+ຈຳນວນເຕັມ bsp_lapic_id;
 
-static volatile unsigned probe_ticks;
+static ca_ncala unsigned probe_ticks;
 static	u64_t tsc0, tsc1;
 static	u32_t lapic_tctr0, lapic_tctr1;
 
@@ -173,20 +173,20 @@ static u32_t lapic_bus_freq[CONFIG_MAX_CPUS];
 
 static u32_t ioapic_read(u32_t ioa_base, u32_t reg)
 {
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = (reg & 0xff);
-	return *(volatile u32_t *)(ioa_base + IOAPIC_IOWIN);
+	*((ca_ncala u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = (reg & 0xff);
+	ສົ່ງຄືນ *(ca_ncala u32_t *)(ioa_base + IOAPIC_IOWIN);
 }
 
 static void ioapic_write(u32_t ioa_base, u8_t reg, u32_t val)
 {
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = reg;
-	*((volatile u32_t *)(ioa_base + IOAPIC_IOWIN)) = val;
+	*((ca_ncala u32_t *)(ioa_base + IOAPIC_IOREGSEL)) = reg;
+	*((ca_ncala u32_t *)(ioa_base + IOAPIC_IOWIN)) = val;
 }
 
 void lapic_microsec_sleep(unsigned count);
-void apic_idt_init(const int reset);
+void apic_idt_init(const ຈຳນວນເຕັມ reset);
 
-static void ioapic_enable_pin(vir_bytes ioapic_addr, int pin)
+static void ioapic_enable_pin(vir_bytes ioapic_addr, ຈຳນວນເຕັມ pin)
 {
 	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2);
 
@@ -194,7 +194,7 @@ static void ioapic_enable_pin(vir_bytes ioapic_addr, int pin)
 	ioapic_write(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2, lo);
 }
 
-static void ioapic_disable_pin(vir_bytes ioapic_addr, int pin)
+static void ioapic_disable_pin(vir_bytes ioapic_addr, ຈຳນວນເຕັມ pin)
 {
 	u32_t lo = ioapic_read(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2);
 
@@ -202,9 +202,9 @@ static void ioapic_disable_pin(vir_bytes ioapic_addr, int pin)
 	ioapic_write(ioapic_addr, IOAPIC_REDIR_TABLE + pin * 2, lo);
 }
 
-#if 0
+#ຖ້າ 0
 static void ioapic_redirt_entry_read(void * ioapic_addr,
-					int entry,
+					ຈຳນວນເຕັມ entry,
 					u32_t *hi,
 					u32_t *lo)
 {
@@ -215,11 +215,11 @@ static void ioapic_redirt_entry_read(void * ioapic_addr,
 #endif
 
 static void ioapic_redirt_entry_write(void * ioapic_addr,
-					int entry,
+					ຈຳນວນເຕັມ entry,
 					u32_t hi,
 					u32_t lo)
 {
-#if 0
+#ຖ້າ 0
 	VERBOSE_APIC(printf("IO apic redir entry %3d "
 				"write 0x%08x 0x%08x\n", entry, hi, lo));
 #endif
@@ -238,7 +238,7 @@ static void ioapic_redirt_entry_write(void * ioapic_addr,
 
 #define lapic_test_delivery_val(val, vector) ((val) & (1 << ((vector) & 0x1f)))
 
-static void ioapic_eoi_level(struct irq * irq)
+static void ioapic_eoi_level(sa_nracanaa irq * irq)
 {
 	reg_t tmr;
 
@@ -249,8 +249,8 @@ static void ioapic_eoi_level(struct irq * irq)
 	 * test if it was a level or edge triggered interrupt. If delivered as
 	 * edge exec the workaround for broken chipsets
 	 */
-	if (!lapic_test_delivery_val(tmr, irq->vector)) {
-		int is_masked;
+	ຖ້າ (!lapic_test_delivery_val(tmr, irq->vector)) {
+		ຈຳນວນເຕັມ is_masked;
 		u32_t lo;
 		
 		panic("EDGE instead of LEVEL!");
@@ -271,60 +271,60 @@ static void ioapic_eoi_level(struct irq * irq)
 				IOAPIC_REDIR_TABLE + irq->pin * 2);
 
 		lo |= APIC_ICR_TRIGGER;
-		if (is_masked)
+		ຖ້າ (is_masked)
 			lo |= APIC_ICR_INT_MASK;
-		else
+		ບໍ່ດັ່ງນັ້ນ
 			lo &= ~APIC_ICR_INT_MASK;
 		ioapic_write(irq->ioa->addr,
 				IOAPIC_REDIR_TABLE + irq->pin * 2, lo);
 	}
 }
 
-static void ioapic_eoi_edge(__unused struct irq * irq)
+static void ioapic_eoi_edge(__unused sa_nracanaa irq * irq)
 {
 	apic_eoi();
 }
 
-void ioapic_eoi(int irq)
+void ioapic_eoi(ຈຳນວນເຕັມ irq)
 {
-	if (ioapic_enabled) {
+	ຖ້າ (ioapic_enabled) {
 		io_apic_irq[irq].eoi(&io_apic_irq[irq]);
 	}
-	else
+	ບໍ່ດັ່ງນັ້ນ
 		irq_8259_eoi(irq);
 }
  
-void ioapic_set_id(u32_t addr, unsigned int id)
+void ioapic_set_id(u32_t addr, unsigned ຈຳນວນເຕັມ id)
 {
 	ioapic_write(addr, IOAPIC_ID, id << 24);
 }
 
-int ioapic_enable_all(void)
+ຈຳນວນເຕັມ ioapic_enable_all(void)
 {
 	i8259_disable();
 
-	if (apic_imcrp) {
+	ຖ້າ (apic_imcrp) {
 		/* Select IMCR and disconnect 8259s. */
 		outb(0x22, 0x70);
 		outb(0x23, 0x01);
 	}
 
-	return ioapic_enabled = 1;
+	ສົ່ງຄືນ ioapic_enabled = 1;
 }
 
 /* disables a single IO APIC */
-static void ioapic_disable(struct io_apic * ioapic)
+static void ioapic_disable(sa_nracanaa io_apic * ioapic)
 {
 	unsigned p;
 	
-	for (p = 0; p < io_apic->pins; p++) {
+	ສຳລັບ (p = 0; p < io_apic->pins; p++) {
 		u32_t low_32, hi_32;
 		low_32 = ioapic_read((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2));
 		hi_32 = ioapic_read((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1));
 
-		if (!(low_32 & APIC_ICR_INT_MASK)) {
+		ຖ້າ (!(low_32 & APIC_ICR_INT_MASK)) {
 			low_32 |= APIC_ICR_INT_MASK;
 			ioapic_write((u32_t)ioapic->addr,
 				(uint8_t) (IOAPIC_REDIR_TABLE + p * 2 + 1), hi_32);
@@ -338,16 +338,16 @@ static void ioapic_disable(struct io_apic * ioapic)
 void ioapic_disable_all(void)
 {
 	unsigned ioa;
-	if (!ioapic_enabled)
-		return;
+	ຖ້າ (!ioapic_enabled)
+		ສົ່ງຄືນ;
 
-	for (ioa = 0 ; ioa < nioapics; ioa++) 
+	ສຳລັບ (ioa = 0 ; ioa < nioapics; ioa++) 
 		ioapic_disable(&io_apic[ioa]);
 
 	ioapic_enabled = 0; /* io apic, disabled */
 
 	/* Enable 8259 - write 0x00 in OCW1 master and slave.  */
-	if (apic_imcrp) {
+	ຖ້າ (apic_imcrp) {
 		outb(0x22, 0x70);
 		outb(0x23, 0x00);
 	}
@@ -360,9 +360,9 @@ void ioapic_disable_all(void)
 
 static void ioapic_disable_irq(unsigned irq)
 {
-	if(!(io_apic_irq[irq].ioa)) {
+	ຖ້າ(!(io_apic_irq[irq].ioa)) {
 		printf("ioapic_disable_irq: no ioa set for irq %d!\n", irq);
-		return;
+		ສົ່ງຄືນ;
 	}
 
 	assert(io_apic_irq[irq].ioa);
@@ -373,9 +373,9 @@ static void ioapic_disable_irq(unsigned irq)
 
 static void ioapic_enable_irq(unsigned irq)
 {
-	if(!(io_apic_irq[irq].ioa)) {
+	ຖ້າ(!(io_apic_irq[irq].ioa)) {
 		printf("ioapic_enable_irq: no ioa set for irq %d!\n", irq);
-		return;
+		ສົ່ງຄືນ;
 	}
 
 	assert(io_apic_irq[irq].ioa);
@@ -386,28 +386,28 @@ static void ioapic_enable_irq(unsigned irq)
 
 void ioapic_unmask_irq(unsigned irq)
 {
-	if (ioapic_enabled)
+	ຖ້າ (ioapic_enabled)
 		ioapic_enable_irq(irq);
-	else
+	ບໍ່ດັ່ງນັ້ນ
 		/* FIXME unlikely */
 		irq_8259_unmask(irq);
 }
 
 void ioapic_mask_irq(unsigned irq)
 {
-	if (ioapic_enabled)
+	ຖ້າ (ioapic_enabled)
 		ioapic_disable_irq(irq);
-	else
+	ບໍ່ດັ່ງນັ້ນ
 		/* FIXME unlikely */
 		irq_8259_mask(irq);
 }
 
-unsigned int apicid(void)
+unsigned ຈຳນວນເຕັມ apicid(void)
 {
-	return lapic_read(LAPIC_ID) >> 24;
+	ສົ່ງຄືນ lapic_read(LAPIC_ID) >> 24;
 }
 
-static int calib_clk_handler(irq_hook_t * UNUSED(hook))
+static ຈຳນວນເຕັມ calib_clk_handler(irq_hook_t * UNUSED(hook))
 {
 	u32_t tcrt;
 	u64_t tsc;
@@ -417,27 +417,27 @@ static int calib_clk_handler(irq_hook_t * UNUSED(hook))
 	tcrt = lapic_read(LAPIC_TIMER_CCR);
 
 
-	if (probe_ticks == 1) {
+	ຖ້າ (probe_ticks == 1) {
 		lapic_tctr0 = tcrt;
 		tsc0 = tsc;
 	}
-	else if (probe_ticks == PROBE_TICKS) {
+	ບໍ່ດັ່ງນັ້ນ ຖ້າ (probe_ticks == PROBE_TICKS) {
 		lapic_tctr1 = tcrt;
 		tsc1 = tsc;
 		stop_8253A_timer();
 	}
 
 	BKL_UNLOCK();
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 
-static int spurious_irq_handler(irq_hook_t * UNUSED(hook))
+static ຈຳນວນເຕັມ spurious_irq_handler(irq_hook_t * UNUSED(hook))
 {
 	/*
 	 * Do nothing, only unlock the kernel so we do not deadlock!
 	 */
 	BKL_UNLOCK();
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 
 static void apic_calibrate_clocks(unsigned cpu)
@@ -500,7 +500,7 @@ static void apic_calibrate_clocks(unsigned cpu)
 	intr_enable();
 
 	/* loop for some time to get a sample */
-	while(probe_ticks < PROBE_TICKS) {
+	ໃນຂະນະທີ່(probe_ticks < PROBE_TICKS) {
 		intr_enable();
 	}
 
@@ -574,25 +574,25 @@ void lapic_stop_timer(void)
 void lapic_restart_timer(void)
 {
 	/* restart the timer only if the counter reached zero, i.e. expired */
-	if (lapic_read(LAPIC_TIMER_CCR) == 0)
+	ຖ້າ (lapic_read(LAPIC_TIMER_CCR) == 0)
 		lapic_set_timer_one_shot(1000000/system_hz);
 }
 
 void lapic_microsec_sleep(unsigned count)
 {
 	lapic_set_timer_one_shot(count);
-	while (lapic_read(LAPIC_TIMER_CCR))
+	ໃນຂະນະທີ່ (lapic_read(LAPIC_TIMER_CCR))
 		arch_pause();
 }
 
 static  u32_t lapic_errstatus(void)
 {
 	lapic_write(LAPIC_ESR, 0);
-	return lapic_read(LAPIC_ESR);
+	ສົ່ງຄືນ lapic_read(LAPIC_ESR);
 }
 
 #ifdef CONFIG_SMP
-static int lapic_disable_in_msr(void)
+static ຈຳນວນເຕັມ lapic_disable_in_msr(void)
 {
 	u32_t msr_hi, msr_lo;
 
@@ -601,7 +601,7 @@ static int lapic_disable_in_msr(void)
 	msr_lo &= ~(1 << IA32_APIC_BASE_ENABLE_BIT);
 	ia32_msr_write(IA32_APIC_BASE, msr_hi, msr_lo);
 
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 #endif /* CONFIG_SMP */
 
@@ -610,11 +610,11 @@ void lapic_disable(void)
 	/* Disable current APIC and close interrupts from PIC */
 	u32_t val;
 
-	if (!lapic_addr)
-		return;
+	ຖ້າ (!lapic_addr)
+		ສົ່ງຄືນ;
 	
 #ifdef CONFIG_SMP
-	if (cpu_is_bsp(cpuid) && !apic_imcrp)
+	ຖ້າ (cpu_is_bsp(cpuid) && !apic_imcrp)
 #endif
 	{
 		/* leave it enabled if imcr is not set */
@@ -622,7 +622,7 @@ void lapic_disable(void)
 		val &= ~(APIC_ICR_DM_MASK|APIC_ICR_INT_MASK);
 		val |= APIC_ICR_DM_EXTINT; /* ExtINT at LINT0 */
 		lapic_write (LAPIC_LINT0, val);
-		return;
+		ສົ່ງຄືນ;
 	}
 
 #ifdef CONFIG_SMP
@@ -642,13 +642,13 @@ void lapic_disable(void)
 #endif /* CONFIG_SMP */
 }
 
-static int lapic_enable_in_msr(void)
+static ຈຳນວນເຕັມ lapic_enable_in_msr(void)
 {
 	u32_t msr_hi, msr_lo;
 
 	ia32_msr_read(IA32_APIC_BASE, &msr_hi, &msr_lo);
 
-#if 0
+#ຖ້າ 0
 	u32_t addr;
 	/*FIXME this is a problem on AP */
 	/*
@@ -656,10 +656,10 @@ static int lapic_enable_in_msr(void)
 	 * update it
 	 */
 	addr = (msr_lo >> 12) | ((msr_hi & 0xf) << 20);
-	if (addr != (lapic_addr >> 12)) {
-		if (msr_hi & 0xf) {
+	ຖ້າ (addr != (lapic_addr >> 12)) {
+		ຖ້າ (msr_hi & 0xf) {
 			printf("ERROR : APIC address needs more then 32 bits\n");
-			return 0;
+			ສົ່ງຄືນ 0;
 		}
 		lapic_addr = msr_lo & ~((1 << 12) - 1);
 	}
@@ -668,25 +668,25 @@ static int lapic_enable_in_msr(void)
 	msr_lo |= (1 << IA32_APIC_BASE_ENABLE_BIT);
 	ia32_msr_write(IA32_APIC_BASE, msr_hi, msr_lo);
 
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 
-int lapic_enable(unsigned cpu)
+ຈຳນວນເຕັມ lapic_enable(unsigned cpu)
 {
 	u32_t val, nlvt;
 
-	if (!lapic_addr)
-		return 0;
+	ຖ້າ (!lapic_addr)
+		ສົ່ງຄືນ 0;
 
 	cpu_has_tsc = _cpufeature(_CPUF_I386_TSC);
-	if (!cpu_has_tsc) {
+	ຖ້າ (!cpu_has_tsc) {
 		printf("CPU lacks timestamp counter, "
 			"cannot calibrate LAPIC timer\n");
-		return 0;
+		ສົ່ງຄືນ 0;
 	}
 
-	if (!lapic_enable_in_msr())
-		return 0;
+	ຖ້າ (!lapic_enable_in_msr())
+		ສົ່ງຄືນ 0;
 
 	/* set the highest priority for ever */
 	lapic_write(LAPIC_TPR, 0x0);
@@ -718,12 +718,12 @@ int lapic_enable(unsigned cpu)
 
 	nlvt = (lapic_read(LAPIC_VERSION)>>16) & 0xFF;
 
-	if(nlvt >= 4) {
+	ຖ້າ(nlvt >= 4) {
 		val = lapic_read(LAPIC_LVTTMR);
 		lapic_write(LAPIC_LVTTMR, val | APIC_ICR_INT_MASK);
 	}
 
-	if(nlvt >= 5) {
+	ຖ້າ(nlvt >= 5) {
 		val = lapic_read(LAPIC_LVTPCR);
 		lapic_write(LAPIC_LVTPCR, val | APIC_ICR_INT_MASK);
 	}
@@ -739,7 +739,7 @@ int lapic_enable(unsigned cpu)
 	apic_calibrate_clocks(cpu);
 	BOOT_VERBOSE(printf("APIC timer calibrated\n"));
 
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 
 void apic_spurios_intr_handler(void)
@@ -747,7 +747,7 @@ void apic_spurios_intr_handler(void)
 	static unsigned x;
 
 	x++;
-	if (x == 1 || (x % 100) == 0)
+	ຖ້າ (x == 1 || (x % 100) == 0)
 		printf("WARNING spurious interrupt(s) %d on cpu %d\n", x, cpuid);
 }
 
@@ -756,12 +756,12 @@ void apic_error_intr_handler(void)
 	static unsigned x;
 
 	x++;
-	if (x == 1 || (x % 100) == 0)
+	ຖ້າ (x == 1 || (x % 100) == 0)
 		printf("WARNING apic error (0x%x) interrupt(s) %d on cpu %d\n",
 				lapic_errstatus(), x, cpuid);
 }
 
-static struct gate_table_s gate_table_ioapic[] = {
+static sa_nracanaa gate_table_s gate_table_ioapic[] = {
 	{ apic_hwint0, LAPIC_VECTOR( 0), INTR_PRIVILEGE },
 	{ apic_hwint1, LAPIC_VECTOR( 1), INTR_PRIVILEGE },
 	{ apic_hwint2, LAPIC_VECTOR( 2), INTR_PRIVILEGE },
@@ -831,7 +831,7 @@ static struct gate_table_s gate_table_ioapic[] = {
 	{ NULL, 0, 0}
 };
 
-static struct gate_table_s gate_table_common[] = {
+static sa_nracanaa gate_table_s gate_table_common[] = {
 	{ ipc_entry_softint_orig, IPC_VECTOR_ORIG, USER_PRIVILEGE },
 	{ kernel_call_entry_orig, KERN_CALL_VECTOR_ORIG, USER_PRIVILEGE },
 	{ ipc_entry_softint_um, IPC_VECTOR_UM, USER_PRIVILEGE },
@@ -840,7 +840,7 @@ static struct gate_table_s gate_table_common[] = {
 };
 
 #ifdef CONFIG_SMP
-static struct gate_table_s gate_table_smp[] = {
+static sa_nracanaa gate_table_s gate_table_smp[] = {
 	{ apic_ipi_sched_intr, APIC_SMP_SCHED_PROC_VECTOR, INTR_PRIVILEGE },
 	{ apic_ipi_halt_intr,  APIC_SMP_CPU_HALT_VECTOR, INTR_PRIVILEGE },
 	{ NULL, 0, 0}
@@ -850,12 +850,12 @@ static struct gate_table_s gate_table_smp[] = {
 #ifdef APIC_DEBUG
 static void lapic_set_dummy_handlers(void)
 {
-	char * handler;
-	int vect = 32; /* skip the reserved vectors */
+	var_na * handler;
+	ຈຳນວນເຕັມ vect = 32; /* skip the reserved vectors */
 
 	handler = &lapic_intr_dummy_handles_start;
 	handler += vect * LAPIC_INTR_DUMMY_HANDLER_SIZE;
-	for(; handler < &lapic_intr_dummy_handles_end;
+	ສຳລັບ(; handler < &lapic_intr_dummy_handles_end;
 			handler += LAPIC_INTR_DUMMY_HANDLER_SIZE) {
 		int_gate_idt(vect++, (vir_bytes) handler,
 				PRESENT | INT_GATE_TYPE |
@@ -865,32 +865,32 @@ static void lapic_set_dummy_handlers(void)
 #endif
 
 /* Build descriptors for interrupt gates in IDT. */
-void apic_idt_init(const int reset)
+void apic_idt_init(const ຈຳນວນເຕັມ reset)
 {
 	u32_t val;
 
 	/* Set up idt tables for smp mode.
 	 */
-	int is_bsp;
+	ຈຳນວນເຕັມ is_bsp;
 
-	if (reset) {
+	ຖ້າ (reset) {
 		idt_copy_vectors_pic();
 		idt_copy_vectors(gate_table_common);
-		return;
+		ສົ່ງຄືນ;
 	}
 
 	is_bsp = is_boot_apic(apicid());
 
 #ifdef APIC_DEBUG
-	if (is_bsp)
+	ຖ້າ (is_bsp)
 		printf("APIC debugging is enabled\n");
 	lapic_set_dummy_handlers();
 #endif
 
 	/* Build descriptors for interrupt gates in IDT. */
-	if (ioapic_enabled)
+	ຖ້າ (ioapic_enabled)
 		idt_copy_vectors(gate_table_ioapic);
-	else
+	ບໍ່ດັ່ງນັ້ນ
 		idt_copy_vectors_pic();
 
 	idt_copy_vectors(gate_table_common);
@@ -907,7 +907,7 @@ void apic_idt_init(const int reset)
 	(void) lapic_read(LAPIC_LVTER);
 
 	/* configure the timer interupt handler */
-	if (is_bsp) {
+	ຖ້າ (is_bsp) {
 		BOOT_VERBOSE(printf("Initiating APIC timer handler\n"));
 		/* register the timer interrupt handler for this CPU */
 		int_gate_idt(APIC_TIMER_INT_VECTOR, (vir_bytes) lapic_timer_int_handler,
@@ -916,15 +916,15 @@ void apic_idt_init(const int reset)
 
 }
 
-static int acpi_get_ioapics(struct io_apic * ioa, unsigned * nioa, unsigned max)
+static ຈຳນວນເຕັມ acpi_get_ioapics(sa_nracanaa io_apic * ioa, unsigned * nioa, unsigned max)
 {
 	unsigned n = 0;
-	struct acpi_madt_ioapic * acpi_ioa;
+	sa_nracanaa acpi_madt_ioapic * acpi_ioa;
 
-	while (n < max) {
+	ໃນຂະນະທີ່ (n < max) {
 		acpi_ioa = acpi_get_ioapic_next();
-		if (acpi_ioa == NULL)
-			break;
+		ຖ້າ (acpi_ioa == NULL)
+			bha_nga;
 
 		assert(acpi_ioa->address);
 
@@ -941,75 +941,75 @@ static int acpi_get_ioapics(struct io_apic * ioa, unsigned * nioa, unsigned max)
 	}
 
 	*nioa = n;
-	return n;
+	ສົ່ງຄືນ n;
 }
 
-int detect_ioapics(void)
+ຈຳນວນເຕັມ detect_ioapics(void)
 {
-	int status;
+	ຈຳນວນເຕັມ status;
 
-	if (machine.acpi_rsdp) {
+	ຖ້າ (machine.acpi_rsdp) {
 		status = acpi_get_ioapics(io_apic, &nioapics, MAX_NR_IOAPICS);
-	} else {
+	} ບໍ່ດັ່ງນັ້ນ {
 		status = 0;
 	}
-	if (!status) {
+	ຖ້າ (!status) {
 		/* try something different like MPS */
 	}
 
-	return status;
+	ສົ່ງຄືນ status;
 }
 
 #ifdef CONFIG_SMP
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type)
+void apic_send_ipi(unsigned vector, unsigned cpu, ຈຳນວນເຕັມ type)
 {
 	u32_t icr1, icr2;
 
-	if (ncpus == 1)
+	ຖ້າ (ncpus == 1)
 		/* no need of sending an IPI */
-		return;
+		ສົ່ງຄືນ;
 
-	while (lapic_read_icr1() & APIC_ICR_DELIVERY_PENDING) 
+	ໃນຂະນະທີ່ (lapic_read_icr1() & APIC_ICR_DELIVERY_PENDING) 
 		arch_pause();
 
 	icr1 = lapic_read_icr1() & 0xFFF0F800;
 	icr2 = lapic_read_icr2() & 0xFFFFFF;
 
 	switch (type) {
-		case APIC_IPI_DEST:
-			if (!cpu_is_ready(cpu))
-				return;
+		pak_sa APIC_IPI_DEST:
+			ຖ້າ (!cpu_is_ready(cpu))
+				ສົ່ງຄືນ;
 			lapic_write_icr2(icr2 |	(cpuid2apicid[cpu] << 24));
 			lapic_write_icr1(icr1 |	APIC_ICR_DEST_FIELD | vector);
-			break;
-		case APIC_IPI_SELF:
+			bha_nga;
+		pak_sa APIC_IPI_SELF:
 			lapic_write_icr2(icr2);
 			lapic_write_icr1(icr1 |	APIC_ICR_DEST_SELF | vector);
-			break;
-		case APIC_IPI_TO_ALL_BUT_SELF:
+			bha_nga;
+		pak_sa APIC_IPI_TO_ALL_BUT_SELF:
 			lapic_write_icr2(icr2);
 			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL_BUT_SELF | vector);
-			break;
-		case APIC_IPI_TO_ALL:
+			bha_nga;
+		pak_sa APIC_IPI_TO_ALL:
 			lapic_write_icr2(icr2);
 			lapic_write_icr1(icr1 |	APIC_ICR_DEST_ALL | vector);
-			break;
+			bha_nga;
 		default:
 			printf("WARNING : unknown send ipi type request\n");
 	}
 
 }
 
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline)
+ຈຳນວນເຕັມ apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline)
 {
-	int timeout;
+	ຈຳນວນເຕັມ timeout;
 	u32_t errstatus = 0;
-	int i;
+	ຈຳນວນເຕັມ i;
 
 	/* INIT-SIPI-SIPI sequence */
 
-	for (i = 0; i < 2; i++) {
+	ສຳລັບ (i = 0; i < 2; i++) {
 		u32_t val;
 		
 		/* clear err status */
@@ -1032,31 +1032,31 @@ int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline)
 		lapic_microsec_sleep (200);
 		errstatus = 0;
 
-		while ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) &&
+		ໃນຂະນະທີ່ ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) &&
 				!errstatus) {
 			errstatus = lapic_errstatus();
 			timeout--;
-			if (!timeout) break;
+			ຖ້າ (!timeout) bha_nga;
 		}
 
 		/* skip this one and continue with another cpu */
-		if (errstatus)
-			return -1;
+		ຖ້າ (errstatus)
+			ສົ່ງຄືນ -1;
 	}
 
-	return 0;
+	ສົ່ງຄືນ 0;
 }
 
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline) 
+ຈຳນວນເຕັມ apic_send_init_ipi(unsigned cpu, phys_bytes trampoline) 
 {
 	u32_t ptr, errstatus = 0;
-	int timeout;
+	ຈຳນວນເຕັມ timeout;
 
 	/* set the warm reset vector */
 	ptr = (u32_t)(trampoline & 0xF);
-	phys_copy(0x467, vir2phys(&ptr), sizeof(u16_t ));
+	phys_copy(0x467, vir2phys(&ptr), parimaa_na(u16_t ));
 	ptr = (u32_t)(trampoline >> 4);
-	phys_copy(0x469, vir2phys(&ptr), sizeof(u16_t ));
+	phys_copy(0x469, vir2phys(&ptr), parimaa_na(u16_t ));
 
 	/* set shutdown code */
 	outb (RTC_INDEX, 0xF);
@@ -1078,14 +1078,14 @@ int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline)
 
 	errstatus = 0;
 
-	while ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) && !errstatus) {
+	ໃນຂະນະທີ່ ((lapic_read(LAPIC_ICR1) & APIC_ICR_DELIVERY_PENDING) && !errstatus) {
 		errstatus = lapic_errstatus();
 		timeout--;
-		if (!timeout) break;
+		ຖ້າ (!timeout) bha_nga;
 	}
 
-	if (errstatus) 
-		return -1; /* to continue with a new processor */
+	ຖ້າ (errstatus) 
+		ສົ່ງຄືນ -1; /* to continue with a new processor */
 
 	/* clear error state register. */
 	lapic_errstatus();
@@ -1102,14 +1102,14 @@ int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline)
 	/* sleep for 200 micro-seconds */
 	lapic_microsec_sleep(200);
 
-	while ((lapic_read(LAPIC_ICR1)&APIC_ICR_DELIVERY_PENDING) && !errstatus) {
+	ໃນຂະນະທີ່ ((lapic_read(LAPIC_ICR1)&APIC_ICR_DELIVERY_PENDING) && !errstatus) {
 		errstatus = lapic_errstatus();
 		timeout--;
-		if(!timeout) break;
+		ຖ້າ(!timeout) bha_nga;
 	}
 
-	if (errstatus) 
-		return -1; /* with the new processor */
+	ຖ້າ (errstatus) 
+		ສົ່ງຄືນ -1; /* with the new processor */
 
 	/* clear error state register.  */
 	(void) lapic_errstatus();
@@ -1117,22 +1117,22 @@ int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline)
 	/* wait 10ms */
 	lapic_microsec_sleep (10000);
 
-	return 0;
+	ສົ່ງຄືນ 0;
 }
 #endif
 
 #ifndef CONFIG_SMP
-int apic_single_cpu_init(void)
+ຈຳນວນເຕັມ apic_single_cpu_init(void)
 {
-	if (!cpu_feature_apic_on_chip())
-		return 0;
+	ຖ້າ (!cpu_feature_apic_on_chip())
+		ສົ່ງຄືນ 0;
 
 	lapic_addr = LOCAL_APIC_DEF_ADDR;
 	ioapic_enabled = 0;
 
-	if (!lapic_enable(0)) {
+	ຖ້າ (!lapic_enable(0)) {
 		lapic_addr = 0x0;
-		return 0;
+		ສົ່ງຄືນ 0;
 	}
 
 	bsp_lapic_id = apicid();
@@ -1140,20 +1140,20 @@ int apic_single_cpu_init(void)
 
 	acpi_init();
 
-	if (!detect_ioapics()) {
+	ຖ້າ (!detect_ioapics()) {
 		lapic_disable();
 		lapic_addr = 0x0;
-		return 0;
+		ສົ່ງຄືນ 0;
 	}
 
 	ioapic_enable_all();
 
-	if (ioapic_enabled)
+	ຖ້າ (ioapic_enabled)
 		machine.apic_enabled = 1;
 
 	apic_idt_init(0); /* Not a reset ! */
 	idt_reload();
-	return 1;
+	ສົ່ງຄືນ 1;
 }
 #endif
 
@@ -1164,10 +1164,10 @@ static eoi_method_t set_eoi_method(unsigned irq)
 	 * triggered interrupts. All the rest is for PCI level triggered
 	 * interrupts
 	 */
-	if (irq < 16)
-		return ioapic_eoi_edge;
-	else
-		return ioapic_eoi_level;
+	ຖ້າ (irq < 16)
+		ສົ່ງຄືນ ioapic_eoi_edge;
+	ບໍ່ດັ່ງນັ້ນ
+		ສົ່ງຄືນ ioapic_eoi_level;
 }
 
 void set_irq_redir_low(unsigned irq, u32_t * low)
@@ -1178,13 +1178,13 @@ void set_irq_redir_low(unsigned irq, u32_t * low)
 	val &= ~(APIC_ICR_VECTOR | APIC_ICR_INT_MASK |
 			APIC_ICR_TRIGGER | APIC_ICR_INT_POLARITY);
 
-	if (irq < 16) {
+	ຖ້າ (irq < 16) {
 		/* ISA active-high */
 		val &= ~APIC_ICR_INT_POLARITY;
 		/* ISA edge triggered */
 		val &= ~APIC_ICR_TRIGGER;
 	}
-	else {
+	ບໍ່ດັ່ງນັ້ນ {
 		/* PCI active-low */
 		val |= APIC_ICR_INT_POLARITY;
 		/* PCI level triggered */
@@ -1203,13 +1203,13 @@ void ioapic_set_irq(unsigned irq)
 	assert(irq < NR_IRQ_VECTORS);
 	
 	/* shared irq, already set */
-	if (io_apic_irq[irq].ioa && io_apic_irq[irq].eoi)
-		return;
+	ຖ້າ (io_apic_irq[irq].ioa && io_apic_irq[irq].eoi)
+		ສົ່ງຄືນ;
 	
 	assert(!io_apic_irq[irq].ioa || !io_apic_irq[irq].eoi);
 
-	for (ioa = 0; ioa < nioapics; ioa++) {
-		if (io_apic[ioa].gsi_base <= irq &&
+	ສຳລັບ (ioa = 0; ioa < nioapics; ioa++) {
+		ຖ້າ (io_apic[ioa].gsi_base <= irq &&
 				io_apic[ioa].gsi_base +
 				io_apic[ioa].pins > irq) {
 			u32_t hi_32, low_32;
@@ -1250,17 +1250,17 @@ void ioapic_reset_pic(void)
 		outb(0x23, 0x00);
 }
 
-static void irq_lapic_status(int irq)
+static void irq_lapic_status(ຈຳນວນເຕັມ irq)
 {
 	u32_t lo;
 	reg_t tmr, irr, isr;
-	int vector;
-	struct irq * intr;
+	ຈຳນວນເຕັມ vector;
+	sa_nracanaa irq * intr;
 
 	intr = &io_apic_irq[irq];
 	
-	if (!intr->ioa)
-		return;
+	ຖ້າ (!intr->ioa)
+		ສົ່ງຄືນ;
 
 	vector = LAPIC_VECTOR(irq);
 	tmr =  apic_read_tmr_vector(vector);
@@ -1268,14 +1268,14 @@ static void irq_lapic_status(int irq)
 	isr =  apic_read_isr_vector(vector);
 
 
-	if (lapic_test_delivery_val(isr, vector)) {
+	ຖ້າ (lapic_test_delivery_val(isr, vector)) {
 		printf("IRQ %d vec %d trigger %s irr %d isr %d\n",
 				irq, vector,
 				lapic_test_delivery_val(tmr, vector) ?
 				"level" : "edge",
 				lapic_test_delivery_val(irr, vector) ? 1 : 0,
 				lapic_test_delivery_val(isr, vector) ? 1 : 0);
-	} else {
+	} ບໍ່ດັ່ງນັ້ນ {
 		printf("IRQ %d vec %d irr %d\n",
 				irq, vector,
 				lapic_test_delivery_val(irr, vector) ? 1 : 0);
@@ -1294,10 +1294,10 @@ static void irq_lapic_status(int irq)
 
 void dump_apic_irq_state(void)
 {
-	int irq;
+	ຈຳນວນເຕັມ irq;
 
 	printf("--- IRQs state dump ---\n");
-	for (irq = 0; irq < NR_IRQ_VECTORS; irq++) {
+	ສຳລັບ (irq = 0; irq < NR_IRQ_VECTORS; irq++) {
 		irq_lapic_status(irq);
 	}
 	printf("--- all ---\n");

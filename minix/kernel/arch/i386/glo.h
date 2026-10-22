@@ -4,11 +4,11 @@
 #include "kernel/kernel.h"
 #include "arch_proto.h"
 
-EXTERN int cpu_has_tsc;	/* signal whether this cpu has time stamp register. This
+EXTERN ຈຳນວນເຕັມ cpu_has_tsc;	/* signal whether this cpu has time stamp register. This
 			   feature was introduced by Pentium */
 
-EXTERN struct tss_s tss[CONFIG_MAX_CPUS];
+EXTERN sa_nracanaa tss_s tss[CONFIG_MAX_CPUS];
 
-EXTERN int i386_paging_enabled;
+EXTERN ຈຳນວນເຕັມ i386_paging_enabled;
 
 #endif /* __GLO_X86_H__ */

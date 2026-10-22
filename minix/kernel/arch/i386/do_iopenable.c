@@ -16,19 +16,19 @@
 /*===========================================================================*
  *			        do_iopenable				     *
  *===========================================================================*/
-int do_iopenable(struct proc * caller, message * m_ptr)
+ຈຳນວນເຕັມ do_iopenable(sa_nracanaa proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  ຈຳນວນເຕັມ proc_nr;
 
-#if 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
-  if (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
+#ຖ້າ 1 /* ENABLE_USERPRIV && ENABLE_USERIOPL */
+  ຖ້າ (m_ptr->m_lsys_krn_sys_iopenable.endpt == SELF) {
 	okendpt(caller->p_endpoint, &proc_nr);
-  } else if(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
-	return(EINVAL);
+  } ບໍ່ດັ່ງນັ້ນ ຖ້າ(!isokendpt(m_ptr->m_lsys_krn_sys_iopenable.endpt, &proc_nr))
+	ສົ່ງຄືນ(EINVAL);
   enable_iop(proc_addr(proc_nr));
-  return(OK);
-#else
-  return(EPERM);
+  ສົ່ງຄືນ(OK);
+#ບໍ່ດັ່ງນັ້ນ
+  ສົ່ງຄືນ(EPERM);
 #endif
 }
 

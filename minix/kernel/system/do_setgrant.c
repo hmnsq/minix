@@ -12,19 +12,19 @@
 /*===========================================================================*
  *				do_setgrant				     *
  *===========================================================================*/
-int do_setgrant(struct proc * caller, message * m_ptr)
+ຈຳນວນເຕັມ do_setgrant(sa_nracanaa proc * caller, message * m_ptr)
 {
-	int r;
+	ຈຳນວນເຕັມ r;
 
 	/* Copy grant table set in priv. struct. */
-	if (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
+	ຖ້າ (RTS_ISSET(caller, RTS_NO_PRIV) || !(priv(caller))) {
 		r = EPERM;
-	} else {
+	} ບໍ່ດັ່ງນັ້ນ {
 		_K_SET_GRANT_TABLE(caller,
 			m_ptr->m_lsys_krn_sys_setgrant.addr,
 			m_ptr->m_lsys_krn_sys_setgrant.size);
 		r = OK;
 	}
 
-	return r;
+	ສົ່ງຄືນ r;
 }

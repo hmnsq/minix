@@ -27,23 +27,23 @@
 #define DM37XX_PRM_RSTCTRL_REG 0x250
 #define DM37XX_RST_DPLL3_BIT 2
 
-struct omap_reset
+sa_nracanaa omap_reset
 {
 	vir_bytes base;
 	vir_bytes size;
 };
 
-static struct omap_reset omap_reset;
+static sa_nracanaa omap_reset omap_reset;
 
 static kern_phys_map reset_phys_map;
 
 void
 bsp_reset_init(void)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	ຖ້າ (BOARD_IS_BBXM(machine.board_id)) {
 		omap_reset.base = DM37XX_CM_BASE;
 		omap_reset.size = DM37XX_CM_SIZE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} ບໍ່ດັ່ງນັ້ນ ຖ້າ (BOARD_IS_BB(machine.board_id)) {
 		omap_reset.base = AM335X_CM_BASE;
 		omap_reset.size = AM335X_CM_SIZE;
 	}
@@ -56,10 +56,10 @@ bsp_reset_init(void)
 void
 bsp_reset(void)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	ຖ້າ (BOARD_IS_BBXM(machine.board_id)) {
 		mmio_set((omap_reset.base + DM37XX_PRM_RSTCTRL_REG),
 		    (1 << DM37XX_RST_DPLL3_BIT));
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} ບໍ່ດັ່ງນັ້ນ ຖ້າ (BOARD_IS_BB(machine.board_id)) {
 		mmio_set((omap_reset.base + AM335X_PRM_DEVICE_OFFSET +
 			AM335X_PRM_RSTCTRL_REG),
 		    (1 << AM335X_RST_GLOBAL_WARM_SW_BIT));
@@ -77,24 +77,24 @@ bsp_poweroff(void)
  * The only way to pull the pin low is via ALARM2 (see TRM 20.3.3.8).
  * At this point PM should have already signaled readclock to set the alarm.
  */
-	if (BOARD_IS_BB(machine.board_id)) {
+	ຖ້າ (BOARD_IS_BB(machine.board_id)) {
 		/* rtc was frozen to prevent premature power-off, unfreeze it
 		 * now */
 		omap3_rtc_run();
 
 		/* wait for the alarm to go off and PMIC to disable power to
 		 * SoC */
-		while (1);
+		ໃນຂະນະທີ່ (1);
 	}
 }
 
 void bsp_disable_watchdog(void)
 {
-        if(BOARD_IS_BB(machine.board_id)) {
+        ຖ້າ(BOARD_IS_BB(machine.board_id)) {
 		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0xAAAA);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+		ໃນຂະນະທີ່(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
 		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0x5555);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+		ໃນຂະນະທີ່(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
 	}
 }
 

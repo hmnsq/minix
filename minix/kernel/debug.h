@@ -56,35 +56,35 @@
 /* DEBUG_IPCSTATS collects information on who sends messages to whom. */
 #define DEBUG_IPCSTATS			0
 
-#if !USE_SYSDEBUG
+#ຖ້າ !USE_SYSDEBUG
 #undef DEBUG_SERIAL
 #undef DEBUG_ENABLE_IPC_WARNINGS
 #endif
 
-#if DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
+#ຖ້າ DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
 #define DEBUG_IPC_HOOK			1
 #endif
 
-#if DEBUG_TRACE
+#ຖ້າ DEBUG_TRACE
 
 #define VF_SCHEDULING		(1L << 1)
 #define VF_PICKPROC		(1L << 2)
 
-#define TRACE(code, statement) if(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
+#define TRACE(code, statement) ຖ້າ(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
 
-#else
+#ບໍ່ດັ່ງນັ້ນ
 #define TRACE(code, statement)
 #endif
 
 #ifdef CONFIG_BOOT_VERBOSE
 #define BOOT_VERBOSE(x)	x
-#else
+#ບໍ່ດັ່ງນັ້ນ
 #define BOOT_VERBOSE(x)
 #endif
 
 #ifdef _SYSTEM
 #define DEBUG_PRINT(params, level) do { \
-	if (verboseboot >= (level)) printf params; } while (0)
+	ຖ້າ (verboseboot >= (level)) printf params; } ໃນຂະນະທີ່ (0)
 #define DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
 #define DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
 #define DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)
