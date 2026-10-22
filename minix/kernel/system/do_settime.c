@@ -15,23 +15,23 @@
 /*===========================================================================*
  *				do_settime				     *
  *===========================================================================*/
-int do_settime(struct proc * caller, message * m_ptr)
+จำนวนเต็ม do_settime(sa_nracanaa proc * caller, message * m_ptr)
 {
   clock_t newclock;
   int32_t ticks;
   time_t boottime, timediff, timediff_ticks;
 
   /* only realtime can change */
-  if (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
-	return EINVAL;
+  ถ้า (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
+	คืน EINVAL;
 
   /* user just wants to adjtime() */
-  if (m_ptr->m_lsys_krn_sys_settime.now == 0) {
+  ถ้า (m_ptr->m_lsys_krn_sys_settime.now == 0) {
 	/* convert delta value from seconds and nseconds to ticks */
 	ticks = (m_ptr->m_lsys_krn_sys_settime.sec * system_hz) +
 		(m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
 	set_adjtime_delta(ticks);
-	return(OK);
+	คืน(OK);
   } /* else user wants to set the time */
 
   boottime = get_boottime();
@@ -40,12 +40,12 @@ int do_settime(struct proc * caller, message * m_ptr)
   timediff_ticks = timediff * system_hz;
 
   /* prevent a negative value for realtime */
-  if (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
+  ถ้า (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
       timediff_ticks < LONG_MIN/2 || timediff_ticks > LONG_MAX/2) {
   	/* boottime was likely wrong, try to correct it. */
 	set_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
 	set_realtime(1);
-	return(OK);
+	คืน(OK);
   }
 
   /* calculate the new value of realtime in ticks */
@@ -54,5 +54,5 @@ int do_settime(struct proc * caller, message * m_ptr)
 
   set_realtime(newclock);
 
-  return(OK);
+  คืน(OK);
 }

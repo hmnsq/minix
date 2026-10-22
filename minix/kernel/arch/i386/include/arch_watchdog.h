@@ -3,7 +3,7 @@
 
 #include "kernel/kernel.h"
 
-struct nmi_frame {
+sa_nracanaa nmi_frame {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,7 +21,7 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+จำนวนเต็ม i386_watchdog_start(void);
 
 #define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
