@@ -9,22 +9,22 @@ void direct_cls(void)
     /* Do nothing */
 }
 
-void direct_print_char(char c)
+void direct_print_char(var_na c)
 {
-	if(c == '\n')
+	නම්(c == '\n')
 		bsp_ser_putc('\r');
 	ser_putc(c);
 }
 
-void direct_print(const char *str)
+void direct_print(const var_na *str)
 {
-	while (*str) {
+	අතරතුර (*str) {
 		direct_print_char(*str);
 		str++;
 	}
 }
 
-int direct_read_char(unsigned char *ch)
+පූර්ණ_සංඛ්‍යා direct_read_char(unsigned var_na *ch)
 {
-	return 0;
+	ආපසු 0;
 }

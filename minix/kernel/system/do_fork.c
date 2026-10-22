@@ -18,55 +18,55 @@
 #include <minix/endpoint.h>
 #include <minix/u64.h>
 
-#if USE_FORK
+#නම් USE_FORK
 
 /*===========================================================================*
  *				do_fork					     *
  *===========================================================================*/
-int do_fork(struct proc * caller, message * m_ptr)
+පූර්ණ_සංඛ්‍යා do_fork(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Handle sys_fork().
  * m_lsys_krn_sys_fork.endpt has forked.
  * The child is m_lsys_krn_sys_fork.slot.
  */
-#if defined(__i386__)
-  char *old_fpu_save_area_p;
+#නම් defined(__i386__)
+  var_na *old_fpu_save_area_p;
 #endif
-  register struct proc *rpc;		/* child process pointer */
-  struct proc *rpp;			/* parent process pointer */
-  int gen;
-  int p_proc;
-  int namelen;
+  pa_njikaa sa_nracanaa proc *rpc;		/* child process pointer */
+  sa_nracanaa proc *rpp;			/* parent process pointer */
+  පූර්ණ_සංඛ්‍යා gen;
+  පූර්ණ_සංඛ්‍යා p_proc;
+  පූර්ණ_සංඛ්‍යා namelen;
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_fork.endpt, &p_proc))
-	return EINVAL;
+  නම්(!isokendpt(m_ptr->m_lsys_krn_sys_fork.endpt, &p_proc))
+	ආපසු EINVAL;
 
   rpp = proc_addr(p_proc);
   rpc = proc_addr(m_ptr->m_lsys_krn_sys_fork.slot);
-  if (isemptyp(rpp) || ! isemptyp(rpc)) return(EINVAL);
+  නම් (isemptyp(rpp) || ! isemptyp(rpc)) ආපසු(EINVAL);
 
   assert(!(rpp->p_misc_flags & MF_DELIVERMSG));
 
   /* needs to be receiving so we know where the message buffer is */
-  if(!RTS_ISSET(rpp, RTS_RECEIVING)) {
+  නම්(!RTS_ISSET(rpp, RTS_RECEIVING)) {
 	printf("kernel: fork not done synchronously?\n");
-	return EINVAL;
+	ආපසු EINVAL;
   }
 
   /* make sure that the FPU context is saved in parent before copy */
   save_fpu(rpp);
   /* Copy parent 'proc' struct to child. And reinitialize some fields. */
   gen = _ENDPOINT_G(rpc->p_endpoint);
-#if defined(__i386__)
+#නම් defined(__i386__)
   old_fpu_save_area_p = rpc->p_seg.fpu_state;
 #endif
   *rpc = *rpp;				/* copy 'proc' struct */
-#if defined(__i386__)
+#නම් defined(__i386__)
   rpc->p_seg.fpu_state = old_fpu_save_area_p;
-  if(proc_used_fpu(rpp))
+  නම්(proc_used_fpu(rpp))
 	memcpy(rpc->p_seg.fpu_state, rpp->p_seg.fpu_state, FPU_XFP_SIZE);
 #endif
-  if(++gen >= _ENDPOINT_MAX_GENERATION)	/* increase generation */
+  නම්(++gen >= _ENDPOINT_MAX_GENERATION)	/* increase generation */
 	gen = 1;			/* generation number wraparound */
   rpc->p_nr = m_ptr->m_lsys_krn_sys_fork.slot;	/* this was obliterated by copy */
   rpc->p_endpoint = _ENDPOINT(gen, rpc->p_nr);	/* new endpoint of slot */
@@ -83,7 +83,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   /* Mark process name as being a forked copy */
   namelen = strlen(rpc->p_name);
 #define FORKSTR "*F"
-  if(namelen+strlen(FORKSTR) < sizeof(rpc->p_name))
+  නම්(namelen+strlen(FORKSTR) < parimaa_na(rpc->p_name))
 	strcat(rpc->p_name, FORKSTR);
 
   /* the child process is not runnable until it's scheduled. */
@@ -102,7 +102,7 @@ int do_fork(struct proc * caller, message * m_ptr)
    * child process and inhibit it from running by setting the NO_PRIV flag.
    * The caller should explicitly set the new privileges before executing.
    */
-  if (priv(rpp)->s_flags & SYS_PROC) {
+  නම් (priv(rpp)->s_flags & SYS_PROC) {
       rpc->p_priv = priv_addr(USER_PRIV_ID);
       rpc->p_rts_flags |= RTS_NO_PRIV;
   }
@@ -112,7 +112,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   m_ptr->m_krn_lsys_sys_fork.msgaddr = rpp->p_delivermsg_vir;
 
   /* Don't schedule process in VM mode until it has a new pagetable. */
-  if(m_ptr->m_lsys_krn_sys_fork.flags & PFF_VMINHIBIT) {
+  නම්(m_ptr->m_lsys_krn_sys_fork.flags & PFF_VMINHIBIT) {
   	RTS_SET(rpc, RTS_VMINHIBIT);
   }
 
@@ -122,7 +122,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   RTS_UNSET(rpc, (RTS_SIGNALED | RTS_SIG_PENDING | RTS_P_STOP));
   (void) sigemptyset(&rpc->p_pending);
 
-#if defined(__i386__)
+#නම් defined(__i386__)
   rpc->p_seg.p_cr3 = 0;
   rpc->p_seg.p_cr3_v = NULL;
 #elif defined(__arm__)
@@ -130,7 +130,7 @@ int do_fork(struct proc * caller, message * m_ptr)
   rpc->p_seg.p_ttbr_v = NULL;
 #endif
 
-  return OK;
+  ආපසු OK;
 }
 
 #endif /* USE_FORK */

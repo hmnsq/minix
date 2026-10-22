@@ -10,12 +10,12 @@
 #include "kernel/system.h"
 #include <assert.h>
 
-#if USE_RUNCTL
+#නම් USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+පූර්ණ_සංඛ්‍යා do_runctl(sa_nracanaa proc * caller, message * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
-  register struct proc *rp;
+  පූර්ණ_සංඛ්‍යා proc_nr, action, flags;
+  pa_njikaa sa_nracanaa proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  නම් (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) ආපසු(EINVAL);
+  නම් (iskerneln(proc_nr)) ආපසු(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,35 +41,35 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  නම් (action == RC_STOP && (flags & RC_DELAY)) {
+	නම් (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	නම් (rp->p_misc_flags & MF_SIG_DELAY)
+		ආපසු (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
   switch (action) {
-  case RC_STOP:
-#if CONFIG_SMP
+  pak_sa RC_STOP:
+#නම් CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
+	  නම් (rp->p_cpu != cpuid) {
 		  smp_schedule_stop_proc(rp);
-		  break;
+		  bha_nga;
 	  }
 #endif
 	  RTS_SET(rp, RTS_PROC_STOP);
-	break;
-  case RC_RESUME:
+	bha_nga;
+  pak_sa RC_RESUME:
 	assert(RTS_ISSET(rp, RTS_PROC_STOP));
 	RTS_UNSET(rp, RTS_PROC_STOP);
-	break;
+	bha_nga;
   default:
-	return(EINVAL);
+	ආපසු(EINVAL);
   }
 
-  return(OK);
+  ආපසු(OK);
 }
 
 #endif /* USE_RUNCTL */

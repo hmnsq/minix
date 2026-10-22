@@ -8,33 +8,33 @@
 #include "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+static පූර්ණ_සංඛ්‍යා print_line = 1, print_col = 1;
 
 #include <sys/video.h>
 
-extern char *video_mem;
+extern var_na *video_mem;
 #define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
 #define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+void direct_put_char(var_na c, පූර්ණ_සංඛ්‍යා line, පූර්ණ_සංඛ්‍යා col) 
 {
-	int offset = VIDOFFSET(line, col);
+	පූර්ණ_සංඛ්‍යා offset = VIDOFFSET(line, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+static var_na direct_get_char(පූර්ණ_සංඛ්‍යා line, පූර්ණ_සංඛ්‍යා col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	ආපසු video_mem[VIDOFFSET(line, col)];
 }
 
 void direct_cls(void)
 {
 	/* Clear screen */
-	int i,j;
+	පූර්ණ_සංඛ්‍යා i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	සඳහා(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		සඳහා(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
 			direct_put_char(' ', j, i);
 
 	print_line = print_col = 0;
@@ -46,13 +46,13 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+static void direct_scroll_up(පූර්ණ_සංඛ්‍යා lines) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
+	පූර්ණ_සංඛ්‍යා i, j;
+	සඳහා (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
+		සඳහා (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			var_na c = 0;
+			නම්(i < MULTIBOOT_CONSOLE_LINES-lines)
 				c = direct_get_char(i + lines, j);
 			direct_put_char(c, i, j);
 		}
@@ -60,45 +60,45 @@ static void direct_scroll_up(int lines)
 	print_line-= lines;
 }
 
-void direct_print_char(char c)
+void direct_print_char(var_na c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	අතරතුර (print_line >= MULTIBOOT_CONSOLE_LINES)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	නම්(c == '\t') {
+		නම්(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
+		} නැතහොත් {
 			do {
 				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+			} අතරතුර(print_col % TABWIDTH);
+			ආපසු;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
+	නම් (c == '\n') {
+		අතරතුර (print_col < MULTIBOOT_CONSOLE_COLS)
 			direct_put_char(' ', print_line, print_col++);
 		print_line++;
 		print_col = 0;
-		return;
+		ආපසු;
 	}
 
 	direct_put_char(c, print_line, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
+	නම් (print_col >= MULTIBOOT_CONSOLE_COLS) {
 		print_line++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	අතරතුර (print_line >= MULTIBOOT_CONSOLE_LINES)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+void direct_print(const var_na *str)
 {
-	while (*str) {
+	අතරතුර (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+පූර්ණ_සංඛ්‍යා direct_read_char(unsigned var_na *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	නම් (!(sb & KB_OUT_FULL)) {
+		ආපසු 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	නම් (!(sb & KB_AUX_BYTE))
+		ආපසු 1;
 
-	return 0;
+	ආපසු 0;
 }
 
