@@ -3,44 +3,44 @@
  *   kputc:          buffered putc used by kernel printf
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#अन्तर्भाव "kernel/kernel.h"
+#अन्तर्भाव "arch_proto.h"
 
-#include <minix/syslib.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
-#include <string.h>
+#अन्तर्भाव <minix/syslib.h>
+#अन्तर्भाव <unistd.h>
+#अन्तर्भाव <stdarg.h>
+#अन्तर्भाव <signal.h>
+#अन्तर्भाव <string.h>
 
-#include <minix/sys_config.h>
+#अन्तर्भाव <minix/sys_config.h>
 
 #define ARE_PANICING 0xDEADC0FF
 
 /*===========================================================================*
  *			panic                                          *
  *===========================================================================*/
-void panic(const char *fmt, ...)
+शून्य panic(स्थिरांक अक्षर *fmt, ...)
 {
-  va_list arg;
+  बहु_सूची arg;
   /* The system has run aground of a fatal kernel error. Terminate execution. */
-  if (kinfo.minix_panicing == ARE_PANICING) {
+  जर (kinfo.minix_panicing == ARE_PANICING) {
   	reset();
   }
   kinfo.minix_panicing = ARE_PANICING;
-  if (fmt != NULL) {
-	printf("kernel panic: ");
-  	va_start(arg, fmt);
-	vprintf(fmt, arg);
-	va_end(arg);
-	printf("\n");
+  जर (fmt != रिक्त) {
+	म_लिखो("kernel panic: ");
+  	बहु_शुरू(arg, fmt);
+	भ_लिखो(fmt, arg);
+	बहु_पूर्ण(arg);
+	म_लिखो("\n");
   }
 
-  printf("kernel on CPU %d: ", cpuid);
+  म_लिखो("kernel on CPU %d: ", cpuid);
   util_stacktrace();
 
-#if 0
-  if(get_cpulocal_var(proc_ptr)) {
-	  printf("current process : ");
+#जर 0
+  जर(get_cpulocal_var(proc_ptr)) {
+	  म_लिखो("current process : ");
 	  proc_stacktrace(get_cpulocal_var(proc_ptr));
   }
 #endif
@@ -52,32 +52,32 @@ void panic(const char *fmt, ...)
 /*===========================================================================*
  *				kputc				     	     *
  *===========================================================================*/
-void kputc(
-  int c					/* character to append */
+शून्य kputc(
+  पूर्णांक c					/* character to append */
 )
 {
 /* Accumulate a single character for a kernel message. Send a notification
  * to the output drivers if an END_OF_KMESS is encountered.
  */
-  if (c != END_OF_KMESS) {
-      int maxblpos = sizeof(kmess.kmess_buf) - 2;
+  जर (c != END_OF_KMESS) {
+      पूर्णांक maxblpos = आकार(kmess.kmess_buf) - 2;
 #ifdef DEBUG_SERIAL
-      if (kinfo.do_serial_debug) {
-	if(c == '\n')
+      जर (kinfo.do_serial_debug) {
+	जर(c == '\n')
       		ser_putc('\r');
       	ser_putc(c);
       }
 #endif
       kmess.km_buf[kmess.km_next] = c;	/* put normal char in buffer */
       kmess.kmess_buf[kmess.blpos] = c;
-      if (kmess.km_size < sizeof(kmess.km_buf))
+      जर (kmess.km_size < आकार(kmess.km_buf))
           kmess.km_size += 1;
       kmess.km_next = (kmess.km_next + 1) % _KMESS_BUF_SIZE;
-      if(kmess.blpos == maxblpos) {
-      	memmove(kmess.kmess_buf,
-		kmess.kmess_buf+1, sizeof(kmess.kmess_buf)-1);
-      } else kmess.blpos++;
-  } else if (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
+      जर(kmess.blpos == maxblpos) {
+      	स_हटाओ(kmess.kmess_buf,
+		kmess.kmess_buf+1, आकार(kmess.kmess_buf)-1);
+      } अन्यथा kmess.blpos++;
+  } अन्यथा जर (!(kinfo.minix_panicing || kinfo.do_serial_debug)) {
 	send_diag_sig();
   }
 }
@@ -85,8 +85,8 @@ void kputc(
 /*===========================================================================*
  *				_exit				     	     *
  *===========================================================================*/
-void _exit(
-  int e					/* error code */
+शून्य _exit(
+  पूर्णांक e					/* error code */
 )
 {
   panic("_exit called from within the kernel, should not happen. (err %i)", e);

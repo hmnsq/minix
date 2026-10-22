@@ -3,45 +3,45 @@
  * for local descriptors in the process table.
  */
 
-#include <assert.h>
-#include <string.h>
+#अन्तर्भाव <assert.h>
+#अन्तर्भाव <string.h>
 
-#include <minix/cpufeature.h>
-#include <sys/types.h>
-#include "kernel/kernel.h"
+#अन्तर्भाव <minix/cpufeature.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव "kernel/kernel.h"
 
-#include "arch_proto.h"
+#अन्तर्भाव "arch_proto.h"
 
-#include <sys/exec.h>
-#include <libexec.h>
+#अन्तर्भाव <sys/exec.h>
+#अन्तर्भाव <libexec.h>
 
 #define INT_GATE_TYPE	(INT_286_GATE | DESC_386_BIT)
 #define TSS_TYPE	(AVL_286_TSS  | DESC_386_BIT)
 
 /* This is OK initially, when the 1:1 mapping is still there. */
-char *video_mem = (char *) MULTIBOOT_VIDEO_BUFFER;
+अक्षर *video_mem = (अक्षर *) MULTIBOOT_VIDEO_BUFFER;
 
 /* Storage for gdt, idt and tss. */
-struct segdesc_s gdt[GDT_SIZE] __aligned(DESC_SIZE);
-struct gatedesc_s idt[IDT_SIZE] __aligned(DESC_SIZE);
-struct tss_s tss[CONFIG_MAX_CPUS];
+संरचना segdesc_s gdt[GDT_SIZE] __aligned(DESC_SIZE);
+संरचना gatedesc_s idt[IDT_SIZE] __aligned(DESC_SIZE);
+संरचना tss_s tss[CONFIG_MAX_CPUS];
 
 u32_t k_percpu_stacks[CONFIG_MAX_CPUS];
 
-int prot_init_done = 0;
+पूर्णांक prot_init_done = 0;
 
-phys_bytes vir2phys(void *vir)
+phys_bytes vir2phys(शून्य *vir)
 {
-	extern char _kern_vir_base, _kern_phys_base;	/* in kernel.lds */
+	बाह्य अक्षर _kern_vir_base, _kern_phys_base;	/* in kernel.lds */
 	u32_t offset = (vir_bytes) &_kern_vir_base -
 		(vir_bytes) &_kern_phys_base;
-	return (phys_bytes)vir - offset;
+	परत (phys_bytes)vir - offset;
 }
 
 /*===========================================================================*
  *				enable_iop				     * 
  *===========================================================================*/
-void enable_iop(struct proc *pp)
+शून्य enable_iop(संरचना proc *pp)
 {
 /* Allow a user process to use I/O instructions.  Change the I/O Permission
  * Level bits in the psw. These specify least-privileged Current Permission
@@ -55,20 +55,20 @@ void enable_iop(struct proc *pp)
 /*===========================================================================*
  *				sdesc					     *
  *===========================================================================*/
- void sdesc(struct segdesc_s *segdp, phys_bytes base, vir_bytes size)
+ शून्य sdesc(संरचना segdesc_s *segdp, phys_bytes base, vir_bytes size)
 {
 /* Fill in the size fields (base, limit and granularity) of a descriptor. */
-  segdp->base_low = base;
-  segdp->base_middle = base >> BASE_MIDDLE_SHIFT;
-  segdp->base_high = base >> BASE_HIGH_SHIFT;
+  segdp->base_खालचा = base;
+  segdp->base_मधला = base >> BASE_मधला_SHIFT;
+  segdp->base_वरचा = base >> BASE_वरचा_SHIFT;
 
   --size;			/* convert to a limit, 0 size means 4G */
-  if (size > BYTE_GRAN_MAX) {
-	segdp->limit_low = size >> PAGE_GRAN_SHIFT;
+  जर (size > BYTE_GRAN_MAX) {
+	segdp->limit_खालचा = size >> PAGE_GRAN_SHIFT;
 	segdp->granularity = GRANULAR | (size >>
 			     (PAGE_GRAN_SHIFT + GRANULARITY_SHIFT));
-  } else {
-	segdp->limit_low = size;
+  } अन्यथा {
+	segdp->limit_खालचा = size;
 	segdp->granularity = size >> GRANULARITY_SHIFT;
   }
   segdp->granularity |= DEFAULT;	/* means BIG for data seg */
@@ -77,8 +77,8 @@ void enable_iop(struct proc *pp)
 /*===========================================================================*
  *				init_dataseg				     *
  *===========================================================================*/
-void init_param_dataseg(register struct segdesc_s *segdp,
-	phys_bytes base, vir_bytes size, const int privilege)
+शून्य init_param_dataseg(नोंदणी संरचना segdesc_s *segdp,
+	phys_bytes base, vir_bytes size, स्थिरांक पूर्णांक privilege)
 {
 	/* Build descriptor for a data segment. */
 	sdesc(segdp, base, size);
@@ -87,7 +87,7 @@ void init_param_dataseg(register struct segdesc_s *segdp,
 		/* EXECUTABLE = 0, EXPAND_DOWN = 0, ACCESSED = 0 */
 }
 
-void init_dataseg(int index, const int privilege)
+शून्य init_dataseg(पूर्णांक index, स्थिरांक पूर्णांक privilege)
 {
 	init_param_dataseg(&gdt[index], 0, 0xFFFFFFFF, privilege);
 }
@@ -95,7 +95,7 @@ void init_dataseg(int index, const int privilege)
 /*===========================================================================*
  *				init_codeseg				     *
  *===========================================================================*/
-static void init_codeseg(int index, int privilege)
+स्थिर शून्य init_codeseg(पूर्णांक index, पूर्णांक privilege)
 {
 	/* Build descriptor for a code segment. */
 	sdesc(&gdt[index], 0, 0xFFFFFFFF);
@@ -104,7 +104,7 @@ static void init_codeseg(int index, int privilege)
 		/* CONFORMING = 0, ACCESSED = 0 */
 }
 
-static struct gate_table_s gate_table_pic[] = {
+स्थिर संरचना gate_table_s gate_table_pic[] = {
 	{ hwint00, VECTOR( 0), INTR_PRIVILEGE },
 	{ hwint01, VECTOR( 1), INTR_PRIVILEGE },
 	{ hwint02, VECTOR( 2), INTR_PRIVILEGE },
@@ -121,10 +121,10 @@ static struct gate_table_s gate_table_pic[] = {
 	{ hwint13, VECTOR(13), INTR_PRIVILEGE },
 	{ hwint14, VECTOR(14), INTR_PRIVILEGE },
 	{ hwint15, VECTOR(15), INTR_PRIVILEGE },
-	{ NULL, 0, 0}
+	{ रिक्त, 0, 0}
 };
 
-static struct gate_table_s gate_table_exceptions[] = {
+स्थिर संरचना gate_table_s gate_table_exceptions[] = {
 	{ divide_error, DIVIDE_VECTOR, INTR_PRIVILEGE },
 	{ single_step_exception, DEBUG_VECTOR, INTR_PRIVILEGE },
 	{ nmi, NMI_VECTOR, INTR_PRIVILEGE },
@@ -137,7 +137,7 @@ static struct gate_table_s gate_table_exceptions[] = {
 	{ copr_seg_overrun, COPROC_SEG_VECTOR, INTR_PRIVILEGE },
 	{ inval_tss, INVAL_TSS_VECTOR, INTR_PRIVILEGE },
 	{ segment_not_present, SEG_NOT_VECTOR, INTR_PRIVILEGE },
-	{ stack_exception, STACK_FAULT_VECTOR, INTR_PRIVILEGE },
+	{ चळत_exception, चळत_FAULT_VECTOR, INTR_PRIVILEGE },
 	{ general_protection, PROTECTION_VECTOR, INTR_PRIVILEGE },
 	{ page_fault, PAGE_FAULT_VECTOR, INTR_PRIVILEGE },
 	{ copr_error, COPROC_ERR_VECTOR, INTR_PRIVILEGE },
@@ -148,47 +148,47 @@ static struct gate_table_s gate_table_exceptions[] = {
 	{ kernel_call_entry_orig, KERN_CALL_VECTOR_ORIG, USER_PRIVILEGE },
 	{ ipc_entry_softint_um, IPC_VECTOR_UM, USER_PRIVILEGE },
 	{ kernel_call_entry_um, KERN_CALL_VECTOR_UM, USER_PRIVILEGE },
-	{ NULL, 0, 0}
+	{ रिक्त, 0, 0}
 };
 
-int tss_init(unsigned cpu, void * kernel_stack)
+पूर्णांक tss_init(अचिन्हित cpu, शून्य * kernel_चळत)
 {
-	struct tss_s * t = &tss[cpu];
-	int index = TSS_INDEX(cpu);
-	struct segdesc_s *tssgdt;
+	संरचना tss_s * t = &tss[cpu];
+	पूर्णांक index = TSS_INDEX(cpu);
+	संरचना segdesc_s *tssgdt;
 
 	tssgdt = &gdt[index];
   
 	init_param_dataseg(tssgdt, (phys_bytes) t,
-			sizeof(struct tss_s), INTR_PRIVILEGE);
+			आकार(संरचना tss_s), INTR_PRIVILEGE);
 	tssgdt->access = PRESENT | (INTR_PRIVILEGE << DPL_SHIFT) | TSS_TYPE;
 
 	/* Build TSS. */
-	memset(t, 0, sizeof(*t));
+	स_रखो(t, 0, आकार(*t));
 	t->ds = t->es = t->fs = t->gs = t->ss0 = KERN_DS_SELECTOR;
 	t->cs = KERN_CS_SELECTOR;
-	t->iobase = sizeof(struct tss_s);	/* empty i/o permissions map */
+	t->iobase = आकार(संरचना tss_s);	/* empty i/o permissions map */
 
 	/* 
 	 * make space for process pointer and cpu id and point to the first
 	 * usable word
 	 */
-	k_percpu_stacks[cpu] = t->sp0 = ((unsigned) kernel_stack) - X86_STACK_TOP_RESERVED;
+	k_percpu_stacks[cpu] = t->sp0 = ((अचिन्हित) kernel_चळत) - X86_चळत_शीर्ष_RESERVED;
 	/* 
 	 * set the cpu id at the top of the stack so we know on which cpu is
 	 * this stack in use when we trap to kernel
 	 */
-	*((reg_t *)(t->sp0 + 1 * sizeof(reg_t))) = cpu;
+	*((reg_t *)(t->sp0 + 1 * आकार(reg_t))) = cpu;
 
 	/* Set up Intel SYSENTER support if available. */
-	if(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
+	जर(minix_feature_flags & MKF_I386_INTEL_SYSENTER) {
 	  ia32_msr_write(INTEL_MSR_SYSENTER_CS, 0, KERN_CS_SELECTOR);
   	  ia32_msr_write(INTEL_MSR_SYSENTER_ESP, 0, t->sp0);
   	  ia32_msr_write(INTEL_MSR_SYSENTER_EIP, 0, (u32_t) ipc_entry_sysenter);
   	}
 
 	/* Set up AMD SYSCALL support if available. */
-	if(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
+	जर(minix_feature_flags & MKF_I386_AMD_SYSCALL) {
 		u32_t msr_lo, msr_hi;
 
 		/* set SYSCALL ENABLE bit in EFER MSR */
@@ -197,7 +197,7 @@ int tss_init(unsigned cpu, void * kernel_stack)
 		ia32_msr_write(AMD_MSR_EFER, msr_hi, msr_lo);
 
 		/* set STAR register value */
-#define set_star_cpu(forcpu) if(cpu == forcpu) {				\
+#define set_star_cpu(forcpu) जर(cpu == forcpu) {				\
 		ia32_msr_write(AMD_MSR_STAR,					\
 		  ((u32_t)USER_CS_SELECTOR << 16) | (u32_t)KERN_CS_SELECTOR,	\
 		  (u32_t) ipc_entry_syscall_cpu ## forcpu); }
@@ -209,93 +209,93 @@ int tss_init(unsigned cpu, void * kernel_stack)
 		set_star_cpu(5);
 		set_star_cpu(6);
 		set_star_cpu(7);
-		assert(CONFIG_MAX_CPUS <= 8);
+		प्रतिज्ञा(CONFIG_MAX_CPUS <= 8);
   	}
 
-	return SEG_SELECTOR(index);
+	परत SEG_SELECTOR(index);
 }
 
-phys_bytes init_segdesc(int gdt_index, void *base, int size)
+phys_bytes init_segdesc(पूर्णांक gdt_index, शून्य *base, पूर्णांक size)
 {
-	struct desctableptr_s *dtp = (struct desctableptr_s *) &gdt[gdt_index];
+	संरचना desctableptr_s *dtp = (संरचना desctableptr_s *) &gdt[gdt_index];
 	dtp->limit = size - 1;
 	dtp->base = (phys_bytes) base;
 
-	return (phys_bytes) dtp;
+	परत (phys_bytes) dtp;
 }
 
-void int_gate(struct gatedesc_s *tab,
-	unsigned vec_nr, vir_bytes offset, unsigned dpl_type)
+शून्य int_gate(संरचना gatedesc_s *tab,
+	अचिन्हित vec_nr, vir_bytes offset, अचिन्हित dpl_type)
 {
 /* Build descriptor for an interrupt gate. */
-  register struct gatedesc_s *idp;
+  नोंदणी संरचना gatedesc_s *idp;
 
   idp = &tab[vec_nr];
-  idp->offset_low = offset;
+  idp->offset_खालचा = offset;
   idp->selector = KERN_CS_SELECTOR;
   idp->p_dpl_type = dpl_type;
-  idp->offset_high = offset >> OFFSET_HIGH_SHIFT;
+  idp->offset_वरचा = offset >> OFFSET_वरचा_SHIFT;
 }
 
-void int_gate_idt(unsigned vec_nr, vir_bytes offset, unsigned dpl_type)
+शून्य int_gate_idt(अचिन्हित vec_nr, vir_bytes offset, अचिन्हित dpl_type)
 {
 	int_gate(idt, vec_nr, offset, dpl_type);
 }
 
-void idt_copy_vectors(struct gate_table_s * first)
+शून्य idt_copy_vectors(संरचना gate_table_s * first)
 {
-	struct gate_table_s *gtp;
-	for (gtp = first; gtp->gate; gtp++) {
+	संरचना gate_table_s *gtp;
+	साठी (gtp = first; gtp->gate; gtp++) {
 		int_gate(idt, gtp->vec_nr, (vir_bytes) gtp->gate,
 				PRESENT | INT_GATE_TYPE |
 				(gtp->privilege << DPL_SHIFT));
 	}
 }
 
-void idt_copy_vectors_pic(void)
+शून्य idt_copy_vectors_pic(शून्य)
 {
 	idt_copy_vectors(gate_table_pic);
 }
 
-void idt_init(void)
+शून्य idt_init(शून्य)
 {
 	idt_copy_vectors_pic();
 	idt_copy_vectors(gate_table_exceptions);
 }
 
-struct desctableptr_s gdt_desc, idt_desc;
+संरचना desctableptr_s gdt_desc, idt_desc;
 
-void idt_reload(void)
+शून्य idt_reload(शून्य)
 {
 	x86_lidt(&idt_desc);
 }
 
-multiboot_module_t *bootmod(int pnr)
+multiboot_module_t *bootmod(पूर्णांक pnr)
 {
-	int i;
+	पूर्णांक i;
 
-	assert(pnr >= 0);
+	प्रतिज्ञा(pnr >= 0);
 
 	/* Search for desired process in boot process
 	 * list. The first NR_TASKS ones do not correspond
 	 * to a module, however, so we don't search those.
 	 */
-	for(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
-		int p;
+	साठी(i = NR_TASKS; i < NR_BOOT_PROCS; i++) {
+		पूर्णांक p;
 		p = i - NR_TASKS;
-		if(image[i].proc_nr == pnr) {
-			assert(p < MULTIBOOT_MAX_MODS);
-			assert(p < kinfo.mbi.mi_mods_count);
-			return &kinfo.module_list[p];
+		जर(image[i].proc_nr == pnr) {
+			प्रतिज्ञा(p < MULTIBOOT_MAX_MODS);
+			प्रतिज्ञा(p < kinfo.mbi.mi_mods_मोजणी);
+			परत &kinfo.module_list[p];
 		}
 	}
 
 	panic("boot module %d not found", pnr);
 }
 
-int booting_cpu = 0;
+पूर्णांक booting_cpu = 0;
 
-void prot_load_selectors(void)
+शून्य prot_load_selectors(शून्य)
 {
   /* this function is called by both prot_init by the BSP and
    * the early AP booting code in mpx.S by secondary CPU's.
@@ -318,23 +318,23 @@ void prot_load_selectors(void)
 /*===========================================================================*
  *				prot_init				     *
  *===========================================================================*/
-void prot_init(void)
+शून्य prot_init(शून्य)
 {
-  extern char k_boot_stktop;
+  बाह्य अक्षर k_boot_stktop;
 
-  if(_cpufeature(_CPUF_I386_SYSENTER))
+  जर(_cpufeature(_CPUF_I386_SYSENTER))
 	minix_feature_flags |= MKF_I386_INTEL_SYSENTER;
-  if(_cpufeature(_CPUF_I386_SYSCALL))
+  जर(_cpufeature(_CPUF_I386_SYSCALL))
 	minix_feature_flags |= MKF_I386_AMD_SYSCALL;
 
-  memset(gdt, 0, sizeof(gdt));
-  memset(idt, 0, sizeof(idt));
+  स_रखो(gdt, 0, आकार(gdt));
+  स_रखो(idt, 0, आकार(idt));
 
   /* Build GDT, IDT, IDT descriptors. */
   gdt_desc.base = (u32_t) gdt;
-  gdt_desc.limit = sizeof(gdt)-1;
+  gdt_desc.limit = आकार(gdt)-1;
   idt_desc.base = (u32_t) idt;
-  idt_desc.limit = sizeof(idt)-1;
+  idt_desc.limit = आकार(idt)-1;
   tss_init(0, &k_boot_stktop);
 
   /* Build GDT */
@@ -365,33 +365,33 @@ void prot_init(void)
   prot_init_done = 1;
 }
 
-static int alloc_for_vm = 0;
+स्थिर पूर्णांक alloc_for_vm = 0;
 
-void arch_post_init(void)
+शून्य arch_post_init(शून्य)
 {
   /* Let memory mapping code know what's going on at bootstrap time */
-  struct proc *vm;
+  संरचना proc *vm;
   vm = proc_addr(VM_PROC_NR);
   get_cpulocal_var(ptproc) = vm;
   pg_info(&vm->p_seg.p_cr3, &vm->p_seg.p_cr3_v);
 }
 
-static int libexec_pg_alloc(struct exec_info *execi, vir_bytes vaddr, size_t len)
+स्थिर पूर्णांक libexec_pg_alloc(संरचना exec_info *execi, vir_bytes vaddr, माप_प्रकार len)
 {
         pg_map(PG_ALLOCATEME, vaddr, vaddr+len, &kinfo);
   	pg_load();
-        memset((char *) vaddr, 0, len);
+        स_रखो((अक्षर *) vaddr, 0, len);
 	alloc_for_vm += len;
-        return OK;
+        परत OK;
 }
 
-void arch_boot_proc(struct boot_image *ip, struct proc *rp)
+शून्य arch_boot_proc(संरचना boot_image *ip, संरचना proc *rp)
 {
 	multiboot_module_t *mod;
-	struct ps_strings *psp;
-	char *sp;
+	संरचना ps_strings *psp;
+	अक्षर *sp;
 
-	if(rp->p_nr < 0) return;
+	जर(rp->p_nr < 0) परत;
 
 	mod = bootmod(rp->p_nr);
 
@@ -399,18 +399,18 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 	 * so it can run.
 	 */
 
-	if(rp->p_nr == VM_PROC_NR) {
-		struct exec_info execi;
+	जर(rp->p_nr == VM_PROC_NR) {
+		संरचना exec_info execi;
 
-		memset(&execi, 0, sizeof(execi));
+		स_रखो(&execi, 0, आकार(execi));
 
 		/* exec parameters */
-		execi.stack_high = kinfo.user_sp;
-		execi.stack_size = 64 * 1024;	/* not too crazy as it must be preallocated */
+		execi.चळत_वरचा = kinfo.user_sp;
+		execi.चळत_size = 64 * 1024;	/* not too crazy as it must be preallocated */
 		execi.proc_e = ip->endpoint;
-		execi.hdr = (char *) mod->mod_start; /* phys mem direct */
+		execi.hdr = (अक्षर *) mod->mod_start; /* phys mem direct */
 		execi.filesize = execi.hdr_len = mod->mod_end - mod->mod_start;
-		strlcpy(execi.progname, ip->proc_name, sizeof(execi.progname));
+		strlcpy(execi.progname, ip->proc_name, आकार(execi.progname));
 		execi.frame_len = 0;
 
 		/* callbacks for use in the kernel */
@@ -419,31 +419,31 @@ void arch_boot_proc(struct boot_image *ip, struct proc *rp)
 		execi.allocmem_prealloc_junk = libexec_pg_alloc;
 		execi.allocmem_prealloc_cleared = libexec_pg_alloc;
 		execi.allocmem_ondemand = libexec_pg_alloc;
-		execi.clearproc = NULL;
+		execi.clearproc = रिक्त;
 
 		/* parse VM ELF binary and alloc/map it into bootstrap pagetable */
-		if(libexec_load_elf(&execi) != OK)
+		जर(libexec_load_elf(&execi) != OK)
 			panic("VM loading failed");
 
 		/* Setup a ps_strings struct on the stack, pointing to the
 		 * following argv, envp. */
-		sp = (char *)execi.stack_high;
-		sp -= sizeof(struct ps_strings);
-		psp = (struct ps_strings *) sp;
+		sp = (अक्षर *)execi.चळत_वरचा;
+		sp -= आकार(संरचना ps_strings);
+		psp = (संरचना ps_strings *) sp;
 
 		/* Take the stack pointer down three words to give startup code
 		 * something to use as "argc", "argv" and "envp".
 		 */
-		sp -= (sizeof(void *) + sizeof(void *) + sizeof(int));
+		sp -= (आकार(शून्य *) + आकार(शून्य *) + आकार(पूर्णांक));
 
 		// linear address space, so it is available.
-		psp->ps_argvstr = (char **)(sp + sizeof(int));
+		psp->ps_argvstr = (अक्षर **)(sp + आकार(पूर्णांक));
 		psp->ps_nargvstr = 0;
-		psp->ps_envstr = psp->ps_argvstr + sizeof(void *);
+		psp->ps_envstr = psp->ps_argvstr + आकार(शून्य *);
 		psp->ps_nenvstr = 0;
 
 		arch_proc_init(rp, execi.pc, (vir_bytes)sp,
-			execi.stack_high - sizeof(struct ps_strings),
+			execi.चळत_वरचा - आकार(संरचना ps_strings),
 			ip->proc_name);
 
 		/* Free VM blob that was just copied into existence. */

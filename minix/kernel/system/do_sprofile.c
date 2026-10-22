@@ -14,47 +14,47 @@
  *   14 Aug, 2006   Created (Rogier Meurs)
  */
 
-#include "kernel/system.h"
-#include "kernel/watchdog.h"
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव "kernel/watchdog.h"
 
-#if SPROFILE
+#जर SPROFILE
 
 /* user address to write info struct */
-static vir_bytes sprof_info_addr_vir;
+स्थिर vir_bytes sprof_info_addr_vir;
 
-static void clean_seen_flag(void)
+स्थिर शून्य clean_seen_flag(शून्य)
 {
-	int i;
+	पूर्णांक i;
 
-	for (i = 0; i < NR_TASKS + NR_PROCS; i++)
+	साठी (i = 0; i < NR_TASKS + NR_PROCS; i++)
 		proc[i].p_misc_flags &= ~MF_SPROF_SEEN;
 }
 
 /*===========================================================================*
  *				do_sprofile				     *
  *===========================================================================*/
-int do_sprofile(struct proc * caller, message * m_ptr)
+पूर्णांक do_sprofile(संरचना proc * caller, message * m_ptr)
 {
-  int proc_nr;
-  int err;
+  पूर्णांक proc_nr;
+  पूर्णांक err;
 
-  switch(m_ptr->m_lsys_krn_sys_sprof.action) {
+  निवड(m_ptr->m_lsys_krn_sys_sprof.action) {
 
-  case PROF_START:
+  स्थिती PROF_START:
 	/* Starting profiling.
 	 *
 	 * Check if profiling is not already running.  Calculate physical
 	 * addresses of user pointers.  Reset counters.  Start CMOS timer.
 	 * Turn on profiling.
 	 */
-	if (sprofiling) {
-		printf("SYSTEM: start s-profiling: already started\n");
-		return EBUSY;
+	जर (sprofiling) {
+		म_लिखो("SYSTEM: start s-profiling: already started\n");
+		परत EBUSY;
 	}
 
 	/* Test endpoint number. */
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
-		return EINVAL;
+	जर(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
+		परत EINVAL;
 
 	/* Set parameters for statistical profiler. */
 	sprof_ep = m_ptr->m_lsys_krn_sys_sprof.endpt;
@@ -71,60 +71,60 @@ int do_sprofile(struct proc * caller, message * m_ptr)
 		m_ptr->m_lsys_krn_sys_sprof.mem_size < SAMPLE_BUFFER_SIZE ?
 		m_ptr->m_lsys_krn_sys_sprof.mem_size : SAMPLE_BUFFER_SIZE;
 
-	switch (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
-		case PROF_RTC:
+	निवड (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
+		स्थिती PROF_RTC:
 			init_profile_clock(m_ptr->m_lsys_krn_sys_sprof.freq);
-			break;
-		case PROF_NMI:
+			थांबा;
+		स्थिती PROF_NMI:
 			err = nmi_watchdog_start_profiling(
 				m_ptr->m_lsys_krn_sys_sprof.freq);
-			if (err)
-				return err;
-			break;
-		default:
-			printf("ERROR : unknown profiling interrupt type\n");
-			return EINVAL;
+			जर (err)
+				परत err;
+			थांबा;
+		पूर्वनिर्धारित:
+			म_लिखो("ERROR : unknown profiling interrupt type\n");
+			परत EINVAL;
 	}
 	
 	sprofiling = 1;
 
 	clean_seen_flag();
 
-  	return OK;
+  	परत OK;
 
-  case PROF_STOP:
+  स्थिती PROF_STOP:
 	/* Stopping profiling.
 	 *
 	 * Check if profiling is indeed running.  Turn off profiling.
 	 * Stop CMOS timer.  Copy info struct to user process.
 	 */
-	if (!sprofiling) {
-		printf("SYSTEM: stop s-profiling: not started\n");
-		return EBUSY;
+	जर (!sprofiling) {
+		म_लिखो("SYSTEM: stop s-profiling: not started\n");
+		परत EBUSY;
 	}
 
 	sprofiling = 0;
 
-	switch (sprofiling_type) {
-		case PROF_RTC:
+	निवड (sprofiling_type) {
+		स्थिती PROF_RTC:
 			stop_profile_clock();
-			break;
-		case PROF_NMI:
+			थांबा;
+		स्थिती PROF_NMI:
 			nmi_watchdog_stop_profiling();
-			break;
+			थांबा;
 	}
 
 	data_copy(KERNEL, (vir_bytes) &sprof_info,
-		sprof_ep, sprof_info_addr_vir, sizeof(sprof_info));
+		sprof_ep, sprof_info_addr_vir, आकार(sprof_info));
 	data_copy(KERNEL, (vir_bytes) sprof_sample_buffer,
 		sprof_ep, sprof_data_addr_vir, sprof_info.mem_used);
 
 	clean_seen_flag();
 
-  	return OK;
+  	परत OK;
 
-  default:
-	return EINVAL;
+  पूर्वनिर्धारित:
+	परत EINVAL;
   }
 }
 

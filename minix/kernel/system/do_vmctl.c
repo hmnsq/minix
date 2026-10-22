@@ -7,54 +7,54 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
-#include <assert.h>
+#अन्तर्भाव "kernel/system.h"
+#अन्तर्भाव "kernel/vm.h"
+#अन्तर्भाव <assert.h>
 
 /*===========================================================================*
  *				do_vmctl				     *
  *===========================================================================*/
-int do_vmctl(struct proc * caller, message * m_ptr)
+पूर्णांक do_vmctl(संरचना proc * caller, message * m_ptr)
 {
-  int proc_nr;
+  पूर्णांक proc_nr;
   endpoint_t ep = m_ptr->SVMCTL_WHO;
-  struct proc *p, *rp, **rpp, *target;
+  संरचना proc *p, *rp, **rpp, *target;
 
-  if(ep == SELF) { ep = caller->p_endpoint; }
+  जर(ep == SELF) { ep = caller->p_endpoint; }
 
-  if(!isokendpt(ep, &proc_nr)) {
-	printf("do_vmctl: unexpected endpoint %d from VM\n", ep);
-	return EINVAL;
+  जर(!isokendpt(ep, &proc_nr)) {
+	म_लिखो("do_vmctl: unexpected endpoint %d from VM\n", ep);
+	परत EINVAL;
   }
 
   p = proc_addr(proc_nr);
 
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_CLEAR_PAGEFAULT:
-		assert(RTS_ISSET(p,RTS_PAGEFAULT));
+  निवड(m_ptr->SVMCTL_PARAM) {
+	स्थिती VMCTL_CLEAR_PAGEFAULT:
+		प्रतिज्ञा(RTS_ISSET(p,RTS_PAGEFAULT));
 		RTS_UNSET(p, RTS_PAGEFAULT);
-		return OK;
-	case VMCTL_MEMREQ_GET:
+		परत OK;
+	स्थिती VMCTL_MEMREQ_GET:
 		/* Send VM the information about the memory request. We can
 		 * not simply send the first request on the list, because IPC
 		 * filters may forbid VM from getting requests for particular
 		 * sources. However, IPC filters are used only in rare cases.
 		 */
-		for (rpp = &vmrequest; *rpp != NULL;
+		साठी (rpp = &vmrequest; *rpp != रिक्त;
 		    rpp = &(*rpp)->p_vmrequest.nextrequestor) {
 			rp = *rpp;
 
-			assert(RTS_ISSET(rp, RTS_VMREQUEST));
+			प्रतिज्ञा(RTS_ISSET(rp, RTS_VMREQUEST));
 
 			okendpt(rp->p_vmrequest.target, &proc_nr);
 			target = proc_addr(proc_nr);
 
 			/* Check against IPC filters. */
-			if (!allow_ipc_filtered_memreq(rp, target))
-				continue;
+			जर (!allow_ipc_filtered_memreq(rp, target))
+				सुरूठेवा;
 
 			/* Reply with request fields. */
-			if (rp->p_vmrequest.req_type != VMPTYPE_CHECK)
+			जर (rp->p_vmrequest.req_type != VMPTYPE_CHECK)
 				panic("VMREQUEST wrong type");
 
 			m_ptr->SVMCTL_MRG_TARGET	=
@@ -66,84 +66,84 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 			m_ptr->SVMCTL_MRG_FLAG		=
 				rp->p_vmrequest.params.check.writeflag;
 			m_ptr->SVMCTL_MRG_REQUESTOR	=
-				(void *) rp->p_endpoint;
+				(शून्य *) rp->p_endpoint;
 
 			rp->p_vmrequest.vmresult = VMSUSPEND;
 
 			/* Remove from request chain. */
 			*rpp = rp->p_vmrequest.nextrequestor;
 
-			return rp->p_vmrequest.req_type;
+			परत rp->p_vmrequest.req_type;
 		}
 
-		return ENOENT;
+		परत ENOENT;
 
-	case VMCTL_MEMREQ_REPLY:
-		assert(RTS_ISSET(p, RTS_VMREQUEST));
-		assert(p->p_vmrequest.vmresult == VMSUSPEND);
+	स्थिती VMCTL_MEMREQ_REPLY:
+		प्रतिज्ञा(RTS_ISSET(p, RTS_VMREQUEST));
+		प्रतिज्ञा(p->p_vmrequest.vmresult == VMSUSPEND);
   		okendpt(p->p_vmrequest.target, &proc_nr);
 		target = proc_addr(proc_nr);
-		p->p_vmrequest.vmresult = m_ptr->SVMCTL_VALUE;
-		assert(p->p_vmrequest.vmresult != VMSUSPEND);
+		p->p_vmrequest.vmresult = m_ptr->SVMCTL_मूल्य;
+		प्रतिज्ञा(p->p_vmrequest.vmresult != VMSUSPEND);
 
-		switch(p->p_vmrequest.type) {
-		case VMSTYPE_KERNELCALL:
+		निवड(p->p_vmrequest.type) {
+		स्थिती VMSTYPE_KERNELCALL:
 			/*
 			 * we will have to resume execution of the kernel call
 			 * as soon the scheduler picks up this process again
 			 */
 			p->p_misc_flags |= MF_KCALL_RESUME;
-			break;
-		case VMSTYPE_DELIVERMSG:
-			assert(p->p_misc_flags & MF_DELIVERMSG);
-			assert(p == target);
-			assert(RTS_ISSET(p, RTS_VMREQUEST));
-			break;
-		case VMSTYPE_MAP:
-			assert(RTS_ISSET(p, RTS_VMREQUEST));
-			break;
-		default:
+			थांबा;
+		स्थिती VMSTYPE_DELIVERMSG:
+			प्रतिज्ञा(p->p_misc_flags & MF_DELIVERMSG);
+			प्रतिज्ञा(p == target);
+			प्रतिज्ञा(RTS_ISSET(p, RTS_VMREQUEST));
+			थांबा;
+		स्थिती VMSTYPE_MAP:
+			प्रतिज्ञा(RTS_ISSET(p, RTS_VMREQUEST));
+			थांबा;
+		पूर्वनिर्धारित:
 			panic("strange request type: %d",p->p_vmrequest.type);
 		}
 
 		RTS_UNSET(p, RTS_VMREQUEST);
-		return OK;
+		परत OK;
 
-	case VMCTL_KERN_PHYSMAP:
+	स्थिती VMCTL_KERN_PHYSMAP:
 	{
-		int i = m_ptr->SVMCTL_VALUE;
-		return arch_phys_map(i,
+		पूर्णांक i = m_ptr->SVMCTL_मूल्य;
+		परत arch_phys_map(i,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_ADDR,
 			(phys_bytes *) &m_ptr->SVMCTL_MAP_PHYS_LEN,
 			&m_ptr->SVMCTL_MAP_FLAGS);
 	}
-	case VMCTL_KERN_MAP_REPLY:
+	स्थिती VMCTL_KERN_MAP_REPLY:
 	{
-		return arch_phys_map_reply(m_ptr->SVMCTL_VALUE,
+		परत arch_phys_map_reply(m_ptr->SVMCTL_मूल्य,
 			(vir_bytes) m_ptr->SVMCTL_MAP_VIR_ADDR);
 	}
-	case VMCTL_VMINHIBIT_SET:
+	स्थिती VMCTL_VMINHIBIT_SET:
 		/* check if we must stop a process on a different CPU */
-#if CONFIG_SMP
-		if (p->p_cpu != cpuid) {
+#जर CONFIG_SMP
+		जर (p->p_cpu != cpuid) {
 			smp_schedule_vminhibit(p);
-		} else
+		} अन्यथा
 #endif
 			RTS_SET(p, RTS_VMINHIBIT);
-#if CONFIG_SMP
+#जर CONFIG_SMP
 		p->p_misc_flags |= MF_FLUSH_TLB;
 #endif
-		return OK;
-	case VMCTL_VMINHIBIT_CLEAR:
-		assert(RTS_ISSET(p, RTS_VMINHIBIT));
+		परत OK;
+	स्थिती VMCTL_VMINHIBIT_CLEAR:
+		प्रतिज्ञा(RTS_ISSET(p, RTS_VMINHIBIT));
 		/*
 		 * the processes is certainly not runnable, no need to tell its
 		 * cpu
 		 */
 		RTS_UNSET(p, RTS_VMINHIBIT);
 #ifdef CONFIG_SMP
-		if (p->p_misc_flags & MF_SENDA_VM_MISS) {
-			struct priv *privp;
+		जर (p->p_misc_flags & MF_SENDA_VM_MISS) {
+			संरचना priv *privp;
 			p->p_misc_flags &= ~MF_SENDA_VM_MISS;
 			privp = priv(p);
 			try_deliver_senda(p, (asynmsg_t *) privp->s_asyntab,
@@ -158,16 +158,16 @@ int do_vmctl(struct proc * caller, message * m_ptr)
 		 */
 		bits_fill(p->p_stale_tlb, CONFIG_MAX_CPUS);
 #endif
-		return OK;
-	case VMCTL_CLEARMAPCACHE:
+		परत OK;
+	स्थिती VMCTL_CLEARMAPCACHE:
 		/* VM says: forget about old mappings we have cached. */
 		mem_clear_mapcache();
-		return OK;
-	case VMCTL_BOOTINHIBIT_CLEAR:
+		परत OK;
+	स्थिती VMCTL_BOOTINHIBIT_CLEAR:
 		RTS_UNSET(p, RTS_BOOTINHIBIT);
-		return OK;
+		परत OK;
   }
 
   /* Try architecture-specific vmctls. */
-  return arch_do_vmctl(m_ptr, p);
+  परत arch_do_vmctl(m_ptr, p);
 }
