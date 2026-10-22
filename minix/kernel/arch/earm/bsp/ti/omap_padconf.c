@@ -1,83 +1,83 @@
 /* Implements sys_padconf() for the AM335X and DM37XX. */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/mmio.h>
-#include <minix/padconf.h>
-#include <minix/board.h>
-#include <minix/com.h>
-#include <assert.h>
-#include <io.h>
-#include <stdlib.h>
-#include <stdio.h>
+#অন্তর্ভাৱ "kernel/kernel.h"
+#অন্তর্ভাৱ "arch_proto.h"
+#অন্তর্ভাৱ <sys/types.h>
+#অন্তর্ভাৱ <machine/cpu.h>
+#অন্তর্ভাৱ <minix/mmio.h>
+#অন্তর্ভাৱ <minix/padconf.h>
+#অন্তর্ভাৱ <minix/board.h>
+#অন্তর্ভাৱ <minix/com.h>
+#অন্তর্ভাৱ <assert.h>
+#অন্তর্ভাৱ <io.h>
+#অন্তর্ভাৱ <stdlib.h>
+#অন্তর্ভাৱ <stdio.h>
 
-#include "bsp_padconf.h"
+#অন্তর্ভাৱ "bsp_padconf.h"
 
-struct omap_padconf
+সংরচনা omap_padconf
 {
 	vir_bytes base;
 	vir_bytes offset;
 	vir_bytes size;
-	unsigned int board_filter_value;
-	unsigned int board_filter_mask;
+	unsigned পূর্ণাঙ্ক board_filter_মান;
+	unsigned পূর্ণাঙ্ক board_filter_mask;
 };
 
-static struct omap_padconf omap_padconfs[] = {
+স্থির সংরচনা omap_padconf omap_padconfs[] = {
 	{
 		    .base = PADCONF_DM37XX_REGISTERS_BASE,
 		    .offset = PADCONF_DM37XX_REGISTERS_OFFSET,
 		    .size = PADCONF_DM37XX_REGISTERS_SIZE,
-		    .board_filter_value = BOARD_FILTER_BBXM_VALUE,
+		    .board_filter_মান = BOARD_FILTER_BBXM_মান,
 		    .board_filter_mask = BOARD_FILTER_BBXM_MASK,
 	    },
 	{
 		    .base = PADCONF_AM335X_REGISTERS_BASE,
 		    .offset = PADCONF_AM335X_REGISTERS_OFFSET,
 		    .size = PADCONF_AM335X_REGISTERS_SIZE,
-		    .board_filter_value = BOARD_FILTER_BB_VALUE,
+		    .board_filter_মান = BOARD_FILTER_BB_মান,
 		    .board_filter_mask = BOARD_FILTER_BB_MASK,
 	    },
 };
 
 /* initialized in init */
-static struct omap_padconf *omap_padconf;
+স্থির সংরচনা omap_padconf *omap_padconf;
 
-static kern_phys_map padconf_phys_map;
+স্থির kern_phys_map padconf_phys_map;
 
-int
-bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value)
+পূর্ণাঙ্ক
+bsp_padconf_set(u32_t padconf, u32_t mask, u32_t মান)
 {
 	/* check that the value will be inside the padconf memory range */
-	if (padconf >= (omap_padconf->size - omap_padconf->offset)) {
-		return EINVAL;	/* outside of valid range */
+	যদি (padconf >= (omap_padconf->size - omap_padconf->offset)) {
+		ঘূৰাই EINVAL;	/* outside of valid range */
 	}
 
 	set32(padconf + omap_padconf->base + omap_padconf->offset, mask,
-	    value);
+	    মান);
 
-	return OK;
+	ঘূৰাই OK;
 }
 
-void
-bsp_padconf_init(void)
+শূন্য
+bsp_padconf_init(শূন্য)
 {
-	int x;
-	omap_padconf = NULL;
+	পূর্ণাঙ্ক x;
+	omap_padconf = রিক্ত;
 	/* find the correct padconf */
-	for (x = 0; x < sizeof(omap_padconfs) / sizeof(omap_padconfs[0]); x++) {
-		if ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
-		    omap_padconfs[x].board_filter_value) {
+	বাবে (x = 0; x < পরিমাণ(omap_padconfs) / পরিমাণ(omap_padconfs[0]); x++) {
+		যদি ((omap_padconfs[x].board_filter_mask & machine.board_id) ==
+		    omap_padconfs[x].board_filter_মান) {
 			omap_padconf = &omap_padconfs[x];
-			break;
+			ভঙ্গ;
 		}
 	}
-	assert(omap_padconf);
+	প্রতিজ্ঞা(omap_padconf);
 
 	kern_phys_map_ptr(omap_padconf->base, omap_padconf->size,
 	    VMMF_UNCACHED | VMMF_WRITE,
 	    &padconf_phys_map, (vir_bytes) & omap_padconf->base);
 
-	return;
+	ঘূৰাই;
 }

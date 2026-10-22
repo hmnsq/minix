@@ -3,9 +3,9 @@
 
 #ifndef __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
-void bsp_irq_handle(void);
+শূন্য bsp_irq_unmask(পূর্ণাঙ্ক irq);
+শূন্য bsp_irq_mask(পূর্ণাঙ্ক irq);
+শূন্য bsp_irq_handle(শূন্য);
 
 #endif /* __ASSEMBLY__ */
 

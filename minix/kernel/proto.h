@@ -6,28 +6,28 @@
 #ifndef PROTO_H
 #define PROTO_H
 
-#include <minix/safecopies.h>
-#include <machine/archtypes.h>
-#include <machine/signal.h>
-#include <machine/frame.h>
+#অন্তর্ভাৱ <minix/safecopies.h>
+#অন্তর্ভাৱ <machine/archtypes.h>
+#অন্তর্ভাৱ <machine/signal.h>
+#অন্তর্ভাৱ <machine/frame.h>
 
 /* Struct declarations. */
-struct proc;
-struct ipc_filter_s;
+সংরচনা proc;
+সংরচনা ipc_filter_s;
 
 /* clock.c */
-void init_clock(void);
-clock_t get_realtime(void);
-void set_realtime(clock_t);
-void set_adjtime_delta(int32_t);
-clock_t get_monotonic(void);
-void set_boottime(time_t);
-time_t get_boottime(void);
-void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, int arg);
-void reset_kernel_timer(minix_timer_t *tp);
-void ser_dump_proc(void);
+শূন্য init_clock(শূন্য);
+clock_t get_realtime(শূন্য);
+শূন্য set_realtime(clock_t);
+শূন্য set_adjtime_delta(int32_t);
+clock_t get_monotonic(শূন্য);
+শূন্য set_boottime(time_t);
+time_t get_boottime(শূন্য);
+শূন্য set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, পূর্ণাঙ্ক arg);
+শূন্য reset_kernel_timer(minix_timer_t *tp);
+শূন্য ser_dump_proc(শূন্য);
 
-void cycles_accounting_init(void);
+শূন্য cycles_accounting_init(শূন্য);
 /*
  * This functions start and stop accounting for process, kernel or idle cycles.
  * It inherently have to account for some kernel cycles for process too,
@@ -35,217 +35,217 @@ void cycles_accounting_init(void);
  * possible before returning to userspace. These function is architecture
  * dependent
  */
-void context_stop(struct proc * p);
+শূন্য context_stop(সংরচনা proc * p);
 /* this is a wrapper to make calling it from assembly easier */
-void context_stop_idle(void);
-void get_cpu_ticks(unsigned int cpu, uint64_t ticks[MINIX_CPUSTATES]);
-int restore_fpu(struct proc *);
-void save_fpu(struct proc *);
-void save_local_fpu(struct proc *, int retain);
-void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
+শূন্য context_stop_idle(শূন্য);
+শূন্য get_cpu_ticks(unsigned পূর্ণাঙ্ক cpu, uint64_t ticks[MINIX_CPUSTATES]);
+পূর্ণাঙ্ক restore_fpu(সংরচনা proc *);
+শূন্য save_fpu(সংরচনা proc *);
+শূন্য save_local_fpu(সংরচনা proc *, পূর্ণাঙ্ক retain);
+শূন্য fpu_sigcontext(সংরচনা proc *, সংরচনা sigframe_sigcontext *fr, সংরচনা
 	sigcontext *sc);
 
 /* main.c */
 #ifndef UNPAGED
 #define kmain __k_unpaged_kmain
 #endif
-void kmain(kinfo_t *cbi);
-void prepare_shutdown(int how);
-__dead void minix_shutdown(int how);
-void bsp_finish_booting(void);
+শূন্য kmain(kinfo_t *cbi);
+শূন্য prepare_shutdown(পূর্ণাঙ্ক how);
+__dead শূন্য minix_shutdown(পূর্ণাঙ্ক how);
+শূন্য bsp_finish_booting(শূন্য);
 
 /* proc.c */
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3);
-void proc_init(void);
-int cancel_async(struct proc *src, struct proc *dst);
-int has_pending_notify(struct proc * caller, int src_p);
-int has_pending_asend(struct proc * caller, int src_p);
-void unset_notify_pending(struct proc * caller, int src_p);
-int mini_notify(const struct proc *src, endpoint_t dst);
-void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag);
-void enqueue(struct proc *rp);
-void dequeue(struct proc *rp);
-void switch_to_user(void);
-void arch_proc_reset(struct proc *rp);
-void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
-	int user, int restorestyle);
-struct proc * arch_finish_switch_to_user(void);
-struct proc *endpoint_lookup(endpoint_t ep);
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+পূর্ণাঙ্ক do_ipc(reg_t r1, reg_t r2, reg_t r3);
+শূন্য proc_init(শূন্য);
+পূর্ণাঙ্ক cancel_async(সংরচনা proc *src, সংরচনা proc *dst);
+পূর্ণাঙ্ক has_pending_notify(সংরচনা proc * caller, পূর্ণাঙ্ক src_p);
+পূর্ণাঙ্ক has_pending_asend(সংরচনা proc * caller, পূর্ণাঙ্ক src_p);
+শূন্য unset_notify_pending(সংরচনা proc * caller, পূর্ণাঙ্ক src_p);
+পূর্ণাঙ্ক mini_notify(ধ্রুৱ সংরচনা proc *src, endpoint_t dst);
+শূন্য vm_suspend(সংরচনা proc *caller, ধ্রুৱ সংরচনা proc *target,
+        ধ্রুৱ vir_bytes linaddr, ধ্রুৱ vir_bytes len, ধ্রুৱ পূর্ণাঙ্ক type,
+        ধ্রুৱ পূর্ণাঙ্ক writeflag);
+শূন্য enqueue(সংরচনা proc *rp);
+শূন্য dequeue(সংরচনা proc *rp);
+শূন্য switch_to_user(শূন্য);
+শূন্য arch_proc_reset(সংরচনা proc *rp);
+শূন্য arch_proc_setcontext(সংরচনা proc *rp, সংরচনা stackframe_s *state,
+	পূর্ণাঙ্ক user, পূর্ণাঙ্ক restorestyle);
+সংরচনা proc * arch_finish_switch_to_user(শূন্য);
+সংরচনা proc *endpoint_lookup(endpoint_t ep);
+#যদি DEBUG_ENABLE_IPC_WARNINGS
+পূর্ণাঙ্ক isokendpt_f(ধ্রুৱ ৱর্ণ *file, পূর্ণাঙ্ক সাৰি, endpoint_t e, পূর্ণাঙ্ক *p, পূর্ণাঙ্ক
 	f);
 #define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
-#else
-int isokendpt_f(endpoint_t e, int *p, int f);
+#অন্যথা
+পূর্ণাঙ্ক isokendpt_f(endpoint_t e, পূর্ণাঙ্ক *p, পূর্ণাঙ্ক f);
 #define isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
 #endif
-void proc_no_time(struct proc *p);
-void reset_proc_accounting(struct proc *p);
-void flag_account(struct proc *p, int flag);
-int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+শূন্য proc_no_time(সংরচনা proc *p);
+শূন্য reset_proc_accounting(সংরচনা proc *p);
+শূন্য flag_account(সংরচনা proc *p, পূর্ণাঙ্ক flag);
+পূর্ণাঙ্ক try_deliver_senda(সংরচনা proc *caller_ptr, asynmsg_t *table, size_t
 	size);
 
 /* start.c */
-void cstart(void);
-char *env_get(const char *key);
+শূন্য cstart(শূন্য);
+ৱর্ণ *env_get(ধ্রুৱ ৱর্ণ *চাবি);
 
 /* system.c */
-int get_priv(register struct proc *rc, int proc_type);
-void set_sendto_bit(const struct proc *rc, int id);
-void unset_sendto_bit(const struct proc *rc, int id);
-void fill_sendto_mask(const struct proc *rc, sys_map_t *map);
-int send_sig(endpoint_t proc_nr, int sig_nr);
-void cause_sig(proc_nr_t proc_nr, int sig_nr);
-void sig_delay_done(struct proc *rp);
-void send_diag_sig(void);
-void kernel_call(message *m_user, struct proc * caller);
-void system_init(void);
-void clear_endpoint(struct proc *rc);
-void clear_ipc_refs(struct proc *rc, int caller_ret);
-void kernel_call_resume(struct proc *p);
-int sched_proc(struct proc *rp, int priority, int quantum, int cpu, int niced);
-int add_ipc_filter(struct proc *rp, int type,
+পূর্ণাঙ্ক get_priv(পঞ্জিকা সংরচনা proc *rc, পূর্ণাঙ্ক proc_type);
+শূন্য set_sendto_bit(ধ্রুৱ সংরচনা proc *rc, পূর্ণাঙ্ক id);
+শূন্য unset_sendto_bit(ধ্রুৱ সংরচনা proc *rc, পূর্ণাঙ্ক id);
+শূন্য fill_sendto_mask(ধ্রুৱ সংরচনা proc *rc, sys_map_t *map);
+পূর্ণাঙ্ক send_sig(endpoint_t proc_nr, পূর্ণাঙ্ক sig_nr);
+শূন্য cause_sig(proc_nr_t proc_nr, পূর্ণাঙ্ক sig_nr);
+শূন্য sig_delay_done(সংরচনা proc *rp);
+শূন্য send_diag_sig(শূন্য);
+শূন্য kernel_call(message *m_user, সংরচনা proc * caller);
+শূন্য system_init(শূন্য);
+শূন্য clear_endpoint(সংরচনা proc *rc);
+শূন্য clear_ipc_refs(সংরচনা proc *rc, পূর্ণাঙ্ক caller_ret);
+শূন্য kernel_call_resume(সংরচনা proc *p);
+পূর্ণাঙ্ক sched_proc(সংরচনা proc *rp, পূর্ণাঙ্ক priority, পূর্ণাঙ্ক quantum, পূর্ণাঙ্ক cpu, পূর্ণাঙ্ক niced);
+পূর্ণাঙ্ক add_ipc_filter(সংরচনা proc *rp, পূর্ণাঙ্ক type,
     vir_bytes address, size_t length);
-void clear_ipc_filters(struct proc *rp);
-int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+শূন্য clear_ipc_filters(সংরচনা proc *rp);
+পূর্ণাঙ্ক check_ipc_filter(সংরচনা ipc_filter_s *ipcf, পূর্ণাঙ্ক fill_flags);
+পূর্ণাঙ্ক allow_ipc_filtered_বাৰ্তা(সংরচনা proc *rp, endpoint_t src_e,
     vir_bytes m_src_v, message *m_src_p);
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
-int priv_add_irq(struct proc *rp, int irq);
-int priv_add_io(struct proc *rp, struct io_range *ior);
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
+পূর্ণাঙ্ক allow_ipc_filtered_memreq(সংরচনা proc *src_rp, সংরচনা proc *dst_rp);
+পূর্ণাঙ্ক priv_add_irq(সংরচনা proc *rp, পূর্ণাঙ্ক irq);
+পূর্ণাঙ্ক priv_add_io(সংরচনা proc *rp, সংরচনা io_range *ior);
+পূর্ণাঙ্ক priv_add_mem(সংরচনা proc *rp, সংরচনা minix_mem_range *memr);
 
 /* system/do_vtimer.c */
-void vtimer_check(struct proc *rp);
+শূন্য vtimer_check(সংরচনা proc *rp);
 
 /* interrupt.c */
-void put_irq_handler(irq_hook_t *hook, int irq, irq_handler_t handler);
-void rm_irq_handler(const irq_hook_t *hook);
-void enable_irq(const irq_hook_t *hook);
-int disable_irq(const irq_hook_t *hook);
+শূন্য put_irq_handler(irq_hook_t *hook, পূর্ণাঙ্ক irq, irq_handler_t handler);
+শূন্য rm_irq_handler(ধ্রুৱ irq_hook_t *hook);
+শূন্য enable_irq(ধ্রুৱ irq_hook_t *hook);
+পূর্ণাঙ্ক disable_irq(ধ্রুৱ irq_hook_t *hook);
 
-void interrupts_enable(void);
-void interrupts_disable(void);
+শূন্য interrupts_enable(শূন্য);
+শূন্য interrupts_disable(শূন্য);
 
 /* debug.c */
-int runqueues_ok(void);
+পূর্ণাঙ্ক runqueues_ok(শূন্য);
 #ifndef CONFIG_SMP
 #define runqueues_ok_local runqueues_ok
-#else
+#অন্যথা
 #define runqueues_ok_local() runqueues_ok_cpu(cpuid)
-int runqueues_ok_cpu(unsigned cpu);
+পূর্ণাঙ্ক runqueues_ok_cpu(unsigned cpu);
 #endif
-char *rtsflagstr(u32_t flags);
-char *miscflagstr(u32_t flags);
-char *schedulerstr(struct proc *scheduler);
+ৱর্ণ *rtsflagstr(u32_t flags);
+ৱর্ণ *miscflagstr(u32_t flags);
+ৱর্ণ *schedulerstr(সংরচনা proc *scheduler);
 /* prints process information */
-void print_proc(struct proc *pp);
+শূন্য print_proc(সংরচনা proc *pp);
 /* prints the given process and recursively all processes it depends on */
-void print_proc_recursive(struct proc *pp);
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-    char operation, int printparams);
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgkcall(message *msg, struct proc *proc);
-void hook_ipc_msgkresult(message *msg, struct proc *proc);
-void hook_ipc_clear(struct proc *proc);
+শূন্য print_proc_recursive(সংরচনা proc *pp);
+শূন্য printmsg(message *বাৰ্তা, সংরচনা proc *src, সংরচনা proc *dst,
+    ৱর্ণ operation, পূর্ণাঙ্ক printparams);
+#যদি DEBUG_IPC_HOOK
+শূন্য hook_ipc_msgrecv(message *বাৰ্তা, সংরচনা proc *src, সংরচনা proc *dst);
+শূন্য hook_ipc_msgsend(message *বাৰ্তা, সংরচনা proc *src, সংরচনা proc *dst);
+শূন্য hook_ipc_msgkcall(message *বাৰ্তা, সংরচনা proc *proc);
+শূন্য hook_ipc_msgkresult(message *বাৰ্তা, সংরচনা proc *proc);
+শূন্য hook_ipc_clear(সংরচনা proc *proc);
 #endif
 
 /* system/do_safecopy.c */
-struct cp_sfinfo; /* external callers may only provide NULL */
-int verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, int,
-	vir_bytes, vir_bytes *, endpoint_t *, struct cp_sfinfo *);
+সংরচনা cp_sfinfo; /* external callers may only provide NULL */
+পূর্ণাঙ্ক verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, পূর্ণাঙ্ক,
+	vir_bytes, vir_bytes *, endpoint_t *, সংরচনা cp_sfinfo *);
 
 /* system/do_diagctl.c */
-int do_diagctl(struct proc * caller, message *m);
+পূর্ণাঙ্ক do_diagctl(সংরচনা proc * caller, message *m);
 
-#if SPROFILE
+#যদি SPROFILE
 /* profile.c */
-void init_profile_clock(u32_t);
-void stop_profile_clock(void);
+শূন্য init_profile_clock(u32_t);
+শূন্য stop_profile_clock(শূন্য);
 #endif
 
 /* functions defined in architecture-dependent files. */
-void prot_init(void);
-void arch_post_init(void);
-void arch_set_secondary_ipc_return(struct proc *, u32_t val);
+শূন্য prot_init(শূন্য);
+শূন্য arch_post_init(শূন্য);
+শূন্য arch_set_secondary_ipc_return(সংরচনা proc *, u32_t val);
 phys_bytes phys_copy(phys_bytes source, phys_bytes dest, phys_bytes
-	count);
-void phys_copy_fault(void);
-void phys_copy_fault_in_kernel(void);
-void memset_fault(void);
-void memset_fault_in_kernel(void);
+	গুনতি);
+শূন্য phys_copy_fault(শূন্য);
+শূন্য phys_copy_fault_in_kernel(শূন্য);
+শূন্য memset_fault(শূন্য);
+শূন্য memset_fault_in_kernel(শূন্য);
 #define virtual_copy(src, dst, bytes) \
-				virtual_copy_f(NULL, src, dst, bytes, 0)
+				virtual_copy_f(রিক্ত, src, dst, bytes, 0)
 #define virtual_copy_vmcheck(caller, src, dst, bytes) \
 				virtual_copy_f(caller, src, dst, bytes, 1)
-int virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
-	vir_addr *dst, vir_bytes bytes, int vmcheck);
-int data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
+পূর্ণাঙ্ক virtual_copy_f(সংরচনা proc * caller, সংরচনা vir_addr *src, সংরচনা
+	vir_addr *dst, vir_bytes bytes, পূর্ণাঙ্ক vmcheck);
+পূর্ণাঙ্ক data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
 	vir_bytes to_addr, size_t bytes);
-int data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
+পূর্ণাঙ্ক data_copy_vmcheck(সংরচনা proc *, endpoint_t from, vir_bytes
 	from_addr, endpoint_t to, vir_bytes to_addr, size_t bytes);
-phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
+phys_bytes umap_virtual(সংরচনা proc* rp, পূর্ণাঙ্ক seg, vir_bytes vir_addr,
 	vir_bytes bytes);
 phys_bytes seg2phys(u16_t);
-int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
-int intr_init(int);
-void halt_cpu(void);
-void arch_init(void);
-void arch_boot_proc(struct boot_image *b, struct proc *p);
-void cpu_identify(void);
+পূর্ণাঙ্ক vm_memset(সংরচনা proc *caller, endpoint_t who, phys_bytes dst,
+	পূর্ণাঙ্ক pattern, phys_bytes গুনতি);
+পূর্ণাঙ্ক intr_init(পূর্ণাঙ্ক);
+শূন্য halt_cpu(শূন্য);
+শূন্য arch_init(শূন্য);
+শূন্য arch_boot_proc(সংরচনা boot_image *b, সংরচনা proc *p);
+শূন্য cpu_identify(শূন্য);
 /* arch dependent FPU initialization per CPU */
-void fpu_init(void);
+শূন্য fpu_init(শূন্য);
 /* returns true if pfu is present and initialized */
-int is_fpu(void);
-void ser_putc(char);
-__dead void arch_shutdown(int);
-void restore_user_context(struct proc * p);
-void read_tsc(u32_t *high, u32_t *low);
-int arch_init_profile_clock(u32_t freq);
-void arch_stop_profile_clock(void);
-void arch_ack_profile_clock(void);
-void do_ser_debug(void);
-int arch_get_params(char *parm, int max);
-void memory_init(void);
-void mem_clear_mapcache(void);
-void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
-int arch_do_vmctl(message *m_ptr, struct proc *p);
-int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
-	size_t count);
-void proc_stacktrace(struct proc *proc);
-int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
+পূর্ণাঙ্ক is_fpu(শূন্য);
+শূন্য ser_putc(ৱর্ণ);
+__dead শূন্য arch_shutdown(পূর্ণাঙ্ক);
+শূন্য restore_user_context(সংরচনা proc * p);
+শূন্য read_tsc(u32_t *উপৰেৰ, u32_t *নিচেৰ);
+পূর্ণাঙ্ক arch_init_profile_clock(u32_t freq);
+শূন্য arch_stop_profile_clock(শূন্য);
+শূন্য arch_ack_profile_clock(শূন্য);
+শূন্য do_ser_debug(শূন্য);
+পূর্ণাঙ্ক arch_get_params(ৱর্ণ *parm, পূর্ণাঙ্ক max);
+শূন্য memory_init(শূন্য);
+শূন্য mem_clear_mapcache(শূন্য);
+শূন্য arch_proc_init(সংরচনা proc *pr, u32_t, u32_t, u32_t, ৱর্ণ *);
+পূর্ণাঙ্ক arch_do_vmctl(message *m_ptr, সংরচনা proc *p);
+পূর্ণাঙ্ক vm_contiguous(ধ্রুৱ সংরচনা proc *targetproc, vir_bytes vir_buf,
+	size_t গুনতি);
+শূন্য proc_stacktrace(সংরচনা proc *proc);
+পূর্ণাঙ্ক vm_lookup(ধ্রুৱ সংরচনা proc *proc, vir_bytes আভাস, phys_bytes
 	*result, u32_t *ptent);
-size_t vm_lookup_range(const struct proc *proc,
+size_t vm_lookup_range(ধ্রুৱ সংরচনা proc *proc,
        vir_bytes vir_addr, phys_bytes *phys_addr, size_t bytes);
-void arch_do_syscall(struct proc *proc);
-int arch_phys_map(int index, phys_bytes *addr, phys_bytes *len, int
+শূন্য arch_do_syscall(সংরচনা proc *proc);
+পূর্ণাঙ্ক arch_phys_map(পূর্ণাঙ্ক index, phys_bytes *addr, phys_bytes *len, পূর্ণাঙ্ক
 	*flags);
-int arch_phys_map_reply(int index, vir_bytes addr);
-reg_t arch_get_sp(struct proc *p);
-int arch_enable_paging(struct proc * caller);
-int vm_check_range(struct proc *caller,
-       struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
+পূর্ণাঙ্ক arch_phys_map_reply(পূর্ণাঙ্ক index, vir_bytes addr);
+reg_t arch_get_sp(সংরচনা proc *p);
+পূর্ণাঙ্ক arch_enable_paging(সংরচনা proc * caller);
+পূর্ণাঙ্ক vm_check_range(সংরচনা proc *caller,
+       সংরচনা proc *target, vir_bytes vir_addr, size_t bytes, পূর্ণাঙ্ক writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
-void switch_address_space(struct proc * p);
-void release_address_space(struct proc *pr);
+পূর্ণাঙ্ক copy_বাৰ্তা_from_user(message * user_mbuf, message * dst);
+পূর্ণাঙ্ক copy_বাৰ্তা_to_user(message * src, message * user_mbuf);
+শূন্য switch_address_space(সংরচনা proc * p);
+শূন্য release_address_space(সংরচনা proc *pr);
 
-void enable_fpu_exception(void);
-void disable_fpu_exception(void);
-void release_fpu(struct proc * p);
-void arch_pause(void);
-short cpu_load(void);
-void busy_delay_ms(int ms);
+শূন্য enable_fpu_exception(শূন্য);
+শূন্য disable_fpu_exception(শূন্য);
+শূন্য release_fpu(সংরচনা proc * p);
+শূন্য arch_pause(শূন্য);
+short cpu_load(শূন্য);
+শূন্য busy_delay_ms(পূর্ণাঙ্ক ms);
 
 /* utility.c */
-void cpu_print_freq(unsigned cpu);
+শূন্য cpu_print_freq(unsigned cpu);
 #endif /* __kernel__ */
 
 #endif /* PROTO_H */

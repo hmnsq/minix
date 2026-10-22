@@ -7,26 +7,26 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#অন্তর্ভাৱ "kernel/system.h"
+#অন্তর্ভাৱ <assert.h>
 
-#include "arch_proto.h"
+#অন্তর্ভাৱ "arch_proto.h"
 
-extern phys_bytes video_mem_vaddr;
+বাহ্য phys_bytes video_mem_vaddr;
 
-extern char *video_mem;
+বাহ্য ৱর্ণ *video_mem;
 
-static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
+স্থির শূন্য setcr3(সংরচনা proc *p, u32_t cr3, u32_t *v)
 {
 	/* Set process CR3. */
 	p->p_seg.p_cr3 = cr3;
-	assert(p->p_seg.p_cr3);
+	প্রতিজ্ঞা(p->p_seg.p_cr3);
 	p->p_seg.p_cr3_v = v; 
-	if(p == get_cpulocal_var(ptproc)) {
+	যদি(p == get_cpulocal_var(ptproc)) {
 		write_cr3(p->p_seg.p_cr3);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	যদি(p->p_nr == VM_PROC_NR) {
+		যদি (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -35,33 +35,33 @@ static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+পূর্ণাঙ্ক arch_do_vmctl(
+  পঞ্জিকা message *m_ptr,	/* pointer to request message */
+  সংরচনা proc *p
 )
 {
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+  ৱিকল্প(m_ptr->SVMCTL_PARAM) {
+	পক্ষ VMCTL_GET_PDBR:
 		/* Get process page directory base reg (CR3). */
-		m_ptr->SVMCTL_VALUE = p->p_seg.p_cr3;
-		return OK;
-	case VMCTL_SETADDRSPACE:
+		m_ptr->SVMCTL_মান = p->p_seg.p_cr3;
+		ঘূৰাই OK;
+	পক্ষ VMCTL_SETADDRSPACE:
 		setcr3(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		ঘূৰাই OK;
+	পক্ষ VMCTL_FLUSHTLB:
 	{
 		reload_cr3();
-		return OK;
+		ঘূৰাই OK;
 	}
-	case VMCTL_I386_INVLPG:
+	পক্ষ VMCTL_I386_INVLPG:
 	{
-		i386_invlpg(m_ptr->SVMCTL_VALUE);
-		return OK;
+		i386_invlpg(m_ptr->SVMCTL_মান);
+		ঘূৰাই OK;
 	}
   }
 
 
 
   printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  ঘূৰাই EINVAL;
 }

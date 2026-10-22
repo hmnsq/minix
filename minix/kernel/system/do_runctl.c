@@ -7,15 +7,15 @@
  *    m1_i3:	RC_FLAGS	request flags
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#অন্তর্ভাৱ "kernel/system.h"
+#অন্তর্ভাৱ <assert.h>
 
-#if USE_RUNCTL
+#যদি USE_RUNCTL
 
 /*===========================================================================*
  *				  do_runctl				     *
  *===========================================================================*/
-int do_runctl(struct proc * caller, message * m_ptr)
+পূর্ণাঙ্ক do_runctl(সংরচনা proc * caller, message * m_ptr)
 {
 /* Control a process's RTS_PROC_STOP flag. Used for process management.
  * If the process is queued sending a message or stopped for system call
@@ -23,12 +23,12 @@ int do_runctl(struct proc * caller, message * m_ptr)
  * of RTS_PROC_STOP, and send a SIGSNDELAY signal later when the process is done
  * sending (ending the delay). Used by PM for safe signal delivery.
  */
-  int proc_nr, action, flags;
-  register struct proc *rp;
+  পূর্ণাঙ্ক proc_nr, action, flags;
+  পঞ্জিকা সংরচনা proc *rp;
 
   /* Extract the message parameters and do sanity checking. */
-  if (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  যদি (!isokendpt(m_ptr->RC_ENDPT, &proc_nr)) ঘূৰাই(EINVAL);
+  যদি (iskerneln(proc_nr)) ঘূৰাই(EPERM);
   rp = proc_addr(proc_nr);
 
   action = m_ptr->RC_ACTION;
@@ -41,35 +41,35 @@ int do_runctl(struct proc * caller, message * m_ptr)
    * should not also install signal handlers *and* expect POSIX compliance.
    */
 
-  if (action == RC_STOP && (flags & RC_DELAY)) {
-	if (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
+  যদি (action == RC_STOP && (flags & RC_DELAY)) {
+	যদি (RTS_ISSET(rp, RTS_SENDING) || (rp->p_misc_flags & MF_SC_DEFER))
 		rp->p_misc_flags |= MF_SIG_DELAY;
 
-	if (rp->p_misc_flags & MF_SIG_DELAY)
-		return (EBUSY);
+	যদি (rp->p_misc_flags & MF_SIG_DELAY)
+		ঘূৰাই (EBUSY);
   }
 
   /* Either set or clear the stop flag. */
-  switch (action) {
-  case RC_STOP:
-#if CONFIG_SMP
+  ৱিকল্প (action) {
+  পক্ষ RC_STOP:
+#যদি CONFIG_SMP
 	  /* check if we must stop a process on a different CPU */
-	  if (rp->p_cpu != cpuid) {
+	  যদি (rp->p_cpu != cpuid) {
 		  smp_schedule_stop_proc(rp);
-		  break;
+		  ভঙ্গ;
 	  }
 #endif
 	  RTS_SET(rp, RTS_PROC_STOP);
-	break;
-  case RC_RESUME:
-	assert(RTS_ISSET(rp, RTS_PROC_STOP));
+	ভঙ্গ;
+  পক্ষ RC_RESUME:
+	প্রতিজ্ঞা(RTS_ISSET(rp, RTS_PROC_STOP));
 	RTS_UNSET(rp, RTS_PROC_STOP);
-	break;
-  default:
-	return(EINVAL);
+	ভঙ্গ;
+  স্ৱভাৱ:
+	ঘূৰাই(EINVAL);
   }
 
-  return(OK);
+  ঘূৰাই(OK);
 }
 
 #endif /* USE_RUNCTL */

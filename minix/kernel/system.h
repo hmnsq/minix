@@ -30,180 +30,180 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include "kernel/kernel.h"
+#অন্তর্ভাৱ "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
-#define do_exec NULL
+পূর্ণাঙ্ক do_exec(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_EXEC
+#define do_exec রিক্ত
 #endif
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
-#define do_fork NULL
+পূর্ণাঙ্ক do_fork(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_FORK
+#define do_fork রিক্ত
 #endif
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
-#define do_clear NULL
+পূর্ণাঙ্ক do_clear(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_CLEAR
+#define do_clear রিক্ত
 #endif
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
-#define do_trace NULL
+পূর্ণাঙ্ক do_trace(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_TRACE
+#define do_trace রিক্ত
 #endif
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
-#define do_runctl NULL
+পূর্ণাঙ্ক do_runctl(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_RUNCTL
+#define do_runctl রিক্ত
 #endif
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
-#define do_update NULL
+পূর্ণাঙ্ক do_update(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_UPDATE
+#define do_update রিক্ত
 #endif
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
-#define do_exit NULL
+পূর্ণাঙ্ক do_exit(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_EXIT
+#define do_exit রিক্ত
 #endif
 
-int do_copy(struct proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_copy(সংরচনা proc * caller, message *m_ptr);
 #define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
-#define do_copy NULL
+#যদি ! (USE_VIRCOPY || USE_PHYSCOPY)
+#define do_copy রিক্ত
 #endif
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
-#define do_umap NULL
+পূর্ণাঙ্ক do_umap(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_UMAP
+#define do_umap রিক্ত
 #endif
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
-#define do_umap_remote NULL
+পূর্ণাঙ্ক do_umap_remote(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_UMAP_REMOTE
+#define do_umap_remote রিক্ত
 #endif
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
-#define do_vumap NULL
+পূর্ণাঙ্ক do_vumap(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_VUMAP
+#define do_vumap রিক্ত
 #endif
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
-#define do_memset NULL
+পূর্ণাঙ্ক do_memset(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_MEMSET
+#define do_memset রিক্ত
 #endif
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
-#define do_abort NULL
+পূর্ণাঙ্ক do_abort(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_ABORT
+#define do_abort রিক্ত
 #endif
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
-#define do_getinfo NULL
+পূর্ণাঙ্ক do_getinfo(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_GETINFO
+#define do_getinfo রিক্ত
 #endif
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
-#define do_privctl NULL
+পূর্ণাঙ্ক do_privctl(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_PRIVCTL
+#define do_privctl রিক্ত
 #endif
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
-#define do_irqctl NULL
+পূর্ণাঙ্ক do_irqctl(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_IRQCTL
+#define do_irqctl রিক্ত
 #endif
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
-#define do_devio NULL
+পূর্ণাঙ্ক do_devio(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_DEVIO
+#define do_devio রিক্ত
 #endif
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
-#define do_vdevio NULL
+পূর্ণাঙ্ক do_vdevio(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_VDEVIO
+#define do_vdevio রিক্ত
 #endif
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
-#define do_sdevio NULL
+পূর্ণাঙ্ক do_sdevio(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_SDEVIO
+#define do_sdevio রিক্ত
 #endif
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
-#define do_kill NULL
+পূর্ণাঙ্ক do_kill(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_KILL
+#define do_kill রিক্ত
 #endif
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
-#define do_getksig NULL
+পূর্ণাঙ্ক do_getksig(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_GETKSIG
+#define do_getksig রিক্ত
 #endif
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
-#define do_endksig NULL
+পূর্ণাঙ্ক do_endksig(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_ENDKSIG
+#define do_endksig রিক্ত
 #endif
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
-#define do_sigsend NULL
+পূর্ণাঙ্ক do_sigsend(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_SIGSEND
+#define do_sigsend রিক্ত
 #endif
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
-#define do_sigreturn NULL
+পূর্ণাঙ্ক do_sigreturn(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_SIGRETURN
+#define do_sigreturn রিক্ত
 #endif
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
-#define do_times NULL
+পূর্ণাঙ্ক do_times(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_TIMES
+#define do_times রিক্ত
 #endif
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
-#define do_setalarm NULL
+পূর্ণাঙ্ক do_setalarm(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_SETALARM
+#define do_setalarm রিক্ত
 #endif
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_stime(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_settime(সংরচনা proc * caller, message *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
-#define do_vtimer NULL
+পূর্ণাঙ্ক do_vtimer(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_VTIMER
+#define do_vtimer রিক্ত
 #endif
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_safecopy_to(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_safecopy_from(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_vsafecopy(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_iopenable(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_vmctl(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_setgrant(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_readbios(সংরচনা proc * caller, message *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_safememset(সংরচনা proc * caller, message *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
-#define do_sprofile NULL
+পূর্ণাঙ্ক do_sprofile(সংরচনা proc * caller, message *m_ptr);
+#যদি ! SPROFILE
+#define do_sprofile রিক্ত
 #endif
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
-#define do_getmcontext NULL
-#define do_setmcontext NULL
+পূর্ণাঙ্ক do_getmcontext(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_setmcontext(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_MCONTEXT
+#define do_getmcontext রিক্ত
+#define do_setmcontext রিক্ত
 #endif
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_schedule(সংরচনা proc * caller, message *m_ptr);
+পূর্ণাঙ্ক do_schedctl(সংরচনা proc * caller, message *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
-#define do_statectl NULL
+পূর্ণাঙ্ক do_statectl(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_STATECTL
+#define do_statectl রিক্ত
 #endif
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
-#define do_padconf NULL
+পূর্ণাঙ্ক do_padconf(সংরচনা proc * caller, message *m_ptr);
+#যদি ! USE_PADCONF
+#define do_padconf রিক্ত
 #endif
 
 #endif	/* SYSTEM_H */

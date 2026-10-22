@@ -5,16 +5,16 @@
  *   m_lsys_krn_sys_clear.endpt		(endpoint of process to clean up)
  */
 
-#include "kernel/system.h"
+#অন্তর্ভাৱ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#অন্তর্ভাৱ <minix/endpoint.h>
 
-#if USE_CLEAR
+#যদি USE_CLEAR
 
 /*===========================================================================*
  *				do_clear				     *
  *===========================================================================*/
-int do_clear(struct proc * caller, message * m_ptr)
+পূর্ণাঙ্ক do_clear(সংরচনা proc * caller, message * m_ptr)
 {
 /* Handle sys_clear. Only the PM can request other process slots to be cleared
  * when a process has exited.
@@ -22,24 +22,24 @@ int do_clear(struct proc * caller, message * m_ptr)
  * possibly removes the process from the message queues, and resets certain 
  * process table fields to the default values.
  */
-  struct proc *rc;
-  int exit_p;
-  int i;
+  সংরচনা proc *rc;
+  পূর্ণাঙ্ক exit_p;
+  পূর্ণাঙ্ক i;
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_clear.endpt, &exit_p)) {
+  যদি(!isokendpt(m_ptr->m_lsys_krn_sys_clear.endpt, &exit_p)) {
       /* get exiting process */
-      return EINVAL;
+      ঘূৰাই EINVAL;
   }
   rc = proc_addr(exit_p);	/* clean up */
 
   release_address_space(rc);
 
   /* Don't clear if already cleared. */
-  if(isemptyp(rc)) return OK;
+  যদি(isemptyp(rc)) ঘূৰাই OK;
 
   /* Check the table with IRQ hooks to see if hooks should be released. */
-  for (i=0; i < NR_IRQ_HOOKS; i++) {
-      if (rc->p_endpoint == irq_hooks[i].proc_nr_e) {
+  বাবে (i=0; i < NR_IRQ_HOOKS; i++) {
+      যদি (rc->p_endpoint == irq_hooks[i].proc_nr_e) {
         rm_irq_handler(&irq_hooks[i]);	/* remove interrupt handler */
         irq_hooks[i].proc_nr_e = NONE;	/* mark hook as free */
       } 
@@ -65,16 +65,16 @@ int do_clear(struct proc * caller, message * m_ptr)
    * this point. All important fields are reinitialized when the 
    * slots are assigned to another, new process. 
    */
-  if (priv(rc)->s_flags & SYS_PROC) priv(rc)->s_proc_nr = NONE;
+  যদি (priv(rc)->s_flags & SYS_PROC) priv(rc)->s_proc_nr = NONE;
 
-#if 0
+#যদি 0
   /* Clean up virtual memory */
-  if (rc->p_misc_flags & MF_VM) {
+  যদি (rc->p_misc_flags & MF_VM) {
   	vm_map_default(rc);
   }
 #endif
 
-  return OK;
+  ঘূৰাই OK;
 }
 
 #endif /* USE_CLEAR */
