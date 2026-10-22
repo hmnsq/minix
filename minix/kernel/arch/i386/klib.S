@@ -487,7 +487,7 @@ ENTRY(clts)
 ENTRY(fnstsw)
 	xor     %eax, %eax
 
-	/* DO NOT CHANGE THE OPERAND!!! gas2ack does not handle it yet */
+	/* DO na CHANGE THE OPERAND!!! gas2ack does not handle it yet */
 	fnstsw	%ax
 	ret
 
