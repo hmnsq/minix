@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#جے_بنا_تعریف _BSP_INIT_H_
+#تعریف_کرو _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+فراغ bsp_init(فراغ);
 
-#endif /* __BSP_INIT_H__ */
+#جے_انت /* __BSP_INIT_H__ */

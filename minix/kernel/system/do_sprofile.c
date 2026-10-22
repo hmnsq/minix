@@ -14,119 +14,119 @@
  *   14 Aug, 2006   Created (Rogier Meurs)
  */
 
-#include "kernel/system.h"
-#include "kernel/watchdog.h"
+#ضمن "kernel/system.h"
+#ضمن "kernel/watchdog.h"
 
-#if SPROFILE
+#إذا SPROFILE
 
 /* user address to write info struct */
-static vir_bytes sprof_info_addr_vir;
+ساكن vir_بائٹاں sprof_info_addr_vir;
 
-static void clean_seen_flag(void)
+ساكن فراغ clean_تکیا_flag(فراغ)
 {
-	int i;
+	صحيح i;
 
-	for (i = 0; i < NR_TASKS + NR_PROCS; i++)
-		proc[i].p_misc_flags &= ~MF_SPROF_SEEN;
+	لكل (i = 0; i < NR_TASKS + NR_PROCS; i++)
+		proc[i].p_misc_flags &= ~MF_SPROF_تکیا;
 }
 
 /*===========================================================================*
  *				do_sprofile				     *
  *===========================================================================*/
-int do_sprofile(struct proc * caller, message * m_ptr)
+صحيح do_sprofile(بنية proc * caller, سنیہا * m_ptr)
 {
-  int proc_nr;
-  int err;
+  صحيح proc_nr;
+  صحيح err;
 
-  switch(m_ptr->m_lsys_krn_sys_sprof.action) {
+  بدل(m_ptr->m_lsys_krn_sys_sprof.action) {
 
-  case PROF_START:
+  حالة PROF_شروع:
 	/* Starting profiling.
 	 *
 	 * Check if profiling is not already running.  Calculate physical
 	 * addresses of user pointers.  Reset counters.  Start CMOS timer.
 	 * Turn on profiling.
 	 */
-	if (sprofiling) {
-		printf("SYSTEM: start s-profiling: already started\n");
-		return EBUSY;
+	إذا (sprofiling) {
+		لکھو("SYSTEM: start s-profiling: already started\n");
+		أرجع EBUSY;
 	}
 
 	/* Test endpoint number. */
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
-		return EINVAL;
+	إذا(!isokendpt(m_ptr->m_lsys_krn_sys_sprof.endpt, &proc_nr))
+		أرجع EINVAL;
 
 	/* Set parameters for statistical profiler. */
 	sprof_ep = m_ptr->m_lsys_krn_sys_sprof.endpt;
 	sprof_info_addr_vir = m_ptr->m_lsys_krn_sys_sprof.ctl_ptr;
-	sprof_data_addr_vir = m_ptr->m_lsys_krn_sys_sprof.mem_ptr;
+	sprof_انکڑے_addr_vir = m_ptr->m_lsys_krn_sys_sprof.mem_ptr;
 
-	sprof_info.mem_used = 0;
-	sprof_info.total_samples = 0;
+	sprof_info.mem_ورتیا = 0;
+	sprof_info.کل_samples = 0;
 	sprof_info.idle_samples = 0;
 	sprof_info.system_samples = 0;
 	sprof_info.user_samples = 0;
 
-	sprof_mem_size =
-		m_ptr->m_lsys_krn_sys_sprof.mem_size < SAMPLE_BUFFER_SIZE ?
-		m_ptr->m_lsys_krn_sys_sprof.mem_size : SAMPLE_BUFFER_SIZE;
+	sprof_mem_ناپ =
+		m_ptr->m_lsys_krn_sys_sprof.mem_ناپ < SAMPLE_بفر_ناپ ?
+		m_ptr->m_lsys_krn_sys_sprof.mem_ناپ : SAMPLE_بفر_ناپ;
 
-	switch (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
-		case PROF_RTC:
+	بدل (sprofiling_type = m_ptr->m_lsys_krn_sys_sprof.intr_type) {
+		حالة PROF_RTC:
 			init_profile_clock(m_ptr->m_lsys_krn_sys_sprof.freq);
-			break;
-		case PROF_NMI:
-			err = nmi_watchdog_start_profiling(
+			اكسر;
+		حالة PROF_NMI:
+			err = nmi_watchdog_شروع_profiling(
 				m_ptr->m_lsys_krn_sys_sprof.freq);
-			if (err)
-				return err;
-			break;
-		default:
-			printf("ERROR : unknown profiling interrupt type\n");
-			return EINVAL;
+			إذا (err)
+				أرجع err;
+			اكسر;
+		افتراضي:
+			لکھو("ERROR : unknown profiling interrupt type\n");
+			أرجع EINVAL;
 	}
 	
 	sprofiling = 1;
 
-	clean_seen_flag();
+	clean_تکیا_flag();
 
-  	return OK;
+  	أرجع OK;
 
-  case PROF_STOP:
+  حالة PROF_STOP:
 	/* Stopping profiling.
 	 *
 	 * Check if profiling is indeed running.  Turn off profiling.
 	 * Stop CMOS timer.  Copy info struct to user process.
 	 */
-	if (!sprofiling) {
-		printf("SYSTEM: stop s-profiling: not started\n");
-		return EBUSY;
+	إذا (!sprofiling) {
+		لکھو("SYSTEM: stop s-profiling: not started\n");
+		أرجع EBUSY;
 	}
 
 	sprofiling = 0;
 
-	switch (sprofiling_type) {
-		case PROF_RTC:
+	بدل (sprofiling_type) {
+		حالة PROF_RTC:
 			stop_profile_clock();
-			break;
-		case PROF_NMI:
+			اكسر;
+		حالة PROF_NMI:
 			nmi_watchdog_stop_profiling();
-			break;
+			اكسر;
 	}
 
-	data_copy(KERNEL, (vir_bytes) &sprof_info,
-		sprof_ep, sprof_info_addr_vir, sizeof(sprof_info));
-	data_copy(KERNEL, (vir_bytes) sprof_sample_buffer,
-		sprof_ep, sprof_data_addr_vir, sprof_info.mem_used);
+	انکڑے_copy(KERNEL, (vir_بائٹاں) &sprof_info,
+		sprof_ep, sprof_info_addr_vir, حجم(sprof_info));
+	انکڑے_copy(KERNEL, (vir_بائٹاں) sprof_sample_بفر,
+		sprof_ep, sprof_انکڑے_addr_vir, sprof_info.mem_ورتیا);
 
-	clean_seen_flag();
+	clean_تکیا_flag();
 
-  	return OK;
+  	أرجع OK;
 
-  default:
-	return EINVAL;
+  افتراضي:
+	أرجع EINVAL;
   }
 }
 
-#endif /* SPROFILE */
+#جے_انت /* SPROFILE */
 

@@ -1,31 +1,31 @@
-#ifndef __SMP_X86_H__
-#define __SMP_X86_H__
+#جے_بنا_تعریف __SMP_X86_H__
+#تعریف_کرو __SMP_X86_H__
 
-#include "arch_proto.h" /* K_STACK_SIZE */
+#ضمن "arch_proto.h" /* K_STACK_SIZE */
 
-#define MAX_NR_INTERRUPT_ENTRIES	128
+#تعریف_کرو MAX_NR_رکاوٹ_ENTRIES	128
 
-#ifndef __ASSEMBLY__
+#جے_بنا_تعریف __ASSEMBLY__
 
 /* returns the current cpu id */
-#define cpuid	(((u32_t *)(((u32_t)get_stack_frame() + (K_STACK_SIZE - 1)) \
-						& ~(K_STACK_SIZE - 1)))[-1])
+#تعریف_کرو cpuid	(((u32_t *)(((u32_t)get_ڈھیر_چوکھٹا() + (K_ڈھیر_ناپ - 1)) \
+						& ~(K_ڈھیر_ناپ - 1)))[-1])
 /* 
  * in case apic or smp is disabled in boot monitor, we need to finish single cpu
  * boot using the legacy PIC
  */
-#define smp_single_cpu_fallback() do {		\
-	  tss_init(0, get_k_stack_top(0));	\
+#تعریف_کرو smp_single_cpu_fallback() افعل {		\
+	  tss_init(0, get_k_ڈھیر_چوٹی(0));	\
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
-	  bsp_finish_booting();			\
-} while(0)
+	  bsp_انت_booting();			\
+} طالما(0)
 
-extern unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
+خارجي بنانشانی حرف cpuid2apicid[CONFIG_MAX_CPUS];
 
-#define barrier()	do { mfence(); } while(0)
+#تعریف_کرو barrier()	افعل { mfence(); } طالما(0)
 
-#endif
+#جے_انت
 
-#endif /* __SMP_X86_H__ */
+#جے_انت /* __SMP_X86_H__ */
 

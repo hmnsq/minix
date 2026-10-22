@@ -1,6 +1,6 @@
-#ifndef __CLOCK_ARM_H__
-#define __CLOCK_ARM_H__
+#جے_بنا_تعریف __CLOCK_ARM_H__
+#تعریف_کرو __CLOCK_ARM_H__
 
-void arch_timer_int_handler(void);
+فراغ arch_timer_int_handler(فراغ);
 
-#endif /* __CLOCK_ARM_H__ */
+#جے_انت /* __CLOCK_ARM_H__ */
