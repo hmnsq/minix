@@ -30,19 +30,19 @@ SPINLOCK_DEFINE(boot_lock)
 void wait_for_APs_to_finish_booting(void)
 {
 	unsigned n = 0;
-	int i;
+	цео i;
 
 	/* check how many cpus are actually alive */
-	for (i = 0 ; i < ncpus ; i++) {
-		if (cpu_test_flag(i, CPU_IS_READY))
+	за (i = 0 ; i < ncpus ; i++) {
+		ако (cpu_test_flag(i, CPU_IS_READY))
 			n++;
 	}
-	if (n != ncpus)
+	ако (n != ncpus)
 		printf("WARNING only %d out of %d cpus booted\n", n, ncpus);
 
 	/* we must let the other CPUs to run in kernel mode first */
 	BKL_UNLOCK();
-	while (ap_cpus_booted != (n - 1))
+	док (ap_cpus_booted != (n - 1))
 		arch_pause();
 	/* now we have to take the lock again as we continue execution */
 	BKL_LOCK();
@@ -82,10 +82,10 @@ static void smp_schedule_sync(struct proc * p, unsigned task)
 	 * if some other cpu made a request to the same cpu, wait until it is
 	 * done before proceeding
 	 */
-	if (sched_ipi_data[cpu].flags != 0) {
+	ако (sched_ipi_data[cpu].flags != 0) {
 		BKL_UNLOCK();
-		while (sched_ipi_data[cpu].flags != 0) {
-			if (sched_ipi_data[mycpu].flags) {
+		док (sched_ipi_data[cpu].flags != 0) {
+			ако (sched_ipi_data[mycpu].flags) {
 				BKL_LOCK();
 				smp_sched_handler();
 				BKL_UNLOCK();
@@ -101,8 +101,8 @@ static void smp_schedule_sync(struct proc * p, unsigned task)
 
 	/* wait until the destination cpu finishes its job */
 	BKL_UNLOCK();
-	while (sched_ipi_data[cpu].flags != 0) {
-		if (sched_ipi_data[mycpu].flags) {
+	док (sched_ipi_data[cpu].flags != 0) {
+		ако (sched_ipi_data[mycpu].flags) {
 			BKL_LOCK();
 			smp_sched_handler();
 			BKL_UNLOCK();
@@ -113,18 +113,18 @@ static void smp_schedule_sync(struct proc * p, unsigned task)
 
 void smp_schedule_stop_proc(struct proc * p)
 {
-	if (proc_is_runnable(p))
+	ако (proc_is_runnable(p))
 		smp_schedule_sync(p, SCHED_IPI_STOP_PROC);
-	else
+	инако
 		RTS_SET(p, RTS_PROC_STOP);
 	assert(RTS_ISSET(p, RTS_PROC_STOP));
 }
 
 void smp_schedule_vminhibit(struct proc * p)
 {
-	if (proc_is_runnable(p))
+	ако (proc_is_runnable(p))
 		smp_schedule_sync(p, SCHED_IPI_VM_INHIBIT);
-	else
+	инако
 		RTS_SET(p, RTS_VMINHIBIT);
 	assert(RTS_ISSET(p, RTS_VMINHIBIT));
 }
@@ -160,16 +160,16 @@ void smp_sched_handler(void)
 
 	flgs = sched_ipi_data[cpu].flags;
 
-	if (flgs) {
+	ако (flgs) {
 		struct proc * p;
 		p = (struct proc *)sched_ipi_data[cpu].data;
 
-		if (flgs & SCHED_IPI_STOP_PROC) {
+		ако (flgs & SCHED_IPI_STOP_PROC) {
 			RTS_SET(p, RTS_PROC_STOP);
 		}
-		if (flgs & SCHED_IPI_SAVE_CTX) {
+		ако (flgs & SCHED_IPI_SAVE_CTX) {
 			/* all context has been saved already, FPU remains */
-			if (proc_used_fpu(p) &&
+			ако (proc_used_fpu(p) &&
 					get_cpulocal_var(fpu_owner) == p) {
 				disable_fpu_exception();
 				save_local_fpu(p, FALSE /*retain*/);
@@ -177,7 +177,7 @@ void smp_sched_handler(void)
 				release_fpu(p);
 			}
 		}
-		if (flgs & SCHED_IPI_VM_INHIBIT) {
+		ако (flgs & SCHED_IPI_VM_INHIBIT) {
 			RTS_SET(p, RTS_VMINHIBIT);
 		}
 	}
@@ -198,7 +198,7 @@ void smp_ipi_sched_handler(void)
 	ipi_ack();
 
 	curr = get_cpulocal_var(proc_ptr);
-	if (curr->p_endpoint != IDLE) {
+	ако (curr->p_endpoint != IDLE) {
 		RTS_SET(curr, RTS_PREEMPTED);
 	}
 }

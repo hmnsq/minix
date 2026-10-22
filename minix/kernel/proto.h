@@ -23,7 +23,7 @@ void set_adjtime_delta(int32_t);
 clock_t get_monotonic(void);
 void set_boottime(time_t);
 time_t get_boottime(void);
-void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, int arg);
+void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, цео arg);
 void reset_kernel_timer(minix_timer_t *tp);
 void ser_dump_proc(void);
 
@@ -38,10 +38,10 @@ void cycles_accounting_init(void);
 void context_stop(struct proc * p);
 /* this is a wrapper to make calling it from assembly easier */
 void context_stop_idle(void);
-void get_cpu_ticks(unsigned int cpu, uint64_t ticks[MINIX_CPUSTATES]);
-int restore_fpu(struct proc *);
+void get_cpu_ticks(unsigned цео cpu, uint64_t ticks[MINIX_CPUSTATES]);
+цео restore_fpu(struct proc *);
 void save_fpu(struct proc *);
-void save_local_fpu(struct proc *, int retain);
+void save_local_fpu(struct proc *, цео retain);
 void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
 	sigcontext *sc);
 
@@ -50,42 +50,42 @@ void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
 #define kmain __k_unpaged_kmain
 #endif
 void kmain(kinfo_t *cbi);
-void prepare_shutdown(int how);
-__dead void minix_shutdown(int how);
+void prepare_shutdown(цео how);
+__dead void minix_shutdown(цео how);
 void bsp_finish_booting(void);
 
 /* proc.c */
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3);
+цео do_ipc(reg_t r1, reg_t r2, reg_t r3);
 void proc_init(void);
-int cancel_async(struct proc *src, struct proc *dst);
-int has_pending_notify(struct proc * caller, int src_p);
-int has_pending_asend(struct proc * caller, int src_p);
-void unset_notify_pending(struct proc * caller, int src_p);
-int mini_notify(const struct proc *src, endpoint_t dst);
+цео cancel_async(struct proc *src, struct proc *dst);
+цео has_pending_notify(struct proc * caller, цео src_p);
+цео has_pending_asend(struct proc * caller, цео src_p);
+void unset_notify_pending(struct proc * caller, цео src_p);
+цео mini_notify(const struct proc *src, endpoint_t dst);
 void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag);
+        const vir_bytes linaddr, const vir_bytes len, const цео type,
+        const цео writeflag);
 void enqueue(struct proc *rp);
 void dequeue(struct proc *rp);
 void switch_to_user(void);
 void arch_proc_reset(struct proc *rp);
 void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
-	int user, int restorestyle);
+	цео user, цео restorestyle);
 struct proc * arch_finish_switch_to_user(void);
 struct proc *endpoint_lookup(endpoint_t ep);
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+#ако DEBUG_ENABLE_IPC_WARNINGS
+цео isokendpt_f(const char *file, цео line, endpoint_t e, цео *p, цео
 	f);
 #define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
-#else
-int isokendpt_f(endpoint_t e, int *p, int f);
+#инако
+цео isokendpt_f(endpoint_t e, цео *p, цео f);
 #define isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
 #endif
 void proc_no_time(struct proc *p);
 void reset_proc_accounting(struct proc *p);
-void flag_account(struct proc *p, int flag);
-int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
+void flag_account(struct proc *p, цео flag);
+цео try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
 	size);
 
 /* start.c */
@@ -93,50 +93,50 @@ void cstart(void);
 char *env_get(const char *key);
 
 /* system.c */
-int get_priv(register struct proc *rc, int proc_type);
-void set_sendto_bit(const struct proc *rc, int id);
-void unset_sendto_bit(const struct proc *rc, int id);
+цео get_priv(register struct proc *rc, цео proc_type);
+void set_sendto_bit(const struct proc *rc, цео id);
+void unset_sendto_bit(const struct proc *rc, цео id);
 void fill_sendto_mask(const struct proc *rc, sys_map_t *map);
-int send_sig(endpoint_t proc_nr, int sig_nr);
-void cause_sig(proc_nr_t proc_nr, int sig_nr);
+цео send_sig(endpoint_t proc_nr, цео sig_nr);
+void cause_sig(proc_nr_t proc_nr, цео sig_nr);
 void sig_delay_done(struct proc *rp);
 void send_diag_sig(void);
 void kernel_call(message *m_user, struct proc * caller);
 void system_init(void);
 void clear_endpoint(struct proc *rc);
-void clear_ipc_refs(struct proc *rc, int caller_ret);
+void clear_ipc_refs(struct proc *rc, цео caller_ret);
 void kernel_call_resume(struct proc *p);
-int sched_proc(struct proc *rp, int priority, int quantum, int cpu, int niced);
-int add_ipc_filter(struct proc *rp, int type,
+цео sched_proc(struct proc *rp, цео priority, цео quantum, цео cpu, цео niced);
+цео add_ipc_filter(struct proc *rp, цео type,
     vir_bytes address, size_t length);
 void clear_ipc_filters(struct proc *rp);
-int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
+цео check_ipc_filter(struct ipc_filter_s *ipcf, цео fill_flags);
+цео allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
     vir_bytes m_src_v, message *m_src_p);
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
-int priv_add_irq(struct proc *rp, int irq);
-int priv_add_io(struct proc *rp, struct io_range *ior);
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
+цео allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
+цео priv_add_irq(struct proc *rp, цео irq);
+цео priv_add_io(struct proc *rp, struct io_range *ior);
+цео priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
 
 /* system/do_vtimer.c */
 void vtimer_check(struct proc *rp);
 
 /* interrupt.c */
-void put_irq_handler(irq_hook_t *hook, int irq, irq_handler_t handler);
+void put_irq_handler(irq_hook_t *hook, цео irq, irq_handler_t handler);
 void rm_irq_handler(const irq_hook_t *hook);
 void enable_irq(const irq_hook_t *hook);
-int disable_irq(const irq_hook_t *hook);
+цео disable_irq(const irq_hook_t *hook);
 
 void interrupts_enable(void);
 void interrupts_disable(void);
 
 /* debug.c */
-int runqueues_ok(void);
+цео runqueues_ok(void);
 #ifndef CONFIG_SMP
 #define runqueues_ok_local runqueues_ok
-#else
+#инако
 #define runqueues_ok_local() runqueues_ok_cpu(cpuid)
-int runqueues_ok_cpu(unsigned cpu);
+цео runqueues_ok_cpu(unsigned cpu);
 #endif
 char *rtsflagstr(u32_t flags);
 char *miscflagstr(u32_t flags);
@@ -146,8 +146,8 @@ void print_proc(struct proc *pp);
 /* prints the given process and recursively all processes it depends on */
 void print_proc_recursive(struct proc *pp);
 void printmsg(message *msg, struct proc *src, struct proc *dst,
-    char operation, int printparams);
-#if DEBUG_IPC_HOOK
+    char operation, цео printparams);
+#ако DEBUG_IPC_HOOK
 void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
 void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
 void hook_ipc_msgkcall(message *msg, struct proc *proc);
@@ -157,13 +157,13 @@ void hook_ipc_clear(struct proc *proc);
 
 /* system/do_safecopy.c */
 struct cp_sfinfo; /* external callers may only provide NULL */
-int verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, int,
+цео verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, цео,
 	vir_bytes, vir_bytes *, endpoint_t *, struct cp_sfinfo *);
 
 /* system/do_diagctl.c */
-int do_diagctl(struct proc * caller, message *m);
+цео do_diagctl(struct proc * caller, message *m);
 
-#if SPROFILE
+#ако SPROFILE
 /* profile.c */
 void init_profile_clock(u32_t);
 void stop_profile_clock(void);
@@ -183,18 +183,18 @@ void memset_fault_in_kernel(void);
 				virtual_copy_f(NULL, src, dst, bytes, 0)
 #define virtual_copy_vmcheck(caller, src, dst, bytes) \
 				virtual_copy_f(caller, src, dst, bytes, 1)
-int virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
-	vir_addr *dst, vir_bytes bytes, int vmcheck);
-int data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
+цео virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
+	vir_addr *dst, vir_bytes bytes, цео vmcheck);
+цео data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
 	vir_bytes to_addr, size_t bytes);
-int data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
+цео data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
 	from_addr, endpoint_t to, vir_bytes to_addr, size_t bytes);
-phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
+phys_bytes umap_virtual(struct proc* rp, цео seg, vir_bytes vir_addr,
 	vir_bytes bytes);
 phys_bytes seg2phys(u16_t);
-int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
-int intr_init(int);
+цео vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
+	цео pattern, phys_bytes count);
+цео intr_init(цео);
 void halt_cpu(void);
 void arch_init(void);
 void arch_boot_proc(struct boot_image *b, struct proc *p);
@@ -202,38 +202,38 @@ void cpu_identify(void);
 /* arch dependent FPU initialization per CPU */
 void fpu_init(void);
 /* returns true if pfu is present and initialized */
-int is_fpu(void);
+цео is_fpu(void);
 void ser_putc(char);
-__dead void arch_shutdown(int);
+__dead void arch_shutdown(цео);
 void restore_user_context(struct proc * p);
 void read_tsc(u32_t *high, u32_t *low);
-int arch_init_profile_clock(u32_t freq);
+цео arch_init_profile_clock(u32_t freq);
 void arch_stop_profile_clock(void);
 void arch_ack_profile_clock(void);
 void do_ser_debug(void);
-int arch_get_params(char *parm, int max);
+цео arch_get_params(char *parm, цео max);
 void memory_init(void);
 void mem_clear_mapcache(void);
 void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
-int arch_do_vmctl(message *m_ptr, struct proc *p);
-int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
+цео arch_do_vmctl(message *m_ptr, struct proc *p);
+цео vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
 	size_t count);
 void proc_stacktrace(struct proc *proc);
-int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
+цео vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
 	*result, u32_t *ptent);
 size_t vm_lookup_range(const struct proc *proc,
        vir_bytes vir_addr, phys_bytes *phys_addr, size_t bytes);
 void arch_do_syscall(struct proc *proc);
-int arch_phys_map(int index, phys_bytes *addr, phys_bytes *len, int
+цео arch_phys_map(цео index, phys_bytes *addr, phys_bytes *len, цео
 	*flags);
-int arch_phys_map_reply(int index, vir_bytes addr);
+цео arch_phys_map_reply(цео index, vir_bytes addr);
 reg_t arch_get_sp(struct proc *p);
-int arch_enable_paging(struct proc * caller);
-int vm_check_range(struct proc *caller,
-       struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
+цео arch_enable_paging(struct proc * caller);
+цео vm_check_range(struct proc *caller,
+       struct proc *target, vir_bytes vir_addr, size_t bytes, цео writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
+цео copy_msg_from_user(message * user_mbuf, message * dst);
+цео copy_msg_to_user(message * src, message * user_mbuf);
 void switch_address_space(struct proc * p);
 void release_address_space(struct proc *pr);
 
@@ -242,7 +242,7 @@ void disable_fpu_exception(void);
 void release_fpu(struct proc * p);
 void arch_pause(void);
 short cpu_load(void);
-void busy_delay_ms(int ms);
+void busy_delay_ms(цео ms);
 
 /* utility.c */
 void cpu_print_freq(unsigned cpu);

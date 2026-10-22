@@ -31,7 +31,7 @@ void fpu_init(void)
 {
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+void save_local_fpu(struct proc *pr, цео retain)
 {
 }
 
@@ -45,18 +45,18 @@ void arch_proc_reset(struct proc *pr)
 
 	/* Clear process state. */
 	memset(&pr->p_reg, 0, sizeof(pr->p_reg));
-	if(iskerneln(pr->p_nr)) {
+	ако(iskerneln(pr->p_nr)) {
 		pr->p_reg.psr = INIT_TASK_PSR;
-	} else {
+	} инако {
 		pr->p_reg.psr = INIT_PSR;
 	}
 }
 
 void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trapstyle)
+	цео isuser, цео trapstyle)
 {
         assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
+	ако(state != &p->p_reg) {
 	        memcpy(&p->p_reg, state, sizeof(*state));
 	}
 
@@ -65,7 +65,7 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
          */
         p->p_misc_flags |= MF_CONTEXT_SET;
 
-        if(!(p->p_rts_flags)) {
+        ако(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
                 print_proc(p);
                 util_stacktrace();
@@ -77,9 +77,9 @@ void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
 	p->p_reg.r1 = val;
 }
 
-int restore_fpu(struct proc *pr)
+цео restore_fpu(struct proc *pr)
 {
-	return 0;
+	врати 0;
 }
 
 void cpu_identify(void)
@@ -156,7 +156,7 @@ struct proc * arch_finish_switch_to_user(void)
 
 #ifdef CONFIG_SMP
 	stk = (char *)tss[cpuid].sp0;
-#else
+#инако
 	stk = (char *)tss[0].sp0;
 #endif
 	svc_stack = (reg_t)stk;
@@ -167,16 +167,16 @@ struct proc * arch_finish_switch_to_user(void)
 	/* turn interrupts on */
         p->p_reg.psr &= ~(PSR_I|PSR_F);
 
-	return p;
+	врати p;
 }
 
 void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
 {
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(struct proc *p) { врати p->p_reg.sp; }
 
-void get_randomness(struct k_randomness *rand, int source)
+void get_randomness(struct k_randomness *rand, цео source)
 {
 }
 
@@ -198,8 +198,8 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	reg_t orig_ttbr, new_ttbr;
 
 	new_ttbr = p->p_seg.p_ttbr;
-	if (new_ttbr == 0)
-	    return;
+	ако (new_ttbr == 0)
+	    врати;
 
 	orig_ttbr = read_ttbr0();
 
@@ -207,12 +207,12 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	 * test if ttbr is loaded with the current value to avoid unnecessary
 	 * TLB flushes
 	 */
-	if (new_ttbr == orig_ttbr)
-	    return;
+	ако (new_ttbr == orig_ttbr)
+	    врати;
 
 	write_ttbr0(new_ttbr);
 
 	*__ptproc = p;
 
-	return;
+	врати;
 }

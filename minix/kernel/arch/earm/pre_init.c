@@ -18,7 +18,7 @@
 #include "glo.h"
 #include <machine/multiboot.h>
 
-#if USE_SYSDEBUG
+#ако USE_SYSDEBUG
 #define MULTIBOOT_VERBOSE 1
 #endif
 
@@ -27,7 +27,7 @@ kinfo_t kinfo;
 struct kmessages kmessages;
 
 /* pg_utils.c uses this; in this phase, there is a 1:1 mapping. */
-phys_bytes vir2phys(void *addr) { return (phys_bytes) addr; }
+phys_bytes vir2phys(void *addr) { врати (phys_bytes) addr; }
 
 static void setup_mbi(multiboot_info_t *mbi, char *bootargs);
 
@@ -35,7 +35,7 @@ static void setup_mbi(multiboot_info_t *mbi, char *bootargs);
 #define ITOA_BUFFER_SIZE 20
 
 /* Kernel may use memory */
-int kernel_may_alloc = 1;
+цео kernel_may_alloc = 1;
 
 /* kernel bss */
 extern u32_t _edata;
@@ -60,30 +60,30 @@ extern char _kern_unpaged_end;
  *       the end char
  *
 **/
-int find_value(char * content,char * key,char *value,int value_max_len){
+цео find_value(char * content,char * key,char *value,цео value_max_len){
 
 	char *iter,*keyp;
-	int key_len,content_len,match_len,value_len;
+	цео key_len,content_len,match_len,value_len;
 
 	/* return if the input is invalid */
-	if  (key == NULL || content == NULL || value == NULL) {
-		return 1;
+	ако  (key == NULL || content == NULL || value == NULL) {
+		врати 1;
 	}
 
 	/* find the key and content length */
 	key_len = content_len =0;
-	for(iter = key ; *iter != '\0'; iter++, key_len++);
-	for(iter = content ; *iter != '\0'; iter++, content_len++);
+	за(iter = key ; *iter != '\0'; iter++, key_len++);
+	за(iter = content ; *iter != '\0'; iter++, content_len++);
 
 	/* return if key or content length invalid */
-	if (key_len == 0 || content_len == 0) {
-		return 1;
+	ако (key_len == 0 || content_len == 0) {
+		врати 1;
 	}
 
 	/* now find the key in the contents */
 	match_len =0;
-	for (iter = content ,keyp=key; match_len < key_len && *iter != '\0' ; iter++) {
-		if (*iter == *keyp) {
+	за (iter = content ,keyp=key; match_len < key_len && *iter != '\0' ; iter++) {
+		ако (*iter == *keyp) {
 			match_len++;
 			keyp++;
 			continue;
@@ -93,62 +93,62 @@ int find_value(char * content,char * key,char *value,int value_max_len){
 		keyp=key;
 	}
 
-	if (match_len == key_len) {
+	ако (match_len == key_len) {
 		printf("key found at %d %s\n", match_len, &content[match_len]);
 		value_len = 0;
 		/* copy the content to the value char iter already points to the first 
 		   char value */
-		while(*iter != '\0' && *iter != ' ' && value_len  + 1< value_max_len) {
+		док(*iter != '\0' && *iter != ' ' && value_len  + 1< value_max_len) {
 			*value++ = *iter++;
 			value_len++;
 		}
 		*value='\0';
-		return 0;
+		врати 0;
 	}
-	return 1; /* not found */
+	врати 1; /* not found */
 }
 
-static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
+static цео mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
 {
 	/* bigbuf contains a list of key=value pairs separated by \0 char.
 	 * The list itself is ended by a second \0 terminator*/
 	char *p = bigbuf;
 	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
 	char *q;
-	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	цео namelen = strlen(name);
+	цео valuelen = strlen(value);
 
 	/* Some variables we recognize */
-	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	ако(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
+	ако(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
 
 	/* Delete the item if already exists */
-	while (*p) {
-		if (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
+	док (*p) {
+		ако (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
 			q = p;
 			/* let q point to the end of the entry */
-			while (*q) q++; 
+			док (*q) q++; 
 			/* now copy the remained of the buffer */
-			for (q++; q < bufend; q++, p++)
+			за (q++; q < bufend; q++, p++)
 				*p = *q;
 			break;
 		}
 
 		/* find the end of the buffer */
-		while (*p++);
+		док (*p++);
 		p++;
 	}
 	
 
 	/* find the first empty spot */
-	for (p = bigbuf; p < bufend && (*p || *(p + 1)); p++);
+	за (p = bigbuf; p < bufend && (*p || *(p + 1)); p++);
 
 	/* unless we are the first entry step over the delimiter */
-	if (p > bigbuf) p++;
+	ако (p > bigbuf) p++;
 	
 	/* Make sure there's enough space for the new parameter */
-	if (p + namelen + valuelen + 3 > bufend) {
-		return -1;
+	ако (p + namelen + valuelen + 3 > bufend) {
+		врати -1;
 	}
 	
 	strcpy(p, name);
@@ -156,25 +156,25 @@ static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
 	strcpy(p + namelen + 1, value);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0; /* end with a second delimiter */
-	return 0;
+	врати 0;
 }
 
-int overlaps(multiboot_module_t *mod, int n, int cmp_mod)
+цео overlaps(multiboot_module_t *mod, цео n, цео cmp_mod)
 {
 	multiboot_module_t *cmp = &mod[cmp_mod];
-	int m;
+	цео m;
 
 #define INRANGE(mod, v) ((v) >= mod->mod_start && (v) <= thismod->mod_end)
 #define OVERLAP(mod1, mod2) (INRANGE(mod1, mod2->mod_start) || \
 	    INRANGE(mod1, mod2->mod_end))
-	for(m = 0; m < n; m++) {
+	за(m = 0; m < n; m++) {
 		multiboot_module_t *thismod = &mod[m];
-		if(m == cmp_mod) continue;
-		if(OVERLAP(thismod, cmp)) {
-			return 1;
+		ако(m == cmp_mod) continue;
+		ако(OVERLAP(thismod, cmp)) {
+			врати 1;
 		}
 	}
-	return 0;
+	врати 0;
 }
 
 /* XXX: hard-coded stuff for modules */
@@ -195,8 +195,8 @@ void setup_mbi(multiboot_info_t *mbi, char *bootargs)
 	mbi->mi_mods_count = MB_MODS_NR;
 	mbi->mods_addr = (u32_t)&mb_modlist;
 
-	int i;
-	for (i = 0; i < MB_MODS_NR; ++i) {
+	цео i;
+	за (i = 0; i < MB_MODS_NR; ++i) {
 		mb_modlist[i].mod_start = MB_MODS_BASE + i * MB_MODS_ALIGN;
 		mb_modlist[i].mod_end = mb_modlist[i].mod_start + MB_MODS_ALIGN
 		    - ARM_PAGE_SIZE;
@@ -219,7 +219,7 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 {
 	multiboot_memory_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
+	цео var_i,value_i, m, k;
 	char *p;
 	extern char _kern_phys_base, _kern_vir_base, _kern_size,
 	    _kern_unpaged_start, _kern_unpaged_end;
@@ -245,23 +245,23 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	cbi->serial_debug_baud = 115200;
 
 	/* parse boot command line */
-	if (mbi->flags&MULTIBOOT_INFO_CMDLINE) {
+	ако (mbi->flags&MULTIBOOT_INFO_CMDLINE) {
 		static char var[BUF];
 		static char value[BUF];
 
 		/* Override values with cmdline argument */
 		memcpy(cmdline, (void *) mbi->cmdline, BUF);
 		p = cmdline;
-		while (*p) {
+		док (*p) {
 			var_i = 0;
 			value_i = 0;
-			while (*p == ' ') p++; /* skip spaces */
-			if (!*p) break; /* is this the end? */
-			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1)
+			док (*p == ' ') p++; /* skip spaces */
+			ако (!*p) break; /* is this the end? */
+			док (*p && *p != '=' && *p != ' ' && var_i < BUF - 1)
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
-			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) {
+			ако (*p++ != '=') continue; /* skip if not name=value */
+			док (*p && *p != ' ' && value_i < BUF - 1) {
 				value[value_i++] = *p++ ;
 			}
 			value[value_i] = 0;
@@ -298,16 +298,16 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	
 	memset(cbi->memmap, 0, sizeof(cbi->memmap));
 	/* mem_map has a variable layout */
-	if(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
+	ако(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
 		cbi->mmap_size = 0;
-	        for (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
+	        за (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
        	     (unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;
        	       mmap = (multiboot_memory_map_t *) 
 		      	((unsigned long) mmap + mmap->size + sizeof(mmap->size))) {
-			if(mmap->type != MULTIBOOT_MEMORY_AVAILABLE) continue;
+			ако(mmap->type != MULTIBOOT_MEMORY_AVAILABLE) continue;
 			add_memmap(cbi, mmap->mm_base_addr, mmap->mm_length);
 		}
-	} else {
+	} инако {
 		assert(mbi->flags & MULTIBOOT_INFO_MEMORY);
 		add_memmap(cbi, 0, mbi->mem_lower_unused*1024);
 		add_memmap(cbi, 0x100000, mbi->mem_upper_unused*1024);
@@ -324,12 +324,12 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	cbi->mods_with_kernel = mbi->mi_mods_count+1;
 	cbi->kern_mod = k;
 
-	for(m = 0; m < cbi->mods_with_kernel; m++) {
-#if 0
+	за(m = 0; m < cbi->mods_with_kernel; m++) {
+#ако 0
 		printf("checking overlap of module %08lx-%08lx\n",
 		  cbi->module_list[m].mod_start, cbi->module_list[m].mod_end);
 #endif
-		if(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
+		ако(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
 			panic("overlapping boot modules/kernel");
 		/* We cut out the bits of memory that we know are
 		 * occupied by the kernel and boot modules.
@@ -356,7 +356,7 @@ void set_machine_id(char *cmdline)
 
 	char boardname[20];
 	memset(boardname,'\0',20);
-	if (find_value(cmdline,"board_name=",boardname,20)){
+	ако (find_value(cmdline,"board_name=",boardname,20)){
 		/* we expect the bootloader to pass a board_name as argument
 		 * this however did not happen and given we still are in early
 		 * boot we can't use the serial. We therefore generate an interrupt
@@ -365,13 +365,13 @@ void set_machine_id(char *cmdline)
 	}  
 	machine.board_id = get_board_id_by_short_name(boardname);
 
-	if (machine.board_id ==0){
+	ако (machine.board_id ==0){
 		/* same thing as above there is no safe escape */
 		POORMANS_FAILURE_NOTIFICATION;
 	}
 }
 
-kinfo_t *pre_init(int argc, char **argv)
+kinfo_t *pre_init(цео argc, char **argv)
 {
 	char *bootargs;
 	/* This is the main "c" entry point into the kernel. It gets called
@@ -385,7 +385,7 @@ kinfo_t *pre_init(int argc, char **argv)
          * is the program name (load address) and the rest are
 	 * arguments. by convention the second argument is the
 	 *  command line */
-	if (argc != 2) {
+	ако (argc != 2) {
 		POORMANS_FAILURE_NOTIFICATION;
 	}
 
@@ -409,7 +409,7 @@ kinfo_t *pre_init(int argc, char **argv)
 	vm_enable_paging();
 
 	/* Done, return boot info so it can be passed to kmain(). */
-	return &kinfo;
+	врати &kinfo;
 }
 
 /* pre_init gets executed at the memory location where the kernel was loaded by the boot loader.
@@ -418,9 +418,9 @@ kinfo_t *pre_init(int argc, char **argv)
  * longer used and the "real" implementations are visible
  */
 void send_diag_sig(void) { }
-void minix_shutdown(int how) { arch_shutdown(how); }
-void busy_delay_ms(int x) { }
-int raise(int n) { panic("raise(%d)\n", n); }
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, int vm_flags,
-struct kern_phys_map * priv, vir_bytes ptr) { return -1; };
+void minix_shutdown(цео how) { arch_shutdown(how); }
+void busy_delay_ms(цео x) { }
+цео raise(цео n) { panic("raise(%d)\n", n); }
+цео kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, цео vm_flags,
+struct kern_phys_map * priv, vir_bytes ptr) { врати -1; };
 struct machine machine; /* pre init stage machine */

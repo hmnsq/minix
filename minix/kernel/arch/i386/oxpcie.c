@@ -1,7 +1,7 @@
 
 #include "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#ако CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
@@ -47,20 +47,20 @@ static void oxpcie_init(void)
 
 void oxpcie_putc(char c)
 {
-	static int inuse = 0;
+	static цео inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	ако(vm_running && oxpcie_vaddr && !inuse) {
+        	цео i;
+		static цео init_done;
 		inuse = 1;
 
-		if(!init_done) {
+		ако(!init_done) {
 			oxpcie_init();
 			init_done = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
+        	за (i= 0; i<100000; i++) {
+			ако(OXPCIE_LSR & LSR_THRE)
                        		break;
 		}
 		OXPCIE_THR = c;
@@ -68,16 +68,16 @@ void oxpcie_putc(char c)
 	}
 }
 
-int oxpcie_in(void)
+цео oxpcie_in(void)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	ако(vm_running && oxpcie_vaddr) {
+		цео lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		ако(lsr & LSR_DR)
+			врати (цео) OXPCIE_RBR;
 	}
 
-	return -1;
+	врати -1;
 }
 
 #endif

@@ -4,7 +4,7 @@
 #include "acpi.h"
 #include "arch_proto.h"
 
-typedef int ((* acpi_read_t)(phys_bytes addr, void * buff, size_t size));
+typedef цео ((* acpi_read_t)(phys_bytes addr, void * buff, size_t size));
 
 struct acpi_rsdp acpi_rsdp;
 
@@ -36,45 +36,45 @@ static struct {
 	size_t	length;
 } sdt_trans[MAX_RSDT];
 
-static int sdt_count;
+static цео sdt_count;
 static u16_t pm1a_cnt_blk = 0;
 static u16_t pm1b_cnt_blk = 0;
 static u16_t slp_typa = 0;
 static u16_t slp_typb = 0;
 
-static int acpi_check_csum(struct acpi_sdt_header * tb, size_t size)
+static цео acpi_check_csum(struct acpi_sdt_header * tb, size_t size)
 {
 	u8_t total = 0;
-	int i;
-	for (i = 0; i < size; i++)
+	цео i;
+	за (i = 0; i < size; i++)
 		total += ((unsigned char *)tb)[i];
-	return total == 0 ? 0 : -1;
+	врати total == 0 ? 0 : -1;
 }
 
-static int acpi_check_signature(const char * orig, const char * match)
+static цео acpi_check_signature(const char * orig, const char * match)
 {
-	return strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
+	врати strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
 }
 
 static u32_t acpi_phys2vir(u32_t p)
 {
-	if(!vm_running) {
+	ако(!vm_running) {
 		DEBUGEXTRA(("acpi: returning 0x%lx as vir addr\n", p));
-		return p;
+		врати p;
 	}
 	panic("acpi: can't get virtual address of arbitrary physical address");
 }
 
-static int acpi_phys_copy(phys_bytes phys, void *target, size_t len)
+static цео acpi_phys_copy(phys_bytes phys, void *target, size_t len)
 {
-	if(!vm_running) {
+	ако(!vm_running) {
 		memcpy(target, (void *) phys, len);
-		return 0;
+		врати 0;
 	}
 	panic("can't acpi_phys_copy with vm");
 }
 
-static int acpi_read_sdt_at(phys_bytes addr,
+static цео acpi_read_sdt_at(phys_bytes addr,
 				struct acpi_sdt_header * tb,
 				size_t size,
 				const char * name)
@@ -82,67 +82,67 @@ static int acpi_read_sdt_at(phys_bytes addr,
 	struct acpi_sdt_header hdr;
 
 	/* if NULL is supplied, we only return the size of the table */
-	if (tb == NULL) {
-		if (read_func(addr, &hdr, sizeof(struct acpi_sdt_header))) {
+	ако (tb == NULL) {
+		ако (read_func(addr, &hdr, sizeof(struct acpi_sdt_header))) {
 			printf("ERROR acpi cannot read %s header\n", name);
-			return -1;
+			врати -1;
 		}
 
-		return hdr.length;
+		врати hdr.length;
 	}
 
-	if (read_func(addr, tb, sizeof(struct acpi_sdt_header))) {
+	ако (read_func(addr, tb, sizeof(struct acpi_sdt_header))) {
 		printf("ERROR acpi cannot read %s header\n", name);
-		return -1;
+		врати -1;
 	}
 
-	if (acpi_check_signature(tb->signature, name)) {
+	ако (acpi_check_signature(tb->signature, name)) {
 		printf("ERROR acpi %s signature does not match\n", name);
-		return -1;
+		врати -1;
 	}
 
-	if (size < tb->length) {
+	ако (size < tb->length) {
 		printf("ERROR acpi buffer too small for %s\n", name);
-		return -1;
+		врати -1;
 	}
 
-	if (read_func(addr, tb, size)) {
+	ако (read_func(addr, tb, size)) {
 		printf("ERROR acpi cannot read %s\n", name);
-		return -1;
+		врати -1;
 	}
 
-	if (acpi_check_csum(tb, tb->length)) {
+	ако (acpi_check_csum(tb, tb->length)) {
 		printf("ERROR acpi %s checksum does not match\n", name);
-		return -1;
+		врати -1;
 	}
 
-	return tb->length;
+	врати tb->length;
 }
 
 phys_bytes acpi_get_table_base(const char * name)
 {
-	int i;
+	цео i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	за(i = 0; i < sdt_count; i++) {
+		ако (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return (phys_bytes) rsdt.data[i];
+			врати (phys_bytes) rsdt.data[i];
 	}
 
-	return (phys_bytes) NULL;
+	врати (phys_bytes) NULL;
 }
 
 size_t acpi_get_table_length(const char * name)
 {
-	int i;
+	цео i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	за(i = 0; i < sdt_count; i++) {
+		ако (strncmp(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return sdt_trans[i].length;
+			врати sdt_trans[i].length;
 	}
 
-	return 0;
+	врати 0;
 }
 
 static void * acpi_madt_get_typed_item(struct acpi_madt_hdr * hdr,
@@ -150,81 +150,81 @@ static void * acpi_madt_get_typed_item(struct acpi_madt_hdr * hdr,
 					unsigned idx)
 {
 	u8_t * t, * end;
-	int i;
+	цео i;
 
 	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
 	end = (u8_t *) hdr + hdr->hdr.length;
 
 	i = 0;
-	while(t < end) {
-		if (type == ((struct acpi_madt_item_hdr *) t)->type) {
-			if (i == idx)
-				return t;
-			else
+	док(t < end) {
+		ако (type == ((struct acpi_madt_item_hdr *) t)->type) {
+			ако (i == idx)
+				врати t;
+			инако
 				i++;
 		}
 		t += ((struct acpi_madt_item_hdr *) t)->length;
 	}
 
-	return NULL;
+	врати NULL;
 }
 
-#if 0
+#ако 0
 static void * acpi_madt_get_item(struct acpi_madt_hdr * hdr,
 				unsigned idx)
 {
 	u8_t * t, * end;
-	int i;
+	цео i;
 
 	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
 	end = (u8_t *) hdr + hdr->hdr.length;
 
-	for(i = 0 ; i <= idx && t < end; i++) {
-		if (i == idx)
-			return t;
+	за(i = 0 ; i <= idx && t < end; i++) {
+		ако (i == idx)
+			врати t;
 		t += ((struct acpi_madt_item_hdr *) t)->length;
 	}
 
-	return NULL;
+	врати NULL;
 }
 #endif
 
-static int acpi_rsdp_test(void * buff)
+static цео acpi_rsdp_test(void * buff)
 {
 	struct acpi_rsdp * rsdp = (struct acpi_rsdp *) buff;
 
-	if (!platform_tbl_checksum_ok(buff, 20))
-		return 0;
-	if (strncmp(rsdp->signature, "RSD PTR ", 8))
-		return 0;
+	ако (!platform_tbl_checksum_ok(buff, 20))
+		врати 0;
+	ако (strncmp(rsdp->signature, "RSD PTR ", 8))
+		врати 0;
 
-	return 1;
+	врати 1;
 }
 
-static int get_acpi_rsdp(void)
+static цео get_acpi_rsdp(void)
 {
 	u16_t ebda;
 	/*
 	 * Read 40:0Eh - to find the starting address of the EBDA.
 	 */
 	acpi_phys_copy (0x40E, &ebda, sizeof(ebda));
-	if (ebda) {
+	ако (ebda) {
 		ebda <<= 4;
-		if(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
+		ако(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
 					sizeof(acpi_rsdp), &machine.acpi_rsdp,
 					acpi_rsdp_test))
-			return 1;
+			врати 1;
 	} 
 
 	/* try BIOS read only mem space */
-	if(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
+	ако(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
 				sizeof(acpi_rsdp), &machine.acpi_rsdp,
 				acpi_rsdp_test))
-		return 1;
+		врати 1;
 	
 	machine.acpi_rsdp = 0; /* RSDP cannot be found at this address therefore
 				  it is a valid negative value */
-	return 0;
+	врати 0;
 }
 
 static void acpi_init_poweroff(void)
@@ -240,14 +240,14 @@ static void acpi_init_poweroff(void)
 	/* So we can safely use them */
 	fadt_header = (struct acpi_fadt_header *)
 		acpi_phys2vir(acpi_get_table_base("FACP"));
-	if (fadt_header == NULL) {
+	ако (fadt_header == NULL) {
 		msg = "Could not load FACP";
 		goto exit;
 	}
 
 	dsdt_header = (struct acpi_rsdt *)
 		acpi_phys2vir((phys_bytes) fadt_header->dsdt);
-	if (dsdt_header == NULL) {
+	ако (dsdt_header == NULL) {
 		msg = "Could not load DSDT";
 		goto exit;
 	}
@@ -260,41 +260,41 @@ static void acpi_init_poweroff(void)
 
 	/* See http://forum.osdev.org/viewtopic.php?t=16990 */
 	/* for layout of \_S5 */
-	while (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
+	док (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
 		ptr++;
 
 	msg = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
-	if (ptr >= end || ptr == start)
+	ако (ptr >= end || ptr == start)
 		goto exit;
 
 	/* validate AML structure */
-	if (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
+	ако (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
 		goto exit;
 
-	if ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
+	ако ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
 		(*(ptr + AMI_S5_NAME_OP_OFFSET_2) != AMI_NAME_OP_CODE ||
 		 *(ptr + AMI_S5_NAME_OP_OFFSET_2 + 1) != '\\')) &&
 		*(ptr + AMI_S5_NAME_OP_OFFSET_1) != AMI_NAME_OP_CODE)
 		goto exit;
 
 	ptr += AMI_S5_PACKET_LENGTH_OFFSET;
-	if (ptr >= end)
+	ако (ptr >= end)
 		goto exit;
 
 	/* package length */
 	ptr += ((*ptr & AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK) >>
 		AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT) +
 		AMI_MIN_PACKAGE_LENGTH + AMI_NUM_ELEMENTS_LENGTH;
-	if (ptr >= end)
+	ако (ptr >= end)
 		goto exit;
 
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ако (*ptr == AMI_BYTE_PREFIX_CODE)
 		ptr++; /* skip byte prefix */
 
 	slp_typa = (*ptr) << AMI_SLP_TYPA_SHIFT;
 
 	ptr++; /* move to SLP_TYPb */
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ако (*ptr == AMI_BYTE_PREFIX_CODE)
 		ptr++; /* skip byte prefix */
 
 	slp_typb = (*ptr) << AMI_SLP_TYPB_SHIFT;
@@ -302,19 +302,19 @@ static void acpi_init_poweroff(void)
 	msg = "poweroff initialized";
 
 exit:
-	if (msg) {
+	ако (msg) {
 		DEBUGBASIC(("acpi: %s\n", msg));
 	}
 }
 
 void acpi_init(void)
 {
-	int s, i;
+	цео s, i;
 	read_func = acpi_phys_copy;
 
-	if (!get_acpi_rsdp()) {
+	ако (!get_acpi_rsdp()) {
 		printf("WARNING : Cannot configure ACPI\n");
-		return;
+		врати;
 	}
 	
 	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (struct acpi_sdt_header *) &rsdt,
@@ -322,16 +322,16 @@ void acpi_init(void)
 
 	sdt_count = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
 
-	for (i = 0; i < sdt_count; i++) {
+	за (i = 0; i < sdt_count; i++) {
 		struct acpi_sdt_header hdr;
-		int j;
-		if (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {
+		цео j;
+		ако (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {
 			printf("ERROR acpi cannot read header at 0x%x\n",
 								rsdt.data[i]);
-			return;
+			врати;
 		}
 
-		for (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
+		за (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
 			sdt_trans[i].signature[j] = hdr.signature[j];
 		sdt_trans[i].signature[ACPI_SDT_SIGNATURE_LEN] = '\0';
 		sdt_trans[i].length = hdr.length;
@@ -347,19 +347,19 @@ struct acpi_madt_ioapic * acpi_get_ioapic_next(void)
 
 	struct acpi_madt_ioapic * ret;
 
-	if (idx == 0) {
+	ако (idx == 0) {
 		madt_hdr = (struct acpi_madt_hdr *)
 			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+		ако (madt_hdr == NULL)
+			врати NULL;
 	}
 
 	ret = (struct acpi_madt_ioapic *)
 		acpi_madt_get_typed_item(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
-	if (ret)
+	ако (ret)
 		idx++;
 
-	return ret;
+	врати ret;
 }
 
 struct acpi_madt_lapic * acpi_get_lapic_next(void)
@@ -369,28 +369,28 @@ struct acpi_madt_lapic * acpi_get_lapic_next(void)
 
 	struct acpi_madt_lapic * ret;
 
-	if (idx == 0) {
+	ако (idx == 0) {
 		madt_hdr = (struct acpi_madt_hdr *)
 			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+		ако (madt_hdr == NULL)
+			врати NULL;
 	}
 
-	for (;;) {
+	за (;;) {
 		ret = (struct acpi_madt_lapic *)
 			acpi_madt_get_typed_item(madt_hdr,
 					ACPI_MADT_TYPE_LAPIC, idx);
-		if (!ret)
+		ако (!ret)
 			break;
 
 		idx++;
 
 		/* report only usable CPUs */
-		if (ret->flags & 1)
+		ако (ret->flags & 1)
 			break;
 	}
 
-	return ret;
+	врати ret;
 }
 
 void __k_unpaged_acpi_poweroff(void)
@@ -400,11 +400,11 @@ void __k_unpaged_acpi_poweroff(void)
 
 void acpi_poweroff(void)
 {
-	if (pm1a_cnt_blk == 0) {
-		return;
+	ако (pm1a_cnt_blk == 0) {
+		врати;
 	}
 	outw(pm1a_cnt_blk, slp_typa | SLP_EN_CODE);
-	if (pm1b_cnt_blk != 0) {
+	ако (pm1b_cnt_blk != 0) {
 		outw(pm1b_cnt_blk, slp_typb | SLP_EN_CODE);
 	}
 }

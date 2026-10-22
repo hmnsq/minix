@@ -12,12 +12,12 @@
 #include "kernel/system.h"
 #include <sys/ptrace.h>
 
-#if USE_TRACE
+#ако USE_TRACE
 
 /*==========================================================================*
  *				do_trace				    *
  *==========================================================================*/
-int do_trace(struct proc * caller, message * m_ptr)
+цео do_trace(struct proc * caller, message * m_ptr)
 {
 /* Handle the debugging commands supported by the ptrace system call
  * The commands are:
@@ -47,50 +47,50 @@ int do_trace(struct proc * caller, message * m_ptr)
   register struct proc *rp;
   vir_bytes tr_addr = m_ptr->m_lsys_krn_sys_trace.address;
   long tr_data = m_ptr->m_lsys_krn_sys_trace.data;
-  int tr_request = m_ptr->m_lsys_krn_sys_trace.request;
-  int tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
+  цео tr_request = m_ptr->m_lsys_krn_sys_trace.request;
+  цео tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
   unsigned char ub;
-  int i;
+  цео i;
 
 #define COPYTOPROC(addr, myaddr, length) {		\
 	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	цео r;	\
 	fromaddr.proc_nr_e = KERNEL;			\
 	toaddr.proc_nr_e = tr_proc_nr_e;		\
 	fromaddr.offset = (myaddr);			\
 	toaddr.offset = (addr);				\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	ако((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		врати r;\
 	}  \
 }
 
 #define COPYFROMPROC(addr, myaddr, length) {	\
 	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	цео r;	\
 	fromaddr.proc_nr_e = tr_proc_nr_e;		\
 	toaddr.proc_nr_e = KERNEL;			\
 	fromaddr.offset = (addr);			\
 	toaddr.offset = (myaddr);			\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	ако((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		врати r;\
 	}  \
 }
 
-  if(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) return(EINVAL);
-  if (iskerneln(tr_proc_nr)) return(EPERM);
+  ако(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) врати(EINVAL);
+  ако (iskerneln(tr_proc_nr)) врати(EPERM);
 
   rp = proc_addr(tr_proc_nr);
-  if (isemptyp(rp)) return(EINVAL);
+  ако (isemptyp(rp)) врати(EINVAL);
   switch (tr_request) {
   case T_STOP:			/* stop process */
 	RTS_SET(rp, RTS_P_STOP);
 	/* clear syscall trace and single step flags */
 	rp->p_misc_flags &= ~(MF_SC_TRACE | MF_STEP);
-	return(OK);
+	врати(OK);
 
   case T_GETINS:		/* return value from instruction space */
 	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
@@ -103,11 +103,11 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   case T_GETUSER:		/* return value from process table */
-	if ((tr_addr & (sizeof(long) - 1)) != 0) return(EFAULT);
+	ако ((tr_addr & (sizeof(long) - 1)) != 0) врати(EFAULT);
 
-	if (tr_addr <= sizeof(struct proc) - sizeof(long)) {
+	ако (tr_addr <= sizeof(struct proc) - sizeof(long)) {
 		m_ptr->m_krn_lsys_sys_trace.data =
-		    *(long *) ((char *) rp + (int) tr_addr);
+		    *(long *) ((char *) rp + (цео) tr_addr);
 		break;
 	}
 
@@ -117,10 +117,10 @@ int do_trace(struct proc * caller, message * m_ptr)
 	i = sizeof(long) - 1;
 	tr_addr -= (sizeof(struct proc) + i) & ~i;
 
-	if (tr_addr > sizeof(struct priv) - sizeof(long)) return(EFAULT);
+	ако (tr_addr > sizeof(struct priv) - sizeof(long)) врати(EFAULT);
 
 	m_ptr->m_krn_lsys_sys_trace.data =
-	    *(long *) ((char *) rp->p_priv + (int) tr_addr);
+	    *(long *) ((char *) rp->p_priv + (цео) tr_addr);
 	break;
 
   case T_SETINS:		/* set value in instruction space */
@@ -134,33 +134,33 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   case T_SETUSER:			/* set value in process table */
-	if ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
+	ако ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
 	     tr_addr > sizeof(struct stackframe_s) - sizeof(reg_t))
-		return(EFAULT);
-	i = (int) tr_addr;
-#if defined(__i386__)
+		врати(EFAULT);
+	i = (цео) tr_addr;
+#ако defined(__i386__)
 	/* Altering segment registers might crash the kernel when it
 	 * tries to load them prior to restarting a process, so do
 	 * not allow it.
 	 */
-	if (i == (int) &((struct proc *) 0)->p_reg.cs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ds ||
-	    i == (int) &((struct proc *) 0)->p_reg.es ||
-	    i == (int) &((struct proc *) 0)->p_reg.gs ||
-	    i == (int) &((struct proc *) 0)->p_reg.fs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ss)
-		return(EFAULT);
+	ако (i == (цео) &((struct proc *) 0)->p_reg.cs ||
+	    i == (цео) &((struct proc *) 0)->p_reg.ds ||
+	    i == (цео) &((struct proc *) 0)->p_reg.es ||
+	    i == (цео) &((struct proc *) 0)->p_reg.gs ||
+	    i == (цео) &((struct proc *) 0)->p_reg.fs ||
+	    i == (цео) &((struct proc *) 0)->p_reg.ss)
+		врати(EFAULT);
 
-	if (i == (int) &((struct proc *) 0)->p_reg.psw)
+	ако (i == (цео) &((struct proc *) 0)->p_reg.psw)
 		/* only selected bits are changeable */
 		SETPSW(rp, tr_data);
-	else
+	инако
 		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
 #elif defined(__arm__)
-	if (i == (int) &((struct proc *) 0)->p_reg.psr) {
+	ако (i == (цео) &((struct proc *) 0)->p_reg.psr) {
 		/* only selected bits are changeable */
 		SET_USR_PSR(rp, tr_data);
-	} else {
+	} инако {
 		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
 	}
 #endif
@@ -200,9 +200,9 @@ int do_trace(struct proc * caller, message * m_ptr)
 	break;
 
   default:
-	return(EINVAL);
+	врати(EINVAL);
   }
-  return(OK);
+  врати(OK);
 }
 
 #endif /* USE_TRACE */

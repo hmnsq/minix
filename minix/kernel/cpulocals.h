@@ -18,7 +18,7 @@
 /* FIXME - padd the structure so that items in the array do not share cacheline
  * with other cpus */
 
-#else
+#инако
 
 /* single CPU */
 
@@ -45,7 +45,7 @@ extern struct __cpu_local_vars {
  * signal whether pagefault is already being handled to detect recursive
  * pagefaults
  */
-	int pagefault_handled;
+	цео pagefault_handled;
 
 /*
  * which processpage tables are loaded right now. We need to know this because
@@ -57,9 +57,9 @@ extern struct __cpu_local_vars {
 /* CPU private run queues */
 	struct proc * run_q_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */
 	struct proc * run_q_tail[NR_SCHED_QUEUES]; /* ptrs to ready list tails */
-	int cpu_is_idle; /* let the others know that you are idle */
+	цео cpu_is_idle; /* let the others know that you are idle */
 
-	int idle_interrupted; /* to interrupt busy-idle
+	цео idle_interrupted; /* to interrupt busy-idle
 						     while profiling */
 
 	u64_t tsc_ctr_switch; /* when did we switched time accounting */
