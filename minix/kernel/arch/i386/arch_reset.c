@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <ctype.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <machine/cmos.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <machine/bios.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <machine/cpu.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/cpufeature.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/reboot.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <signal.h>
 
-#include <minix/u64.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "oxpcie.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "direct_utils.h"
 
-#ifdef USE_ACPI
-#include "acpi.h"
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ USE_ACPI
+#ਅਨ੍ਤਰ੍ਭਾਵ "acpi.h"
+#ਜੇ_ਅੰਤ
 
-#define     KBCMDP          4       /* kbd controller port (O) */
-#define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
-#define      IO_KBD          0x060           /* 8042 Keyboard */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ     KBCMDP          4       /* kbd controller port (O) */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ      KBC_PULSE0     0xfe    /* pulse output bit 0 */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+ਪੂਰਨ cpu_has_tsc;
 
-void
-reset(void)
+ਖਾਲੀ
+reset(ਖਾਲੀ)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        ਜੇ (b != 0xff) {
+                ਜੇ ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	ਜਦੋਂ(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+ਸਥਿਰ __dead ਖਾਲੀ
+halt(ਖਾਲੀ)
 {
-	for ( ; ; )
+	ਲਈ ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+ਸਥਿਰ __dead ਖਾਲੀ
+poweroff(ਖਾਲੀ)
 {
-	const char *shutdown_str;
+	ਅਚਲ ਅੱਖਰ *shutdown_str;
 
-#ifdef USE_ACPI
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ USE_ACPI
 	acpi_poweroff();
-#endif
+#ਜੇ_ਅੰਤ
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        ਜਦੋਂ (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,40 +105,40 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead ਖਾਲੀ arch_shutdown(ਪੂਰਨ how)
 {
-	unsigned char unused_ch;
+	ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ ਅਣਵਰਤਿਆ_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	ਜਦੋਂ(ਸਿੱਧਾ_read_char(&ਅਣਵਰਤਿਆ_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	ਜੇ(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		ਜੇ (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
-		direct_cls();
-		direct_print("Minix panic. System diagnostics buffer:\n\n");
-		direct_print(kmess.kmess_buf);
-		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		ਸਿੱਧਾ_cls();
+		ਸਿੱਧਾ_print("Minix panic. System diagnostics buffer:\n\n");
+		ਸਿੱਧਾ_print(kmess.kmess_buf);
+		ਸਿੱਧਾ_print("\nSystem has panicked, press any key to reboot");
+		ਜਦੋਂ (!ਸਿੱਧਾ_read_char(&ਅਣਵਰਤਿਆ_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ਜੇ((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ਜੇ(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		ਲਈ (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -150,24 +150,24 @@ __dead void arch_shutdown(int how)
 	NOT_REACHABLE;
 }
 
-#ifdef DEBUG_SERIAL
-void ser_putc(char c)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ DEBUG_SERIAL
+ਖਾਲੀ ser_putc(ਅੱਖਰ c)
 {
-        int i;
-        int lsr, thr;
+        ਪੂਰਨ i;
+        ਪੂਰਨ lsr, thr;
 
-#if CONFIG_OXPCIE
+#ਜੇ CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#ਨਹੀਂਤਾਂ
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        ਲਈ (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                ਜੇ (inb( lsr) & LSR_THRE)
+                        ਰੋਕੋ;
         }
         outb( thr, c);
-#endif
+#ਜੇ_ਅੰਤ
 }
 
-#endif
+#ਜੇ_ਅੰਤ

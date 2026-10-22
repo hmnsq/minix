@@ -1,14 +1,14 @@
-#ifndef __HW_INTR_X86_H__
-#define __HW_INTR_X86_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __HW_INTR_X86_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __HW_INTR_X86_H__
 
-#include "kernel/kernel.h"
-void irq_8259_unmask(int irq);
-void irq_8259_mask(int irq);
-void irq_8259_eoi(int irq);
-void irq_handle(int irq);
-void i8259_disable(void);
-void eoi_8259_master(void);
-void eoi_8259_slave(void);
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
+ਖਾਲੀ irq_8259_unmask(ਪੂਰਨ irq);
+ਖਾਲੀ irq_8259_ਨਕਾਬ(ਪੂਰਨ irq);
+ਖਾਲੀ irq_8259_eoi(ਪੂਰਨ irq);
+ਖਾਲੀ irq_handle(ਪੂਰਨ irq);
+ਖਾਲੀ i8259_disable(ਖਾਲੀ);
+ਖਾਲੀ eoi_8259_master(ਖਾਲੀ);
+ਖਾਲੀ eoi_8259_slave(ਖਾਲੀ);
 
 /* 
  * we don't use IO APIC if not configured for SMP as we cannot read any info
@@ -16,39 +16,39 @@ void eoi_8259_slave(void);
  * configurations. ACPI would be another option, however we don't support it
  * either
  */
-#if defined(USE_APIC)
-#include "kernel/arch/i386/apic.h"
+#ਜੇ defined(USE_APIC)
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/arch/i386/apic.h"
 
-#define hw_intr_mask(irq)	ioapic_mask_irq(irq)
-#define hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
-#define hw_intr_ack(irq)	ioapic_eoi(irq)
-#define hw_intr_used(irq)	do {					\
-					if (ioapic_enabled)		\
-						ioapic_set_irq(irq);	\
-				} while (0)
-#define hw_intr_not_used(irq)	do {					\
-					if (ioapic_enabled)		\
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ਨਕਾਬ(irq)	ioapic_ਨਕਾਬ_irq(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_unmask(irq)	ioapic_unmask_irq(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ack(irq)	ioapic_eoi(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ਵਰਤਿਆ(irq)	ਕਰੋ {					\
+					ਜੇ (ioapic_enabled)		\
+						ioapic_ਸੈੱਟ_irq(irq);	\
+				} ਜਦੋਂ (0)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_not_ਵਰਤਿਆ(irq)	ਕਰੋ {					\
+					ਜੇ (ioapic_enabled)		\
 						ioapic_unset_irq(irq);	\
-				} while (0)
-#define hw_intr_disable_all() do {					\
+				} ਜਦੋਂ (0)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_disable_all() ਕਰੋ {					\
 					ioapic_disable_all();		\
 					ioapic_reset_pic();		\
 					lapic_disable();		\
-				} while (0)
-#ifdef CONFIG_SMP
-#define ipi_ack			apic_eoi
-#endif
+				} ਜਦੋਂ (0)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ipi_ack			apic_eoi
+#ਜੇ_ਅੰਤ
 
-#else
+#ਨਹੀਂਤਾਂ
 /* legacy PIC */
 
-#define hw_intr_mask(irq)	irq_8259_mask(irq)
-#define hw_intr_unmask(irq)	irq_8259_unmask(irq)
-#define hw_intr_ack(irq)	irq_8259_eoi(irq)
-#define hw_intr_used(irq)
-#define hw_intr_not_used(irq)
-#define hw_intr_disable_all()
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ਨਕਾਬ(irq)	irq_8259_ਨਕਾਬ(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_unmask(irq)	irq_8259_unmask(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ack(irq)	irq_8259_eoi(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_ਵਰਤਿਆ(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_not_ਵਰਤਿਆ(irq)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ hw_intr_disable_all()
 
-#endif
+#ਜੇ_ਅੰਤ
 
-#endif /* __HW_INTR_X86_H__ */
+#ਜੇ_ਅੰਤ /* __HW_INTR_X86_H__ */

@@ -1,7 +1,7 @@
-#ifndef __SCONST_H__
-#define __SCONST_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __SCONST_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __SCONST_H__
 
-#include "kernel/const.h"
-#include "kernel/procoffsets.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/const.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/procoffsets.h"
 
-#endif /* __SCONST_H__ */
+#ਜੇ_ਅੰਤ /* __SCONST_H__ */

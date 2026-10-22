@@ -1,410 +1,410 @@
 
-#include <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
 
-#include "acpi.h"
-#include "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "acpi.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
 
-typedef int ((* acpi_read_t)(phys_bytes addr, void * buff, size_t size));
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਪੂਰਨ ((* acpi_read_t)(phys_ਬਾਈਟਾਂ addr, ਖਾਲੀ * buff, size_t ਮਾਪ));
 
-struct acpi_rsdp acpi_rsdp;
+ਬਣਤਰ acpi_rsdp acpi_rsdp;
 
-static acpi_read_t read_func;
+ਸਥਿਰ acpi_read_t read_func;
 
-#define MAX_RSDT	35 /* ACPI defines 35 signatures */
-#define SLP_EN_CODE	(1 << 13) /* ACPI SLP_EN_CODE code */
-#define AMI_PACKAGE_OP_CODE (0x12)
-#define AMI_NAME_OP_CODE (0x8)
-#define AMI_BYTE_PREFIX_CODE (0xA)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK (0xC0)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT (6)
-#define AMI_MIN_PACKAGE_LENGTH (1)
-#define AMI_NUM_ELEMENTS_LENGTH (1)
-#define AMI_SLP_TYPA_SHIFT (10)
-#define AMI_SLP_TYPB_SHIFT (10)
-#define AMI_S5_NAME_OP_OFFSET_1 (-1)
-#define AMI_S5_NAME_OP_OFFSET_2 (-2)
-#define AMI_S5_PACKAGE_OP_OFFSET (4)
-#define AMI_S5_PACKET_LENGTH_OFFSET (5)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ MAX_RSDT	35 /* ACPI defines 35 signatures */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SLP_EN_ਕੋਡ	(1 << 13) /* ACPI SLP_EN_CODE code */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_PACKAGE_OP_ਕੋਡ (0x12)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_NAME_OP_ਕੋਡ (0x8)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_BYTE_ਅਗੇਤਰ_ਕੋਡ (0xA)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_PACKAGE_ਲੰਮਾਈ_ENCODING_ਬਿੱਟ_ਨਕਾਬ (0xC0)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_PACKAGE_ਲੰਮਾਈ_ENCODING_ਬਿੱਟ_ਖਿਸਕਾਓ (6)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_MIN_PACKAGE_ਲੰਮਾਈ (1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_ਅੰਕ_ELEMENTS_ਲੰਮਾਈ (1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_SLP_TYPA_ਖਿਸਕਾਓ (10)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_SLP_TYPB_ਖਿਸਕਾਓ (10)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_S5_NAME_OP_ਵਿੱਥ_1 (-1)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_S5_NAME_OP_ਵਿੱਥ_2 (-2)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_S5_PACKAGE_OP_ਵਿੱਥ (4)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ AMI_S5_PACKET_ਲੰਮਾਈ_ਵਿੱਥ (5)
 
-static struct acpi_rsdt {
-	struct acpi_sdt_header	hdr;
-	u32_t			data[MAX_RSDT];
+ਸਥਿਰ ਬਣਤਰ acpi_rsdt {
+	ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ	hdr;
+	u32_t			ਅੰਕੜੇ[MAX_RSDT];
 } rsdt;
 	
-static struct {
-	char	signature [ACPI_SDT_SIGNATURE_LEN + 1];
-	size_t	length;
+ਸਥਿਰ ਬਣਤਰ {
+	ਅੱਖਰ	signature [ACPI_SDT_SIGNATURE_LEN + 1];
+	size_t	ਲੰਮਾਈ;
 } sdt_trans[MAX_RSDT];
 
-static int sdt_count;
-static u16_t pm1a_cnt_blk = 0;
-static u16_t pm1b_cnt_blk = 0;
-static u16_t slp_typa = 0;
-static u16_t slp_typb = 0;
+ਸਥਿਰ ਪੂਰਨ sdt_ਗਿਣਤੀ;
+ਸਥਿਰ u16_t pm1a_cnt_blk = 0;
+ਸਥਿਰ u16_t pm1b_cnt_blk = 0;
+ਸਥਿਰ u16_t slp_typa = 0;
+ਸਥਿਰ u16_t slp_typb = 0;
 
-static int acpi_check_csum(struct acpi_sdt_header * tb, size_t size)
+ਸਥਿਰ ਪੂਰਨ acpi_check_csum(ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ * tb, size_t ਮਾਪ)
 {
-	u8_t total = 0;
-	int i;
-	for (i = 0; i < size; i++)
-		total += ((unsigned char *)tb)[i];
-	return total == 0 ? 0 : -1;
+	u8_t ਕੁੱਲ = 0;
+	ਪੂਰਨ i;
+	ਲਈ (i = 0; i < ਮਾਪ; i++)
+		ਕੁੱਲ += ((ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ *)tb)[i];
+	ਵਾਪਸ ਕੁੱਲ == 0 ? 0 : -1;
 }
 
-static int acpi_check_signature(const char * orig, const char * match)
+ਸਥਿਰ ਪੂਰਨ acpi_check_signature(ਅਚਲ ਅੱਖਰ * orig, ਅਚਲ ਅੱਖਰ * ਮੇਲ)
 {
-	return strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
+	ਵਾਪਸ ਲੜੀ_ਤੁਲਨਾ(orig, ਮੇਲ, ACPI_SDT_SIGNATURE_LEN);
 }
 
-static u32_t acpi_phys2vir(u32_t p)
+ਸਥਿਰ u32_t acpi_phys2vir(u32_t p)
 {
-	if(!vm_running) {
+	ਜੇ(!vm_running) {
 		DEBUGEXTRA(("acpi: returning 0x%lx as vir addr\n", p));
-		return p;
+		ਵਾਪਸ p;
 	}
 	panic("acpi: can't get virtual address of arbitrary physical address");
 }
 
-static int acpi_phys_copy(phys_bytes phys, void *target, size_t len)
+ਸਥਿਰ ਪੂਰਨ acpi_phys_copy(phys_ਬਾਈਟਾਂ phys, ਖਾਲੀ *ਨਿਸ਼ਾਨਾ, size_t len)
 {
-	if(!vm_running) {
-		memcpy(target, (void *) phys, len);
-		return 0;
+	ਜੇ(!vm_running) {
+		ਸਮ੍ਰਿਤੀ_ਨਕਲ(ਨਿਸ਼ਾਨਾ, (ਖਾਲੀ *) phys, len);
+		ਵਾਪਸ 0;
 	}
 	panic("can't acpi_phys_copy with vm");
 }
 
-static int acpi_read_sdt_at(phys_bytes addr,
-				struct acpi_sdt_header * tb,
-				size_t size,
-				const char * name)
+ਸਥਿਰ ਪੂਰਨ acpi_read_sdt_at(phys_ਬਾਈਟਾਂ addr,
+				ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ * tb,
+				size_t ਮਾਪ,
+				ਅਚਲ ਅੱਖਰ * name)
 {
-	struct acpi_sdt_header hdr;
+	ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ hdr;
 
 	/* if NULL is supplied, we only return the size of the table */
-	if (tb == NULL) {
-		if (read_func(addr, &hdr, sizeof(struct acpi_sdt_header))) {
-			printf("ERROR acpi cannot read %s header\n", name);
-			return -1;
+	ਜੇ (tb == ਨਿਰਾ) {
+		ਜੇ (read_func(addr, &hdr, ਆਕਾਰ(ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ))) {
+			ਲਿਖੋ("ERROR acpi cannot read %s header\n", name);
+			ਵਾਪਸ -1;
 		}
 
-		return hdr.length;
+		ਵਾਪਸ hdr.ਲੰਮਾਈ;
 	}
 
-	if (read_func(addr, tb, sizeof(struct acpi_sdt_header))) {
-		printf("ERROR acpi cannot read %s header\n", name);
-		return -1;
+	ਜੇ (read_func(addr, tb, ਆਕਾਰ(ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ))) {
+		ਲਿਖੋ("ERROR acpi cannot read %s header\n", name);
+		ਵਾਪਸ -1;
 	}
 
-	if (acpi_check_signature(tb->signature, name)) {
-		printf("ERROR acpi %s signature does not match\n", name);
-		return -1;
+	ਜੇ (acpi_check_signature(tb->signature, name)) {
+		ਲਿਖੋ("ERROR acpi %s signature does not match\n", name);
+		ਵਾਪਸ -1;
 	}
 
-	if (size < tb->length) {
-		printf("ERROR acpi buffer too small for %s\n", name);
-		return -1;
+	ਜੇ (ਮਾਪ < tb->ਲੰਮਾਈ) {
+		ਲਿਖੋ("ERROR acpi buffer too small for %s\n", name);
+		ਵਾਪਸ -1;
 	}
 
-	if (read_func(addr, tb, size)) {
-		printf("ERROR acpi cannot read %s\n", name);
-		return -1;
+	ਜੇ (read_func(addr, tb, ਮਾਪ)) {
+		ਲਿਖੋ("ERROR acpi cannot read %s\n", name);
+		ਵਾਪਸ -1;
 	}
 
-	if (acpi_check_csum(tb, tb->length)) {
-		printf("ERROR acpi %s checksum does not match\n", name);
-		return -1;
+	ਜੇ (acpi_check_csum(tb, tb->ਲੰਮਾਈ)) {
+		ਲਿਖੋ("ERROR acpi %s checksum does not match\n", name);
+		ਵਾਪਸ -1;
 	}
 
-	return tb->length;
+	ਵਾਪਸ tb->ਲੰਮਾਈ;
 }
 
-phys_bytes acpi_get_table_base(const char * name)
+phys_ਬਾਈਟਾਂ acpi_get_ਸਾਰਣੀ_ਅਧਾਰ(ਅਚਲ ਅੱਖਰ * name)
 {
-	int i;
+	ਪੂਰਨ i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	ਲਈ(i = 0; i < sdt_ਗਿਣਤੀ; i++) {
+		ਜੇ (ਲੜੀ_ਤੁਲਨਾ(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return (phys_bytes) rsdt.data[i];
+			ਵਾਪਸ (phys_ਬਾਈਟਾਂ) rsdt.ਅੰਕੜੇ[i];
 	}
 
-	return (phys_bytes) NULL;
+	ਵਾਪਸ (phys_ਬਾਈਟਾਂ) ਨਿਰਾ;
 }
 
-size_t acpi_get_table_length(const char * name)
+size_t acpi_get_ਸਾਰਣੀ_ਲੰਮਾਈ(ਅਚਲ ਅੱਖਰ * name)
 {
-	int i;
+	ਪੂਰਨ i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	ਲਈ(i = 0; i < sdt_ਗਿਣਤੀ; i++) {
+		ਜੇ (ਲੜੀ_ਤੁਲਨਾ(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return sdt_trans[i].length;
+			ਵਾਪਸ sdt_trans[i].ਲੰਮਾਈ;
 	}
 
-	return 0;
+	ਵਾਪਸ 0;
 }
 
-static void * acpi_madt_get_typed_item(struct acpi_madt_hdr * hdr,
-					unsigned char type,
-					unsigned idx)
+ਸਥਿਰ ਖਾਲੀ * acpi_madt_get_typed_ਵਸਤੂ(ਬਣਤਰ acpi_madt_hdr * hdr,
+					ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ type,
+					ਬਿਨਾਨਿਸ਼ਾਨੀ idx)
 {
-	u8_t * t, * end;
-	int i;
+	u8_t * t, * ਸਿਰਾ;
+	ਪੂਰਨ i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + ਆਕਾਰ(ਬਣਤਰ acpi_madt_hdr);
+	ਸਿਰਾ = (u8_t *) hdr + hdr->hdr.ਲੰਮਾਈ;
 
 	i = 0;
-	while(t < end) {
-		if (type == ((struct acpi_madt_item_hdr *) t)->type) {
-			if (i == idx)
-				return t;
-			else
+	ਜਦੋਂ(t < ਸਿਰਾ) {
+		ਜੇ (type == ((ਬਣਤਰ acpi_madt_ਵਸਤੂ_hdr *) t)->type) {
+			ਜੇ (i == idx)
+				ਵਾਪਸ t;
+			ਨਹੀਂਤਾਂ
 				i++;
 		}
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+		t += ((ਬਣਤਰ acpi_madt_ਵਸਤੂ_hdr *) t)->ਲੰਮਾਈ;
 	}
 
-	return NULL;
+	ਵਾਪਸ ਨਿਰਾ;
 }
 
-#if 0
-static void * acpi_madt_get_item(struct acpi_madt_hdr * hdr,
-				unsigned idx)
+#ਜੇ 0
+ਸਥਿਰ ਖਾਲੀ * acpi_madt_get_ਵਸਤੂ(ਬਣਤਰ acpi_madt_hdr * hdr,
+				ਬਿਨਾਨਿਸ਼ਾਨੀ idx)
 {
-	u8_t * t, * end;
-	int i;
+	u8_t * t, * ਸਿਰਾ;
+	ਪੂਰਨ i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + ਆਕਾਰ(ਬਣਤਰ acpi_madt_hdr);
+	ਸਿਰਾ = (u8_t *) hdr + hdr->hdr.ਲੰਮਾਈ;
 
-	for(i = 0 ; i <= idx && t < end; i++) {
-		if (i == idx)
-			return t;
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+	ਲਈ(i = 0 ; i <= idx && t < ਸਿਰਾ; i++) {
+		ਜੇ (i == idx)
+			ਵਾਪਸ t;
+		t += ((ਬਣਤਰ acpi_madt_ਵਸਤੂ_hdr *) t)->ਲੰਮਾਈ;
 	}
 
-	return NULL;
+	ਵਾਪਸ ਨਿਰਾ;
 }
-#endif
+#ਜੇ_ਅੰਤ
 
-static int acpi_rsdp_test(void * buff)
+ਸਥਿਰ ਪੂਰਨ acpi_rsdp_test(ਖਾਲੀ * buff)
 {
-	struct acpi_rsdp * rsdp = (struct acpi_rsdp *) buff;
+	ਬਣਤਰ acpi_rsdp * rsdp = (ਬਣਤਰ acpi_rsdp *) buff;
 
-	if (!platform_tbl_checksum_ok(buff, 20))
-		return 0;
-	if (strncmp(rsdp->signature, "RSD PTR ", 8))
-		return 0;
+	ਜੇ (!platform_tbl_checksum_ok(buff, 20))
+		ਵਾਪਸ 0;
+	ਜੇ (ਲੜੀ_ਤੁਲਨਾ(rsdp->signature, "RSD PTR ", 8))
+		ਵਾਪਸ 0;
 
-	return 1;
+	ਵਾਪਸ 1;
 }
 
-static int get_acpi_rsdp(void)
+ਸਥਿਰ ਪੂਰਨ get_acpi_rsdp(ਖਾਲੀ)
 {
 	u16_t ebda;
 	/*
 	 * Read 40:0Eh - to find the starting address of the EBDA.
 	 */
-	acpi_phys_copy (0x40E, &ebda, sizeof(ebda));
-	if (ebda) {
+	acpi_phys_copy (0x40E, &ebda, ਆਕਾਰ(ebda));
+	ਜੇ (ebda) {
 		ebda <<= 4;
-		if(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
-					sizeof(acpi_rsdp), &machine.acpi_rsdp,
+		ਜੇ(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
+					ਆਕਾਰ(acpi_rsdp), &machine.acpi_rsdp,
 					acpi_rsdp_test))
-			return 1;
+			ਵਾਪਸ 1;
 	} 
 
 	/* try BIOS read only mem space */
-	if(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
-				sizeof(acpi_rsdp), &machine.acpi_rsdp,
+	ਜੇ(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
+				ਆਕਾਰ(acpi_rsdp), &machine.acpi_rsdp,
 				acpi_rsdp_test))
-		return 1;
+		ਵਾਪਸ 1;
 	
 	machine.acpi_rsdp = 0; /* RSDP cannot be found at this address therefore
 				  it is a valid negative value */
-	return 0;
+	ਵਾਪਸ 0;
 }
 
-static void acpi_init_poweroff(void)
+ਸਥਿਰ ਖਾਲੀ acpi_init_poweroff(ਖਾਲੀ)
 {
-	u8_t *ptr = NULL;
-	u8_t *start = NULL;
-	u8_t *end = NULL;
-	struct acpi_fadt_header *fadt_header = NULL;
-	struct acpi_rsdt * dsdt_header = NULL;
-	char *msg = NULL;
+	u8_t *ptr = ਨਿਰਾ;
+	u8_t *ਸ਼ੁਰੂ = ਨਿਰਾ;
+	u8_t *ਸਿਰਾ = ਨਿਰਾ;
+	ਬਣਤਰ acpi_fadt_ਸਿਰਲੇਖ *fadt_ਸਿਰਲੇਖ = ਨਿਰਾ;
+	ਬਣਤਰ acpi_rsdt * dsdt_ਸਿਰਲੇਖ = ਨਿਰਾ;
+	ਅੱਖਰ *ਸੁਨੇਹਾ_2 = ਨਿਰਾ;
 
 	/* Everything used here existed since ACPI spec 1.0 */
 	/* So we can safely use them */
-	fadt_header = (struct acpi_fadt_header *)
-		acpi_phys2vir(acpi_get_table_base("FACP"));
-	if (fadt_header == NULL) {
-		msg = "Could not load FACP";
-		goto exit;
+	fadt_ਸਿਰਲੇਖ = (ਬਣਤਰ acpi_fadt_ਸਿਰਲੇਖ *)
+		acpi_phys2vir(acpi_get_ਸਾਰਣੀ_ਅਧਾਰ("FACP"));
+	ਜੇ (fadt_ਸਿਰਲੇਖ == ਨਿਰਾ) {
+		ਸੁਨੇਹਾ_2 = "Could not load FACP";
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 	}
 
-	dsdt_header = (struct acpi_rsdt *)
-		acpi_phys2vir((phys_bytes) fadt_header->dsdt);
-	if (dsdt_header == NULL) {
-		msg = "Could not load DSDT";
-		goto exit;
+	dsdt_ਸਿਰਲੇਖ = (ਬਣਤਰ acpi_rsdt *)
+		acpi_phys2vir((phys_ਬਾਈਟਾਂ) fadt_ਸਿਰਲੇਖ->dsdt);
+	ਜੇ (dsdt_ਸਿਰਲੇਖ == ਨਿਰਾ) {
+		ਸੁਨੇਹਾ_2 = "Could not load DSDT";
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 	}
 
-	pm1a_cnt_blk = fadt_header->pm1a_cnt_blk;
-	pm1b_cnt_blk = fadt_header->pm1b_cnt_blk;
+	pm1a_cnt_blk = fadt_ਸਿਰਲੇਖ->pm1a_cnt_blk;
+	pm1b_cnt_blk = fadt_ਸਿਰਲੇਖ->pm1b_cnt_blk;
 
-	ptr = start = (u8_t *) dsdt_header->data;
-	end = start + dsdt_header->hdr.length - 4;
+	ptr = ਸ਼ੁਰੂ = (u8_t *) dsdt_ਸਿਰਲੇਖ->ਅੰਕੜੇ;
+	ਸਿਰਾ = ਸ਼ੁਰੂ + dsdt_ਸਿਰਲੇਖ->hdr.ਲੰਮਾਈ - 4;
 
 	/* See http://forum.osdev.org/viewtopic.php?t=16990 */
 	/* for layout of \_S5 */
-	while (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
+	ਜਦੋਂ (ptr < ਸਿਰਾ && memcmp(ptr, "_S5_", 4) != 0)
 		ptr++;
 
-	msg = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
-	if (ptr >= end || ptr == start)
-		goto exit;
+	ਸੁਨੇਹਾ_2 = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
+	ਜੇ (ptr >= ਸਿਰਾ || ptr == ਸ਼ੁਰੂ)
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 
 	/* validate AML structure */
-	if (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
-		goto exit;
+	ਜੇ (*(ptr + AMI_S5_PACKAGE_OP_ਵਿੱਥ) != AMI_PACKAGE_OP_ਕੋਡ)
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 
-	if ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
-		(*(ptr + AMI_S5_NAME_OP_OFFSET_2) != AMI_NAME_OP_CODE ||
-		 *(ptr + AMI_S5_NAME_OP_OFFSET_2 + 1) != '\\')) &&
-		*(ptr + AMI_S5_NAME_OP_OFFSET_1) != AMI_NAME_OP_CODE)
-		goto exit;
+	ਜੇ ((ptr < ਸ਼ੁਰੂ + (-AMI_S5_NAME_OP_ਵਿੱਥ_2) ||
+		(*(ptr + AMI_S5_NAME_OP_ਵਿੱਥ_2) != AMI_NAME_OP_ਕੋਡ ||
+		 *(ptr + AMI_S5_NAME_OP_ਵਿੱਥ_2 + 1) != '\\')) &&
+		*(ptr + AMI_S5_NAME_OP_ਵਿੱਥ_1) != AMI_NAME_OP_ਕੋਡ)
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 
-	ptr += AMI_S5_PACKET_LENGTH_OFFSET;
-	if (ptr >= end)
-		goto exit;
+	ptr += AMI_S5_PACKET_ਲੰਮਾਈ_ਵਿੱਥ;
+	ਜੇ (ptr >= ਸਿਰਾ)
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 
 	/* package length */
-	ptr += ((*ptr & AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK) >>
-		AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT) +
-		AMI_MIN_PACKAGE_LENGTH + AMI_NUM_ELEMENTS_LENGTH;
-	if (ptr >= end)
-		goto exit;
+	ptr += ((*ptr & AMI_PACKAGE_ਲੰਮਾਈ_ENCODING_ਬਿੱਟ_ਨਕਾਬ) >>
+		AMI_PACKAGE_ਲੰਮਾਈ_ENCODING_ਬਿੱਟ_ਖਿਸਕਾਓ) +
+		AMI_MIN_PACKAGE_ਲੰਮਾਈ + AMI_ਅੰਕ_ELEMENTS_ਲੰਮਾਈ;
+	ਜੇ (ptr >= ਸਿਰਾ)
+		ਜਾਓ ਬਾਹਰ_ਨਿਕਲੋ;
 
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ਜੇ (*ptr == AMI_BYTE_ਅਗੇਤਰ_ਕੋਡ)
 		ptr++; /* skip byte prefix */
 
-	slp_typa = (*ptr) << AMI_SLP_TYPA_SHIFT;
+	slp_typa = (*ptr) << AMI_SLP_TYPA_ਖਿਸਕਾਓ;
 
 	ptr++; /* move to SLP_TYPb */
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ਜੇ (*ptr == AMI_BYTE_ਅਗੇਤਰ_ਕੋਡ)
 		ptr++; /* skip byte prefix */
 
-	slp_typb = (*ptr) << AMI_SLP_TYPB_SHIFT;
+	slp_typb = (*ptr) << AMI_SLP_TYPB_ਖਿਸਕਾਓ;
 
-	msg = "poweroff initialized";
+	ਸੁਨੇਹਾ_2 = "poweroff initialized";
 
-exit:
-	if (msg) {
-		DEBUGBASIC(("acpi: %s\n", msg));
+ਬਾਹਰ_ਨਿਕਲੋ:
+	ਜੇ (ਸੁਨੇਹਾ_2) {
+		DEBUGBASIC(("acpi: %s\n", ਸੁਨੇਹਾ_2));
 	}
 }
 
-void acpi_init(void)
+ਖਾਲੀ acpi_init(ਖਾਲੀ)
 {
-	int s, i;
+	ਪੂਰਨ s, i;
 	read_func = acpi_phys_copy;
 
-	if (!get_acpi_rsdp()) {
-		printf("WARNING : Cannot configure ACPI\n");
-		return;
+	ਜੇ (!get_acpi_rsdp()) {
+		ਲਿਖੋ("WARNING : Cannot configure ACPI\n");
+		ਵਾਪਸ;
 	}
 	
-	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (struct acpi_sdt_header *) &rsdt,
-			sizeof(struct acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
+	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ *) &rsdt,
+			ਆਕਾਰ(ਬਣਤਰ acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
 
-	sdt_count = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
+	sdt_ਗਿਣਤੀ = (s - ਆਕਾਰ(ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ)) / ਆਕਾਰ(u32_t);
 
-	for (i = 0; i < sdt_count; i++) {
-		struct acpi_sdt_header hdr;
-		int j;
-		if (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {
-			printf("ERROR acpi cannot read header at 0x%x\n",
-								rsdt.data[i]);
-			return;
+	ਲਈ (i = 0; i < sdt_ਗਿਣਤੀ; i++) {
+		ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ hdr;
+		ਪੂਰਨ j;
+		ਜੇ (read_func(rsdt.ਅੰਕੜੇ[i], &hdr, ਆਕਾਰ(ਬਣਤਰ acpi_sdt_ਸਿਰਲੇਖ))) {
+			ਲਿਖੋ("ERROR acpi cannot read header at 0x%x\n",
+								rsdt.ਅੰਕੜੇ[i]);
+			ਵਾਪਸ;
 		}
 
-		for (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
+		ਲਈ (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
 			sdt_trans[i].signature[j] = hdr.signature[j];
 		sdt_trans[i].signature[ACPI_SDT_SIGNATURE_LEN] = '\0';
-		sdt_trans[i].length = hdr.length;
+		sdt_trans[i].ਲੰਮਾਈ = hdr.ਲੰਮਾਈ;
 	}
 
 	acpi_init_poweroff();
 }
 
-struct acpi_madt_ioapic * acpi_get_ioapic_next(void)
+ਬਣਤਰ acpi_madt_ioapic * acpi_get_ioapic_ਅਗਲਾ(ਖਾਲੀ)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	ਸਥਿਰ ਬਿਨਾਨਿਸ਼ਾਨੀ idx = 0;
+	ਸਥਿਰ ਬਣਤਰ acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_ioapic * ret;
+	ਬਣਤਰ acpi_madt_ioapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
-			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+	ਜੇ (idx == 0) {
+		madt_hdr = (ਬਣਤਰ acpi_madt_hdr *)
+			acpi_phys2vir(acpi_get_ਸਾਰਣੀ_ਅਧਾਰ("APIC"));
+		ਜੇ (madt_hdr == ਨਿਰਾ)
+			ਵਾਪਸ ਨਿਰਾ;
 	}
 
-	ret = (struct acpi_madt_ioapic *)
-		acpi_madt_get_typed_item(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
-	if (ret)
+	ret = (ਬਣਤਰ acpi_madt_ioapic *)
+		acpi_madt_get_typed_ਵਸਤੂ(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
+	ਜੇ (ret)
 		idx++;
 
-	return ret;
+	ਵਾਪਸ ret;
 }
 
-struct acpi_madt_lapic * acpi_get_lapic_next(void)
+ਬਣਤਰ acpi_madt_lapic * acpi_get_lapic_ਅਗਲਾ(ਖਾਲੀ)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	ਸਥਿਰ ਬਿਨਾਨਿਸ਼ਾਨੀ idx = 0;
+	ਸਥਿਰ ਬਣਤਰ acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_lapic * ret;
+	ਬਣਤਰ acpi_madt_lapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
-			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+	ਜੇ (idx == 0) {
+		madt_hdr = (ਬਣਤਰ acpi_madt_hdr *)
+			acpi_phys2vir(acpi_get_ਸਾਰਣੀ_ਅਧਾਰ("APIC"));
+		ਜੇ (madt_hdr == ਨਿਰਾ)
+			ਵਾਪਸ ਨਿਰਾ;
 	}
 
-	for (;;) {
-		ret = (struct acpi_madt_lapic *)
-			acpi_madt_get_typed_item(madt_hdr,
+	ਲਈ (;;) {
+		ret = (ਬਣਤਰ acpi_madt_lapic *)
+			acpi_madt_get_typed_ਵਸਤੂ(madt_hdr,
 					ACPI_MADT_TYPE_LAPIC, idx);
-		if (!ret)
-			break;
+		ਜੇ (!ret)
+			ਰੋਕੋ;
 
 		idx++;
 
 		/* report only usable CPUs */
-		if (ret->flags & 1)
-			break;
+		ਜੇ (ret->flags & 1)
+			ਰੋਕੋ;
 	}
 
-	return ret;
+	ਵਾਪਸ ret;
 }
 
-void __k_unpaged_acpi_poweroff(void)
+ਖਾਲੀ __k_unpaged_acpi_poweroff(ਖਾਲੀ)
 {
 	/* NO OP poweroff symbol*/
 }
 
-void acpi_poweroff(void)
+ਖਾਲੀ acpi_poweroff(ਖਾਲੀ)
 {
-	if (pm1a_cnt_blk == 0) {
-		return;
+	ਜੇ (pm1a_cnt_blk == 0) {
+		ਵਾਪਸ;
 	}
-	outw(pm1a_cnt_blk, slp_typa | SLP_EN_CODE);
-	if (pm1b_cnt_blk != 0) {
-		outw(pm1b_cnt_blk, slp_typb | SLP_EN_CODE);
+	outw(pm1a_cnt_blk, slp_typa | SLP_EN_ਕੋਡ);
+	ਜੇ (pm1b_cnt_blk != 0) {
+		outw(pm1b_cnt_blk, slp_typb | SLP_EN_ਕੋਡ);
 	}
 }

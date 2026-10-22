@@ -1,223 +1,223 @@
 
-#include <minix/cpufeature.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/cpufeature.h>
 
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
 
-#include <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+ਬਾਹਰੀ ਅੱਖਰ kern_vir_ਅਧਾਰ, kern_phys_ਅਧਾਰ, kern_ਮਾਪ;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+ਸਥਿਰ phys_ਬਾਈਟਾਂ kern_vir_ਸ਼ੁਰੂ = (phys_ਬਾਈਟਾਂ) &kern_vir_ਅਧਾਰ;
+ਸਥਿਰ phys_ਬਾਈਟਾਂ kern_phys_ਸ਼ੁਰੂ = (phys_ਬਾਈਟਾਂ) &kern_phys_ਅਧਾਰ;
+ਸਥਿਰ phys_ਬਾਈਟਾਂ kern_kernlen = (phys_ਬਾਈਟਾਂ) &kern_ਮਾਪ;
 
 /* page directory we can use to map things */
-static u32_t pagedir[1024]  __aligned(4096);
+ਸਥਿਰ u32_t pagedir[1024]  __aligned(4096);
 
-void print_memmap(kinfo_t *cbi)
+ਖਾਲੀ print_memmap(kinfo_t *cbi)
 {
-        int m;
-        assert(cbi->mmap_size < MAXMEMMAP);
-        for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
-                printf("%08lx-%08lx ",addr, endit);
+        ਪੂਰਨ m;
+        ਪ੍ਰਤਿਜ੍ਞਾ(cbi->mmap_ਮਾਪ < MAXMEMMAP);
+        ਲਈ(m = 0; m < cbi->mmap_ਮਾਪ; m++) {
+		phys_ਬਾਈਟਾਂ addr = cbi->memmap[m].mm_ਅਧਾਰ_addr, endit = cbi->memmap[m].mm_ਅਧਾਰ_addr + cbi->memmap[m].mm_ਲੰਮਾਈ;
+                ਲਿਖੋ("%08lx-%08lx ",addr, endit);
         }
-        printf("\nsize %08lx\n", cbi->mmap_size);
+        ਲਿਖੋ("\nsize %08lx\n", cbi->mmap_ਮਾਪ);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+ਖਾਲੀ cut_memmap(kinfo_t *cbi, phys_ਬਾਈਟਾਂ ਸ਼ੁਰੂ, phys_ਬਾਈਟਾਂ ਸਿਰਾ)
 {
-        int m;
-        phys_bytes o;
+        ਪੂਰਨ m;
+        phys_ਬਾਈਟਾਂ o;
 
-        if((o=start % I386_PAGE_SIZE))
-                start -= o;
-        if((o=end % I386_PAGE_SIZE))
-                end += I386_PAGE_SIZE - o;
+        ਜੇ((o=ਸ਼ੁਰੂ % I386_ਪੰਨਾ_ਮਾਪ))
+                ਸ਼ੁਰੂ -= o;
+        ਜੇ((o=ਸਿਰਾ % I386_ਪੰਨਾ_ਮਾਪ))
+                ਸਿਰਾ += I386_ਪੰਨਾ_ਮਾਪ - o;
 
-	assert(kernel_may_alloc);
+	ਪ੍ਰਤਿਜ੍ਞਾ(kernel_may_alloc);
 
-        for(m = 0; m < cbi->mmap_size; m++) {
-                phys_bytes substart = start, subend = end;
-                phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
-                        memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
+        ਲਈ(m = 0; m < cbi->mmap_ਮਾਪ; m++) {
+                phys_ਬਾਈਟਾਂ substart = ਸ਼ੁਰੂ, subend = ਸਿਰਾ;
+                phys_ਬਾਈਟਾਂ memaddr = cbi->memmap[m].mm_ਅਧਾਰ_addr,
+                        memend = cbi->memmap[m].mm_ਅਧਾਰ_addr + cbi->memmap[m].mm_ਲੰਮਾਈ;
 
                 /* adjust cut range to be a subset of the free memory */
-                if(substart < memaddr) substart = memaddr;
-                if(subend > memend) subend = memend;
-                if(substart >= subend) continue;
+                ਜੇ(substart < memaddr) substart = memaddr;
+                ਜੇ(subend > memend) subend = memend;
+                ਜੇ(substart >= subend) ਜਾਰੀ;
 
                 /* if there is any overlap, forget this one and add
                  * 1-2 subranges back
                  */
-                cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-                if(substart > memaddr)
-                        add_memmap(cbi, memaddr, substart-memaddr);
-                if(subend < memend)
-                        add_memmap(cbi, subend, memend-subend);
+                cbi->memmap[m].mm_ਅਧਾਰ_addr = cbi->memmap[m].mm_ਲੰਮਾਈ = 0;
+                ਜੇ(substart > memaddr)
+                        ਜੋੜੋ_memmap(cbi, memaddr, substart-memaddr);
+                ਜੇ(subend < memend)
+                        ਜੋੜੋ_memmap(cbi, subend, memend-subend);
         }
 }
 
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len)
+phys_ਬਾਈਟਾਂ alloc_ਸਭ_ਤੋਂ_ਨੀਵਾਂ(kinfo_t *cbi, phys_ਬਾਈਟਾਂ len)
 {
 	/* Allocate the lowest physical page we have. */
-	int m;
-#define EMPTY 0xffffffff
-	phys_bytes lowest = EMPTY;
-	assert(len > 0);
-	len = roundup(len, I386_PAGE_SIZE);
+	ਪੂਰਨ m;
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਖਾਲੀ_ਥਾਵਾਂ 0xffffffff
+	phys_ਬਾਈਟਾਂ ਸਭ_ਤੋਂ_ਨੀਵਾਂ = ਖਾਲੀ_ਥਾਵਾਂ;
+	ਪ੍ਰਤਿਜ੍ਞਾ(len > 0);
+	len = roundup(len, I386_ਪੰਨਾ_ਮਾਪ);
 
-	assert(kernel_may_alloc);
+	ਪ੍ਰਤਿਜ੍ਞਾ(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
-		if(cbi->memmap[m].mm_length < len) continue;
-		if(cbi->memmap[m].mm_base_addr < lowest) lowest = cbi->memmap[m].mm_base_addr;
+	ਲਈ(m = 0; m < cbi->mmap_ਮਾਪ; m++) {
+		ਜੇ(cbi->memmap[m].mm_ਲੰਮਾਈ < len) ਜਾਰੀ;
+		ਜੇ(cbi->memmap[m].mm_ਅਧਾਰ_addr < ਸਭ_ਤੋਂ_ਨੀਵਾਂ) ਸਭ_ਤੋਂ_ਨੀਵਾਂ = cbi->memmap[m].mm_ਅਧਾਰ_addr;
 	}
-	assert(lowest != EMPTY);
-	cut_memmap(cbi, lowest, len);
-	cbi->kernel_allocated_bytes_dynamic += len;
-	return lowest;
+	ਪ੍ਰਤਿਜ੍ਞਾ(ਸਭ_ਤੋਂ_ਨੀਵਾਂ != ਖਾਲੀ_ਥਾਵਾਂ);
+	cut_memmap(cbi, ਸਭ_ਤੋਂ_ਨੀਵਾਂ, len);
+	cbi->kernel_allocated_ਬਾਈਟਾਂ_dynamic += len;
+	ਵਾਪਸ ਸਭ_ਤੋਂ_ਨੀਵਾਂ;
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+ਖਾਲੀ ਜੋੜੋ_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-        int m;
-#define LIMIT 0xFFFFF000
+        ਪੂਰਨ m;
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਹੱਦਬੰਦੀ 0xFFFFF000
         /* Truncate available memory at 4GB as the rest of minix
          * currently can't deal with any bigger.
          */
-        if(addr > LIMIT) return;
-        if(addr + len > LIMIT) {
-                len -= (addr + len - LIMIT);
+        ਜੇ(addr > ਹੱਦਬੰਦੀ) ਵਾਪਸ;
+        ਜੇ(addr + len > ਹੱਦਬੰਦੀ) {
+                len -= (addr + len - ਹੱਦਬੰਦੀ);
         }
-        assert(cbi->mmap_size < MAXMEMMAP);
-        if(len == 0) return;
-	addr = roundup(addr, I386_PAGE_SIZE);
-	len = rounddown(len, I386_PAGE_SIZE);
+        ਪ੍ਰਤਿਜ੍ਞਾ(cbi->mmap_ਮਾਪ < MAXMEMMAP);
+        ਜੇ(len == 0) ਵਾਪਸ;
+	addr = roundup(addr, I386_ਪੰਨਾ_ਮਾਪ);
+	len = rounddown(len, I386_ਪੰਨਾ_ਮਾਪ);
 
-	assert(kernel_may_alloc);
+	ਪ੍ਰਤਿਜ੍ਞਾ(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
-		phys_bytes highmark;
-                if(cbi->memmap[m].mm_length) continue;
-                cbi->memmap[m].mm_base_addr = addr;
-                cbi->memmap[m].mm_length = len;
-                cbi->memmap[m].mm_type = MULTIBOOT_MEMORY_AVAILABLE;
-                if(m >= cbi->mmap_size)
-                        cbi->mmap_size = m+1;
+        ਲਈ(m = 0; m < MAXMEMMAP; m++) {
+		phys_ਬਾਈਟਾਂ highmark;
+                ਜੇ(cbi->memmap[m].mm_ਲੰਮਾਈ) ਜਾਰੀ;
+                cbi->memmap[m].mm_ਅਧਾਰ_addr = addr;
+                cbi->memmap[m].mm_ਲੰਮਾਈ = len;
+                cbi->memmap[m].mm_type = MULTIBOOT_ਸਮ੍ਰਿਤੀ_ਉਪਲਬਧ;
+                ਜੇ(m >= cbi->mmap_ਮਾਪ)
+                        cbi->mmap_ਮਾਪ = m+1;
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		ਜੇ(highmark > cbi->mem_ਉੱਚਾ_phys) {
+			cbi->mem_ਉੱਚਾ_phys = highmark;
 		}
 
-                return;
+                ਵਾਪਸ;
         }
 
         panic("no available memmap slot");
 }
 
-u32_t *alloc_pagetable(phys_bytes *ph)
+u32_t *alloc_pagetable(phys_ਬਾਈਟਾਂ *ph)
 {
 	u32_t *ret;
-#define PG_PAGETABLES 6
-	static u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
-	assert(sizeof(pagetables[pt_inuse]) == I386_PAGE_SIZE);
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ PG_PAGETABLES 6
+	ਸਥਿਰ u32_t pagetables[PG_PAGETABLES][1024]  __aligned(4096);
+	ਸਥਿਰ ਪੂਰਨ pt_inuse = 0;
+	ਜੇ(pt_inuse >= PG_PAGETABLES) panic("no more pagetables");
+	ਪ੍ਰਤਿਜ੍ਞਾ(ਆਕਾਰ(pagetables[pt_inuse]) == I386_ਪੰਨਾ_ਮਾਪ);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	ਵਾਪਸ ret;
 }
 
-#define PAGE_KB (I386_PAGE_SIZE / 1024)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਪੰਨਾ_KB (I386_ਪੰਨਾ_ਮਾਪ / 1024)
 
-phys_bytes pg_alloc_page(kinfo_t *cbi)
+phys_ਬਾਈਟਾਂ pg_alloc_ਪੰਨਾ(kinfo_t *cbi)
 {
-	int m;
-	multiboot_memory_map_t *mmap;
+	ਪੂਰਨ m;
+	multiboot_ਸਮ੍ਰਿਤੀ_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	ਪ੍ਰਤਿਜ੍ਞਾ(kernel_may_alloc);
 
-	for(m = cbi->mmap_size-1; m >= 0; m--) {
+	ਲਈ(m = cbi->mmap_ਮਾਪ-1; m >= 0; m--) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) continue;
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % I386_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % I386_PAGE_SIZE));
+		ਜੇ(!mmap->mm_ਲੰਮਾਈ) ਜਾਰੀ;
+		ਪ੍ਰਤਿਜ੍ਞਾ(mmap->mm_ਲੰਮਾਈ > 0);
+		ਪ੍ਰਤਿਜ੍ਞਾ(!(mmap->mm_ਲੰਮਾਈ % I386_ਪੰਨਾ_ਮਾਪ));
+		ਪ੍ਰਤਿਜ੍ਞਾ(!(mmap->mm_ਅਧਾਰ_addr % I386_ਪੰਨਾ_ਮਾਪ));
 
-		mmap->mm_length -= I386_PAGE_SIZE;
+		mmap->mm_ਲੰਮਾਈ -= I386_ਪੰਨਾ_ਮਾਪ;
 
-                cbi->kernel_allocated_bytes_dynamic += I386_PAGE_SIZE;
+                cbi->kernel_allocated_ਬਾਈਟਾਂ_dynamic += I386_ਪੰਨਾ_ਮਾਪ;
 
-		return mmap->mm_base_addr + mmap->mm_length;
+		ਵਾਪਸ mmap->mm_ਅਧਾਰ_addr + mmap->mm_ਲੰਮਾਈ;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+ਖਾਲੀ pg_ਪਛਾਣ_ਤੱਤ(kinfo_t *cbi)
 {
 	uint32_t i;
-	phys_bytes phys;
+	phys_ਬਾਈਟਾਂ phys;
 
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	ਪ੍ਰਤਿਜ੍ਞਾ(cbi->mem_ਉੱਚਾ_phys);
 
         /* Set up an identity mapping page directory */
-        for(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
+        ਲਈ(i = 0; i < I386_VM_DIR_ENTRIES; i++) {
 		u32_t flags = I386_VM_PRESENT | I386_VM_BIGPAGE
 			| I386_VM_USER
 			| I386_VM_WRITE;
-                phys = i * I386_BIG_PAGE_SIZE;
-		if((cbi->mem_high_phys & I386_VM_ADDR_MASK_4MB)
-			<= (phys & I386_VM_ADDR_MASK_4MB)) {
+                phys = i * I386_BIG_ਪੰਨਾ_ਮਾਪ;
+		ਜੇ((cbi->mem_ਉੱਚਾ_phys & I386_VM_ADDR_ਨਕਾਬ_4_MB)
+			<= (phys & I386_VM_ADDR_ਨਕਾਬ_4_MB)) {
 			flags |= I386_VM_PWT | I386_VM_PCD;
 		}
                 pagedir[i] =  phys | flags;
         }
 }
 
-int pg_mapkernel(void)
+ਪੂਰਨ pg_mapkernel(ਖਾਲੀ)
 {
-	int pde;
-	u32_t mapped = 0, kern_phys = kern_phys_start;
+	ਪੂਰਨ pde;
+	u32_t mapped = 0, kern_phys = kern_phys_ਸ਼ੁਰੂ;
 
-        assert(!(kern_vir_start % I386_BIG_PAGE_SIZE));
-        assert(!(kern_phys % I386_BIG_PAGE_SIZE));
-        pde = kern_vir_start / I386_BIG_PAGE_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
+        ਪ੍ਰਤਿਜ੍ਞਾ(!(kern_vir_ਸ਼ੁਰੂ % I386_BIG_ਪੰਨਾ_ਮਾਪ));
+        ਪ੍ਰਤਿਜ੍ਞਾ(!(kern_phys % I386_BIG_ਪੰਨਾ_ਮਾਪ));
+        pde = kern_vir_ਸ਼ੁਰੂ / I386_BIG_ਪੰਨਾ_ਮਾਪ; /* start pde */
+	ਜਦੋਂ(mapped < kern_kernlen) {
 	        pagedir[pde] = kern_phys | I386_VM_PRESENT | 
 			I386_VM_BIGPAGE | I386_VM_WRITE;
-		mapped += I386_BIG_PAGE_SIZE;
-		kern_phys += I386_BIG_PAGE_SIZE;
+		mapped += I386_BIG_ਪੰਨਾ_ਮਾਪ;
+		kern_phys += I386_BIG_ਪੰਨਾ_ਮਾਪ;
 		pde++;
 	}
-	return pde;	/* free pde */
+	ਵਾਪਸ pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+ਖਾਲੀ vm_enable_paging(ਖਾਲੀ)
 {
         u32_t cr0, cr4;
-        int pgeok;
+        ਪੂਰਨ pgeok;
 
         pgeok = _cpufeature(_CPUF_I386_PGE);
 
-#ifdef PAE
-	if(_cpufeature(_CPUF_I386_PAE) == 0)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ PAE
+	ਜੇ(_cpufeature(_CPUF_I386_PAE) == 0)
 		panic("kernel built with PAE support, CPU seems to lack PAE support?\n");
-#endif
+#ਜੇ_ਅੰਤ
 
         cr0= read_cr0();
         cr4= read_cr4();
 
 	/* The boot loader should have put us in protected mode. */
-	assert(cr0 & I386_CR0_PE);
+	ਪ੍ਰਤਿਜ੍ਞਾ(cr0 & I386_CR0_PE);
 
         /* First clear PG and PGE flag, as PGE must be enabled after PG. */
         write_cr0(cr0 & ~I386_CR0_PG);
@@ -238,78 +238,78 @@ void vm_enable_paging(void)
         write_cr0(cr0);
 
         /* May we enable these features? */
-        if(pgeok)
+        ਜੇ(pgeok)
                 cr4 |= I386_CR4_PGE;
 
         write_cr4(cr4);
 }
 
-phys_bytes pg_load(void)
+phys_ਬਾਈਟਾਂ pg_ਲੱਦੋ(ਖਾਲੀ)
 {
-	phys_bytes phpagedir = vir2phys(pagedir);
+	phys_ਬਾਈਟਾਂ phpagedir = vir2phys(pagedir);
         write_cr3(phpagedir);
-	return phpagedir;
+	ਵਾਪਸ phpagedir;
 }
 
-void pg_clear(void)
+ਖਾਲੀ pg_clear(ਖਾਲੀ)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	memset(pagedir, 0, ਆਕਾਰ(pagedir));
 }
 
-phys_bytes pg_rounddown(phys_bytes b)
+phys_ਬਾਈਟਾਂ pg_rounddown(phys_ਬਾਈਟਾਂ b)
 {
-	phys_bytes o;
-	if(!(o = b % I386_PAGE_SIZE))
-		return b;
-	return b  - o;
+	phys_ਬਾਈਟਾਂ o;
+	ਜੇ(!(o = b % I386_ਪੰਨਾ_ਮਾਪ))
+		ਵਾਪਸ b;
+	ਵਾਪਸ b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+ਖਾਲੀ pg_map(phys_ਬਾਈਟਾਂ phys, vir_ਬਾਈਟਾਂ vaddr, vir_ਬਾਈਟਾਂ vaddr_ਸਿਰਾ,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	ਸਥਿਰ ਪੂਰਨ mapped_pde = -1;
+	ਸਥਿਰ u32_t *pt = ਨਿਰਾ;
+	ਪੂਰਨ pde, pte;
 
-	assert(kernel_may_alloc);
+	ਪ੍ਰਤਿਜ੍ਞਾ(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % I386_PAGE_SIZE));
-	} else  {
-		assert((vaddr % I386_PAGE_SIZE) == (phys % I386_PAGE_SIZE));
+	ਜੇ(phys == PG_ALLOCATEME) {
+		ਪ੍ਰਤਿਜ੍ਞਾ(!(vaddr % I386_ਪੰਨਾ_ਮਾਪ));
+	} ਨਹੀਂਤਾਂ  {
+		ਪ੍ਰਤਿਜ੍ਞਾ((vaddr % I386_ਪੰਨਾ_ਮਾਪ) == (phys % I386_ਪੰਨਾ_ਮਾਪ));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}	
-	assert(vaddr < kern_vir_start);
+	ਪ੍ਰਤਿਜ੍ਞਾ(vaddr < kern_vir_ਸ਼ੁਰੂ);
 
-	while(vaddr < vaddr_end) {
-		phys_bytes source = phys;
-		assert(!(vaddr % I386_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
-			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % I386_PAGE_SIZE));
+	ਜਦੋਂ(vaddr < vaddr_ਸਿਰਾ) {
+		phys_ਬਾਈਟਾਂ ਸਰੋਤ = phys;
+		ਪ੍ਰਤਿਜ੍ਞਾ(!(vaddr % I386_ਪੰਨਾ_ਮਾਪ));
+		ਜੇ(phys == PG_ALLOCATEME) {
+			ਸਰੋਤ = pg_alloc_ਪੰਨਾ(cbi);
+		} ਨਹੀਂਤਾਂ {
+			ਪ੍ਰਤਿਜ੍ਞਾ(!(phys % I386_ਪੰਨਾ_ਮਾਪ));
 		}
-		assert(!(source % I386_PAGE_SIZE));
+		ਪ੍ਰਤਿਜ੍ਞਾ(!(ਸਰੋਤ % I386_ਪੰਨਾ_ਮਾਪ));
 		pde = I386_VM_PDE(vaddr);
 		pte = I386_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
-			phys_bytes ph;
+		ਜੇ(mapped_pde < pde) {
+			phys_ਬਾਈਟਾਂ ph;
 			pt = alloc_pagetable(&ph);
-			pagedir[pde] = (ph & I386_VM_ADDR_MASK)
+			pagedir[pde] = (ph & I386_VM_ADDR_ਨਕਾਬ)
 		                | I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
 			mapped_pde = pde;
 		}
-		assert(pt);
-		pt[pte] = (source & I386_VM_ADDR_MASK) |
+		ਪ੍ਰਤਿਜ੍ਞਾ(pt);
+		pt[pte] = (ਸਰੋਤ & I386_VM_ADDR_ਨਕਾਬ) |
 			I386_VM_PRESENT | I386_VM_USER | I386_VM_WRITE;
-		vaddr += I386_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME)
-			phys += I386_PAGE_SIZE;
+		vaddr += I386_ਪੰਨਾ_ਮਾਪ;
+		ਜੇ(phys != PG_ALLOCATEME)
+			phys += I386_ਪੰਨਾ_ਮਾਪ;
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+ਖਾਲੀ pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

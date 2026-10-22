@@ -22,7 +22,7 @@
 /*===========================================================================*/
 /*					MINIX				     */
 /*===========================================================================*/
-.global MINIX
+.ਵੈਸ਼੍ਵਿਕ MINIX
 MINIX:
 /* this is the entry point for the MINIX kernel */
 	b multiboot_init
@@ -37,7 +37,7 @@ multiboot_init:
 	 * the boot info pointer returned by pre_init in r0.
 	 * Set the highly mapped stack and initialize it.
 	 *
-	 * Afther that call kmain with r0 still pointing to boot info
+	 * Afther that ਬੁਲਾਓ kmain with r0 still pointing to boot info
 	 */
 	ldr	sp, =k_initial_stktop
 	mov	r1, #0

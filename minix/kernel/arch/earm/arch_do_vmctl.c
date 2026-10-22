@@ -7,23 +7,23 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include <assert.h>
-#include <minix/type.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/type.h>
 
-#include "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
 
-static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
+ਸਥਿਰ ਖਾਲੀ ਸੈੱਟ_ttbr(ਬਣਤਰ proc *p, u32_t ttbr, u32_t *v)
 {
 	/* Set process TTBR. */
 	p->p_seg.p_ttbr = ttbr;
-	assert(p->p_seg.p_ttbr);
+	ਪ੍ਰਤਿਜ੍ਞਾ(p->p_seg.p_ttbr);
 	p->p_seg.p_ttbr_v = v;
-	if(p == get_cpulocal_var(ptproc)) {
+	ਜੇ(p == get_cpulocal_var(ptproc)) {
 		write_ttbr0(p->p_seg.p_ttbr);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	ਜੇ(p->p_nr == VM_PROC_NR) {
+		ਜੇ (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -32,26 +32,26 @@ static void set_ttbr(struct proc *p, u32_t ttbr, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+ਪੂਰਨ arch_do_vmctl(
+  ਰਜਿਸਟਰ ਸੁਨੇਹਾ *m_ptr,	/* pointer to request message */
+  ਬਣਤਰ proc *p
 )
 {
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+  ਚੋਣ(m_ptr->SVMCTL_PARAM) {
+	ਹਾਲਤ VMCTL_GET_PDBR:
 		/* Get process page directory base reg (TTBR). */
-		m_ptr->SVMCTL_VALUE = p->p_seg.p_ttbr;
-		return OK;
-	case VMCTL_SETADDRSPACE:
-		set_ttbr(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		m_ptr->SVMCTL_ਮੁੱਲ = p->p_seg.p_ttbr;
+		ਵਾਪਸ OK;
+	ਹਾਲਤ VMCTL_SETADDRSPACE:
+		ਸੈੱਟ_ttbr(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
+		ਵਾਪਸ OK;
+	ਹਾਲਤ VMCTL_FLUSHTLB:
 	{
 		reload_ttbr0();
-		return OK;
+		ਵਾਪਸ OK;
 	}
   }
 
-  printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  ਲਿਖੋ("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
+  ਵਾਪਸ EINVAL;
 }

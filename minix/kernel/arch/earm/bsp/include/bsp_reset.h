@@ -1,9 +1,9 @@
-#ifndef _BSP_RESET_H_
-#define _BSP_RESET_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_RESET_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_RESET_H_
 
-void bsp_reset_init(void);
-void bsp_reset(void);
-void bsp_poweroff(void);
-void bsp_disable_watchdog(void);
+ਖਾਲੀ bsp_reset_init(ਖਾਲੀ);
+ਖਾਲੀ bsp_reset(ਖਾਲੀ);
+ਖਾਲੀ bsp_poweroff(ਖਾਲੀ);
+ਖਾਲੀ bsp_disable_watchdog(ਖਾਲੀ);
 
-#endif /* _BSP_RESET_H_ */
+#ਜੇ_ਅੰਤ /* _BSP_RESET_H_ */

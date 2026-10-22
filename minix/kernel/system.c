@@ -32,16 +32,16 @@
  *   Sep 30, 2004   source code documentation updated  (Jorrit N. Herder)
  */
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
-#include "kernel/clock.h"
-#include <stdlib.h>
-#include <stddef.h>
-#include <assert.h>
-#include <signal.h>
-#include <unistd.h>
-#include <minix/endpoint.h>
-#include <minix/safecopies.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/vm.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/clock.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdlib.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stddef.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <signal.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <unistd.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/safecopies.h>
 
 /* Declaration of the call vector that defines the mapping of system calls
  * to handler functions. The vector is initialized in sys_init() with map(),
@@ -49,39 +49,39 @@
  * because the dummy is declared extern. If an illegal call is given, the
  * array size will be negative and this won't compile.
  */
-static int (*call_vec[NR_SYS_CALLS])(struct proc * caller, message *m_ptr);
+ਸਥਿਰ ਪੂਰਨ (*call_vec[NR_SYS_CALLS])(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ *m_ptr);
 
-#define map(call_nr, handler) 					\
-    {	int call_index = call_nr-KERNEL_CALL; 				\
-    	assert(call_index >= 0 && call_index < NR_SYS_CALLS);			\
-    call_vec[call_index] = (handler)  ; }
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ map(call_nr, handler) 					\
+    {	ਪੂਰਨ call_ਸੂਚਕਾਂਕ = call_nr-KERNEL_CALL; 				\
+    	ਪ੍ਰਤਿਜ੍ਞਾ(call_ਸੂਚਕਾਂਕ >= 0 && call_ਸੂਚਕਾਂਕ < NR_SYS_CALLS);			\
+    call_vec[call_ਸੂਚਕਾਂਕ] = (handler)  ; }
 
-static void kernel_call_finish(struct proc * caller, message *msg, int result)
+ਸਥਿਰ ਖਾਲੀ kernel_call_ਅੰਤ(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ *ਸੁਨੇਹਾ_2, ਪੂਰਨ ਨਤੀਜਾ)
 {
-  if(result == VMSUSPEND) {
+  ਜੇ(ਨਤੀਜਾ == VMSUSPEND) {
 	  /* Special case: message has to be saved for handling
 	   * until VM tells us it's allowed. VM has been notified
 	   * and we must wait for its reply to restart the call.
 	   */
-	  assert(RTS_ISSET(caller, RTS_VMREQUEST));
-	  assert(caller->p_vmrequest.type == VMSTYPE_KERNELCALL);
-	  caller->p_vmrequest.saved.reqmsg = *msg;
+	  ਪ੍ਰਤਿਜ੍ਞਾ(RTS_ISSET(caller, RTS_VMREQUEST));
+	  ਪ੍ਰਤਿਜ੍ਞਾ(caller->p_vmrequest.type == VMSTYPE_KERNELCALL);
+	  caller->p_vmrequest.saved.reqmsg = *ਸੁਨੇਹਾ_2;
 	  caller->p_misc_flags |= MF_KCALL_RESUME;
-  } else {
+  } ਨਹੀਂਤਾਂ {
 	  /*
 	   * call is finished, we could have been suspended because of VM,
 	   * remove the request message
 	   */
-	  caller->p_vmrequest.saved.reqmsg.m_source = NONE;
-	  if (result != EDONTREPLY) {
+	  caller->p_vmrequest.saved.reqmsg.m_ਸਰੋਤ = NONE;
+	  ਜੇ (ਨਤੀਜਾ != EDONTREPLY) {
 		  /* copy the result as a message to the original user buffer */
-		  msg->m_source = SYSTEM;
-		  msg->m_type = result;		/* report status of call */
-#if DEBUG_IPC_HOOK
-	hook_ipc_msgkresult(msg, caller);
-#endif
-		  if (copy_msg_to_user(msg, (message *)caller->p_delivermsg_vir)) {
-			  printf("WARNING wrong user pointer 0x%08x from "
+		  ਸੁਨੇਹਾ_2->m_ਸਰੋਤ = SYSTEM;
+		  ਸੁਨੇਹਾ_2->m_type = ਨਤੀਜਾ;		/* report status of call */
+#ਜੇ DEBUG_IPC_HOOK
+	hook_ipc_msgkresult(ਸੁਨੇਹਾ_2, caller);
+#ਜੇ_ਅੰਤ
+		  ਜੇ (copy_ਸੁਨੇਹਾ_ਮੰਜ਼ਿਲ_user(ਸੁਨੇਹਾ_2, (ਸੁਨੇਹਾ *)caller->p_delivermsg_vir)) {
+			  ਲਿਖੋ("WARNING wrong user pointer 0x%08x from "
 					  "process %s / %d\n",
 					  caller->p_delivermsg_vir,
 					  caller->p_name,
@@ -92,38 +92,38 @@ static void kernel_call_finish(struct proc * caller, message *msg, int result)
   }
 }
 
-static int kernel_call_dispatch(struct proc * caller, message *msg)
+ਸਥਿਰ ਪੂਰਨ kernel_call_dispatch(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ *ਸੁਨੇਹਾ_2)
 {
-  int result = OK;
-  int call_nr;
+  ਪੂਰਨ ਨਤੀਜਾ = OK;
+  ਪੂਰਨ call_nr;
 
-#if DEBUG_IPC_HOOK
-	hook_ipc_msgkcall(msg, caller);
-#endif
-  call_nr = msg->m_type - KERNEL_CALL;
+#ਜੇ DEBUG_IPC_HOOK
+	hook_ipc_msgkcall(ਸੁਨੇਹਾ_2, caller);
+#ਜੇ_ਅੰਤ
+  call_nr = ਸੁਨੇਹਾ_2->m_type - KERNEL_CALL;
 
   /* See if the caller made a valid request and try to handle it. */
-  if (call_nr < 0 || call_nr >= NR_SYS_CALLS) {	/* check call number */
-	  printf("SYSTEM: illegal request %d from %d.\n",
-			  call_nr,msg->m_source);
-	  result = EBADREQUEST;			/* illegal message type */
+  ਜੇ (call_nr < 0 || call_nr >= NR_SYS_CALLS) {	/* check call number */
+	  ਲਿਖੋ("SYSTEM: illegal request %d from %d.\n",
+			  call_nr,ਸੁਨੇਹਾ_2->m_ਸਰੋਤ);
+	  ਨਤੀਜਾ = EBADREQUEST;			/* illegal message type */
   }
-  else if (!GET_BIT(priv(caller)->s_k_call_mask, call_nr)) {
-	  printf("SYSTEM: denied request %d from %d.\n",
-			  call_nr,msg->m_source);
-	  result = ECALLDENIED;			/* illegal message type */
-  } else {
+  ਨਹੀਂਤਾਂ ਜੇ (!GET_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(caller)->s_k_call_ਨਕਾਬ, call_nr)) {
+	  ਲਿਖੋ("SYSTEM: denied request %d from %d.\n",
+			  call_nr,ਸੁਨੇਹਾ_2->m_ਸਰੋਤ);
+	  ਨਤੀਜਾ = ECALLDENIED;			/* illegal message type */
+  } ਨਹੀਂਤਾਂ {
 	  /* handle the system call */
-	  if (call_vec[call_nr])
-		  result = (*call_vec[call_nr])(caller, msg);
-	  else {
-		  printf("Unused kernel call %d from %d\n",
+	  ਜੇ (call_vec[call_nr])
+		  ਨਤੀਜਾ = (*call_vec[call_nr])(caller, ਸੁਨੇਹਾ_2);
+	  ਨਹੀਂਤਾਂ {
+		  ਲਿਖੋ("Unused kernel call %d from %d\n",
 				  call_nr, caller->p_endpoint);
-		  result = EBADREQUEST;
+		  ਨਤੀਜਾ = EBADREQUEST;
 	  }
   }
 
-  return result;
+  ਵਾਪਸ ਨਤੀਜਾ;
 }
 
 /*===========================================================================*
@@ -133,50 +133,50 @@ static int kernel_call_dispatch(struct proc * caller, message *msg)
  * this function checks the basic syscall parameters and if accepted it
  * dispatches its handling to the right handler
  */
-void kernel_call(message *m_user, struct proc * caller)
+ਖਾਲੀ kernel_call(ਸੁਨੇਹਾ *m_user, ਬਣਤਰ proc * caller)
 {
-  int result = OK;
-  message msg;
+  ਪੂਰਨ ਨਤੀਜਾ = OK;
+  ਸੁਨੇਹਾ ਸੁਨੇਹਾ_2;
 
-  caller->p_delivermsg_vir = (vir_bytes) m_user;
+  caller->p_delivermsg_vir = (vir_ਬਾਈਟਾਂ) m_user;
   /*
    * the ldt and cr3 of the caller process is loaded because it just've trapped
    * into the kernel or was already set in switch_to_user() before we resume
    * execution of an interrupted kernel call
    */
-  if (copy_msg_from_user(m_user, &msg) == 0) {
-	  msg.m_source = caller->p_endpoint;
-	  result = kernel_call_dispatch(caller, &msg);
+  ਜੇ (copy_ਸੁਨੇਹਾ_from_user(m_user, &ਸੁਨੇਹਾ_2) == 0) {
+	  ਸੁਨੇਹਾ_2.m_ਸਰੋਤ = caller->p_endpoint;
+	  ਨਤੀਜਾ = kernel_call_dispatch(caller, &ਸੁਨੇਹਾ_2);
   }
-  else {
-	  printf("WARNING wrong user pointer 0x%08x from process %s / %d\n",
+  ਨਹੀਂਤਾਂ {
+	  ਲਿਖੋ("WARNING wrong user pointer 0x%08x from process %s / %d\n",
 			  m_user, caller->p_name, caller->p_endpoint);
 	  cause_sig(proc_nr(caller), SIGSEGV);
-	  return;
+	  ਵਾਪਸ;
   }
 
 
   /* remember who invoked the kcall so we can bill it its time */
   kbill_kcall = caller;
 
-  kernel_call_finish(caller, &msg, result);
+  kernel_call_ਅੰਤ(caller, &ਸੁਨੇਹਾ_2, ਨਤੀਜਾ);
 }
 
 /*===========================================================================*
  *				initialize				     *
  *===========================================================================*/
-void system_init(void)
+ਖਾਲੀ system_init(ਖਾਲੀ)
 {
-  register struct priv *sp;
-  int i;
+  ਰਜਿਸਟਰ ਬਣਤਰ priv *sp;
+  ਪੂਰਨ i;
 
   /* Initialize IRQ handler hooks. Mark all hooks available. */
-  for (i=0; i<NR_IRQ_HOOKS; i++) {
+  ਲਈ (i=0; i<NR_IRQ_HOOKS; i++) {
       irq_hooks[i].proc_nr_e = NONE;
   }
 
   /* Initialize all alarm timers for all processes. */
-  for (sp=BEG_PRIV_ADDR; sp < END_PRIV_ADDR; sp++) {
+  ਲਈ (sp=BEG_PRIV_ADDR; sp < ਸਿਰਾ_PRIV_ADDR; sp++) {
     tmr_inittimer(&(sp->s_alarm_timer));
   }
 
@@ -185,8 +185,8 @@ void system_init(void)
    * handler functions. This is done with a macro that gives a compile error
    * if an illegal call number is used. The ordering is not important here.
    */
-  for (i=0; i<NR_SYS_CALLS; i++) {
-      call_vec[i] = NULL;
+  ਲਈ (i=0; i<NR_SYS_CALLS; i++) {
+      call_vec[i] = ਨਿਰਾ;
   }
 
   /* Process management. */
@@ -210,10 +210,10 @@ void system_init(void)
 
   /* Device I/O. */
   map(SYS_IRQCTL, do_irqctl);  		/* interrupt control operations */
-#if defined(__i386__)
+#ਜੇ defined(__i386__)
   map(SYS_DEVIO, do_devio);   		/* inb, inw, inl, outb, outw, outl */
   map(SYS_VDEVIO, do_vdevio);  		/* vector with devio requests */
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Memory management. */
   map(SYS_MEMSET, do_memset);		/* write char to memory area */
@@ -226,7 +226,7 @@ void system_init(void)
   map(SYS_VIRCOPY, do_vircopy); 	/* use pure virtual addressing */
   map(SYS_PHYSCOPY, do_copy);	 	/* use physical addressing */
   map(SYS_SAFECOPYFROM, do_safecopy_from);/* copy with pre-granted permission */
-  map(SYS_SAFECOPYTO, do_safecopy_to);	/* copy with pre-granted permission */
+  map(SYS_SAFECOPYTO, do_safecopy_ਮੰਜ਼ਿਲ);	/* copy with pre-granted permission */
   map(SYS_VSAFECOPY, do_vsafecopy);	/* vectored safecopy */
 
   /* safe memset */
@@ -248,63 +248,63 @@ void system_init(void)
   map(SYS_SPROF, do_sprofile);         /* start/stop statistical profiling */
 
   /* arm-specific. */
-#if defined(__arm__)
+#ਜੇ defined(__arm__)
   map(SYS_PADCONF, do_padconf);		/* configure pinmux */
-#endif
+#ਜੇ_ਅੰਤ
 
   /* i386-specific. */
-#if defined(__i386__)
+#ਜੇ defined(__i386__)
   map(SYS_READBIOS, do_readbios);	/* read from BIOS locations */
   map(SYS_IOPENABLE, do_iopenable); 	/* Enable I/O */
   map(SYS_SDEVIO, do_sdevio);		/* phys_insb, _insw, _outsb, _outsw */
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Machine state switching. */
   map(SYS_SETMCONTEXT, do_setmcontext); /* set machine context */
   map(SYS_GETMCONTEXT, do_getmcontext); /* get machine context */
 
   /* Scheduling */
-  map(SYS_SCHEDULE, do_schedule);	/* reschedule a process */
+  map(SYS_ਸਮਾਂ_ਸਾਰਣੀ, do_ਸਮਾਂ_ਸਾਰਣੀ);	/* reschedule a process */
   map(SYS_SCHEDCTL, do_schedctl);	/* change process scheduler */
 
 }
 /*===========================================================================*
  *				get_priv				     *
  *===========================================================================*/
-int get_priv(
-  register struct proc *rc,		/* new (child) process pointer */
-  int priv_id				/* privilege id */
+ਪੂਰਨ get_priv(
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rc,		/* new (child) process pointer */
+  ਪੂਰਨ priv_id				/* privilege id */
 )
 {
 /* Allocate a new privilege structure for a system process. Privilege ids
  * can be assigned either statically or dynamically.
  */
-  register struct priv *sp;                 /* privilege structure */
+  ਰਜਿਸਟਰ ਬਣਤਰ priv *sp;                 /* privilege structure */
 
-  if(priv_id == NULL_PRIV_ID) {             /* allocate slot dynamically */
-      for (sp = BEG_DYN_PRIV_ADDR; sp < END_DYN_PRIV_ADDR; ++sp)
-          if (sp->s_proc_nr == NONE) break;
-      if (sp >= END_DYN_PRIV_ADDR) return(ENOSPC);
+  ਜੇ(priv_id == NULL_PRIV_ID) {             /* allocate slot dynamically */
+      ਲਈ (sp = BEG_DYN_PRIV_ADDR; sp < ਸਿਰਾ_DYN_PRIV_ADDR; ++sp)
+          ਜੇ (sp->s_proc_nr == NONE) ਰੋਕੋ;
+      ਜੇ (sp >= ਸਿਰਾ_DYN_PRIV_ADDR) ਵਾਪਸ(ENOSPC);
   }
-  else {                                    /* allocate slot from id */
-      if(!is_static_priv_id(priv_id)) {
-          return EINVAL;                    /* invalid static priv id */
+  ਨਹੀਂਤਾਂ {                                    /* allocate slot from id */
+      ਜੇ(!is_static_priv_id(priv_id)) {
+          ਵਾਪਸ EINVAL;                    /* invalid static priv id */
       }
-      if(priv[priv_id].s_proc_nr != NONE) {
-          return EBUSY;                     /* slot already in use */
+      ਜੇ(priv[priv_id].s_proc_nr != NONE) {
+          ਵਾਪਸ EBUSY;                     /* slot already in use */
       }
       sp = &priv[priv_id];
   }
   rc->p_priv = sp;			    /* assign new slot */
   rc->p_priv->s_proc_nr = proc_nr(rc);	    /* set association */
 
-  return(OK);
+  ਵਾਪਸ(OK);
 }
 
 /*===========================================================================*
  *				set_sendto_bit				     *
  *===========================================================================*/
-void set_sendto_bit(const struct proc *rp, int id)
+ਖਾਲੀ ਸੈੱਟ_sendto_ਦੋਆਧਾਰੀ_ਅੰਕ(ਅਚਲ ਬਣਤਰ proc *rp, ਪੂਰਨ id)
 {
 /* Allow a process to send messages to the process(es) associated with the
  * system privilege structure with the given ID.
@@ -313,80 +313,80 @@ void set_sendto_bit(const struct proc *rp, int id)
   /* Disallow the process from sending to a process privilege structure with no
    * associated process, and disallow the process from sending to itself.
    */
-  if (id_to_nr(id) == NONE || priv_id(rp) == id) {
-	unset_sys_bit(priv(rp)->s_ipc_to, id);
-	return;
+  ਜੇ (id_ਮੰਜ਼ਿਲ_nr(id) == NONE || priv_id(rp) == id) {
+	unset_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(rp)->s_ipc_ਮੰਜ਼ਿਲ, id);
+	ਵਾਪਸ;
   }
 
-  set_sys_bit(priv(rp)->s_ipc_to, id);
+  ਸੈੱਟ_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(rp)->s_ipc_ਮੰਜ਼ਿਲ, id);
 
   /* The process that this process can now send to, must be able to reply (or
    * vice versa). Therefore, its send mask should be updated as well. Ignore
    * receivers that don't support traps other than RECEIVE, they can't reply
    * or send messages anyway.
    */
-  if (priv_addr(id)->s_trap_mask & ~((1 << RECEIVE)))
-      set_sys_bit(priv_addr(id)->s_ipc_to, priv_id(rp));
+  ਜੇ (priv_addr(id)->s_trap_ਨਕਾਬ & ~((1 << RECEIVE)))
+      ਸੈੱਟ_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv_addr(id)->s_ipc_ਮੰਜ਼ਿਲ, priv_id(rp));
 }
 
 /*===========================================================================*
  *				unset_sendto_bit			     *
  *===========================================================================*/
-void unset_sendto_bit(const struct proc *rp, int id)
+ਖਾਲੀ unset_sendto_ਦੋਆਧਾਰੀ_ਅੰਕ(ਅਚਲ ਬਣਤਰ proc *rp, ਪੂਰਨ id)
 {
 /* Prevent a process from sending to another process. Retain the send mask
  * symmetry by also unsetting the bit for the other direction.
  */
 
-  unset_sys_bit(priv(rp)->s_ipc_to, id);
+  unset_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(rp)->s_ipc_ਮੰਜ਼ਿਲ, id);
 
-  unset_sys_bit(priv_addr(id)->s_ipc_to, priv_id(rp));
+  unset_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv_addr(id)->s_ipc_ਮੰਜ਼ਿਲ, priv_id(rp));
 }
 
 /*===========================================================================*
  *			      fill_sendto_mask				     *
  *===========================================================================*/
-void fill_sendto_mask(const struct proc *rp, sys_map_t *map)
+ਖਾਲੀ fill_sendto_ਨਕਾਬ(ਅਚਲ ਬਣਤਰ proc *rp, sys_map_t *map)
 {
-  int i;
+  ਪੂਰਨ i;
 
-  for (i=0; i < NR_SYS_PROCS; i++) {
-  	if (get_sys_bit(*map, i))
-  		set_sendto_bit(rp, i);
-  	else
-  		unset_sendto_bit(rp, i);
+  ਲਈ (i=0; i < NR_SYS_PROCS; i++) {
+  	ਜੇ (get_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(*map, i))
+  		ਸੈੱਟ_sendto_ਦੋਆਧਾਰੀ_ਅੰਕ(rp, i);
+  	ਨਹੀਂਤਾਂ
+  		unset_sendto_ਦੋਆਧਾਰੀ_ਅੰਕ(rp, i);
   }
 }
 
 /*===========================================================================*
  *				send_sig				     *
  *===========================================================================*/
-int send_sig(endpoint_t ep, int sig_nr)
+ਪੂਰਨ send_sig(endpoint_t ep, ਪੂਰਨ sig_nr)
 {
 /* Notify a system process about a signal. This is straightforward. Simply
  * set the signal that is to be delivered in the pending signals map and
  * send a notification with source SYSTEM.
  */
-  register struct proc *rp;
-  struct priv *priv;
-  int proc_nr;
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rp;
+  ਬਣਤਰ priv *priv;
+  ਪੂਰਨ proc_nr;
 
-  if(!isokendpt(ep, &proc_nr) || isemptyn(proc_nr))
-	return EINVAL;
+  ਜੇ(!isokendpt(ep, &proc_nr) || isemptyn(proc_nr))
+	ਵਾਪਸ EINVAL;
 
   rp = proc_addr(proc_nr);
   priv = priv(rp);
-  if(!priv) return ENOENT;
+  ਜੇ(!priv) ਵਾਪਸ ENOENT;
   sigaddset(&priv->s_sig_pending, sig_nr);
   mini_notify(proc_addr(SYSTEM), rp->p_endpoint);
 
-  return OK;
+  ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *				cause_sig				     *
  *===========================================================================*/
-void cause_sig(proc_nr_t proc_nr, int sig_nr)
+ਖਾਲੀ cause_sig(proc_nr_t proc_nr, ਪੂਰਨ sig_nr)
 {
 /* A system process wants to send signal 'sig_nr' to process 'proc_nr'.
  * Examples are:
@@ -402,28 +402,28 @@ void cause_sig(proc_nr_t proc_nr, int sig_nr)
  * only called when a user process causes a CPU exception and from the kernel
  * process level, which runs to completion.
  */
-  register struct proc *rp, *sig_mgr_rp;
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rp, *sig_mgr_rp;
   endpoint_t sig_mgr;
-  int sig_mgr_proc_nr;
-  int s;
+  ਪੂਰਨ sig_mgr_proc_nr;
+  ਪੂਰਨ s;
 
   /* Lookup signal manager. */
   rp = proc_addr(proc_nr);
   sig_mgr = priv(rp)->s_sig_mgr;
-  if(sig_mgr == SELF) sig_mgr = rp->p_endpoint;
+  ਜੇ(sig_mgr == SELF) sig_mgr = rp->p_endpoint;
 
   /* If the target is the signal manager of itself, send the signal directly. */
-  if(rp->p_endpoint == sig_mgr) {
-       if(SIGS_IS_LETHAL(sig_nr)) {
+  ਜੇ(rp->p_endpoint == sig_mgr) {
+       ਜੇ(SIGS_IS_LETHAL(sig_nr)) {
            /* If the signal is lethal, see if a backup signal manager exists. */
            sig_mgr = priv(rp)->s_bak_sig_mgr;
-           if(sig_mgr != NONE && isokendpt(sig_mgr, &sig_mgr_proc_nr)) {
+           ਜੇ(sig_mgr != NONE && isokendpt(sig_mgr, &sig_mgr_proc_nr)) {
                priv(rp)->s_sig_mgr = sig_mgr;
                priv(rp)->s_bak_sig_mgr = NONE;
                sig_mgr_rp = proc_addr(sig_mgr_proc_nr);
                RTS_UNSET(sig_mgr_rp, RTS_NO_PRIV);
                cause_sig(proc_nr, sig_nr); /* try again with the new sig mgr. */
-               return;
+               ਵਾਪਸ;
            }
            /* We are out of luck. Time to panic. */
            proc_stacktrace(rp);
@@ -431,18 +431,18 @@ void cause_sig(proc_nr_t proc_nr, int sig_nr)
 	   	rp->p_endpoint, sig_nr);
        }
        sigaddset(&priv(rp)->s_sig_pending, sig_nr);
-       if(OK != send_sig(rp->p_endpoint, SIGKSIGSM))
+       ਜੇ(OK != send_sig(rp->p_endpoint, SIGKSIGSM))
        	panic("send_sig failed");
-       return;
+       ਵਾਪਸ;
   }
 
   s = sigismember(&rp->p_pending, sig_nr);
   /* Check if the signal is already pending. Process it otherwise. */
-  if (!s) {
+  ਜੇ (!s) {
       sigaddset(&rp->p_pending, sig_nr);
-      if (! (RTS_ISSET(rp, RTS_SIGNALED))) {		/* other pending */
-	  RTS_SET(rp, RTS_SIGNALED | RTS_SIG_PENDING);
-          if(OK != send_sig(sig_mgr, SIGKSIG))
+      ਜੇ (! (RTS_ISSET(rp, RTS_SIGNALED))) {		/* other pending */
+	  RTS_ਸੈੱਟ(rp, RTS_SIGNALED | RTS_SIG_PENDING);
+          ਜੇ(OK != send_sig(sig_mgr, SIGKSIG))
 	  	panic("send_sig failed");
       }
   }
@@ -451,7 +451,7 @@ void cause_sig(proc_nr_t proc_nr, int sig_nr)
 /*===========================================================================*
  *				sig_delay_done				     *
  *===========================================================================*/
-void sig_delay_done(struct proc *rp)
+ਖਾਲੀ sig_delay_ਪੂਰਾ(ਬਣਤਰ proc *rp)
 {
 /* A process is now known not to send any direct messages.
  * Tell PM that the stop delay has ended, by sending a signal to the process.
@@ -466,16 +466,16 @@ void sig_delay_done(struct proc *rp)
 /*===========================================================================*
  *				send_diag_sig				     *
  *===========================================================================*/
-void send_diag_sig(void)
+ਖਾਲੀ send_diag_sig(ਖਾਲੀ)
 {
 /* Send a SIGKMESS signal to all processes in receiving updates about new
  * diagnostics messages.
  */
-  struct priv *privp;
+  ਬਣਤਰ priv *privp;
   endpoint_t ep;
 
-  for (privp = BEG_PRIV_ADDR; privp < END_PRIV_ADDR; privp++) {
-	if (privp->s_proc_nr != NONE && privp->s_diag_sig == TRUE) {
+  ਲਈ (privp = BEG_PRIV_ADDR; privp < ਸਿਰਾ_PRIV_ADDR; privp++) {
+	ਜੇ (privp->s_proc_nr != NONE && privp->s_diag_sig == TRUE) {
 		ep = proc_addr(privp->s_proc_nr)->p_endpoint;
 		send_sig(ep, SIGKMESS);
 	}
@@ -485,18 +485,18 @@ void send_diag_sig(void)
 /*===========================================================================*
  *			         clear_memreq				     *
  *===========================================================================*/
-static void clear_memreq(struct proc *rp)
+ਸਥਿਰ ਖਾਲੀ clear_memreq(ਬਣਤਰ proc *rp)
 {
-  struct proc **rpp;
+  ਬਣਤਰ proc **rpp;
 
-  if (!RTS_ISSET(rp, RTS_VMREQUEST))
-	return; /* nothing to do */
+  ਜੇ (!RTS_ISSET(rp, RTS_VMREQUEST))
+	ਵਾਪਸ; /* nothing to do */
 
-  for (rpp = &vmrequest; *rpp != NULL;
+  ਲਈ (rpp = &vmrequest; *rpp != ਨਿਰਾ;
      rpp = &(*rpp)->p_vmrequest.nextrequestor) {
-	if (*rpp == rp) {
+	ਜੇ (*rpp == rp) {
 		*rpp = rp->p_vmrequest.nextrequestor;
-		break;
+		ਰੋਕੋ;
 	}
   }
 
@@ -506,26 +506,26 @@ static void clear_memreq(struct proc *rp)
 /*===========================================================================*
  *			         clear_ipc				     *
  *===========================================================================*/
-static void clear_ipc(
-  register struct proc *rc	/* slot of process to clean up */
+ਸਥਿਰ ਖਾਲੀ clear_ipc(
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rc	/* slot of process to clean up */
 )
 {
 /* Clear IPC data for a given process slot. */
-  struct proc **xpp;			/* iterate over caller queue */
+  ਬਣਤਰ proc **xpp;			/* iterate over caller queue */
 
-  if (RTS_ISSET(rc, RTS_SENDING)) {
-      int target_proc;
+  ਜੇ (RTS_ISSET(rc, RTS_SENDING)) {
+      ਪੂਰਨ ਨਿਸ਼ਾਨਾ_proc;
 
-      okendpt(rc->p_sendto_e, &target_proc);
-      xpp = &proc_addr(target_proc)->p_caller_q; /* destination's queue */
-      while (*xpp) {		/* check entire queue */
-          if (*xpp == rc) {			/* process is on the queue */
+      okendpt(rc->p_sendto_e, &ਨਿਸ਼ਾਨਾ_proc);
+      xpp = &proc_addr(ਨਿਸ਼ਾਨਾ_proc)->p_caller_q; /* destination's queue */
+      ਜਦੋਂ (*xpp) {		/* check entire queue */
+          ਜੇ (*xpp == rc) {			/* process is on the queue */
               *xpp = (*xpp)->p_q_link;		/* replace by next process */
-#if DEBUG_ENABLE_IPC_WARNINGS
-	      printf("endpoint %d / %s removed from queue at %d\n",
+#ਜੇ DEBUG_ENABLE_IPC_WARNINGS
+	      ਲਿਖੋ("endpoint %d / %s removed from queue at %d\n",
 	          rc->p_endpoint, rc->p_name, rc->p_sendto_e);
-#endif
-              break;				/* can only be queued once */
+#ਜੇ_ਅੰਤ
+              ਰੋਕੋ;				/* can only be queued once */
           }
           xpp = &(*xpp)->p_q_link;		/* proceed to next queued */
       }
@@ -537,19 +537,19 @@ static void clear_ipc(
 /*===========================================================================*
  *			         clear_endpoint				     *
  *===========================================================================*/
-void clear_endpoint(struct proc * rc)
+ਖਾਲੀ clear_endpoint(ਬਣਤਰ proc * rc)
 {
 /* Clean up the slot of the process given as 'rc'. */
-  if(isemptyp(rc)) panic("clear_proc: empty process: %d",  rc->p_endpoint);
+  ਜੇ(isemptyp(rc)) panic("clear_proc: empty process: %d",  rc->p_endpoint);
 
 
-#if DEBUG_IPC_HOOK
+#ਜੇ DEBUG_IPC_HOOK
   hook_ipc_clear(rc);
-#endif
+#ਜੇ_ਅੰਤ
 
   /* Make sure that the exiting process is no longer scheduled. */
-  RTS_SET(rc, RTS_NO_ENDPOINT);
-  if (priv(rc)->s_flags & SYS_PROC)
+  RTS_ਸੈੱਟ(rc, RTS_NO_ENDPOINT);
+  ਜੇ (priv(rc)->s_flags & SYS_PROC)
   {
 	priv(rc)->s_asynsize= 0;
   }
@@ -574,32 +574,32 @@ void clear_endpoint(struct proc * rc)
 /*===========================================================================*
  *			       clear_ipc_refs				     *
  *===========================================================================*/
-void clear_ipc_refs(
-  register struct proc *rc,		/* slot of process to clean up */
-  int caller_ret			/* code to return on callers */
+ਖਾਲੀ clear_ipc_refs(
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rc,		/* slot of process to clean up */
+  ਪੂਰਨ caller_ret			/* code to return on callers */
 )
 {
 /* Clear IPC references for a given process slot. */
-  struct proc *rp;			/* iterate over process table */
-  int src_id;
+  ਬਣਤਰ proc *rp;			/* iterate over process table */
+  ਪੂਰਨ src_id;
 
   /* Tell processes that sent asynchronous messages to 'rc' they are not
    * going to be delivered */
-  while ((src_id = has_pending_asend(rc, ANY)) != NULL_PRIV_ID)
-      cancel_async(proc_addr(id_to_nr(src_id)), rc);
+  ਜਦੋਂ ((src_id = has_pending_asend(rc, ANY)) != NULL_PRIV_ID)
+      cancel_async(proc_addr(id_ਮੰਜ਼ਿਲ_nr(src_id)), rc);
 
-  for (rp = BEG_PROC_ADDR; rp < END_PROC_ADDR; rp++) {
-      if(isemptyp(rp))
-	continue;
+  ਲਈ (rp = BEG_PROC_ADDR; rp < ਸਿਰਾ_PROC_ADDR; rp++) {
+      ਜੇ(isemptyp(rp))
+	ਜਾਰੀ;
 
       /* Unset pending notification bits. */
-      unset_sys_bit(priv(rp)->s_notify_pending, priv(rc)->s_id);
+      unset_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(rp)->s_notify_pending, priv(rc)->s_id);
 
       /* Unset pending asynchronous messages */
-      unset_sys_bit(priv(rp)->s_asyn_pending, priv(rc)->s_id);
+      unset_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(priv(rp)->s_asyn_pending, priv(rc)->s_id);
 
       /* Check if process depends on given process. */
-      if (P_BLOCKEDON(rp) == rc->p_endpoint) {
+      ਜੇ (P_BLOCKEDON(rp) == rc->p_endpoint) {
           rp->p_reg.retreg = caller_ret;	/* return requested code */
 	  clear_ipc(rp);
       }
@@ -609,14 +609,14 @@ void clear_ipc_refs(
 /*===========================================================================*
  *                              kernel_call_resume                           *
  *===========================================================================*/
-void kernel_call_resume(struct proc *caller)
+ਖਾਲੀ kernel_call_resume(ਬਣਤਰ proc *caller)
 {
-	int result;
+	ਪੂਰਨ ਨਤੀਜਾ;
 
-	assert(!RTS_ISSET(caller, RTS_SLOT_FREE));
-	assert(!RTS_ISSET(caller, RTS_VMREQUEST));
+	ਪ੍ਰਤਿਜ੍ਞਾ(!RTS_ISSET(caller, RTS_ਥਾਂ_FREE));
+	ਪ੍ਰਤਿਜ੍ਞਾ(!RTS_ISSET(caller, RTS_VMREQUEST));
 
-	assert(caller->p_vmrequest.saved.reqmsg.m_source == caller->p_endpoint);
+	ਪ੍ਰਤਿਜ੍ਞਾ(caller->p_vmrequest.saved.reqmsg.m_ਸਰੋਤ == caller->p_endpoint);
 
 	/*
 	printf("KERNEL_CALL restart from %s / %d rts 0x%08x misc 0x%08x\n",
@@ -627,33 +627,33 @@ void kernel_call_resume(struct proc *caller)
 	/* re-execute the kernel call, with MF_KCALL_RESUME still set so
 	 * the call knows this is a retry.
 	 */
-	result = kernel_call_dispatch(caller, &caller->p_vmrequest.saved.reqmsg);
+	ਨਤੀਜਾ = kernel_call_dispatch(caller, &caller->p_vmrequest.saved.reqmsg);
 	/*
 	 * we are resuming the kernel call so we have to remove this flag so it
 	 * can be set again
 	 */
 	caller->p_misc_flags &= ~MF_KCALL_RESUME;
-	kernel_call_finish(caller, &caller->p_vmrequest.saved.reqmsg, result);
+	kernel_call_ਅੰਤ(caller, &caller->p_vmrequest.saved.reqmsg, ਨਤੀਜਾ);
 }
 
 /*===========================================================================*
  *                               sched_proc                                  *
  *===========================================================================*/
-int sched_proc(struct proc *p, int priority, int quantum, int cpu, int niced)
+ਪੂਰਨ sched_proc(ਬਣਤਰ proc *p, ਪੂਰਨ ਤਰਜੀਹ, ਪੂਰਨ ਸਮਾਂ_ਹਿੱਸਾ, ਪੂਰਨ cpu, ਪੂਰਨ niced)
 {
 	/* Make sure the values given are within the allowed range.*/
-	if ((priority < TASK_Q && priority != -1) || priority > NR_SCHED_QUEUES)
-		return(EINVAL);
+	ਜੇ ((ਤਰਜੀਹ < TASK_Q && ਤਰਜੀਹ != -1) || ਤਰਜੀਹ > NR_SCHED_QUEUES)
+		ਵਾਪਸ(EINVAL);
 
-	if (quantum < 1 && quantum != -1)
-		return(EINVAL);
+	ਜੇ (ਸਮਾਂ_ਹਿੱਸਾ < 1 && ਸਮਾਂ_ਹਿੱਸਾ != -1)
+		ਵਾਪਸ(EINVAL);
 
-#ifdef CONFIG_SMP
-	if ((cpu < 0 && cpu != -1) || (cpu > 0 && (unsigned) cpu >= ncpus))
-		return(EINVAL);
-	if (cpu != -1 && !(cpu_is_ready(cpu)))
-		return EBADCPU;
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+	ਜੇ ((cpu < 0 && cpu != -1) || (cpu > 0 && (ਬਿਨਾਨਿਸ਼ਾਨੀ) cpu >= ncpus))
+		ਵਾਪਸ(EINVAL);
+	ਜੇ (cpu != -1 && !(cpu_is_ready(cpu)))
+		ਵਾਪਸ EBADCPU;
+#ਜੇ_ਅੰਤ
 
 	/* In some cases, we might be rescheduling a runnable process. In such
 	 * a case (i.e. if we are updating the priority) we set the NO_QUANTUM
@@ -664,219 +664,219 @@ int sched_proc(struct proc *p, int priority, int quantum, int cpu, int niced)
 
 	/* FIXME this is a problem for SMP if the processes currently runs on a
 	 * different CPU */
-	if (proc_is_runnable(p)) {
-#ifdef CONFIG_SMP
-		if (p->p_cpu != cpuid && cpu != -1 && cpu != p->p_cpu) {
-			smp_schedule_migrate_proc(p, cpu);
+	ਜੇ (proc_is_runnable(p)) {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+		ਜੇ (p->p_cpu != cpuid && cpu != -1 && cpu != p->p_cpu) {
+			smp_ਸਮਾਂ_ਸਾਰਣੀ_migrate_proc(p, cpu);
 		}
-#endif
+#ਜੇ_ਅੰਤ
 
-		RTS_SET(p, RTS_NO_QUANTUM);
+		RTS_ਸੈੱਟ(p, RTS_NO_ਸਮਾਂ_ਹਿੱਸਾ);
 	}
 
-	if (proc_is_runnable(p))
-		RTS_SET(p, RTS_NO_QUANTUM);
+	ਜੇ (proc_is_runnable(p))
+		RTS_ਸੈੱਟ(p, RTS_NO_ਸਮਾਂ_ਹਿੱਸਾ);
 
-	if (priority != -1)
-		p->p_priority = priority;
-	if (quantum != -1) {
-		p->p_quantum_size_ms = quantum;
-		p->p_cpu_time_left = ms_2_cpu_time(quantum);
+	ਜੇ (ਤਰਜੀਹ != -1)
+		p->p_ਤਰਜੀਹ = ਤਰਜੀਹ;
+	ਜੇ (ਸਮਾਂ_ਹਿੱਸਾ != -1) {
+		p->p_ਸਮਾਂ_ਹਿੱਸਾ_ਮਾਪ_ms = ਸਮਾਂ_ਹਿੱਸਾ;
+		p->p_cpu_ਸਮਾਂ_ਖੱਬਾ = ms_2_cpu_ਸਮਾਂ(ਸਮਾਂ_ਹਿੱਸਾ);
 	}
-#ifdef CONFIG_SMP
-	if (cpu != -1)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+	ਜੇ (cpu != -1)
 		p->p_cpu = cpu;
-#endif
+#ਜੇ_ਅੰਤ
 
-	if (niced)
+	ਜੇ (niced)
 		p->p_misc_flags |= MF_NICED;
-	else
+	ਨਹੀਂਤਾਂ
 		p->p_misc_flags &= ~MF_NICED;
 
 	/* Clear the scheduling bit and enqueue the process */
-	RTS_UNSET(p, RTS_NO_QUANTUM);
+	RTS_UNSET(p, RTS_NO_ਸਮਾਂ_ਹਿੱਸਾ);
 
-	return OK;
+	ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *				add_ipc_filter				     *
  *===========================================================================*/
-int add_ipc_filter(struct proc *rp, int type, vir_bytes address,
-	size_t length)
+ਪੂਰਨ ਜੋੜੋ_ipc_filter(ਬਣਤਰ proc *rp, ਪੂਰਨ type, vir_ਬਾਈਟਾਂ ਪਤਾ,
+	size_t ਲੰਮਾਈ)
 {
-	int num_elements, r;
+	ਪੂਰਨ ਅੰਕ_elements, r;
 	ipc_filter_t *ipcf, **ipcfp;
 
 	/* Validate arguments. */
-	if (type != IPCF_BLACKLIST && type != IPCF_WHITELIST)
-		return EINVAL;
+	ਜੇ (type != IPCF_BLACKLIST && type != IPCF_WHITELIST)
+		ਵਾਪਸ EINVAL;
 
-	if (length % sizeof(ipc_filter_el_t) != 0)
-		return EINVAL;
+	ਜੇ (ਲੰਮਾਈ % ਆਕਾਰ(ipc_filter_el_t) != 0)
+		ਵਾਪਸ EINVAL;
 
-	num_elements = length / sizeof(ipc_filter_el_t);
-	if (num_elements <= 0 || num_elements > IPCF_MAX_ELEMENTS)
-		return E2BIG;
+	ਅੰਕ_elements = ਲੰਮਾਈ / ਆਕਾਰ(ipc_filter_el_t);
+	ਜੇ (ਅੰਕ_elements <= 0 || ਅੰਕ_elements > IPCF_MAX_ELEMENTS)
+		ਵਾਪਸ E2BIG;
 
 	/* Allocate a new IPC filter slot. */
-	IPCF_POOL_ALLOCATE_SLOT(type, &ipcf);
-	if (ipcf == NULL)
-		return ENOMEM;
+	IPCF_POOL_ALLOCATE_ਥਾਂ(type, &ipcf);
+	ਜੇ (ipcf == ਨਿਰਾ)
+		ਵਾਪਸ ENOMEM;
 
 	/* Fill details. */
-	ipcf->num_elements = num_elements;
-	ipcf->next = NULL;
-	r = data_copy(rp->p_endpoint, address,
-		KERNEL, (vir_bytes)ipcf->elements, length);
-	if (r == OK)
+	ipcf->ਅੰਕ_elements = ਅੰਕ_elements;
+	ipcf->ਅਗਲਾ = ਨਿਰਾ;
+	r = ਅੰਕੜੇ_copy(rp->p_endpoint, ਪਤਾ,
+		KERNEL, (vir_ਬਾਈਟਾਂ)ipcf->elements, ਲੰਮਾਈ);
+	ਜੇ (r == OK)
 		r = check_ipc_filter(ipcf, TRUE /*fill_flags*/);
-	if (r != OK) {
-		IPCF_POOL_FREE_SLOT(ipcf);
-		return r;
+	ਜੇ (r != OK) {
+		IPCF_POOL_FREE_ਥਾਂ(ipcf);
+		ਵਾਪਸ r;
 	}
 
 	/* Add the new filter at the end of the IPC filter chain. */
-	for (ipcfp = &priv(rp)->s_ipcf; *ipcfp != NULL;
-	    ipcfp = &(*ipcfp)->next)
+	ਲਈ (ipcfp = &priv(rp)->s_ipcf; *ipcfp != ਨਿਰਾ;
+	    ipcfp = &(*ipcfp)->ਅਗਲਾ)
 		;
 	*ipcfp = ipcf;
 
-	return OK;
+	ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *				clear_ipc_filters			     *
  *===========================================================================*/
-void clear_ipc_filters(struct proc *rp)
+ਖਾਲੀ clear_ipc_filters(ਬਣਤਰ proc *rp)
 {
 	ipc_filter_t *curr_ipcf, *ipcf;
 
 	ipcf = priv(rp)->s_ipcf;
-	while (ipcf != NULL) {
+	ਜਦੋਂ (ipcf != ਨਿਰਾ) {
 		curr_ipcf = ipcf;
-		ipcf = ipcf->next;
-		IPCF_POOL_FREE_SLOT(curr_ipcf);
+		ipcf = ipcf->ਅਗਲਾ;
+		IPCF_POOL_FREE_ਥਾਂ(curr_ipcf);
 	}
 
-	priv(rp)->s_ipcf = NULL;
+	priv(rp)->s_ipcf = ਨਿਰਾ;
 
 	/* VM is a special case here: since the cleared IPC filter may have
 	 * blocked memory handling requests, we may now have to tell VM that
 	 * there are "new" requests pending.
 	 */
-	if (rp->p_endpoint == VM_PROC_NR && vmrequest != NULL)
-		if (send_sig(VM_PROC_NR, SIGKMEM) != OK)
+	ਜੇ (rp->p_endpoint == VM_PROC_NR && vmrequest != ਨਿਰਾ)
+		ਜੇ (send_sig(VM_PROC_NR, SIGKMEM) != OK)
 			panic("send_sig failed");
 }
 
 /*===========================================================================*
  *				check_ipc_filter			     *
  *===========================================================================*/
-int check_ipc_filter(ipc_filter_t *ipcf, int fill_flags)
+ਪੂਰਨ check_ipc_filter(ipc_filter_t *ipcf, ਪੂਰਨ fill_flags)
 {
 	ipc_filter_el_t *ipcf_el;
-	int i, num_elements, flags;
+	ਪੂਰਨ i, ਅੰਕ_elements, flags;
 
-	if (ipcf == NULL)
-		return OK;
+	ਜੇ (ipcf == ਨਿਰਾ)
+		ਵਾਪਸ OK;
 
-	num_elements = ipcf->num_elements;
+	ਅੰਕ_elements = ipcf->ਅੰਕ_elements;
 	flags = 0;
-	for (i = 0; i < num_elements; i++) {
+	ਲਈ (i = 0; i < ਅੰਕ_elements; i++) {
 		ipcf_el = &ipcf->elements[i];
-		if (!IPCF_EL_CHECK(ipcf_el))
-			return EINVAL;
+		ਜੇ (!IPCF_EL_CHECK(ipcf_el))
+			ਵਾਪਸ EINVAL;
 		flags |= ipcf_el->flags;
 	}
 
-	if (fill_flags)
+	ਜੇ (fill_flags)
 		ipcf->flags = flags;
-	else if (ipcf->flags != flags)
-		return EINVAL;
-	return OK;
+	ਨਹੀਂਤਾਂ ਜੇ (ipcf->flags != flags)
+		ਵਾਪਸ EINVAL;
+	ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *				allow_ipc_filtered_msg			     *
  *===========================================================================*/
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
-	vir_bytes m_src_v, message *m_src_p)
+ਪੂਰਨ allow_ipc_filtered_ਸੁਨੇਹਾ(ਬਣਤਰ proc *rp, endpoint_t src_e,
+	vir_ਬਾਈਟਾਂ m_src_v, ਸੁਨੇਹਾ *m_src_p)
 {
-	int i, r, num_elements, get_mtype, allow;
+	ਪੂਰਨ i, r, ਅੰਕ_elements, get_mtype, allow;
 	ipc_filter_t *ipcf;
 	ipc_filter_el_t *ipcf_el;
-	message m_buff;
+	ਸੁਨੇਹਾ m_buff;
 
 	ipcf = priv(rp)->s_ipcf;
-	if (ipcf == NULL)
-		return TRUE; /* no IPC filters, always allow */
+	ਜੇ (ipcf == ਨਿਰਾ)
+		ਵਾਪਸ TRUE; /* no IPC filters, always allow */
 
-	if (m_src_p == NULL) {
-		assert(m_src_v != 0);
+	ਜੇ (m_src_p == ਨਿਰਾ) {
+		ਪ੍ਰਤਿਜ੍ਞਾ(m_src_v != 0);
 
 		/* Should we copy in the message type? */
 		get_mtype = FALSE;
-		do {
-#if DEBUG_DUMPIPCF
-			if (TRUE) {
-#else
-			if (ipcf->flags & IPCF_MATCH_M_TYPE) {
-#endif
+		ਕਰੋ {
+#ਜੇ DEBUG_DUMPIPCF
+			ਜੇ (TRUE) {
+#ਨਹੀਂਤਾਂ
+			ਜੇ (ipcf->flags & IPCF_ਮੇਲ_M_TYPE) {
+#ਜੇ_ਅੰਤ
 				get_mtype = TRUE;
-				break;
+				ਰੋਕੋ;
 			}
-			ipcf = ipcf->next;
-		} while (ipcf);
+			ipcf = ipcf->ਅਗਲਾ;
+		} ਜਦੋਂ (ipcf);
 		ipcf = priv(rp)->s_ipcf; /* reset to start */
 
 		/* If so, copy it in from the process. */
-		if (get_mtype) {
-			r = data_copy(src_e,
-			    m_src_v + offsetof(message, m_type), KERNEL,
-			    (vir_bytes)&m_buff.m_type, sizeof(m_buff.m_type));
-			if (r != OK) {
+		ਜੇ (get_mtype) {
+			r = ਅੰਕੜੇ_copy(src_e,
+			    m_src_v + offsetof(ਸੁਨੇਹਾ, m_type), KERNEL,
+			    (vir_ਬਾਈਟਾਂ)&m_buff.m_type, ਆਕਾਰ(m_buff.m_type));
+			ਜੇ (r != OK) {
 				/* allow for now, this will fail later anyway */
-#if DEBUG_DUMPIPCF
-				printf("KERNEL: allow_ipc_filtered_msg: data "
+#ਜੇ DEBUG_DUMPIPCF
+				ਲਿਖੋ("KERNEL: allow_ipc_filtered_msg: data "
 				    "copy error %d, allowing message...\n", r);
-#endif
-				return TRUE;
+#ਜੇ_ਅੰਤ
+				ਵਾਪਸ TRUE;
 			}
 		}
 		m_src_p = &m_buff;
 	}
 
-	m_src_p->m_source = src_e;
+	m_src_p->m_ਸਰੋਤ = src_e;
 
 	/* See if the message is allowed. */
 	allow = (ipcf->type == IPCF_BLACKLIST);
-	do {
-		if (allow != (ipcf->type == IPCF_WHITELIST)) {
-			num_elements = ipcf->num_elements;
-			for (i = 0; i < num_elements; i++) {
+	ਕਰੋ {
+		ਜੇ (allow != (ipcf->type == IPCF_WHITELIST)) {
+			ਅੰਕ_elements = ipcf->ਅੰਕ_elements;
+			ਲਈ (i = 0; i < ਅੰਕ_elements; i++) {
 				ipcf_el = &ipcf->elements[i];
-				if (IPCF_EL_MATCH(ipcf_el, m_src_p)) {
+				ਜੇ (IPCF_EL_ਮੇਲ(ipcf_el, m_src_p)) {
 					allow = (ipcf->type == IPCF_WHITELIST);
-					break;
+					ਰੋਕੋ;
 				}
 			}
 		}
-		ipcf = ipcf->next;
-	} while (ipcf);
+		ipcf = ipcf->ਅਗਲਾ;
+	} ਜਦੋਂ (ipcf);
 
-#if DEBUG_DUMPIPCF
+#ਜੇ DEBUG_DUMPIPCF
 	printmsg(m_src_p, proc_addr(_ENDPOINT_P(src_e)), rp, allow ? '+' : '-',
 	    TRUE /*printparams*/);
-#endif
+#ਜੇ_ਅੰਤ
 
-	return allow;
+	ਵਾਪਸ allow;
 }
 
 /*===========================================================================*
  *			  allow_ipc_filtered_memreq			     *
  *===========================================================================*/
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp)
+ਪੂਰਨ allow_ipc_filtered_memreq(ਬਣਤਰ proc *src_rp, ਬਣਤਰ proc *dst_rp)
 {
 	/* Determine whether VM should receive a request to handle memory
 	 * that is the result of process 'src_rp' trying to access currently
@@ -884,14 +884,14 @@ int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp)
 	 * be given the request, FALSE otherwise.
 	 */
 
-	struct proc *vmp;
-	message m_buf;
+	ਬਣਤਰ proc *vmp;
+	ਸੁਨੇਹਾ m_buf;
 
 	vmp = proc_addr(VM_PROC_NR);
 
 	/* If VM has no filter in place, all requests should go through. */
-	if (priv(vmp)->s_ipcf == NULL)
-		return TRUE;
+	ਜੇ (priv(vmp)->s_ipcf == ਨਿਰਾ)
+		ਵਾਪਸ TRUE;
 
 	/* VM obtains memory requests in response to a SIGKMEM signal, which
 	 * is a notification sent from SYSTEM. Thus, if VM blocks such
@@ -899,9 +899,9 @@ int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp)
 	 * course, VM should not be asking for requests in that case either,
 	 * but the extra check doesn't hurt.
 	 */
-	m_buf.m_type = NOTIFY_MESSAGE;
-	if (!allow_ipc_filtered_msg(vmp, SYSTEM, 0, &m_buf))
-		return FALSE;
+	m_buf.m_type = NOTIFY_ਸੁਨੇਹਾ;
+	ਜੇ (!allow_ipc_filtered_ਸੁਨੇਹਾ(vmp, SYSTEM, 0, &m_buf))
+		ਵਾਪਸ FALSE;
 
 	/* A more refined policy may be implemented here, for example to
 	 * ensure that both the source and the destination (if different)
@@ -909,89 +909,89 @@ int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp)
 	 * is basically not able to handle any memory requests during an
 	 * update, we will not get here, and none of that is needed.
 	 */
-	return TRUE;
+	ਵਾਪਸ TRUE;
 }
 
 /*===========================================================================*
  *                             priv_add_irq                                  *
  *===========================================================================*/
-int priv_add_irq(struct proc *rp, int irq)
+ਪੂਰਨ priv_ਜੋੜੋ_irq(ਬਣਤਰ proc *rp, ਪੂਰਨ irq)
 {
-        struct priv *priv = priv(rp);
-        int i;
+        ਬਣਤਰ priv *priv = priv(rp);
+        ਪੂਰਨ i;
 
 	priv->s_flags |= CHECK_IRQ;	/* Check IRQ */
 
 	/* When restarting a driver, check if it already has the permission */
-	for (i = 0; i < priv->s_nr_irq; i++) {
-		if (priv->s_irq_tab[i] == irq)
-			return OK;
+	ਲਈ (i = 0; i < priv->s_nr_irq; i++) {
+		ਜੇ (priv->s_irq_tab[i] == irq)
+			ਵਾਪਸ OK;
 	}
 
 	i= priv->s_nr_irq;
-	if (i >= NR_IRQ) {
-		printf("do_privctl: %d already has %d irq's.\n",
+	ਜੇ (i >= NR_IRQ) {
+		ਲਿਖੋ("do_privctl: %d already has %d irq's.\n",
 			rp->p_endpoint, i);
-		return ENOMEM;
+		ਵਾਪਸ ENOMEM;
 	}
 	priv->s_irq_tab[i]= irq;
 	priv->s_nr_irq++;
-	return OK;
+	ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *                             priv_add_io                                   *
  *===========================================================================*/
-int priv_add_io(struct proc *rp, struct io_range *ior)
+ਪੂਰਨ priv_ਜੋੜੋ_io(ਬਣਤਰ proc *rp, ਬਣਤਰ io_range *ior)
 {
-        struct priv *priv = priv(rp);
-        int i;
+        ਬਣਤਰ priv *priv = priv(rp);
+        ਪੂਰਨ i;
 
-	priv->s_flags |= CHECK_IO_PORT;	/* Check I/O accesses */
+	priv->s_flags |= CHECK_IO_ਪੋਰਟ;	/* Check I/O accesses */
 
-	for (i = 0; i < priv->s_nr_io_range; i++) {
-		if (priv->s_io_tab[i].ior_base == ior->ior_base &&
-			priv->s_io_tab[i].ior_limit == ior->ior_limit)
-			return OK;
+	ਲਈ (i = 0; i < priv->s_nr_io_range; i++) {
+		ਜੇ (priv->s_io_tab[i].ior_ਅਧਾਰ == ior->ior_ਅਧਾਰ &&
+			priv->s_io_tab[i].ior_ਹੱਦਬੰਦੀ == ior->ior_ਹੱਦਬੰਦੀ)
+			ਵਾਪਸ OK;
 	}
 
 	i= priv->s_nr_io_range;
-	if (i >= NR_IO_RANGE) {
-		printf("do_privctl: %d already has %d i/o ranges.\n",
+	ਜੇ (i >= NR_IO_RANGE) {
+		ਲਿਖੋ("do_privctl: %d already has %d i/o ranges.\n",
 			rp->p_endpoint, i);
-		return ENOMEM;
+		ਵਾਪਸ ENOMEM;
 	}
 
 	priv->s_io_tab[i] = *ior;
 	priv->s_nr_io_range++;
-	return OK;
+	ਵਾਪਸ OK;
 }
 
 /*===========================================================================*
  *                             priv_add_mem                                  *
  *===========================================================================*/
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr)
+ਪੂਰਨ priv_ਜੋੜੋ_mem(ਬਣਤਰ proc *rp, ਬਣਤਰ minix_mem_range *memr)
 {
-        struct priv *priv = priv(rp);
-        int i;
+        ਬਣਤਰ priv *priv = priv(rp);
+        ਪੂਰਨ i;
 
 	priv->s_flags |= CHECK_MEM;	/* Check memory mappings */
 
 	/* When restarting a driver, check if it already has the permission */
-	for (i = 0; i < priv->s_nr_mem_range; i++) {
-		if (priv->s_mem_tab[i].mr_base == memr->mr_base &&
-			priv->s_mem_tab[i].mr_limit == memr->mr_limit)
-			return OK;
+	ਲਈ (i = 0; i < priv->s_nr_mem_range; i++) {
+		ਜੇ (priv->s_mem_tab[i].mr_ਅਧਾਰ == memr->mr_ਅਧਾਰ &&
+			priv->s_mem_tab[i].mr_ਹੱਦਬੰਦੀ == memr->mr_ਹੱਦਬੰਦੀ)
+			ਵਾਪਸ OK;
 	}
 
 	i= priv->s_nr_mem_range;
-	if (i >= NR_MEM_RANGE) {
-		printf("do_privctl: %d already has %d mem ranges.\n",
+	ਜੇ (i >= NR_MEM_RANGE) {
+		ਲਿਖੋ("do_privctl: %d already has %d mem ranges.\n",
 			rp->p_endpoint, i);
-		return ENOMEM;
+		ਵਾਪਸ ENOMEM;
 	}
 	priv->s_mem_tab[i]= *memr;
 	priv->s_nr_mem_range++;
-	return OK;
+	ਵਾਪਸ OK;
 }
 

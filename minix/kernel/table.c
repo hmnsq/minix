@@ -27,9 +27,9 @@
  *    Oct 17, 2004   updated above and tasktab comments  (Jorrit N. Herder)
  *    May 01, 2004   changed struct for system image  (Jorrit N. Herder)
  */
-#define _TABLE
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਸਾਰਣੀ_2
 
-#include "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
 
 /* The system image table lists all programs that are part of the boot image. 
  * The order of the entries here MUST agree with the order of the programs
@@ -41,7 +41,7 @@
  * to prioritize ping messages periodically delivered to system processes.
  */
 
-struct boot_image image[NR_BOOT_PROCS] = {
+ਬਣਤਰ boot_image image[NR_BOOT_PROCS] = {
 /* process nr, name */
 {ASYNCM,        "asyncm"},
 {IDLE,          "idle"  },

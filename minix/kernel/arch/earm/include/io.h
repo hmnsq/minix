@@ -1,16 +1,16 @@
-#ifndef _ARM_IO_H_
-#define _ARM_IO_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _ARM_IO_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _ARM_IO_H_
 
-#ifndef __ASSEMBLY__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ASSEMBLY__
 
-#include <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
 
 /* Access memory-mapped I/O devices */
-#define mmio_read(a)    (*(volatile u32_t *)(a))
-#define mmio_write(a,v) (*(volatile u32_t *)(a) = (v))
-#define mmio_set(a,v)   mmio_write((a), mmio_read((a)) | (v))
-#define mmio_clear(a,v) mmio_write((a), mmio_read((a)) & ~(v))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ mmio_read(a)    (*(ਅਸਥਿਰ u32_t *)(a))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ mmio_write(a,v) (*(ਅਸਥਿਰ u32_t *)(a) = (v))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ mmio_ਸੈੱਟ(a,v)   mmio_write((a), mmio_read((a)) | (v))
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ mmio_clear(a,v) mmio_write((a), mmio_read((a)) & ~(v))
 
-#endif /* __ASSEMBLY__ */
+#ਜੇ_ਅੰਤ /* __ASSEMBLY__ */
 
-#endif /* _ARM_IO_H_ */
+#ਜੇ_ਅੰਤ /* _ARM_IO_H_ */

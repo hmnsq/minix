@@ -1,15 +1,15 @@
-#ifndef __HW_INTR_ARM_H__
-#define __HW_INTR_ARM_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __HW_INTR_ARM_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __HW_INTR_ARM_H__
 
 
-#include "kernel/kernel.h"
-void irq_handle(int irq);
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
+ਖਾਲੀ irq_handle(ਪੂਰਨ irq);
 
-void hw_intr_mask(int irq);
-void hw_intr_unmask(int irq);
-void hw_intr_ack(int irq);
-void hw_intr_used(int irq);
-void hw_intr_not_used(int irq);
-void hw_intr_disable_all(void);
+ਖਾਲੀ hw_intr_ਨਕਾਬ(ਪੂਰਨ irq);
+ਖਾਲੀ hw_intr_unmask(ਪੂਰਨ irq);
+ਖਾਲੀ hw_intr_ack(ਪੂਰਨ irq);
+ਖਾਲੀ hw_intr_ਵਰਤਿਆ(ਪੂਰਨ irq);
+ਖਾਲੀ hw_intr_not_ਵਰਤਿਆ(ਪੂਰਨ irq);
+ਖਾਲੀ hw_intr_disable_all(ਖਾਲੀ);
 
-#endif /* __HW_INTR_ARM_H__ */
+#ਜੇ_ਅੰਤ /* __HW_INTR_ARM_H__ */

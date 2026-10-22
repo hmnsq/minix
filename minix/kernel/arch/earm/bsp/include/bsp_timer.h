@@ -1,13 +1,13 @@
-#ifndef _BSP_TIMER_H_
-#define _BSP_TIMER_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_TIMER_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_TIMER_H_
 
-#ifndef __ASSEMBLY__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ASSEMBLY__
 
-void bsp_timer_init(unsigned freq);
-void bsp_timer_stop(void);
-int  bsp_register_timer_handler(const irq_handler_t handler);
-void bsp_timer_int_handler(void);
+ਖਾਲੀ bsp_timer_init(ਬਿਨਾਨਿਸ਼ਾਨੀ freq);
+ਖਾਲੀ bsp_timer_stop(ਖਾਲੀ);
+ਪੂਰਨ  bsp_ਰਜਿਸਟਰ_timer_handler(ਅਚਲ irq_handler_t handler);
+ਖਾਲੀ bsp_timer_int_handler(ਖਾਲੀ);
 
-#endif /* __ASSEMBLY__ */
+#ਜੇ_ਅੰਤ /* __ASSEMBLY__ */
 
-#endif /* _BSP_TIMER_H_ */
+#ਜੇ_ਅੰਤ /* _BSP_TIMER_H_ */

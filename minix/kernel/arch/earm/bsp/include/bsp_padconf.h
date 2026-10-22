@@ -1,11 +1,11 @@
-#ifndef _BSP_PADCONF_H_
-#define _BSP_PADCONF_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_PADCONF_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_PADCONF_H_
 
-#ifndef __ASSEMBLY__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ASSEMBLY__
 
-void bsp_padconf_init(void);
-int bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value);
+ਖਾਲੀ bsp_padconf_init(ਖਾਲੀ);
+ਪੂਰਨ bsp_padconf_ਸੈੱਟ(u32_t padconf, u32_t ਨਕਾਬ, u32_t ਮੁੱਲ);
 
-#endif /* __ASSEMBLY__ */
+#ਜੇ_ਅੰਤ /* __ASSEMBLY__ */
 
-#endif /* _BSP_PADCONF_H_ */
+#ਜੇ_ਅੰਤ /* _BSP_PADCONF_H_ */

@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ MB_UTILS_H
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ MB_UTILS_H
 
-#include "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+ਖਾਲੀ ਸਿੱਧਾ_cls(ਖਾਲੀ);
+ਖਾਲੀ ਸਿੱਧਾ_print(ਅਚਲ ਅੱਖਰ*);
+ਖਾਲੀ ਸਿੱਧਾ_print_char(ਅੱਖਰ);
+ਪੂਰਨ ਸਿੱਧਾ_read_char(ਬਿਨਾਨਿਸ਼ਾਨੀ ਅੱਖਰ*);
 
-#endif
+#ਜੇ_ਅੰਤ

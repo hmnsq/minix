@@ -10,113 +10,113 @@
  *   m_lsys_krn_sys_umap.nr_bytes	(size of datastructure)
  */
 
-#include "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
 
-#if USE_UMAP || USE_UMAP_REMOTE
+#ਜੇ USE_UMAP || USE_UMAP_REMOTE
 
-#if ! USE_UMAP_REMOTE
-#undef do_umap_remote
-#endif
+#ਜੇ ! USE_UMAP_REMOTE
+#ਪਰਿਭਾਸ਼ਾ_ਰੱਦ do_umap_remote
+#ਜੇ_ਅੰਤ
 
 /*==========================================================================*
  *				do_umap_remote				    *
  *==========================================================================*/
-int do_umap_remote(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_umap_remote(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
 /* Map virtual address to physical, for non-kernel processes. */
-  int seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
-  int seg_index = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_INDEX;
-  vir_bytes offset = m_ptr->m_lsys_krn_sys_umap.src_addr;
-  int count = m_ptr->m_lsys_krn_sys_umap.nr_bytes;
+  ਪੂਰਨ seg_type = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_TYPE;
+  ਪੂਰਨ seg_ਸੂਚਕਾਂਕ = m_ptr->m_lsys_krn_sys_umap.segment & SEGMENT_ਸੂਚਕਾਂਕ;
+  vir_ਬਾਈਟਾਂ ਵਿੱਥ = m_ptr->m_lsys_krn_sys_umap.src_addr;
+  ਪੂਰਨ ਗਿਣਤੀ_2 = m_ptr->m_lsys_krn_sys_umap.nr_ਬਾਈਟਾਂ;
   endpoint_t endpt = m_ptr->m_lsys_krn_sys_umap.src_endpt;
   endpoint_t grantee = m_ptr->m_lsys_krn_sys_umap.dst_endpt;
-  int proc_nr, proc_nr_grantee;
-  phys_bytes phys_addr = 0, lin_addr = 0;
-  struct proc *targetpr;
+  ਪੂਰਨ proc_nr, proc_nr_grantee;
+  phys_ਬਾਈਟਾਂ phys_addr = 0, lin_addr = 0;
+  ਬਣਤਰ proc *targetpr;
 
   /* Verify process number. */
-  if (endpt == SELF)
+  ਜੇ (endpt == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if (! isokendpt(endpt, &proc_nr))
-		return(EINVAL);
+  ਨਹੀਂਤਾਂ
+	ਜੇ (! isokendpt(endpt, &proc_nr))
+		ਵਾਪਸ(EINVAL);
   targetpr = proc_addr(proc_nr);
 
   /* Verify grantee endpoint */
-  if (grantee == SELF) {
+  ਜੇ (grantee == SELF) {
 	grantee = caller->p_endpoint;
-  } else if (grantee == NONE ||
+  } ਨਹੀਂਤਾਂ ਜੇ (grantee == NONE ||
 	grantee == ANY ||
-	seg_index != MEM_GRANT ||
+	seg_ਸੂਚਕਾਂਕ != MEM_GRANT ||
 	!isokendpt(grantee, &proc_nr_grantee)) {
-	return EINVAL;
+	ਵਾਪਸ EINVAL;
   }
 
   /* See which mapping should be made. */
-  switch(seg_type) {
-  case LOCAL_VM_SEG:
-    if(seg_index == MEM_GRANT) {
-	vir_bytes newoffset;
+  ਚੋਣ(seg_type) {
+  ਹਾਲਤ LOCAL_VM_SEG:
+    ਜੇ(seg_ਸੂਚਕਾਂਕ == MEM_GRANT) {
+	vir_ਬਾਈਟਾਂ newoffset;
 	endpoint_t newep;
-	int new_proc_nr;
-	cp_grant_id_t grant = (cp_grant_id_t) offset;
+	ਪੂਰਨ new_proc_nr;
+	cp_grant_id_t grant = (cp_grant_id_t) ਵਿੱਥ;
 
-        if(verify_grant(targetpr->p_endpoint, grantee, grant, count,
-                0, 0, &newoffset, &newep, NULL) != OK) {
-                printf("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, offset, count, caller->p_name);
+        ਜੇ(verify_grant(targetpr->p_endpoint, grantee, grant, ਗਿਣਤੀ_2,
+                0, 0, &newoffset, &newep, ਨਿਰਾ) != OK) {
+                ਲਿਖੋ("SYSTEM: do_umap: verify_grant in %s, grant %d, bytes 0x%lx, failed, caller %s\n", targetpr->p_name, ਵਿੱਥ, ਗਿਣਤੀ_2, caller->p_name);
 		proc_stacktrace(caller);
-                return EFAULT;
+                ਵਾਪਸ EFAULT;
         }
 
-        if(!isokendpt(newep, &new_proc_nr)) {
-                printf("SYSTEM: do_umap: isokendpt failed\n");
-                return EFAULT;
+        ਜੇ(!isokendpt(newep, &new_proc_nr)) {
+                ਲਿਖੋ("SYSTEM: do_umap: isokendpt failed\n");
+                ਵਾਪਸ EFAULT;
         }
 
 	/* New lookup. */
-	offset = newoffset;
+	ਵਿੱਥ = newoffset;
 	targetpr = proc_addr(new_proc_nr);
-	seg_index = VIR_ADDR;
+	seg_ਸੂਚਕਾਂਕ = VIR_ADDR;
       }
 
-      if(seg_index == VIR_ADDR) {
-        phys_addr = lin_addr = offset;
-      } else {
-	printf("SYSTEM: bogus seg type 0x%lx\n", seg_index);
-	return EFAULT;
+      ਜੇ(seg_ਸੂਚਕਾਂਕ == VIR_ADDR) {
+        phys_addr = lin_addr = ਵਿੱਥ;
+      } ਨਹੀਂਤਾਂ {
+	ਲਿਖੋ("SYSTEM: bogus seg type 0x%lx\n", seg_ਸੂਚਕਾਂਕ);
+	ਵਾਪਸ EFAULT;
       }
-      if(!lin_addr) {
-	printf("SYSTEM:do_umap: umap_local failed\n");
-	return EFAULT;
+      ਜੇ(!lin_addr) {
+	ਲਿਖੋ("SYSTEM:do_umap: umap_local failed\n");
+	ਵਾਪਸ EFAULT;
       }
-      if(vm_lookup(targetpr, lin_addr, &phys_addr, NULL) != OK) {
-	printf("SYSTEM:do_umap: vm_lookup failed\n");
-	return EFAULT;
+      ਜੇ(vm_lookup(targetpr, lin_addr, &phys_addr, ਨਿਰਾ) != OK) {
+	ਲਿਖੋ("SYSTEM:do_umap: vm_lookup failed\n");
+	ਵਾਪਸ EFAULT;
       }
-      if(phys_addr == 0)
+      ਜੇ(phys_addr == 0)
 	panic("vm_lookup returned zero physical address");
-      break;
-  default:
-  	printf("umap: peculiar type\n");
-  	return EINVAL;
+      ਰੋਕੋ;
+  ਮੂਲ:
+  	ਲਿਖੋ("umap: peculiar type\n");
+  	ਵਾਪਸ EINVAL;
   }
 
-  if(vm_running && vm_lookup_range(targetpr, lin_addr, NULL, count) != count) {
-	printf("SYSTEM:do_umap: not contiguous\n");
-	return EFAULT;
+  ਜੇ(vm_running && vm_lookup_range(targetpr, lin_addr, ਨਿਰਾ, ਗਿਣਤੀ_2) != ਗਿਣਤੀ_2) {
+	ਲਿਖੋ("SYSTEM:do_umap: not contiguous\n");
+	ਵਾਪਸ EFAULT;
   }
 
   m_ptr->m_krn_lsys_sys_umap.dst_addr = phys_addr;
-  if(phys_addr == 0) {
-	  printf("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
+  ਜੇ(phys_addr == 0) {
+	  ਲਿਖੋ("kernel: umap 0x%x done by %d / %s, pc 0x%lx, 0x%lx -> 0x%lx\n",
 		seg_type, caller->p_endpoint, caller->p_name,
-		caller->p_reg.pc, offset, phys_addr);
-	printf("caller stack: ");
+		caller->p_reg.pc, ਵਿੱਥ, phys_addr);
+	ਲਿਖੋ("caller stack: ");
 	proc_stacktrace(caller);
   }
-  return (phys_addr == 0) ? EFAULT: OK;
+  ਵਾਪਸ (phys_addr == 0) ? EFAULT: OK;
 }
 
-#endif /* USE_UMAP || USE_UMAP_REMOTE */
+#ਜੇ_ਅੰਤ /* USE_UMAP || USE_UMAP_REMOTE */

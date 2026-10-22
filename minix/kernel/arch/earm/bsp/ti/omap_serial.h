@@ -1,27 +1,27 @@
-#ifndef _OMAP_SERIAL_H
-#define _OMAP_SERIAL_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _OMAP_SERIAL_H
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _OMAP_SERIAL_H
 
 /* UART register map */
-#define OMAP3_DM37XX_DEBUG_UART_BASE 0x49020000 /* UART3 physical address */
-#define OMAP3_AM335X_DEBUG_UART_BASE 0x44E09000 /* UART0? physical address */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_DM37_XX_DEBUG_UART_ਅਧਾਰ 0x49020000 /* UART3 physical address */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_AM335_X_DEBUG_UART_ਅਧਾਰ 0x44E09000 /* UART0? physical address */
 
 /* UART registers */
-#define OMAP3_THR 0x000 /* Transmit holding register */
-#define OMAP3_LSR 0x014 /* Line status register */
-#define OMAP3_SSR 0x044 /* Supplementary status register */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_THR 0x000 /* Transmit holding register */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_LSR 0x014 /* Line status register */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_SSR 0x044 /* Supplementary status register */
 
 /* Line status register fields */
-#define OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
-#define OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_LSR_TEMT    0x40 /* Transmitter empty */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_LSR_THRE    0x20 /* Transmit-hold-register empty */
 
 /* Supplementary status register fields */
-#define OMAP3_SSR_TX_FIFO_FULL (1 << 0) /* Transmit FIFO full */
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ OMAP3_SSR_TX_FIFO_ਭਰਿਆ (1 << 0) /* Transmit FIFO full */
 
-#ifndef __ASSEMBLY__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ASSEMBLY__
 
-void omap3_ser_init(void);
-void omap3_ser_putc(char c);
+ਖਾਲੀ omap3_ser_init(ਖਾਲੀ);
+ਖਾਲੀ omap3_ser_putc(ਅੱਖਰ c);
 
-#endif /* __ASSEMBLY__ */
+#ਜੇ_ਅੰਤ /* __ASSEMBLY__ */
 
-#endif /* _OMAP_SERIAL_H */
+#ਜੇ_ਅੰਤ /* _OMAP_SERIAL_H */

@@ -7,22 +7,22 @@
  *    m_lsys_krn_sys_memset.pattern	(pattern byte to be written)
  */
 
-#include "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
 
-#if USE_MEMSET
+#ਜੇ USE_MEMSET
 
 /*===========================================================================*
  *				do_memset				     *
  *===========================================================================*/
-int do_memset(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_memset(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
 /* Handle sys_memset(). This writes a pattern into the specified memory. */
   vm_memset(caller, m_ptr->m_lsys_krn_sys_memset.process,
-	  m_ptr->m_lsys_krn_sys_memset.base,
-	  m_ptr->m_lsys_krn_sys_memset.pattern,
-	  m_ptr->m_lsys_krn_sys_memset.count);
-  return(OK);
+	  m_ptr->m_lsys_krn_sys_memset.ਅਧਾਰ,
+	  m_ptr->m_lsys_krn_sys_memset.ਨਮੂਨਾ,
+	  m_ptr->m_lsys_krn_sys_memset.ਗਿਣਤੀ_2);
+  ਵਾਪਸ(OK);
 }
 
-#endif /* USE_MEMSET */
+#ਜੇ_ਅੰਤ /* USE_MEMSET */
 

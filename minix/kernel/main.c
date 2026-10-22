@@ -8,39 +8,39 @@
  *   main:	    	MINIX main program
  *   prepare_shutdown:	prepare to take MINIX down
  */
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <minix/endpoint.h>
-#include <machine/vmparam.h>
-#include <minix/u64.h>
-#include <minix/board.h>
-#include <sys/reboot.h>
-#include "clock.h"
-#include "direct_utils.h"
-#include "hw_intr.h"
-#include "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <stdlib.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <machine/vmparam.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/u64.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/board.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/reboot.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "clock.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "direct_utils.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "hw_intr.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
 
-#ifdef CONFIG_SMP
-#include "smp.h"
-#endif
-#ifdef USE_WATCHDOG
-#include "watchdog.h"
-#endif
-#include "spinlock.h"
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+#ਅਨ੍ਤਰ੍ਭਾਵ "smp.h"
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ USE_WATCHDOG
+#ਅਨ੍ਤਰ੍ਭਾਵ "watchdog.h"
+#ਜੇ_ਅੰਤ
+#ਅਨ੍ਤਰ੍ਭਾਵ "spinlock.h"
 
 /* dummy for linking */
-char *** _penviron;
+ਅੱਖਰ *** _penviron;
 
 /* Prototype declarations for PRIVATE functions. */
-static void announce(void);
+ਸਥਿਰ ਖਾਲੀ announce(ਖਾਲੀ);
 
-void bsp_finish_booting(void)
+ਖਾਲੀ bsp_ਅੰਤ_booting(ਖਾਲੀ)
 {
-  int i;
-#if SPROFILE
+  ਪੂਰਨ i;
+#ਜੇ SPROFILE
   sprofiling = 0;      /* we're not profiling until instructed to */
-#endif /* SPROFILE */
+#ਜੇ_ਅੰਤ /* SPROFILE */
 
   cpu_identify();
 
@@ -61,16 +61,16 @@ void bsp_finish_booting(void)
    * we have access to the cpu local run queue, only now schedule the processes.
    * We ignore the slots for the former kernel tasks
    */
-  for (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
+  ਲਈ (i=0; i < NR_BOOT_PROCS - NR_TASKS; i++) {
 	RTS_UNSET(proc_addr(i), RTS_PROC_STOP);
   }
   /*
    * Enable timer interrupts and clock task on the boot CPU.  First reset the
    * CPU accounting values, as the timer initialization (indirectly) uses them.
    */
-  cycles_accounting_init();
+  ਚੱਕਰਾਂ_accounting_init();
 
-  if (boot_cpu_init_timer(system_hz)) {
+  ਜੇ (boot_cpu_init_timer(system_hz)) {
 	  panic("FATAL : failed to initialize timer interrupts, "
 			  "cannot continue without any clock source!");
   }
@@ -81,30 +81,30 @@ void bsp_finish_booting(void)
  * so it's a clear warning no full release should be done with them
  * enabled.
  */
-#if DEBUG_SCHED_CHECK
+#ਜੇ DEBUG_SCHED_CHECK
   FIXME("DEBUG_SCHED_CHECK enabled");
-#endif
-#if DEBUG_VMASSERT
+#ਜੇ_ਅੰਤ
+#ਜੇ DEBUG_VMASSERT
   FIXME("DEBUG_VMASSERT enabled");
-#endif
-#if DEBUG_PROC_CHECK
+#ਜੇ_ਅੰਤ
+#ਜੇ DEBUG_PROC_CHECK
   FIXME("PROC check enabled");
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef CONFIG_SMP
-  cpu_set_flag(bsp_cpu_id, CPU_IS_READY);
-  machine.processors_count = ncpus;
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+  cpu_ਸੈੱਟ_flag(bsp_cpu_id, CPU_IS_READY);
+  machine.processors_ਗਿਣਤੀ = ncpus;
   machine.bsp_id = bsp_cpu_id;
-#else
-  machine.processors_count = 1;
+#ਨਹੀਂਤਾਂ
+  machine.processors_ਗਿਣਤੀ = 1;
   machine.bsp_id = 0;
-#endif
+#ਜੇ_ਅੰਤ
   
 
   /* Kernel may no longer use bits of memory as VM will be running soon */
   kernel_may_alloc = 0;
 
-  switch_to_user();
+  switch_ਮੰਜ਼ਿਲ_user();
   NOT_REACHABLE;
 }
 
@@ -112,41 +112,41 @@ void bsp_finish_booting(void)
 /*===========================================================================*
  *			kmain 	                             		*
  *===========================================================================*/
-void kmain(kinfo_t *local_cbi)
+ਖਾਲੀ kmain(kinfo_t *local_cbi)
 {
 /* Start the ball rolling. */
-  struct boot_image *ip;	/* boot image pointer */
-  register struct proc *rp;	/* process pointer */
-  register int i, j;
-  static int bss_test;
+  ਬਣਤਰ boot_image *ip;	/* boot image pointer */
+  ਰਜਿਸਟਰ ਬਣਤਰ proc *rp;	/* process pointer */
+  ਰਜਿਸਟਰ ਪੂਰਨ i, j;
+  ਸਥਿਰ ਪੂਰਨ bss_test;
 
   /* bss sanity check */
-  assert(bss_test == 0);
+  ਪ੍ਰਤਿਜ੍ਞਾ(bss_test == 0);
   bss_test = 1;
 
   /* save a global copy of the boot parameters */
-  memcpy(&kinfo, local_cbi, sizeof(kinfo));
-  memcpy(&kmess, kinfo.kmess, sizeof(kmess));
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(&kinfo, local_cbi, ਆਕਾਰ(kinfo));
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(&kmess, kinfo.kmess, ਆਕਾਰ(kmess));
 
    /* We have done this exercise in pre_init so we expect this code
       to simply work! */
    machine.board_id = get_board_id_by_name(env_get(BOARDVARNAME));
-#ifdef __arm__
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ __arm__
   /* We want to initialize serial before we do any output */
   arch_ser_init();
-#endif
+#ਜੇ_ਅੰਤ
   /* We can talk now */
   DEBUGBASIC(("MINIX booting\n"));
 
   /* Kernel may use bits of main memory before VM is started */
   kernel_may_alloc = 1;
 
-  assert(sizeof(kinfo.boot_procs) == sizeof(image));
-  memcpy(kinfo.boot_procs, image, sizeof(kinfo.boot_procs));
+  ਪ੍ਰਤਿਜ੍ਞਾ(ਆਕਾਰ(kinfo.boot_procs) == ਆਕਾਰ(image));
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(kinfo.boot_procs, image, ਆਕਾਰ(kinfo.boot_procs));
 
   cstart();
 
-  BKL_LOCK();
+  BKL_ਤਾਲਾ();
  
    DEBUGEXTRA(("main()\n"));
 
@@ -157,30 +157,30 @@ void kmain(kinfo_t *local_cbi)
   proc_init();
   IPCF_POOL_INIT();
 
-   if(NR_BOOT_MODULES != kinfo.mbi.mi_mods_count)
+   ਜੇ(NR_BOOT_MODULES != kinfo.mbi.mi_mods_ਗਿਣਤੀ)
    	panic("expecting %d boot processes/modules, found %d",
-		NR_BOOT_MODULES, kinfo.mbi.mi_mods_count);
+		NR_BOOT_MODULES, kinfo.mbi.mi_mods_ਗਿਣਤੀ);
 
   /* Set up proc table entries for processes in boot image. */
-  for (i=0; i < NR_BOOT_PROCS; ++i) {
-	int schedulable_proc;
+  ਲਈ (i=0; i < NR_BOOT_PROCS; ++i) {
+	ਪੂਰਨ schedulable_proc;
 	proc_nr_t proc_nr;
-	int ipc_to_m, kcalls;
+	ਪੂਰਨ ipc_ਮੰਜ਼ਿਲ_m, kcalls;
 	sys_map_t map;
 
 	ip = &image[i];				/* process' attributes */
 	DEBUGEXTRA(("initializing %s... ", ip->proc_name));
 	rp = proc_addr(ip->proc_nr);		/* get process pointer */
 	ip->endpoint = rp->p_endpoint;		/* ipc endpoint */
-	rp->p_cpu_time_left = 0;
-	if(i < NR_TASKS)			/* name (tasks only) */
-		strlcpy(rp->p_name, ip->proc_name, sizeof(rp->p_name));
+	rp->p_cpu_ਸਮਾਂ_ਖੱਬਾ = 0;
+	ਜੇ(i < NR_TASKS)			/* name (tasks only) */
+		strlcpy(rp->p_name, ip->proc_name, ਆਕਾਰ(rp->p_name));
 
-	if(i >= NR_TASKS) {
+	ਜੇ(i >= NR_TASKS) {
 		/* Remember this so it can be passed to VM */
 		multiboot_module_t *mb_mod = &kinfo.module_list[i - NR_TASKS];
-		ip->start_addr = mb_mod->mod_start;
-		ip->len = mb_mod->mod_end - mb_mod->mod_start;
+		ip->ਸ਼ੁਰੂ_addr = mb_mod->mod_ਸ਼ੁਰੂ;
+		ip->len = mb_mod->mod_ਸਿਰਾ - mb_mod->mod_ਸ਼ੁਰੂ;
 	}
 	
 	reset_proc_accounting(rp);
@@ -195,89 +195,89 @@ void kmain(kinfo_t *local_cbi)
 	proc_nr = proc_nr(rp);
 	schedulable_proc = (iskerneln(proc_nr) || isrootsysn(proc_nr) ||
 		proc_nr == VM_PROC_NR);
-	if(schedulable_proc) {
+	ਜੇ(schedulable_proc) {
 	    /* Assign privilege structure. Force a static privilege id. */
-            (void) get_priv(rp, static_priv_id(proc_nr));
+            (ਖਾਲੀ) get_priv(rp, static_priv_id(proc_nr));
 
             /* Privileges for kernel tasks. */
-	    if(proc_nr == VM_PROC_NR) {
+	    ਜੇ(proc_nr == VM_PROC_NR) {
                 priv(rp)->s_flags = VM_F;
-                priv(rp)->s_trap_mask = SRV_T;
-		ipc_to_m = SRV_M;
+                priv(rp)->s_trap_ਨਕਾਬ = SRV_T;
+		ipc_ਮੰਜ਼ਿਲ_m = SRV_M;
 		kcalls = SRV_KC;
                 priv(rp)->s_sig_mgr = SELF;
-                rp->p_priority = SRV_Q;
-                rp->p_quantum_size_ms = SRV_QT;
+                rp->p_ਤਰਜੀਹ = SRV_Q;
+                rp->p_ਸਮਾਂ_ਹਿੱਸਾ_ਮਾਪ_ms = SRV_QT;
 	    }
-	    else if(iskerneln(proc_nr)) {
+	    ਨਹੀਂਤਾਂ ਜੇ(iskerneln(proc_nr)) {
                 /* Privilege flags. */
                 priv(rp)->s_flags = (proc_nr == IDLE ? IDL_F : TSK_F);
                 /* Init flags. */
                 priv(rp)->s_init_flags = TSK_I;
                 /* Allowed traps. */
-                priv(rp)->s_trap_mask = (proc_nr == CLOCK 
+                priv(rp)->s_trap_ਨਕਾਬ = (proc_nr == CLOCK 
                     || proc_nr == SYSTEM  ? CSK_T : TSK_T);
-                ipc_to_m = TSK_M;                  /* allowed targets */
+                ipc_ਮੰਜ਼ਿਲ_m = TSK_M;                  /* allowed targets */
                 kcalls = TSK_KC;                   /* allowed kernel calls */
             }
             /* Privileges for the root system process. */
-            else {
-	    	assert(isrootsysn(proc_nr));
+            ਨਹੀਂਤਾਂ {
+	    	ਪ੍ਰਤਿਜ੍ਞਾ(isrootsysn(proc_nr));
                 priv(rp)->s_flags= RSYS_F;        /* privilege flags */
                 priv(rp)->s_init_flags = SRV_I;   /* init flags */
-                priv(rp)->s_trap_mask= SRV_T;     /* allowed traps */
-                ipc_to_m = SRV_M;                 /* allowed targets */
+                priv(rp)->s_trap_ਨਕਾਬ= SRV_T;     /* allowed traps */
+                ipc_ਮੰਜ਼ਿਲ_m = SRV_M;                 /* allowed targets */
                 kcalls = SRV_KC;                  /* allowed kernel calls */
                 priv(rp)->s_sig_mgr = SRV_SM;     /* signal manager */
-                rp->p_priority = SRV_Q;	          /* priority queue */
-                rp->p_quantum_size_ms = SRV_QT;   /* quantum size */
+                rp->p_ਤਰਜੀਹ = SRV_Q;	          /* priority queue */
+                rp->p_ਸਮਾਂ_ਹਿੱਸਾ_ਮਾਪ_ms = SRV_QT;   /* quantum size */
             }
 
             /* Fill in target mask. */
-            memset(&map, 0, sizeof(map));
+            memset(&map, 0, ਆਕਾਰ(map));
 
-            if (ipc_to_m == ALL_M) {
-                for(j = 0; j < NR_SYS_PROCS; j++)
-                    set_sys_bit(map, j);
+            ਜੇ (ipc_ਮੰਜ਼ਿਲ_m == ALL_M) {
+                ਲਈ(j = 0; j < NR_SYS_PROCS; j++)
+                    ਸੈੱਟ_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(map, j);
             }
 
-            fill_sendto_mask(rp, &map);
+            fill_sendto_ਨਕਾਬ(rp, &map);
 
             /* Fill in kernel call mask. */
-            for(j = 0; j < SYS_CALL_MASK_SIZE; j++) {
-                priv(rp)->s_k_call_mask[j] = (kcalls == NO_C ? 0 : (~0));
+            ਲਈ(j = 0; j < SYS_CALL_ਨਕਾਬ_ਮਾਪ; j++) {
+                priv(rp)->s_k_call_ਨਕਾਬ[j] = (kcalls == NO_C ? 0 : (~0));
             }
 	}
-	else {
+	ਨਹੀਂਤਾਂ {
 	    /* Don't let the process run for now. */
-            RTS_SET(rp, RTS_NO_PRIV | RTS_NO_QUANTUM);
+            RTS_ਸੈੱਟ(rp, RTS_NO_PRIV | RTS_NO_ਸਮਾਂ_ਹਿੱਸਾ);
 	}
 
 	/* Arch-specific state initialization. */
 	arch_boot_proc(ip, rp);
 
 	/* scheduling functions depend on proc_ptr pointing somewhere. */
-	if(!get_cpulocal_var(proc_ptr))
+	ਜੇ(!get_cpulocal_var(proc_ptr))
 		get_cpulocal_var(proc_ptr) = rp;
 
 	/* Process isn't scheduled until VM has set up a pagetable for it. */
-	if(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
+	ਜੇ(rp->p_nr != VM_PROC_NR && rp->p_nr >= 0) {
 		rp->p_rts_flags |= RTS_VMINHIBIT;
 		rp->p_rts_flags |= RTS_BOOTINHIBIT;
 	}
 
 	rp->p_rts_flags |= RTS_PROC_STOP;
-	rp->p_rts_flags &= ~RTS_SLOT_FREE;
+	rp->p_rts_flags &= ~RTS_ਥਾਂ_FREE;
 	DEBUGEXTRA(("done\n"));
   }
 
   /* update boot procs info for VM */
-  memcpy(kinfo.boot_procs, image, sizeof(kinfo.boot_procs));
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(kinfo.boot_procs, image, ਆਕਾਰ(kinfo.boot_procs));
 
-#define IPCNAME(n) { \
-	assert((n) >= 0 && (n) <= IPCNO_HIGHEST); \
-	assert(!ipc_call_names[n]);	\
-	ipc_call_names[n] = #n; \
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ IPCNAME(n) { \
+	ਪ੍ਰਤਿਜ੍ਞਾ((n) >= 0 && (n) <= IPCNO_HIGHEST); \
+	ਪ੍ਰਤਿਜ੍ਞਾ(!ipc_call_ਨਾਂ[n]);	\
+	ipc_call_ਨਾਂ[n] = #n; \
 }
 
   arch_post_init();
@@ -290,7 +290,7 @@ void kmain(kinfo_t *local_cbi)
   IPCNAME(SENDA);
 
   /* System and processes initialization */
-  memory_init();
+  ਸਮ੍ਰਿਤੀ_init();
   DEBUGEXTRA(("system_init()... "));
   system_init();
   DEBUGEXTRA(("done\n"));
@@ -298,31 +298,31 @@ void kmain(kinfo_t *local_cbi)
   /* The bootstrap phase is over, so we can add the physical
    * memory used for it to the free list.
    */
-  add_memmap(&kinfo, kinfo.bootstrap_start, kinfo.bootstrap_len);
+  ਜੋੜੋ_memmap(&kinfo, kinfo.bootstrap_ਸ਼ੁਰੂ, kinfo.bootstrap_len);
 
-#ifdef CONFIG_SMP
-  if (config_no_apic) {
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+  ਜੇ (config_no_apic) {
 	  DEBUGBASIC(("APIC disabled, disables SMP, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else if (config_no_smp) {
+  } ਨਹੀਂਤਾਂ ਜੇ (config_no_smp) {
 	  DEBUGBASIC(("SMP disabled, using legacy PIC\n"));
 	  smp_single_cpu_fallback();
-  } else {
+  } ਨਹੀਂਤਾਂ {
 	  smp_init();
 	  /*
 	   * if smp_init() returns it means that it failed and we try to finish
 	   * single CPU booting
 	   */
-	  bsp_finish_booting();
+	  bsp_ਅੰਤ_booting();
   }
-#else
+#ਨਹੀਂਤਾਂ
   /* 
    * if configured for a single CPU, we are already on the kernel stack which we
    * are going to use everytime we execute kernel code. We finish booting and we
    * never return here
    */
-  bsp_finish_booting();
-#endif
+  bsp_ਅੰਤ_booting();
+#ਜੇ_ਅੰਤ
 
   NOT_REACHABLE;
 }
@@ -330,48 +330,48 @@ void kmain(kinfo_t *local_cbi)
 /*===========================================================================*
  *				announce				     *
  *===========================================================================*/
-static void announce(void)
+ਸਥਿਰ ਖਾਲੀ announce(ਖਾਲੀ)
 {
   /* Display the MINIX startup banner. */
-  printf("\nMINIX %s. "
-#ifdef PAE
+  ਲਿਖੋ("\nMINIX %s. "
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ PAE
 "(PAE) "
-#endif
-#ifdef _VCS_REVISION
+#ਜੇ_ਅੰਤ
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ _VCS_REVISION
 	"(" _VCS_REVISION ")\n"
-#endif
+#ਜੇ_ਅੰਤ
       "Copyright 2016, Vrije Universiteit, Amsterdam, The Netherlands\n",
       OS_RELEASE);
-  printf("MINIX is open source software, see http://www.minix3.org\n");
+  ਲਿਖੋ("MINIX is open source software, see http://www.minix3.org\n");
 }
 
 /*===========================================================================*
  *				prepare_shutdown			     *
  *===========================================================================*/
-void prepare_shutdown(const int how)
+ਖਾਲੀ prepare_shutdown(ਅਚਲ ਪੂਰਨ how)
 {
 /* This function prepares to shutdown MINIX. */
-  static minix_timer_t shutdown_timer;
+  ਸਥਿਰ minix_timer_t shutdown_timer;
 
   /* Continue after 1 second, to give processes a chance to get scheduled to 
    * do shutdown work.  Set a watchog timer to call shutdown(). The timer 
    * argument passes the shutdown status. 
    */
-  printf("MINIX will now be shut down ...\n");
-  set_kernel_timer(&shutdown_timer, get_monotonic() + system_hz,
+  ਲਿਖੋ("MINIX will now be shut down ...\n");
+  ਸੈੱਟ_kernel_timer(&shutdown_timer, get_monotonic() + system_hz,
       minix_shutdown, how);
 }
 
 /*===========================================================================*
  *				shutdown 				     *
  *===========================================================================*/
-void minix_shutdown(int how)
+ਖਾਲੀ minix_shutdown(ਪੂਰਨ how)
 {
 /* This function is called from prepare_shutdown or stop_sequence to bring 
  * down MINIX.
  */
 
-#ifdef CONFIG_SMP
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
   /* 
    * FIXME
    *
@@ -379,49 +379,49 @@ void minix_shutdown(int how)
    * such a state that we can perform the whole boot process once restarted from
    * monitor again
    */
-  if (ncpus > 1)
+  ਜੇ (ncpus > 1)
 	  smp_shutdown_aps();
-#endif
+#ਜੇ_ਅੰਤ
   hw_intr_disable_all();
   stop_local_timer();
 
   /* Show shutdown message */
-  direct_cls();
-  if((how & RB_POWERDOWN) == RB_POWERDOWN)
-	direct_print("MINIX has halted and will now power off.\n");
-  else if(how & RB_HALT)
-	direct_print("MINIX has halted. "
+  ਸਿੱਧਾ_cls();
+  ਜੇ((how & RB_POWERDOWN) == RB_POWERDOWN)
+	ਸਿੱਧਾ_print("MINIX has halted and will now power off.\n");
+  ਨਹੀਂਤਾਂ ਜੇ(how & RB_HALT)
+	ਸਿੱਧਾ_print("MINIX has halted. "
 		     "It is safe to turn off your computer.\n");
-  else
-	direct_print("MINIX will now reset.\n");
+  ਨਹੀਂਤਾਂ
+	ਸਿੱਧਾ_print("MINIX will now reset.\n");
   arch_shutdown(how);
 }
 
 /*===========================================================================*
  *				cstart					     *
  *===========================================================================*/
-void cstart(void)
+ਖਾਲੀ cstart(ਖਾਲੀ)
 {
 /* Perform system initializations prior to calling main(). Most settings are
  * determined with help of the environment strings passed by MINIX' loader.
  */
-  register char *value;				/* value in key=value pair */
+  ਰਜਿਸਟਰ ਅੱਖਰ *ਮੁੱਲ;				/* value in key=value pair */
 
   /* low-level initialization */
   prot_init();
 
   /* determine verbosity */
-  if ((value = env_get(VERBOSEBOOTVARNAME)))
-	  verboseboot = atoi(value);
+  ਜੇ ((ਮੁੱਲ = env_get(VERBOSEBOOTVARNAME)))
+	  verboseboot = atoi(ਮੁੱਲ);
 
   /* Initialize clock variables. */
   init_clock();
 
   /* Get memory parameters. */
-  value = env_get("ac_layout");
-  if(value && atoi(value)) {
-        kinfo.user_sp = (vir_bytes) USR_STACKTOP_COMPACT;
-        kinfo.user_end = (vir_bytes) USR_DATATOP_COMPACT;
+  ਮੁੱਲ = env_get("ac_layout");
+  ਜੇ(ਮੁੱਲ && atoi(ਮੁੱਲ)) {
+        kinfo.user_sp = (vir_ਬਾਈਟਾਂ) USR_STACKTOP_COMPACT;
+        kinfo.user_ਸਿਰਾ = (vir_ਬਾਈਟਾਂ) USR_DATATOP_COMPACT;
   }
 
   DEBUGEXTRA(("cstart\n"));
@@ -429,44 +429,44 @@ void cstart(void)
   /* Record miscellaneous information for user-space servers. */
   kinfo.nr_procs = NR_PROCS;
   kinfo.nr_tasks = NR_TASKS;
-  strlcpy(kinfo.release, OS_RELEASE, sizeof(kinfo.release));
-  strlcpy(kinfo.version, OS_VERSION, sizeof(kinfo.version));
+  strlcpy(kinfo.release, OS_RELEASE, ਆਕਾਰ(kinfo.release));
+  strlcpy(kinfo.ਸੰਸਕਰਣ, OS_ਸੰਸਕਰਣ, ਆਕਾਰ(kinfo.ਸੰਸਕਰਣ));
 
   /* Initialize various user-mapped structures. */
-  memset(&arm_frclock, 0, sizeof(arm_frclock));
+  memset(&arm_frclock, 0, ਆਕਾਰ(arm_frclock));
 
-  memset(&kuserinfo, 0, sizeof(kuserinfo));
-  kuserinfo.kui_size = sizeof(kuserinfo);
+  memset(&kuserinfo, 0, ਆਕਾਰ(kuserinfo));
+  kuserinfo.kui_ਮਾਪ = ਆਕਾਰ(kuserinfo);
   kuserinfo.kui_user_sp = kinfo.user_sp;
 
-#ifdef USE_APIC
-  value = env_get("no_apic");
-  if(value)
-	config_no_apic = atoi(value);
-  else
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ USE_APIC
+  ਮੁੱਲ = env_get("no_apic");
+  ਜੇ(ਮੁੱਲ)
+	config_no_apic = atoi(ਮੁੱਲ);
+  ਨਹੀਂਤਾਂ
 	config_no_apic = 1;
-  value = env_get("apic_timer_x");
-  if(value)
-	config_apic_timer_x = atoi(value);
-  else
+  ਮੁੱਲ = env_get("apic_timer_x");
+  ਜੇ(ਮੁੱਲ)
+	config_apic_timer_x = atoi(ਮੁੱਲ);
+  ਨਹੀਂਤਾਂ
 	config_apic_timer_x = 1;
-#endif
+#ਜੇ_ਅੰਤ
 
-#ifdef USE_WATCHDOG
-  value = env_get("watchdog");
-  if (value)
-	  watchdog_enabled = atoi(value);
-#endif
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ USE_WATCHDOG
+  ਮੁੱਲ = env_get("watchdog");
+  ਜੇ (ਮੁੱਲ)
+	  watchdog_enabled = atoi(ਮੁੱਲ);
+#ਜੇ_ਅੰਤ
 
-#ifdef CONFIG_SMP
-  if (config_no_apic)
+#ਜੇ_ਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
+  ਜੇ (config_no_apic)
 	  config_no_smp = 1;
-  value = env_get("no_smp");
-  if(value)
-	config_no_smp = atoi(value);
-  else
+  ਮੁੱਲ = env_get("no_smp");
+  ਜੇ(ਮੁੱਲ)
+	config_no_smp = atoi(ਮੁੱਲ);
+  ਨਹੀਂਤਾਂ
 	config_no_smp = 0;
-#endif
+#ਜੇ_ਅੰਤ
   DEBUGEXTRA(("intr_init(0)\n"));
 
   intr_init(0);
@@ -478,45 +478,45 @@ void cstart(void)
  *				get_value				     *
  *===========================================================================*/
 
-char *get_value(
-  const char *params,			/* boot monitor parameters */
-  const char *name			/* key to look up */
+ਅੱਖਰ *get_ਮੁੱਲ(
+  ਅਚਲ ਅੱਖਰ *params,			/* boot monitor parameters */
+  ਅਚਲ ਅੱਖਰ *name			/* key to look up */
 )
 {
 /* Get environment value - kernel version of getenv to avoid setting up the
  * usual environment array.
  */
-  register const char *namep;
-  register char *envp;
+  ਰਜਿਸਟਰ ਅਚਲ ਅੱਖਰ *namep;
+  ਰਜਿਸਟਰ ਅੱਖਰ *envp;
 
-  for (envp = (char *) params; *envp != 0;) {
-	for (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
+  ਲਈ (envp = (ਅੱਖਰ *) params; *envp != 0;) {
+	ਲਈ (namep = name; *namep != 0 && *namep == *envp; namep++, envp++)
 		;
-	if (*namep == '\0' && *envp == '=') return(envp + 1);
-	while (*envp++ != 0)
+	ਜੇ (*namep == '\0' && *envp == '=') ਵਾਪਸ(envp + 1);
+	ਜਦੋਂ (*envp++ != 0)
 		;
   }
-  return(NULL);
+  ਵਾਪਸ(ਨਿਰਾ);
 }
 
 /*===========================================================================*
  *				env_get				     	*
  *===========================================================================*/
-char *env_get(const char *name)
+ਅੱਖਰ *env_get(ਅਚਲ ਅੱਖਰ *name)
 {
-	return get_value(kinfo.param_buf, name);
+	ਵਾਪਸ get_ਮੁੱਲ(kinfo.param_buf, name);
 }
 
-void cpu_print_freq(unsigned cpu)
+ਖਾਲੀ cpu_print_freq(ਬਿਨਾਨਿਸ਼ਾਨੀ cpu)
 {
         u64_t freq;
 
         freq = cpu_get_freq(cpu);
-        DEBUGBASIC(("CPU %d freq %lu MHz\n", cpu, (unsigned long)(freq / 1000000)));
+        DEBUGBASIC(("CPU %d freq %lu MHz\n", cpu, (ਬਿਨਾਨਿਸ਼ਾਨੀ ਲੰਮਾ)(freq / 1000000)));
 }
 
-int is_fpu(void)
+ਪੂਰਨ is_fpu(ਖਾਲੀ)
 {
-        return get_cpulocal_var(fpu_presence);
+        ਵਾਪਸ get_cpulocal_var(fpu_presence);
 }
 

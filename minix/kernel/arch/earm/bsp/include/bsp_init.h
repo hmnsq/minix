@@ -1,7 +1,7 @@
-#ifndef _BSP_INIT_H_
-#define _BSP_INIT_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_INIT_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_INIT_H_
 
 /* BSP init */
-void bsp_init(void);
+ਖਾਲੀ bsp_init(ਖਾਲੀ);
 
-#endif /* __BSP_INIT_H__ */
+#ਜੇ_ਅੰਤ /* __BSP_INIT_H__ */

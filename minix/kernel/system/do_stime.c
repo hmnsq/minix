@@ -5,15 +5,15 @@
  *   m_lsys_krn_sys_stime.boot_time
  */
 
-#include "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
 
-#include <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
 
 /*===========================================================================*
  *				do_stime				     *
  *===========================================================================*/
-int do_stime(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_stime(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
-  set_boottime(m_ptr->m_lsys_krn_sys_stime.boot_time);
-  return(OK);
+  ਸੈੱਟ_boottime(m_ptr->m_lsys_krn_sys_stime.boot_ਸਮਾਂ);
+  ਵਾਪਸ(OK);
 }

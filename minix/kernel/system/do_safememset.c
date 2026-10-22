@@ -8,50 +8,50 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
 
-#include <minix/safecopies.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/safecopies.h>
 
-#include "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+ਪੂਰਨ do_safememset(ਬਣਤਰ proc *caller, ਸੁਨੇਹਾ *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
 	endpoint_t dst_endpt = m_ptr->SMS_DST;
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
-	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
-	size_t len = (size_t)m_ptr->SMS_BYTES;
+	vir_ਬਾਈਟਾਂ g_ਵਿੱਥ = m_ptr->SMS_ਵਿੱਥ;
+	ਪੂਰਨ ਨਮੂਨਾ = m_ptr->SMS_ਨਮੂਨਾ;
+	size_t len = (size_t)m_ptr->SMS_ਬਾਈਟਾਂ;
 
-	struct proc *dst_p;
+	ਬਣਤਰ proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	ਸਥਿਰ vir_ਬਾਈਟਾਂ v_ਵਿੱਥ;
+	ਪੂਰਨ r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	ਜੇ (dst_endpt == NONE || caller_endpt == NONE)
+		ਵਾਪਸ EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	ਜੇ (!(dst_p = endpoint_lookup(dst_endpt)))
+		ਵਾਪਸ EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
-		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+	ਜੇ (!(priv(dst_p) && priv(dst_p)->s_grant_ਸਾਰਣੀ)) {
+		ਲਿਖੋ("safememset: dst %d has no grant table\n", dst_endpt);
+		ਵਾਪਸ EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_ਵਿੱਥ, &v_ਵਿੱਥ, &new_granter, ਨਿਰਾ);
 
-	if (r != OK) {
-		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+	ਜੇ (r != OK) {
+		ਲਿਖੋ("safememset: grant %d verify failed %d", grantid, r);
+		ਵਾਪਸ r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	ਵਾਪਸ vm_memset(caller, new_granter, v_ਵਿੱਥ, ਨਮੂਨਾ, len);
 }

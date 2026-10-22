@@ -1,12 +1,12 @@
-#ifndef _BSP_INTR_H_
-#define _BSP_INTR_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_INTR_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_INTR_H_
 
-#ifndef __ASSEMBLY__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ASSEMBLY__
 
-void bsp_irq_unmask(int irq);
-void bsp_irq_mask(int irq);
-void bsp_irq_handle(void);
+ਖਾਲੀ bsp_irq_unmask(ਪੂਰਨ irq);
+ਖਾਲੀ bsp_irq_ਨਕਾਬ(ਪੂਰਨ irq);
+ਖਾਲੀ bsp_irq_handle(ਖਾਲੀ);
 
-#endif /* __ASSEMBLY__ */
+#ਜੇ_ਅੰਤ /* __ASSEMBLY__ */
 
-#endif /* _BSP_INTR_H_ */
+#ਜੇ_ਅੰਤ /* _BSP_INTR_H_ */

@@ -5,49 +5,49 @@
  *   m_lsys_krn_sys_statectl.request	(state control request)
  */
 
-#include "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
 
-#if USE_STATECTL
+#ਜੇ USE_STATECTL
 
 /*===========================================================================*
  *			          do_statectl				     *
  *===========================================================================*/
-int do_statectl(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_statectl(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
 /* Handle sys_statectl(). A process has issued a state control request. */
 
-  switch(m_ptr->m_lsys_krn_sys_statectl.request)
+  ਚੋਣ(m_ptr->m_lsys_krn_sys_statectl.request)
   {
-  case SYS_STATE_CLEAR_IPC_REFS:
+  ਹਾਲਤ SYS_STATE_CLEAR_IPC_REFS:
 	/* Clear IPC references for all the processes communicating
 	 * with the caller.
 	 */
 	clear_ipc_refs(caller, EDEADSRCDST);
-	return(OK);
-  case SYS_STATE_SET_STATE_TABLE:
+	ਵਾਪਸ(OK);
+  ਹਾਲਤ SYS_STATE_ਸੈੱਟ_STATE_ਸਾਰਣੀ:
 	/* Set state table for the caller. */
-	priv(caller)->s_state_table = (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address;
-	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.length;
-	return(OK);
-  case SYS_STATE_ADD_IPC_BL_FILTER:
+	priv(caller)->s_state_ਸਾਰਣੀ = (vir_ਬਾਈਟਾਂ) m_ptr->m_lsys_krn_sys_statectl.ਪਤਾ;
+	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.ਲੰਮਾਈ;
+	ਵਾਪਸ(OK);
+  ਹਾਲਤ SYS_STATE_ਜੋੜੋ_IPC_BL_FILTER:
 	/* Add an IPC blacklist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_BLACKLIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_ADD_IPC_WL_FILTER:
+	ਵਾਪਸ ਜੋੜੋ_ipc_filter(caller, IPCF_BLACKLIST,
+	    (vir_ਬਾਈਟਾਂ) m_ptr->m_lsys_krn_sys_statectl.ਪਤਾ,
+	    m_ptr->m_lsys_krn_sys_statectl.ਲੰਮਾਈ);
+  ਹਾਲਤ SYS_STATE_ਜੋੜੋ_IPC_WL_FILTER:
 	/* Add an IPC whitelist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_WHITELIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_CLEAR_IPC_FILTERS:
+	ਵਾਪਸ ਜੋੜੋ_ipc_filter(caller, IPCF_WHITELIST,
+	    (vir_ਬਾਈਟਾਂ) m_ptr->m_lsys_krn_sys_statectl.ਪਤਾ,
+	    m_ptr->m_lsys_krn_sys_statectl.ਲੰਮਾਈ);
+  ਹਾਲਤ SYS_STATE_CLEAR_IPC_FILTERS:
 	/* Clear any IPC filter for the caller. */
 	clear_ipc_filters(caller);
-	return OK;
-  default:
-	printf("do_statectl: bad request %d\n",
+	ਵਾਪਸ OK;
+  ਮੂਲ:
+	ਲਿਖੋ("do_statectl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_statectl.request);
-	return EINVAL;
+	ਵਾਪਸ EINVAL;
   }
 }
 
-#endif /* USE_STATECTL */
+#ਜੇ_ਅੰਤ /* USE_STATECTL */

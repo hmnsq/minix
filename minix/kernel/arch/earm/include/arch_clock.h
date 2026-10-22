@@ -1,6 +1,6 @@
-#ifndef __CLOCK_ARM_H__
-#define __CLOCK_ARM_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __CLOCK_ARM_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __CLOCK_ARM_H__
 
-void arch_timer_int_handler(void);
+ਖਾਲੀ arch_timer_int_handler(ਖਾਲੀ);
 
-#endif /* __CLOCK_ARM_H__ */
+#ਜੇ_ਅੰਤ /* __CLOCK_ARM_H__ */

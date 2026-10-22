@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/devio.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
 
-#if USE_DEVIO
+#ਜੇ USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_devio(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
-    struct priv *privp;
-    port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    ਬਣਤਰ priv *privp;
+    ਪੋਰਟ_t ਪੋਰਟ;
+    ਬਣਤਰ io_range *iorp;
+    ਪੂਰਨ i, ਮਾਪ, nr_io_range;
+    ਪੂਰਨ io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    ਚੋਣ (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	ਹਾਲਤ _DIO_BYTE: ਮਾਪ= 1; ਰੋਕੋ;
+	ਹਾਲਤ DIO_ਸ਼ਬਦ: ਮਾਪ= 2; ਰੋਕੋ;
+	ਹਾਲਤ _DIO_LONG: ਮਾਪ= 4; ਰੋਕੋ;
+	ਮੂਲ: ਮਾਪ= 4; ਰੋਕੋ;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    ਜੇ (!privp)
     {
-	printf("no priv structure!\n");
-	goto doit;
+	ਲਿਖੋ("no priv structure!\n");
+	ਜਾਓ doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    ਜੇ (privp->s_flags & CHECK_IO_ਪੋਰਟ)
     {
-	port= m_ptr->m_lsys_krn_sys_devio.port;
+	ਪੋਰਟ= m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	ਲਈ (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		ਜੇ (ਪੋਰਟ >= iorp->ior_ਅਧਾਰ && ਪੋਰਟ+ਮਾਪ-1 <= iorp->ior_ਹੱਦਬੰਦੀ)
+			ਰੋਕੋ;
 	}
-	if (i >= nr_io_range)
+	ਜੇ (i >= nr_io_range)
 	{
-			printf("do_devio: port 0x%x (size %d) not allowed\n",
-				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+			ਲਿਖੋ("do_devio: port 0x%x (size %d) not allowed\n",
+				m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ, ਮਾਪ);
+		ਵਾਪਸ EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    ਜੇ (m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ & (ਮਾਪ-1))
     {
-		printf("do_devio: unaligned port 0x%x (size %d)\n",
-			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+		ਲਿਖੋ("do_devio: unaligned port 0x%x (size %d)\n",
+			m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ, ਮਾਪ);
+	ਵਾਪਸ EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    ਜੇ (io_dir == DIO_ਨਿਵੇਸ਼) { 
+      ਚੋਣ (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+        ਹਾਲਤ _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.ਮੁੱਲ =
+			inb(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ);
+		ਰੋਕੋ;
+        ਹਾਲਤ DIO_ਸ਼ਬਦ:
+		m_ptr->m_krn_lsys_sys_devio.ਮੁੱਲ =
+			inw(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ);
+		ਰੋਕੋ;
+        ਹਾਲਤ _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.ਮੁੱਲ =
+			inl(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ);
+		ਰੋਕੋ;
+    	ਮੂਲ: ਵਾਪਸ(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
-		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
-		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
-		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+    } ਨਹੀਂਤਾਂ { 
+      ਚੋਣ (io_type) {
+	ਹਾਲਤ _DIO_BYTE:
+		outb(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ,
+			m_ptr->m_lsys_krn_sys_devio.ਮੁੱਲ);
+		ਰੋਕੋ;
+	ਹਾਲਤ DIO_ਸ਼ਬਦ:
+		outw(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ,
+			m_ptr->m_lsys_krn_sys_devio.ਮੁੱਲ);
+		ਰੋਕੋ;
+	ਹਾਲਤ _DIO_LONG:
+		outl(m_ptr->m_lsys_krn_sys_devio.ਪੋਰਟ,
+			m_ptr->m_lsys_krn_sys_devio.ਮੁੱਲ);
+		ਰੋਕੋ;
+    	ਮੂਲ: ਵਾਪਸ(EINVAL);
       } 
     }
-    return(OK);
+    ਵਾਪਸ(OK);
 }
 
-#endif /* USE_DEVIO */
+#ਜੇ_ਅੰਤ /* USE_DEVIO */

@@ -9,96 +9,96 @@
  *   m.m_lsys_krn_sys_privctl.phys_len
  */
 
-#include "kernel/system.h"
-#include <signal.h>
-#include <string.h>
-#include <minix/endpoint.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/system.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ <signal.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <string.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/endpoint.h>
 
-#if USE_PRIVCTL
+#ਜੇ USE_PRIVCTL
 
-#define PRIV_DEBUG 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ PRIV_DEBUG 0
 
-static int update_priv(struct proc *rp, struct priv *priv);
+ਸਥਿਰ ਪੂਰਨ update_priv(ਬਣਤਰ proc *rp, ਬਣਤਰ priv *priv);
 
 /*===========================================================================*
  *				do_privctl				     *
  *===========================================================================*/
-int do_privctl(struct proc * caller, message * m_ptr)
+ਪੂਰਨ do_privctl(ਬਣਤਰ proc * caller, ਸੁਨੇਹਾ * m_ptr)
 {
 /* Handle sys_privctl(). Update a process' privileges. If the process is not
  * yet a system process, make sure it gets its own privilege structure.
  */
-  struct proc *rp;
+  ਬਣਤਰ proc *rp;
   proc_nr_t proc_nr;
   sys_id_t priv_id;
   sys_map_t map;
-  int ipc_to_m, kcalls;
-  int i, r;
-  struct io_range io_range;
-  struct minix_mem_range mem_range;
-  struct priv priv;
-  int irq;
+  ਪੂਰਨ ipc_ਮੰਜ਼ਿਲ_m, kcalls;
+  ਪੂਰਨ i, r;
+  ਬਣਤਰ io_range io_range;
+  ਬਣਤਰ minix_mem_range mem_range;
+  ਬਣਤਰ priv priv;
+  ਪੂਰਨ irq;
 
   /* Check whether caller is allowed to make this call. Privileged processes 
    * can only update the privileges of processes that are inhibited from 
    * running by the RTS_NO_PRIV flag. This flag is set when a privileged process
    * forks. 
    */
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
-  if(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
+  ਜੇ (! (priv(caller)->s_flags & SYS_PROC)) ਵਾਪਸ(EPERM);
+  ਜੇ(m_ptr->m_lsys_krn_sys_privctl.endpt == SELF) okendpt(caller->p_endpoint,
 	&proc_nr);
-  else if(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
-	return(EINVAL);
+  ਨਹੀਂਤਾਂ ਜੇ(!isokendpt(m_ptr->m_lsys_krn_sys_privctl.endpt, &proc_nr))
+	ਵਾਪਸ(EINVAL);
   rp = proc_addr(proc_nr);
 
-  switch(m_ptr->m_lsys_krn_sys_privctl.request)
+  ਚੋਣ(m_ptr->m_lsys_krn_sys_privctl.request)
   {
-  case SYS_PRIV_ALLOW:
+  ਹਾਲਤ SYS_PRIV_ALLOW:
 	/* Allow process to run. Make sure its privilege structure has already
 	 * been set.
 	 */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ਜੇ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		ਵਾਪਸ(EPERM);
 	}
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_YIELD:
+  ਹਾਲਤ SYS_PRIV_YIELD:
 	/* Allow process to run and suspend the caller. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
-		return(EPERM);
+	ਜੇ (!RTS_ISSET(rp, RTS_NO_PRIV) || priv(rp)->s_proc_nr == NONE) {
+		ਵਾਪਸ(EPERM);
 	}
-	RTS_SET(caller, RTS_NO_PRIV);
+	RTS_ਸੈੱਟ(caller, RTS_NO_PRIV);
 	RTS_UNSET(rp, RTS_NO_PRIV);
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_DISALLOW:
+  ਹਾਲਤ SYS_PRIV_DISALLOW:
 	/* Disallow process from running. */
-	if (RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
-	RTS_SET(rp, RTS_NO_PRIV);
-	return(OK);
+	ਜੇ (RTS_ISSET(rp, RTS_NO_PRIV)) ਵਾਪਸ(EPERM);
+	RTS_ਸੈੱਟ(rp, RTS_NO_PRIV);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_CLEAR_IPC_REFS:
+  ਹਾਲਤ SYS_PRIV_CLEAR_IPC_REFS:
 	/* Clear pending IPC for the process. */
 	clear_ipc_refs(rp, EDEADSRCDST);
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_SET_SYS:
+  ਹਾਲਤ SYS_PRIV_ਸੈੱਟ_SYS:
 	/* Set a privilege structure of a blocked system process. */
-	if (! RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ਜੇ (! RTS_ISSET(rp, RTS_NO_PRIV)) ਵਾਪਸ(EPERM);
 
 	/* Check whether a static or dynamic privilege id must be allocated. */
 	priv_id = NULL_PRIV_ID;
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ਜੇ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
 		/* Copy privilege structure from caller */
-		if((r=data_copy(caller->p_endpoint,
+		ਜੇ((r=ਅੰਕੜੇ_copy(caller->p_endpoint,
 			m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-			(vir_bytes) &priv, sizeof(priv))) != OK)
-			return r;
+			(vir_ਬਾਈਟਾਂ) &priv, ਆਕਾਰ(priv))) != OK)
+			ਵਾਪਸ r;
 
 		/* See if the caller wants to assign a static privilege id. */
-		if(!(priv.s_flags & DYN_PRIV_ID)) {
+		ਜੇ(!(priv.s_flags & DYN_PRIV_ID)) {
 			priv_id = priv.s_id;
 		}
 	}
@@ -107,23 +107,23 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	 * fail, since there are only a limited number of system processes.
 	 * Then copy privileges from the caller and restore some defaults.
 	 */
-	if ((i=get_priv(rp, priv_id)) != OK)
+	ਜੇ ((i=get_priv(rp, priv_id)) != OK)
 	{
-		printf("do_privctl: unable to allocate priv_id %d: %d\n",
+		ਲਿਖੋ("do_privctl: unable to allocate priv_id %d: %d\n",
 			priv_id, i);
-		return(i);
+		ਵਾਪਸ(i);
 	}
 	priv_id = priv(rp)->s_id;		/* backup privilege id */
 	*priv(rp) = *priv(caller);		/* copy from caller */
 	priv(rp)->s_id = priv_id;		/* restore privilege id */
 	priv(rp)->s_proc_nr = proc_nr;		/* reassociate process nr */
 
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
+	ਲਈ (i=0; i< NR_SYS_CHUNKS; i++)		/* remove pending: */
 	      priv(rp)->s_asyn_pending.chunk[i] = 0;	/* - incoming asyn */
-	for (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
+	ਲਈ (i=0; i< NR_SYS_CHUNKS; i++)		/*   messages */
 	      priv(rp)->s_notify_pending.chunk[i] = 0;	/* - notifications */
 	priv(rp)->s_int_pending = 0;			/* - interrupts */
-	(void) sigemptyset(&priv(rp)->s_sig_pending);	/* - signals */
+	(ਖਾਲੀ) sigemptyset(&priv(rp)->s_sig_pending);	/* - signals */
 	reset_kernel_timer(&priv(rp)->s_alarm_timer);	/* - alarm */
 	priv(rp)->s_asyntab= -1;			/* - asynsends */
 	priv(rp)->s_asynsize= 0;
@@ -133,17 +133,17 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	/* Set defaults for privilege bitmaps. */
 	priv(rp)->s_flags= DSRV_F;           /* privilege flags */
 	priv(rp)->s_init_flags= DSRV_I;      /* initialization flags */
-	priv(rp)->s_trap_mask= DSRV_T;       /* allowed traps */
-	memset(&map, 0, sizeof(map));
-	ipc_to_m = DSRV_M;                   /* allowed targets */
-	if (ipc_to_m == ALL_M) {
-		for (i = 0; i < NR_SYS_PROCS; i++)
-			set_sys_bit(map, i);
+	priv(rp)->s_trap_ਨਕਾਬ= DSRV_T;       /* allowed traps */
+	memset(&map, 0, ਆਕਾਰ(map));
+	ipc_ਮੰਜ਼ਿਲ_m = DSRV_M;                   /* allowed targets */
+	ਜੇ (ipc_ਮੰਜ਼ਿਲ_m == ALL_M) {
+		ਲਈ (i = 0; i < NR_SYS_PROCS; i++)
+			ਸੈੱਟ_sys_ਦੋਆਧਾਰੀ_ਅੰਕ(map, i);
 	}
-	fill_sendto_mask(rp, &map);
+	fill_sendto_ਨਕਾਬ(rp, &map);
 	kcalls = DSRV_KC;                    /* allowed kernel calls */
-	for(i = 0; i < SYS_CALL_MASK_SIZE; i++) {
-		priv(rp)->s_k_call_mask[i] = (kcalls == NO_C ? 0 : (~0));
+	ਲਈ(i = 0; i < SYS_CALL_ਨਕਾਬ_ਮਾਪ; i++) {
+		priv(rp)->s_k_call_ਨਕਾਬ[i] = (kcalls == NO_C ? 0 : (~0));
 	}
 
 	/* Set the default signal managers. */
@@ -156,132 +156,132 @@ int do_privctl(struct proc * caller, message * m_ptr)
 	priv(rp)->s_nr_io_range= 0;
 	priv(rp)->s_nr_mem_range= 0;
 	priv(rp)->s_nr_irq= 0;
-	priv(rp)->s_grant_table= 0;
+	priv(rp)->s_grant_ਸਾਰਣੀ= 0;
 	priv(rp)->s_grant_entries= 0;
 	priv(rp)->s_grant_endpoint = rp->p_endpoint;
-	priv(rp)->s_state_table= 0;
+	priv(rp)->s_state_ਸਾਰਣੀ= 0;
 	priv(rp)->s_state_entries= 0;
 	priv(rp)->s_ipcf= 0;
 
 	/* Override defaults if the caller has supplied a privilege structure. */
-	if (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
+	ਜੇ (m_ptr->m_lsys_krn_sys_privctl.arg_ptr)
 	{
-		if((r = update_priv(rp, &priv)) != OK) {
-			return r;
+		ਜੇ((r = update_priv(rp, &priv)) != OK) {
+			ਵਾਪਸ r;
 		} 
 	}
 
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_SET_USER:
+  ਹਾਲਤ SYS_PRIV_ਸੈੱਟ_USER:
 	/* Set a privilege structure of a blocked user process. */
-	if (!RTS_ISSET(rp, RTS_NO_PRIV)) return(EPERM);
+	ਜੇ (!RTS_ISSET(rp, RTS_NO_PRIV)) ਵਾਪਸ(EPERM);
 
 	/* Link the process to the privilege structure of the root user
 	 * process all the user processes share.
 	 */
 	priv(rp) = priv_addr(USER_PRIV_ID);
 
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  case SYS_PRIV_ADD_IO:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  ਹਾਲਤ SYS_PRIV_ਜੋੜੋ_IO:
+	ਜੇ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ਵਾਪਸ(EPERM);
 
-#if 0 /* XXX -- do we need a call for this? */
-	if (strcmp(rp->p_name, "fxp") == 0 ||
+#ਜੇ 0 /* XXX -- do we need a call for this? */
+	ਜੇ (strcmp(rp->p_name, "fxp") == 0 ||
 		strcmp(rp->p_name, "rtl8139") == 0)
 	{
-		printf("setting ipc_stats_target to %d\n", rp->p_endpoint);
-		ipc_stats_target= rp->p_endpoint;
+		ਲਿਖੋ("setting ipc_stats_target to %d\n", rp->p_endpoint);
+		ipc_stats_ਨਿਸ਼ਾਨਾ= rp->p_endpoint;
 	}
-#endif
+#ਜੇ_ਅੰਤ
 
 	/* Get the I/O range */
-	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &io_range, sizeof(io_range));
+	ਅੰਕੜੇ_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
+		KERNEL, (vir_ਬਾਈਟਾਂ) &io_range, ਆਕਾਰ(io_range));
 	/* Add the I/O range */
-	return priv_add_io(rp, &io_range);
+	ਵਾਪਸ priv_ਜੋੜੋ_io(rp, &io_range);
 
-  case SYS_PRIV_ADD_MEM:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  ਹਾਲਤ SYS_PRIV_ਜੋੜੋ_MEM:
+	ਜੇ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ਵਾਪਸ(EPERM);
 
 	/* Get the memory range */
-	if((r=data_copy(caller->p_endpoint,
+	ਜੇ((r=ਅੰਕੜੇ_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &mem_range, sizeof(mem_range))) != OK)
-		return r;
+		(vir_ਬਾਈਟਾਂ) &mem_range, ਆਕਾਰ(mem_range))) != OK)
+		ਵਾਪਸ r;
 	/* Add the memory range */
-	return priv_add_mem(rp, &mem_range);
+	ਵਾਪਸ priv_ਜੋੜੋ_mem(rp, &mem_range);
 
-  case SYS_PRIV_ADD_IRQ:
-	if (RTS_ISSET(rp, RTS_NO_PRIV))
-		return(EPERM);
+  ਹਾਲਤ SYS_PRIV_ਜੋੜੋ_IRQ:
+	ਜੇ (RTS_ISSET(rp, RTS_NO_PRIV))
+		ਵਾਪਸ(EPERM);
 
-#if 0
+#ਜੇ 0
 	/* Only system processes get IRQs? */
-	if (!(priv(rp)->s_flags & SYS_PROC))
-		return EPERM;
-#endif
-	data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
-		KERNEL, (vir_bytes) &irq, sizeof(irq));
+	ਜੇ (!(priv(rp)->s_flags & SYS_PROC))
+		ਵਾਪਸ EPERM;
+#ਜੇ_ਅੰਤ
+	ਅੰਕੜੇ_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_privctl.arg_ptr,
+		KERNEL, (vir_ਬਾਈਟਾਂ) &irq, ਆਕਾਰ(irq));
 	/* Add the IRQ. */
-	return priv_add_irq(rp, irq);
+	ਵਾਪਸ priv_ਜੋੜੋ_irq(rp, irq);
 
-  case SYS_PRIV_QUERY_MEM:
+  ਹਾਲਤ SYS_PRIV_QUERY_MEM:
   {
-	phys_bytes addr, limit;
-  	struct priv *sp;
+	phys_ਬਾਈਟਾਂ addr, ਹੱਦਬੰਦੀ_2;
+  	ਬਣਤਰ priv *sp;
 	/* See if a certain process is allowed to map in certain physical
 	 * memory.
 	 */
-	addr = (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_start;
-	limit = addr + (phys_bytes) m_ptr->m_lsys_krn_sys_privctl.phys_len - 1;
-	if(limit < addr)
-		return EPERM;
-	if(!(sp = priv(rp)))
-		return EPERM;
-	for(i = 0; i < sp->s_nr_mem_range; i++) {
-		if(addr >= sp->s_mem_tab[i].mr_base &&
-		   limit <= sp->s_mem_tab[i].mr_limit)
-			return OK;
+	addr = (phys_ਬਾਈਟਾਂ) m_ptr->m_lsys_krn_sys_privctl.phys_ਸ਼ੁਰੂ;
+	ਹੱਦਬੰਦੀ_2 = addr + (phys_ਬਾਈਟਾਂ) m_ptr->m_lsys_krn_sys_privctl.phys_len - 1;
+	ਜੇ(ਹੱਦਬੰਦੀ_2 < addr)
+		ਵਾਪਸ EPERM;
+	ਜੇ(!(sp = priv(rp)))
+		ਵਾਪਸ EPERM;
+	ਲਈ(i = 0; i < sp->s_nr_mem_range; i++) {
+		ਜੇ(addr >= sp->s_mem_tab[i].mr_ਅਧਾਰ &&
+		   ਹੱਦਬੰਦੀ_2 <= sp->s_mem_tab[i].mr_ਹੱਦਬੰਦੀ)
+			ਵਾਪਸ OK;
 	}
-	return EPERM;
+	ਵਾਪਸ EPERM;
   }
 
-  case SYS_PRIV_UPDATE_SYS:
+  ਹਾਲਤ SYS_PRIV_UPDATE_SYS:
 	/* Update the privilege structure of a system process. */
-	if(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) return EINVAL;
+	ਜੇ(!m_ptr->m_lsys_krn_sys_privctl.arg_ptr) ਵਾਪਸ EINVAL;
 
 	/* Copy privilege structure from caller */
-	if((r=data_copy(caller->p_endpoint,
+	ਜੇ((r=ਅੰਕੜੇ_copy(caller->p_endpoint,
 		m_ptr->m_lsys_krn_sys_privctl.arg_ptr, KERNEL,
-		(vir_bytes) &priv, sizeof(priv))) != OK)
-		return r;
+		(vir_ਬਾਈਟਾਂ) &priv, ਆਕਾਰ(priv))) != OK)
+		ਵਾਪਸ r;
 
 	/* Override settings in existing privilege structure. */
-	if((r = update_priv(rp, &priv)) != OK) {
-		return r;
+	ਜੇ((r = update_priv(rp, &priv)) != OK) {
+		ਵਾਪਸ r;
 	}
 
-	return(OK);
+	ਵਾਪਸ(OK);
 
-  default:
-	printf("do_privctl: bad request %d\n",
+  ਮੂਲ:
+	ਲਿਖੋ("do_privctl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_privctl.request);
-	return EINVAL;
+	ਵਾਪਸ EINVAL;
   }
 }
 
 /*===========================================================================*
  *				update_priv				     *
  *===========================================================================*/
-static int update_priv(struct proc *rp, struct priv *priv)
+ਸਥਿਰ ਪੂਰਨ update_priv(ਬਣਤਰ proc *rp, ਬਣਤਰ priv *priv)
 {
 /* Update the privilege structure of a given process. */
 
-  int i;
+  ਪੂਰਨ i;
 
   /* Copy flags and signal managers. */
   priv(rp)->s_flags = priv->s_flags;
@@ -290,82 +290,82 @@ static int update_priv(struct proc *rp, struct priv *priv)
   priv(rp)->s_bak_sig_mgr = priv->s_bak_sig_mgr;
 
   /* Copy IRQs. */
-  if(priv->s_flags & CHECK_IRQ) {
-  	if (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
-  		return EINVAL;
+  ਜੇ(priv->s_flags & CHECK_IRQ) {
+  	ਜੇ (priv->s_nr_irq < 0 || priv->s_nr_irq > NR_IRQ)
+  		ਵਾਪਸ EINVAL;
   	priv(rp)->s_nr_irq= priv->s_nr_irq;
-  	for (i= 0; i<priv->s_nr_irq; i++)
+  	ਲਈ (i= 0; i<priv->s_nr_irq; i++)
   	{
   		priv(rp)->s_irq_tab[i]= priv->s_irq_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding IRQ %d for %d\n",
+#ਜੇ PRIV_DEBUG
+  		ਲਿਖੋ("do_privctl: adding IRQ %d for %d\n",
   			priv(rp)->s_irq_tab[i], rp->p_endpoint);
-#endif
+#ਜੇ_ਅੰਤ
   	}
   }
 
   /* Copy I/O ranges. */
-  if(priv->s_flags & CHECK_IO_PORT) {
-  	if (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
-  		return EINVAL;
+  ਜੇ(priv->s_flags & CHECK_IO_ਪੋਰਟ) {
+  	ਜੇ (priv->s_nr_io_range < 0 || priv->s_nr_io_range > NR_IO_RANGE)
+  		ਵਾਪਸ EINVAL;
   	priv(rp)->s_nr_io_range= priv->s_nr_io_range;
-  	for (i= 0; i<priv->s_nr_io_range; i++)
+  	ਲਈ (i= 0; i<priv->s_nr_io_range; i++)
   	{
   		priv(rp)->s_io_tab[i]= priv->s_io_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding I/O range [%x..%x] for %d\n",
-  			priv(rp)->s_io_tab[i].ior_base,
-  			priv(rp)->s_io_tab[i].ior_limit,
+#ਜੇ PRIV_DEBUG
+  		ਲਿਖੋ("do_privctl: adding I/O range [%x..%x] for %d\n",
+  			priv(rp)->s_io_tab[i].ior_ਅਧਾਰ,
+  			priv(rp)->s_io_tab[i].ior_ਹੱਦਬੰਦੀ,
   			rp->p_endpoint);
-#endif
+#ਜੇ_ਅੰਤ
   	}
   }
 
   /* Copy memory ranges. */
-  if(priv->s_flags & CHECK_MEM) {
-  	if (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
-  		return EINVAL;
+  ਜੇ(priv->s_flags & CHECK_MEM) {
+  	ਜੇ (priv->s_nr_mem_range < 0 || priv->s_nr_mem_range > NR_MEM_RANGE)
+  		ਵਾਪਸ EINVAL;
   	priv(rp)->s_nr_mem_range= priv->s_nr_mem_range;
-  	for (i= 0; i<priv->s_nr_mem_range; i++)
+  	ਲਈ (i= 0; i<priv->s_nr_mem_range; i++)
   	{
   		priv(rp)->s_mem_tab[i]= priv->s_mem_tab[i];
-#if PRIV_DEBUG
-  		printf("do_privctl: adding mem range [%x..%x] for %d\n",
-  			priv(rp)->s_mem_tab[i].mr_base,
-  			priv(rp)->s_mem_tab[i].mr_limit,
+#ਜੇ PRIV_DEBUG
+  		ਲਿਖੋ("do_privctl: adding mem range [%x..%x] for %d\n",
+  			priv(rp)->s_mem_tab[i].mr_ਅਧਾਰ,
+  			priv(rp)->s_mem_tab[i].mr_ਹੱਦਬੰਦੀ,
   			rp->p_endpoint);
-#endif
+#ਜੇ_ਅੰਤ
   	}
   }
 
   /* Copy trap mask. */
-  priv(rp)->s_trap_mask = priv->s_trap_mask;
+  priv(rp)->s_trap_ਨਕਾਬ = priv->s_trap_ਨਕਾਬ;
 
   /* Copy target mask. */
-#if PRIV_DEBUG
-  printf("do_privctl: Setting ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
-  	printf(" %08x", get_sys_bits(priv->s_ipc_to, i));
+#ਜੇ PRIV_DEBUG
+  ਲਿਖੋ("do_privctl: Setting ipc target mask for %d:");
+  ਲਈ (i=0; i < NR_SYS_PROCS; i += BITCHUNK_ਬਿੱਟ) {
+  	ਲਿਖੋ(" %08x", get_sys_ਬਿੱਟ(priv->s_ipc_ਮੰਜ਼ਿਲ, i));
   }
-  printf("\n");
-#endif
+  ਲਿਖੋ("\n");
+#ਜੇ_ਅੰਤ
 
-  fill_sendto_mask(rp, &priv->s_ipc_to);
+  fill_sendto_ਨਕਾਬ(rp, &priv->s_ipc_ਮੰਜ਼ਿਲ);
 
-#if PRIV_DEBUG
-  printf("do_privctl: Set ipc target mask for %d:");
-  for (i=0; i < NR_SYS_PROCS; i += BITCHUNK_BITS) {
-  	printf(" %08x", get_sys_bits(priv(rp)->s_ipc_to, i));
+#ਜੇ PRIV_DEBUG
+  ਲਿਖੋ("do_privctl: Set ipc target mask for %d:");
+  ਲਈ (i=0; i < NR_SYS_PROCS; i += BITCHUNK_ਬਿੱਟ) {
+  	ਲਿਖੋ(" %08x", get_sys_ਬਿੱਟ(priv(rp)->s_ipc_ਮੰਜ਼ਿਲ, i));
   }
-  printf("\n");
-#endif
+  ਲਿਖੋ("\n");
+#ਜੇ_ਅੰਤ
 
   /* Copy kernel call mask. */
-  memcpy(priv(rp)->s_k_call_mask, priv->s_k_call_mask,
-  	sizeof(priv(rp)->s_k_call_mask));
+  ਸਮ੍ਰਿਤੀ_ਨਕਲ(priv(rp)->s_k_call_ਨਕਾਬ, priv->s_k_call_ਨਕਾਬ,
+  	ਆਕਾਰ(priv(rp)->s_k_call_ਨਕਾਬ));
 
-  return OK;
+  ਵਾਪਸ OK;
 }
 
-#endif /* USE_PRIVCTL */
+#ਜੇ_ਅੰਤ /* USE_PRIVCTL */
 

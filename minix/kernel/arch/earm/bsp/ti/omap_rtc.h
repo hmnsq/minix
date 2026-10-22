@@ -1,7 +1,7 @@
-#ifndef __OMAP_RTC_H
-#define __OMAP_RTC_H
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __OMAP_RTC_H
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __OMAP_RTC_H
 
-void omap3_rtc_init(void);
-void omap3_rtc_run(void);
+ਖਾਲੀ omap3_rtc_init(ਖਾਲੀ);
+ਖਾਲੀ omap3_rtc_ਲੜੀਵਾਰ(ਖਾਲੀ);
 
-#endif /* __OMAP_RTC_H */
+#ਜੇ_ਅੰਤ /* __OMAP_RTC_H */

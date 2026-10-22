@@ -1,7 +1,7 @@
-#ifndef _BSP_SERIAL_H_
-#define _BSP_SERIAL_H_
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ _BSP_SERIAL_H_
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ _BSP_SERIAL_H_
 
-void bsp_ser_init(void);
-void bsp_ser_putc(char c);
+ਖਾਲੀ bsp_ser_init(ਖਾਲੀ);
+ਖਾਲੀ bsp_ser_putc(ਅੱਖਰ c);
 
-#endif /* _BSP_SERIAL_H_ */
+#ਜੇ_ਅੰਤ /* _BSP_SERIAL_H_ */

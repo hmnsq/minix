@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __SPINLOCK_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
 
-typedef struct spinlock {
+ਕਿਸਮਪਰਿਭਾਸ਼ਾ ਬਣਤਰ spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SPINLOCK_DEFINE(name)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਨਿੱਜੀ_SPINLOCK_DEFINE(name)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SPINLOCK_DECLARE(name)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_init(sl)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_ਤਾਲਾ(sl)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_unlock(sl)
 
-#else
+#ਨਹੀਂਤਾਂ
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SPINLOCK_DEFINE(name)	spinlock_t name;
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ ਨਿੱਜੀ_SPINLOCK_DEFINE(name)	ਨਿੱਜੀ SPINLOCK_DEFINE(name)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ SPINLOCK_DECLARE(name)	ਬਾਹਰੀ SPINLOCK_DEFINE(name)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_init(sl) ਕਰੋ { (sl)->val = 0; } ਜਦੋਂ (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#ਜੇ CONFIG_MAX_CPUS == 1
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_ਤਾਲਾ(sl)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_unlock(sl)
+#ਨਹੀਂਤਾਂ
+ਖਾਲੀ arch_spinlock_ਤਾਲਾ(atomic_t * sl);
+ਖਾਲੀ arch_spinlock_unlock(atomic_t * sl);
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_ਤਾਲਾ(sl)	arch_spinlock_ਤਾਲਾ((atomic_t*) sl)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#ਜੇ_ਅੰਤ
 
 
-#endif /* CONFIG_SMP */
+#ਜੇ_ਅੰਤ /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ BKL_ਤਾਲਾ()	spinlock_ਤਾਲਾ(&big_kernel_ਤਾਲਾ)
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ BKL_UNLOCK()	spinlock_unlock(&big_kernel_ਤਾਲਾ)
 
-#endif /* __SPINLOCK_H__ */
+#ਜੇ_ਅੰਤ /* __SPINLOCK_H__ */

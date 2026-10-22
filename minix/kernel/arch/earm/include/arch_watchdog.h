@@ -1,6 +1,6 @@
-#ifndef __ARM_WATCHDOG_H__
-#define __ARM_WATCHDOG_H__
+#ਜੇ_ਅਪਰਿਭਾਸ਼ਿਤ __ARM_WATCHDOG_H__
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ __ARM_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
 
-#endif /* __ARM_WATCHDOG_H__ */
+#ਜੇ_ਅੰਤ /* __ARM_WATCHDOG_H__ */

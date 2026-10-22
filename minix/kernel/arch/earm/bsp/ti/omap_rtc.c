@@ -5,54 +5,54 @@
  * driver just implements mapping the memory and re-starting the clock.
  */
 
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <assert.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <sys/types.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <machine/cpu.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/type.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <minix/board.h>
+#ਅਨ੍ਤਰ੍ਭਾਵ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "omap_rtc.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/kernel.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/proc.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/vm.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "kernel/proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "arch_proto.h"
+#ਅਨ੍ਤਰ੍ਭਾਵ "omap_rtc.h"
 
-#define RTC_SS_BASE 0x44e3e000
-#define RTC_SS_SIZE 0x1000
-#define RTC_CTRL_REG 0x40
-#define RTC_CTRL_RTC_STOP_BIT 0
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ RTC_SS_ਅਧਾਰ 0x44e3e000
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ RTC_SS_ਮਾਪ 0x1000
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ RTC_CTRL_REG 0x40
+#ਪਰਿਭਾਸ਼ਿਤ_ਕਰੋ RTC_CTRL_RTC_STOP_ਦੋਆਧਾਰੀ_ਅੰਕ 0
 
-struct omap_rtc
+ਬਣਤਰ omap_rtc
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_ਬਾਈਟਾਂ ਅਧਾਰ;
+	vir_ਬਾਈਟਾਂ ਮਾਪ;
 };
 
-static struct omap_rtc omap_rtc = {
-	.base = RTC_SS_BASE,
-	.size = RTC_SS_SIZE
+ਸਥਿਰ ਬਣਤਰ omap_rtc omap_rtc = {
+	.ਅਧਾਰ = RTC_SS_ਅਧਾਰ,
+	.ਮਾਪ = RTC_SS_ਮਾਪ
 };
 
-static kern_phys_map rtc_phys_map;
+ਸਥਿਰ kern_phys_map rtc_phys_map;
 
-void
-omap3_rtc_init(void)
+ਖਾਲੀ
+omap3_rtc_init(ਖਾਲੀ)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
-		kern_phys_map_ptr(omap_rtc.base, omap_rtc.size,
+	ਜੇ (BOARD_IS_BB(machine.board_id)) {
+		kern_phys_map_ptr(omap_rtc.ਅਧਾਰ, omap_rtc.ਮਾਪ,
 		    VMMF_UNCACHED | VMMF_WRITE, &rtc_phys_map,
-		    (vir_bytes) & omap_rtc.base);
+		    (vir_ਬਾਈਟਾਂ) & omap_rtc.ਅਧਾਰ);
 	}
 }
 
-void
-omap3_rtc_run(void)
+ਖਾਲੀ
+omap3_rtc_ਲੜੀਵਾਰ(ਖਾਲੀ)
 {
-	if (BOARD_IS_BB(machine.board_id)) {
+	ਜੇ (BOARD_IS_BB(machine.board_id)) {
 		/* Setting the stop bit starts the RTC running */
-		mmio_set((omap_rtc.base + RTC_CTRL_REG),
-		    (1 << RTC_CTRL_RTC_STOP_BIT));
+		mmio_ਸੈੱਟ((omap_rtc.ਅਧਾਰ + RTC_CTRL_REG),
+		    (1 << RTC_CTRL_RTC_STOP_ਦੋਆਧਾਰੀ_ਅੰਕ));
 	}
 }
