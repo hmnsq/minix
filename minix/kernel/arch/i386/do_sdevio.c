@@ -10,38 +10,38 @@
  *    m_lsys_krn_sys_sdevio.offset	(offset into the grant)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#அந்தர்பாவ "kernel/system.h"
+#அந்தர்பாவ <minix/devio.h>
+#அந்தர்பாவ <minix/endpoint.h>
 
-#include "arch_proto.h"
+#அந்தர்பாவ "arch_proto.h"
 
-#if USE_SDEVIO
+#எனில் USE_SDEVIO
 
 /*===========================================================================*
  *			        do_sdevio                                    *
  *===========================================================================*/
-int do_sdevio(struct proc * caller, message *m_ptr)
+முழு do_sdevio(கட்டமைப்பு proc * caller, message *m_ptr)
 {
   vir_bytes newoffset;
   endpoint_t newep;
-  int proc_nr;
+  முழு proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
-  vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
+  vir_bytes மொத்தம் = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
   long port = m_ptr->m_lsys_krn_sys_sdevio.port;
   phys_bytes vir_buf;
-  int i, r, req_type, req_dir, size, nr_io_range;
-  struct priv *privp;
-  struct io_range *iorp;
-  struct proc *destproc;
-  int retval;
+  முழு i, r, req_type, req_dir, size, nr_io_range;
+  கட்டமைப்பு priv *privp;
+  கட்டமைப்பு io_range *iorp;
+  கட்டமைப்பு proc *destproc;
+  முழு retval;
 
   /* Allow safe copies and accesses to SELF */
-  if ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
+  எனில் ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
 	proc_nr_e != SELF)
   {
-	static int first= 1;
-	if (first)
+	நிலையான முழு first= 1;
+	எனில் (first)
 	{
 		first= 0;
 		printf("do_sdevio: for %d, req %d\n",
@@ -53,39 +53,39 @@ int do_sdevio(struct proc * caller, message *m_ptr)
    * A driver may directly provide a pointer to a buffer at the user-process
    * that initiated the device I/O. Kernel processes, of course, are denied.
    */
-  if (proc_nr_e == SELF)
+  எனில் (proc_nr_e == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if(!isokendpt(proc_nr_e, &proc_nr))
-		return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  இல்லையெனில்
+	எனில்(!isokendpt(proc_nr_e, &proc_nr))
+		திரும்பு(EINVAL);
+  எனில் (iskerneln(proc_nr)) திரும்பு(EPERM);
 
   /* Extract direction (in or out) and type (size). */
   req_dir = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_DIRMASK;
   req_type = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_TYPEMASK;
 
   /* Check for 'safe' variants. */
-  if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
+  எனில்((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
      /* Map grant address to physical address. */
-     if((r=verify_grant(proc_nr_e, caller->p_endpoint,
-		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
-		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
+     எனில்((r=verify_grant(proc_nr_e, caller->p_endpoint,
+		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, மொத்தம்,
+		req_dir == DIO_உள்ளீடு ? CPF_WRITE : CPF_READ,
 		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
-		NULL)) != OK) {
-	if(r == ENOTREADY) return r;
+		வெற்று)) != OK) {
+	எனில்(r == ENOTREADY) திரும்பு r;
 	printf("do_sdevio: verify_grant failed\n");
-	return EPERM;
+	திரும்பு EPERM;
     }
-	if(!isokendpt(newep, &proc_nr))
-		return(EINVAL);
+	எனில்(!isokendpt(newep, &proc_nr))
+		திரும்பு(EINVAL);
      destproc = proc_addr(proc_nr);
      vir_buf = newoffset;
-  } else {
-     if(proc_nr != _ENDPOINT_P(caller->p_endpoint))
+  } இல்லையெனில் {
+     எனில்(proc_nr != _ENDPOINT_P(caller->p_endpoint))
      {
 	printf("do_sdevio: unsafe sdevio by %d in %d denied\n",
 		caller->p_endpoint, proc_nr_e);
-	return EPERM;
+	திரும்பு EPERM;
      }
      /* Get and check physical address. */
      vir_buf = m_ptr->m_lsys_krn_sys_sdevio.vec_addr;
@@ -95,69 +95,69 @@ int do_sdevio(struct proc * caller, message *m_ptr)
 
   switch_address_space(destproc);
 
-  switch (req_type)
+  தேர்வு (req_type)
   {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	நிலை _DIO_BYTE: size= 1; நிறுத்து;
+	நிலை _DIO_WORD: size= 2; நிறுத்து;
+	நிலை _DIO_LONG: size= 4; நிறுத்து;
+	இயல்பு: size= 4; நிறுத்து;	/* Be conservative */
   }
 
   privp= priv(caller);
-  if (privp && privp->s_flags & CHECK_IO_PORT)
+  எனில் (privp && privp->s_flags & CHECK_IO_PORT)
   {
 	port= m_ptr->m_lsys_krn_sys_sdevio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	க்கு (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		எனில் (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
+			நிறுத்து;
 	}
-	if (i >= nr_io_range)
+	எனில் (i >= nr_io_range)
 	{
 		printf(
 		"do_sdevio: I/O port check failed for proc %d, port 0x%x\n",
 			m_ptr->m_source, port);
 		retval = EPERM;
-		goto return_error;
+		செல் return_error;
 	}
   }
 
-  if (port & (size-1))
+  எனில் (port & (size-1))
   {
 	printf("do_devio: unaligned port 0x%x (size %d)\n", port, size);
 	retval = EPERM;
-	goto return_error;
+	செல் return_error;
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
-      default:
+  எனில் (req_dir == DIO_உள்ளீடு) { 
+      தேர்வு (req_type) {
+      நிலை _DIO_BYTE: phys_insb(port, vir_buf, மொத்தம்); நிறுத்து; 
+      நிலை _DIO_WORD: phys_insw(port, vir_buf, மொத்தம்); நிறுத்து; 
+      இயல்பு:
   		retval = EINVAL;
-		goto return_error;
+		செல் return_error;
       } 
-  } else if (req_dir == _DIO_OUTPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
-      default:
+  } இல்லையெனில் எனில் (req_dir == _DIO_OUTPUT) { 
+      தேர்வு (req_type) {
+      நிலை _DIO_BYTE: phys_outsb(port, vir_buf, மொத்தம்); நிறுத்து; 
+      நிலை _DIO_WORD: phys_outsw(port, vir_buf, மொத்தம்); நிறுத்து; 
+      இயல்பு:
   		retval = EINVAL;
-		goto return_error;
+		செல் return_error;
       } 
   }
-  else {
+  இல்லையெனில் {
 	  retval = EINVAL;
-	  goto return_error;
+	  செல் return_error;
   }
   retval = OK;
 
 return_error:
   /* switch back to the address of the process which made the call */
   switch_address_space(caller);
-  return retval;
+  திரும்பு retval;
 }
 
 #endif /* USE_SDEVIO */

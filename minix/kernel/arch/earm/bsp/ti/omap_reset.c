@@ -1,19 +1,19 @@
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#அந்தர்பாவ <assert.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <machine/cpu.h>
+#அந்தர்பாவ <minix/type.h>
+#அந்தர்பாவ <minix/board.h>
+#அந்தர்பாவ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
+#அந்தர்பாவ "kernel/kernel.h"
+#அந்தர்பாவ "kernel/proc.h"
+#அந்தர்பாவ "kernel/vm.h"
+#அந்தர்பாவ "kernel/proto.h"
+#அந்தர்பாவ "arch_proto.h"
+#அந்தர்பாவ "bsp_reset.h"
 
-#include "omap_timer_registers.h"
-#include "omap_rtc.h"
+#அந்தர்பாவ "omap_timer_registers.h"
+#அந்தர்பாவ "omap_rtc.h"
 
 #define AM335X_CM_BASE 0x44E00000
 #define AM335X_CM_SIZE 0x1000
@@ -27,23 +27,23 @@
 #define DM37XX_PRM_RSTCTRL_REG 0x250
 #define DM37XX_RST_DPLL3_BIT 2
 
-struct omap_reset
+கட்டமைப்பு omap_reset
 {
 	vir_bytes base;
 	vir_bytes size;
 };
 
-static struct omap_reset omap_reset;
+நிலையான கட்டமைப்பு omap_reset omap_reset;
 
-static kern_phys_map reset_phys_map;
+நிலையான kern_phys_map reset_phys_map;
 
-void
-bsp_reset_init(void)
+வெறுமை
+bsp_reset_init(வெறுமை)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	எனில் (BOARD_IS_BBXM(machine.board_id)) {
 		omap_reset.base = DM37XX_CM_BASE;
 		omap_reset.size = DM37XX_CM_SIZE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} இல்லையெனில் எனில் (BOARD_IS_BB(machine.board_id)) {
 		omap_reset.base = AM335X_CM_BASE;
 		omap_reset.size = AM335X_CM_SIZE;
 	}
@@ -53,21 +53,21 @@ bsp_reset_init(void)
 	    &reset_phys_map, (vir_bytes) & omap_reset.base);
 }
 
-void
-bsp_reset(void)
+வெறுமை
+bsp_reset(வெறுமை)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	எனில் (BOARD_IS_BBXM(machine.board_id)) {
 		mmio_set((omap_reset.base + DM37XX_PRM_RSTCTRL_REG),
 		    (1 << DM37XX_RST_DPLL3_BIT));
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} இல்லையெனில் எனில் (BOARD_IS_BB(machine.board_id)) {
 		mmio_set((omap_reset.base + AM335X_PRM_DEVICE_OFFSET +
 			AM335X_PRM_RSTCTRL_REG),
 		    (1 << AM335X_RST_GLOBAL_WARM_SW_BIT));
 	}
 }
 
-void
-bsp_poweroff(void)
+வெறுமை
+bsp_poweroff(வெறுமை)
 {
 
 /*
@@ -77,24 +77,24 @@ bsp_poweroff(void)
  * The only way to pull the pin low is via ALARM2 (see TRM 20.3.3.8).
  * At this point PM should have already signaled readclock to set the alarm.
  */
-	if (BOARD_IS_BB(machine.board_id)) {
+	எனில் (BOARD_IS_BB(machine.board_id)) {
 		/* rtc was frozen to prevent premature power-off, unfreeze it
 		 * now */
 		omap3_rtc_run();
 
 		/* wait for the alarm to go off and PMIC to disable power to
 		 * SoC */
-		while (1);
+		போது (1);
 	}
 }
 
-void bsp_disable_watchdog(void)
+வெறுமை bsp_disable_watchdog(வெறுமை)
 {
-        if(BOARD_IS_BB(machine.board_id)) {
+        எனில்(BOARD_IS_BB(machine.board_id)) {
 		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0xAAAA);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+		போது(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
 		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0x5555);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+		போது(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
 	}
 }
 

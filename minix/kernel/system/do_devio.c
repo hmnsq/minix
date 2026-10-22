@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#அந்தர்பாவ "kernel/system.h"
+#அந்தர்பாவ <minix/devio.h>
+#அந்தர்பாவ <minix/endpoint.h>
 
-#if USE_DEVIO
+#எனில் USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+முழு do_devio(கட்டமைப்பு proc * caller, message * m_ptr)
 {
-    struct priv *privp;
+    கட்டமைப்பு priv *privp;
     port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    கட்டமைப்பு io_range *iorp;
+    முழு i, size, nr_io_range;
+    முழு io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    தேர்வு (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	நிலை _DIO_BYTE: size= 1; நிறுத்து;
+	நிலை _DIO_WORD: size= 2; நிறுத்து;
+	நிலை _DIO_LONG: size= 4; நிறுத்து;
+	இயல்பு: size= 4; நிறுத்து;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    எனில் (!privp)
     {
 	printf("no priv structure!\n");
-	goto doit;
+	செல் doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    எனில் (privp->s_flags & CHECK_IO_PORT)
     {
 	port= m_ptr->m_lsys_krn_sys_devio.port;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	க்கு (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		எனில் (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
+			நிறுத்து;
 	}
-	if (i >= nr_io_range)
+	எனில் (i >= nr_io_range)
 	{
 			printf("do_devio: port 0x%x (size %d) not allowed\n",
 				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+		திரும்பு EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    எனில் (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
     {
 		printf("do_devio: unaligned port 0x%x (size %d)\n",
 			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+	திரும்பு EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    எனில் (io_dir == DIO_உள்ளீடு) { 
+      தேர்வு (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
+        நிலை _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.மதிப்பு =
 			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		நிறுத்து;
+        நிலை _DIO_WORD:
+		m_ptr->m_krn_lsys_sys_devio.மதிப்பு =
 			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
+		நிறுத்து;
+        நிலை _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.மதிப்பு =
 			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+		நிறுத்து;
+    	இயல்பு: திரும்பு(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
+    } இல்லையெனில் { 
+      தேர்வு (io_type) {
+	நிலை _DIO_BYTE:
 		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
+			m_ptr->m_lsys_krn_sys_devio.மதிப்பு);
+		நிறுத்து;
+	நிலை _DIO_WORD:
 		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
+			m_ptr->m_lsys_krn_sys_devio.மதிப்பு);
+		நிறுத்து;
+	நிலை _DIO_LONG:
 		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+			m_ptr->m_lsys_krn_sys_devio.மதிப்பு);
+		நிறுத்து;
+    	இயல்பு: திரும்பு(EINVAL);
       } 
     }
-    return(OK);
+    திரும்பு(OK);
 }
 
 #endif /* USE_DEVIO */

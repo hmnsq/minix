@@ -1,33 +1,33 @@
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <machine/cpu.h>
+#அந்தர்பாவ <minix/type.h>
+#அந்தர்பாவ <minix/board.h>
+#அந்தர்பாவ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "hw_intr.h"
+#அந்தர்பாவ "kernel/kernel.h"
+#அந்தர்பாவ "kernel/proc.h"
+#அந்தர்பாவ "kernel/vm.h"
+#அந்தர்பாவ "kernel/proto.h"
+#அந்தர்பாவ "arch_proto.h"
+#அந்தர்பாவ "hw_intr.h"
 
-#include "omap_intr_registers.h"
-static struct omap_intr
+#அந்தர்பாவ "omap_intr_registers.h"
+நிலையான கட்டமைப்பு omap_intr
 {
 	vir_bytes base;
-	int size;
+	முழு size;
 } omap_intr;
 
-static kern_phys_map intr_phys_map;
+நிலையான kern_phys_map intr_phys_map;
 
-int
-intr_init(const int auto_eoi)
+முழு
+intr_init(மாறிலி முழு auto_eoi)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
+	எனில் (BOARD_IS_BBXM(machine.board_id)) {
 		omap_intr.base = OMAP3_DM37XX_INTR_BASE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
+	} இல்லையெனில் எனில் (BOARD_IS_BB(machine.board_id)) {
 		omap_intr.base = OMAP3_AM335X_INTR_BASE;
-	} else {
+	} இல்லையெனில் {
 		panic
 		    ("Can not do the interrupt setup. machine (0x%08x) is unknown\n",
 		    machine.board_id);
@@ -37,16 +37,16 @@ intr_init(const int auto_eoi)
 	kern_phys_map_ptr(omap_intr.base, omap_intr.size,
 	    VMMF_UNCACHED | VMMF_WRITE,
 	    &intr_phys_map, (vir_bytes) & omap_intr.base);
-	return 0;
+	திரும்பு 0;
 }
 
-void
-bsp_irq_handle(void)
+வெறுமை
+bsp_irq_handle(வெறுமை)
 {
 	/* Function called from assembly to handle interrupts */
 
 	/* get irq */
-	int irq =
+	முழு irq =
 	    mmio_read(omap_intr.base +
 	    OMAP3_INTCPS_SIR_IRQ) & OMAP3_INTR_ACTIVEIRQ_MASK;
 	/* handle irq */
@@ -57,15 +57,15 @@ bsp_irq_handle(void)
 	    OMAP3_INTR_NEWIRQAGR);
 }
 
-void
-bsp_irq_unmask(int irq)
+வெறுமை
+bsp_irq_unmask(முழு irq)
 {
 	mmio_write(OMAP3_INTR_MIR_CLEAR(omap_intr.base, irq >> 5),
 	    1 << (irq & 0x1f));
 }
 
-void
-bsp_irq_mask(const int irq)
+வெறுமை
+bsp_irq_mask(மாறிலி முழு irq)
 {
 	mmio_write(OMAP3_INTR_MIR_SET(omap_intr.base, irq >> 5),
 	    1 << (irq & 0x1f));

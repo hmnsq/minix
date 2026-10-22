@@ -7,26 +7,26 @@
  *    	SVMCTL_VALUE	to this value
  */
 
-#include "kernel/system.h"
-#include <assert.h>
+#அந்தர்பாவ "kernel/system.h"
+#அந்தர்பாவ <assert.h>
 
-#include "arch_proto.h"
+#அந்தர்பாவ "arch_proto.h"
 
-extern phys_bytes video_mem_vaddr;
+வெளி phys_bytes video_mem_vaddr;
 
-extern char *video_mem;
+வெளி எழுத்து *video_mem;
 
-static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
+நிலையான வெறுமை setcr3(கட்டமைப்பு proc *p, u32_t cr3, u32_t *v)
 {
 	/* Set process CR3. */
 	p->p_seg.p_cr3 = cr3;
-	assert(p->p_seg.p_cr3);
+	ப்ரதிஜ்ஞா(p->p_seg.p_cr3);
 	p->p_seg.p_cr3_v = v; 
-	if(p == get_cpulocal_var(ptproc)) {
+	எனில்(p == get_cpulocal_var(ptproc)) {
 		write_cr3(p->p_seg.p_cr3);
 	}
-	if(p->p_nr == VM_PROC_NR) {
-		if (arch_enable_paging(p) != OK)
+	எனில்(p->p_nr == VM_PROC_NR) {
+		எனில் (arch_enable_paging(p) != OK)
 			panic("arch_enable_paging failed");
 	}
 	RTS_UNSET(p, RTS_VMINHIBIT);
@@ -35,33 +35,33 @@ static void setcr3(struct proc *p, u32_t cr3, u32_t *v)
 /*===========================================================================*
  *				arch_do_vmctl				     *
  *===========================================================================*/
-int arch_do_vmctl(
-  register message *m_ptr,	/* pointer to request message */
-  struct proc *p
+முழு arch_do_vmctl(
+  பதிவு message *m_ptr,	/* pointer to request message */
+  கட்டமைப்பு proc *p
 )
 {
-  switch(m_ptr->SVMCTL_PARAM) {
-	case VMCTL_GET_PDBR:
+  தேர்வு(m_ptr->SVMCTL_PARAM) {
+	நிலை VMCTL_GET_PDBR:
 		/* Get process page directory base reg (CR3). */
-		m_ptr->SVMCTL_VALUE = p->p_seg.p_cr3;
-		return OK;
-	case VMCTL_SETADDRSPACE:
+		m_ptr->SVMCTL_மதிப்பு = p->p_seg.p_cr3;
+		திரும்பு OK;
+	நிலை VMCTL_SETADDRSPACE:
 		setcr3(p, m_ptr->SVMCTL_PTROOT, (u32_t *) m_ptr->SVMCTL_PTROOT_V);
-		return OK;
-	case VMCTL_FLUSHTLB:
+		திரும்பு OK;
+	நிலை VMCTL_FLUSHTLB:
 	{
 		reload_cr3();
-		return OK;
+		திரும்பு OK;
 	}
-	case VMCTL_I386_INVLPG:
+	நிலை VMCTL_I386_INVLPG:
 	{
-		i386_invlpg(m_ptr->SVMCTL_VALUE);
-		return OK;
+		i386_invlpg(m_ptr->SVMCTL_மதிப்பு);
+		திரும்பு OK;
 	}
   }
 
 
 
   printf("arch_do_vmctl: strange param %d\n", m_ptr->SVMCTL_PARAM);
-  return EINVAL;
+  திரும்பு EINVAL;
 }

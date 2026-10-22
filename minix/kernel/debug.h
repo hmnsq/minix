@@ -8,8 +8,8 @@
  */
 
 #ifndef __ASSEMBLY__
-#include <minix/debug.h>
-#include "config.h"
+#அந்தர்பாவ <minix/debug.h>
+#அந்தர்பாவ "config.h"
 #endif
 
 /* Debug info via serial (see ser_debug()) */
@@ -56,35 +56,35 @@
 /* DEBUG_IPCSTATS collects information on who sends messages to whom. */
 #define DEBUG_IPCSTATS			0
 
-#if !USE_SYSDEBUG
+#எனில் !USE_SYSDEBUG
 #undef DEBUG_SERIAL
 #undef DEBUG_ENABLE_IPC_WARNINGS
 #endif
 
-#if DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
+#எனில் DEBUG_DUMPIPC || DEBUG_IPCSTATS	/* either of these needs the hook */
 #define DEBUG_IPC_HOOK			1
 #endif
 
-#if DEBUG_TRACE
+#எனில் DEBUG_TRACE
 
 #define VF_SCHEDULING		(1L << 1)
 #define VF_PICKPROC		(1L << 2)
 
-#define TRACE(code, statement) if(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
+#define TRACE(code, statement) எனில்(verboseflags & code) { printf("%s:%d: ", __FILE__, __LINE__); statement }
 
-#else
+#இல்லையெனில்
 #define TRACE(code, statement)
 #endif
 
 #ifdef CONFIG_BOOT_VERBOSE
 #define BOOT_VERBOSE(x)	x
-#else
+#இல்லையெனில்
 #define BOOT_VERBOSE(x)
 #endif
 
 #ifdef _SYSTEM
-#define DEBUG_PRINT(params, level) do { \
-	if (verboseboot >= (level)) printf params; } while (0)
+#define DEBUG_PRINT(params, level) செய் { \
+	எனில் (verboseboot >= (level)) printf params; } போது (0)
 #define DEBUGBASIC(params) DEBUG_PRINT(params, VERBOSEBOOT_BASIC)
 #define DEBUGEXTRA(params) DEBUG_PRINT(params, VERBOSEBOOT_EXTRA)
 #define DEBUGMAX(params)   DEBUG_PRINT(params, VERBOSEBOOT_MAX)

@@ -1,43 +1,43 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#அந்தர்பாவ <minix/minlib.h>
+#அந்தர்பாவ <minix/cpufeature.h>
+#அந்தர்பாவ <machine/partition.h>
+#அந்தர்பாவ "string.h"
+#அந்தர்பாவ "direct_utils.h"
+#அந்தர்பாவ "serial.h"
+#அந்தர்பாவ "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+நிலையான முழு print_வரி = 1, print_col = 1;
 
-#include <sys/video.h>
+#அந்தர்பாவ <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+வெளி எழுத்து *video_mem;
+#define VIDOFFSET(வரி, col) ((வரி) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_வரிகள்-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+வெறுமை direct_put_char(எழுத்து c, முழு வரி, முழு col) 
 {
-	int offset = VIDOFFSET(line, col);
+	முழு offset = VIDOFFSET(வரி, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+நிலையான எழுத்து direct_get_char(முழு வரி, முழு col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	திரும்பு video_mem[VIDOFFSET(வரி, col)];
 }
 
-void direct_cls(void)
+வெறுமை direct_cls(வெறுமை)
 {
 	/* Clear screen */
-	int i,j;
+	முழு i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	க்கு(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		க்கு(j = 0; j < MULTIBOOT_CONSOLE_வரிகள்; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_வரி = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,59 +46,59 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+நிலையான வெறுமை direct_scroll_up(முழு வரிகள்) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	முழு i, j;
+	க்கு (i = 0; i < MULTIBOOT_CONSOLE_வரிகள்; i++ ) {
+		க்கு (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			எழுத்து c = 0;
+			எனில்(i < MULTIBOOT_CONSOLE_வரிகள்-வரிகள்)
+				c = direct_get_char(i + வரிகள், j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_வரி-= வரிகள்;
 }
 
-void direct_print_char(char c)
+வெறுமை direct_print_char(எழுத்து c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	போது (print_வரி >= MULTIBOOT_CONSOLE_வரிகள்)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	எனில்(c == '\t') {
+		எனில்(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} இல்லையெனில் {
+			செய் {
+				direct_put_char(' ', print_வரி, print_col++);
+			} போது(print_col % TABWIDTH);
+			திரும்பு;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	எனில் (c == '\n') {
+		போது (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_வரி, print_col++);
+		print_வரி++;
 		print_col = 0;
-		return;
+		திரும்பு;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_வரி, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	எனில் (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_வரி++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	போது (print_வரி >= MULTIBOOT_CONSOLE_வரிகள்)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+வெறுமை direct_print(மாறிலி எழுத்து *str)
 {
-	while (*str) {
+	போது (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+முழு direct_read_char(unsigned எழுத்து *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	எனில் (!(sb & KB_OUT_FULL)) {
+		திரும்பு 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	எனில் (!(sb & KB_AUX_BYTE))
+		திரும்பு 1;
 
-	return 0;
+	திரும்பு 0;
 }
 

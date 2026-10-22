@@ -5,48 +5,48 @@
  *   m_lsys_krn_sys_statectl.request	(state control request)
  */
 
-#include "kernel/system.h"
+#அந்தர்பாவ "kernel/system.h"
 
-#if USE_STATECTL
+#எனில் USE_STATECTL
 
 /*===========================================================================*
  *			          do_statectl				     *
  *===========================================================================*/
-int do_statectl(struct proc * caller, message * m_ptr)
+முழு do_statectl(கட்டமைப்பு proc * caller, message * m_ptr)
 {
 /* Handle sys_statectl(). A process has issued a state control request. */
 
-  switch(m_ptr->m_lsys_krn_sys_statectl.request)
+  தேர்வு(m_ptr->m_lsys_krn_sys_statectl.request)
   {
-  case SYS_STATE_CLEAR_IPC_REFS:
+  நிலை SYS_STATE_CLEAR_IPC_REFS:
 	/* Clear IPC references for all the processes communicating
 	 * with the caller.
 	 */
 	clear_ipc_refs(caller, EDEADSRCDST);
-	return(OK);
-  case SYS_STATE_SET_STATE_TABLE:
+	திரும்பு(OK);
+  நிலை SYS_STATE_SET_STATE_TABLE:
 	/* Set state table for the caller. */
 	priv(caller)->s_state_table = (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address;
 	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.length;
-	return(OK);
-  case SYS_STATE_ADD_IPC_BL_FILTER:
+	திரும்பு(OK);
+  நிலை SYS_STATE_ADD_IPC_BL_FILTER:
 	/* Add an IPC blacklist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_BLACKLIST,
+	திரும்பு add_ipc_filter(caller, IPCF_BLACKLIST,
 	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
 	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_ADD_IPC_WL_FILTER:
+  நிலை SYS_STATE_ADD_IPC_WL_FILTER:
 	/* Add an IPC whitelist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_WHITELIST,
+	திரும்பு add_ipc_filter(caller, IPCF_WHITELIST,
 	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
 	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_CLEAR_IPC_FILTERS:
+  நிலை SYS_STATE_CLEAR_IPC_FILTERS:
 	/* Clear any IPC filter for the caller. */
 	clear_ipc_filters(caller);
-	return OK;
-  default:
+	திரும்பு OK;
+  இயல்பு:
 	printf("do_statectl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_statectl.request);
-	return EINVAL;
+	திரும்பு EINVAL;
   }
 }
 

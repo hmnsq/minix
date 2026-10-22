@@ -63,7 +63,7 @@ IMPORT(multiboot_init)
 
 #define PIC_IRQ_HANDLER(irq)	\
 	push	$irq							    	;\
-	call	_C_LABEL(irq_handle)	/* intr_handle(irq_handlers[irq]) */	;\
+	அழை	_C_LABEL(irq_handle)	/* intr_handle(irq_handlers[irq]) */	;\
 	add	$4, %esp						    	;
 
 /*===========================================================================*/
@@ -77,7 +77,7 @@ IMPORT(multiboot_init)
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
 	push	%ebp							;\
 	movl	$0, %ebp	/* for stack trace */			;\
-	call	_C_LABEL(context_stop)					;\
+	அழை	_C_LABEL(context_stop)					;\
 	add	$4, %esp						;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
@@ -86,7 +86,7 @@ IMPORT(multiboot_init)
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	அழை	_C_LABEL(context_stop_idle)				;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
@@ -137,7 +137,7 @@ ENTRY(hwint07)
 	SAVE_PROCESS_CTX(0, KTS_INT_HARD)				;\
 	push	%ebp							;\
 	movl	$0, %ebp	/* for stack trace */			;\
-	call	_C_LABEL(context_stop)					;\
+	அழை	_C_LABEL(context_stop)					;\
 	add	$4, %esp						;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
@@ -147,7 +147,7 @@ ENTRY(hwint07)
 									\
 0:									\
 	pusha								;\
-	call	_C_LABEL(context_stop_idle)				;\
+	அழை	_C_LABEL(context_stop_idle)				;\
 	PIC_IRQ_HANDLER(irq)						;\
 	movb	$END_OF_INT, %al					;\
 	outb	$INT_CTL	/* reenable interrupts in master pic */	;\
@@ -194,7 +194,7 @@ ENTRY(hwint15)
  *     %esp is not configured)
  *   - we have to save the post-SYSRET %eip, provided by the cpu
  *     in %ecx
- *   - the system call parameters are passed in %ecx, so we userland
+ *   - the system அழை parameters are passed in %ecx, so we userland
  *     code that executes SYSCALL copies %ecx to %edx. So the roles
  *     of %ecx and %edx are reversed
  *   - we can use %esi as a scratch register
@@ -223,7 +223,7 @@ ENTRY(ipc_entry_sysenter)
 	 * interrupts are disabled.
 	 *
 	 * register usage:
-	 * edi: call type (IPCVEC, KERVEC)
+	 * edi: அழை type (IPCVEC, KERVEC)
 	 * ebx, eax, ecx: syscall params, set by userland
 	 * esi, edx: esp, eip to restore, set by userland
 	 *
@@ -246,7 +246,7 @@ syscall_sysenter_common:
 	pop	%edx
 	mov	%edx, PSWREG(%ebp)
 
-	/* check for call type; do_ipc? */
+	/* check for அழை type; do_ipc? */
 	cmp	$IPCVEC_UM, %edi
 	jz	ipc_entry_common
 
@@ -254,10 +254,10 @@ syscall_sysenter_common:
 	cmp	$KERVEC_UM, %edi
 	jz	kernel_call_entry_common
 
-	/* unrecognized call number; restore user with error */
+	/* unrecognized அழை number; restore user with error */
 	movl	$-1, AXREG(%ebp)
 	push	%ebp	
-	call	restore_user_context	/* restore_user_context(%ebp); */
+	அழை	restore_user_context	/* restore_user_context(%ebp); */
 
 /*
  * IPC is only from a process to kernel
@@ -287,10 +287,10 @@ ENTRY(ipc_entry_common)
 	push	%ebp
 	/* for stack trace */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
+	அழை	_C_LABEL(context_stop)
 	add	$4, %esp
 
-	call	_C_LABEL(do_ipc)
+	அழை	_C_LABEL(do_ipc)
 
 	/* restore the current process pointer and save the return value */
 	add	$3 * 4, %esp
@@ -301,7 +301,7 @@ ENTRY(ipc_entry_common)
 
 
 /*
- * kernel call is only from a process to kernel
+ * kernel அழை is only from a process to kernel
  */
 ENTRY(kernel_call_entry_orig)
 	SAVE_PROCESS_CTX(0, KTS_INT_ORIG)
@@ -326,10 +326,10 @@ ENTRY(kernel_call_entry_common)
 	push	%ebp
 	/* for stack trace */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
+	அழை	_C_LABEL(context_stop)
 	add	$4, %esp
 
-	call	_C_LABEL(kernel_call)
+	அழை	_C_LABEL(kernel_call)
 
 	/* restore the current process pointer and save the return value */
 	add	$8, %esp
@@ -358,17 +358,17 @@ exception_entry_from_user:
 	push	%ebp
 	/* for stack trace clear %ebp */
 	movl	$0, %ebp
-	call	_C_LABEL(context_stop)
+	அழை	_C_LABEL(context_stop)
 	add	$4, %esp
 
 	/*
 	 * push a pointer to the interrupt state pushed by the cpu and the
 	 * vector number pushed by the vector handler just before calling
-	 * exception_entry and call the exception handler.
+	 * exception_entry and அழை the exception handler.
 	 */
 	push	%esp
 	push	$0	/* it's not a nested exception */
-	call 	_C_LABEL(exception_handler)
+	அழை 	_C_LABEL(exception_handler)
 
 	jmp	_C_LABEL(switch_to_user)
 
@@ -379,7 +379,7 @@ exception_entry_nested:
 	add	$(8 * 4), %eax
 	push	%eax
 	pushl	$1			/* it's a nested exception */
-	call	_C_LABEL(exception_handler)
+	அழை	_C_LABEL(exception_handler)
 	add	$8, %esp
 	popa
 
@@ -509,7 +509,7 @@ LABEL(nmi)
 	mov	%si, %es
 
 	push	%esp
-	call	_C_LABEL(nmi_watchdog_handler)
+	அழை	_C_LABEL(nmi_watchdog_handler)
 	add	$4, %esp
 
 	/* restore all the important registers as they were before the trap */
@@ -541,8 +541,8 @@ LABEL(copr_not_available)
 	/* stop user process cycles */
 	push	%ebp
 	mov	$0, %ebp
-	call	_C_LABEL(context_stop)
-	call	_C_LABEL(copr_not_available_handler)
+	அழை	_C_LABEL(context_stop)
+	அழை	_C_LABEL(copr_not_available_handler)
 	/* reached upon failure only */
 	jmp	_C_LABEL(switch_to_user)
 
@@ -587,7 +587,7 @@ LABEL(simd_exception)
 /*===========================================================================*/
 /*				reload_cr3				     */
 /*===========================================================================*/
-/* PUBLIC void reload_cr3(void); */
+/* பொது void reload_cr3(void); */
 ENTRY(reload_cr3)
 	push    %ebp
 	mov     %esp, %ebp
@@ -615,7 +615,7 @@ ENTRY(startup_ap_32)
 	mov	$_C_LABEL(k_boot_stktop) - 4, %esp
 
 	/* load the highly mapped idt, gdt, per-cpu tss */
-	call	_C_LABEL(prot_load_selectors)
+	அழை	_C_LABEL(prot_load_selectors)
 
 	jmp	_C_LABEL(smp_ap_boot)
 	hlt

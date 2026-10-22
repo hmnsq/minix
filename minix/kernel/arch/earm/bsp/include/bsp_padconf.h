@@ -3,8 +3,8 @@
 
 #ifndef __ASSEMBLY__
 
-void bsp_padconf_init(void);
-int bsp_padconf_set(u32_t padconf, u32_t mask, u32_t value);
+வெறுமை bsp_padconf_init(வெறுமை);
+முழு bsp_padconf_set(u32_t padconf, u32_t mask, u32_t மதிப்பு);
 
 #endif /* __ASSEMBLY__ */
 

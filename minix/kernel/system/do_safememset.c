@@ -8,16 +8,16 @@
  *	SMS_PATTERN     memset pattern byte
  *	SMS_BYTES	bytes from offset
  */
-#include <assert.h>
+#அந்தர்பாவ <assert.h>
 
-#include <minix/safecopies.h>
+#அந்தர்பாவ <minix/safecopies.h>
 
-#include "kernel/system.h"
+#அந்தர்பாவ "kernel/system.h"
 
 /*===========================================================================*
  *                              do_safememset                                *
  *===========================================================================*/
-int do_safememset(struct proc *caller, message *m_ptr) {
+முழு do_safememset(கட்டமைப்பு proc *caller, message *m_ptr) {
 	/* Implementation of the do_safememset() kernel call */
 
 	/* Extract parameters */
@@ -25,33 +25,33 @@ int do_safememset(struct proc *caller, message *m_ptr) {
 	endpoint_t caller_endpt = caller->p_endpoint;
 	cp_grant_id_t grantid = m_ptr->SMS_GID;
 	vir_bytes g_offset = m_ptr->SMS_OFFSET;
-	int pattern = m_ptr->SMS_PATTERN;
+	முழு pattern = m_ptr->SMS_PATTERN;
 	size_t len = (size_t)m_ptr->SMS_BYTES;
 
-	struct proc *dst_p;
+	கட்டமைப்பு proc *dst_p;
 	endpoint_t new_granter;
-	static vir_bytes v_offset;
-	int r;
+	நிலையான vir_bytes v_offset;
+	முழு r;
 
-	if (dst_endpt == NONE || caller_endpt == NONE)
-		return EFAULT;
+	எனில் (dst_endpt == NONE || caller_endpt == NONE)
+		திரும்பு EFAULT;
 
-	if (!(dst_p = endpoint_lookup(dst_endpt)))
-		return EINVAL;
+	எனில் (!(dst_p = endpoint_lookup(dst_endpt)))
+		திரும்பு EINVAL;
 
-	if (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
+	எனில் (!(priv(dst_p) && priv(dst_p)->s_grant_table)) {
 		printf("safememset: dst %d has no grant table\n", dst_endpt);
-		return EINVAL;
+		திரும்பு EINVAL;
 	}
 
 	/* Verify permission exists, memset always requires CPF_WRITE */
 	r = verify_grant(dst_endpt, caller_endpt, grantid, len, CPF_WRITE,
-			 g_offset, &v_offset, &new_granter, NULL);
+			 g_offset, &v_offset, &new_granter, வெற்று);
 
-	if (r != OK) {
+	எனில் (r != OK) {
 		printf("safememset: grant %d verify failed %d", grantid, r);
-		return r;
+		திரும்பு r;
 	}
 
-	return vm_memset(caller, new_granter, v_offset, pattern, len);
+	திரும்பு vm_memset(caller, new_granter, v_offset, pattern, len);
 }

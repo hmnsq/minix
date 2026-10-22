@@ -1,31 +1,31 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#அந்தர்பாவ "kernel/system.h"
+#அந்தர்பாவ <minix/endpoint.h>
 
 /*===========================================================================*
  *			          do_schedctl			     *
  *===========================================================================*/
-int do_schedctl(struct proc * caller, message * m_ptr)
+முழு do_schedctl(கட்டமைப்பு proc * caller, message * m_ptr)
 {
-	struct proc *p;
+	கட்டமைப்பு proc *p;
 	uint32_t flags;
-	int priority, quantum, cpu;
-	int proc_nr;
-	int r;
+	முழு priority, quantum, cpu;
+	முழு proc_nr;
+	முழு r;
 
 	/* check parameter validity */
 	flags = m_ptr->m_lsys_krn_schedctl.flags;
-	if (flags & ~SCHEDCTL_FLAG_KERNEL) {
+	எனில் (flags & ~SCHEDCTL_FLAG_KERNEL) {
 		printf("do_schedctl: flags 0x%x invalid, caller=%d\n", 
 			flags, caller - proc);
-		return EINVAL;
+		திரும்பு EINVAL;
 	}
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
-		return EINVAL;
+	எனில் (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
+		திரும்பு EINVAL;
 
 	p = proc_addr(proc_nr);
 
-	if ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
+	எனில் ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
 		/* the kernel becomes the scheduler and starts 
 		 * scheduling the process.
 		 */
@@ -34,13 +34,13 @@ int do_schedctl(struct proc * caller, message * m_ptr)
 		cpu = m_ptr->m_lsys_krn_schedctl.cpu;
 
 		/* Try to schedule the process. */
-		if((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
-			return r;
-		p->p_scheduler = NULL;
-	} else {
+		எனில்((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
+			திரும்பு r;
+		p->p_scheduler = வெற்று;
+	} இல்லையெனில் {
 		/* the caller becomes the scheduler */
 		p->p_scheduler = caller;
 	}
 
-	return(OK);
+	திரும்பு(OK);
 }

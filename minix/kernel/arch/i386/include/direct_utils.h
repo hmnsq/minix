@@ -1,11 +1,11 @@
 #ifndef MB_UTILS_H
 #define MB_UTILS_H
 
-#include "kernel/kernel.h"
+#அந்தர்பாவ "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+வெறுமை direct_cls(வெறுமை);
+வெறுமை direct_print(மாறிலி எழுத்து*);
+வெறுமை direct_print_char(எழுத்து);
+முழு direct_read_char(unsigned எழுத்து*);
 
 #endif

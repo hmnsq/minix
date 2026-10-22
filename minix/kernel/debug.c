@@ -3,143 +3,143 @@
  * functions and sanity checking of the scheduling queues.
  */
 
-#include "kernel/kernel.h"
+#அந்தர்பாவ "kernel/kernel.h"
 
-#include <minix/callnr.h>
-#include <minix/u64.h>
-#include <limits.h>
-#include <string.h>
-#include <assert.h>
+#அந்தர்பாவ <minix/callnr.h>
+#அந்தர்பாவ <minix/u64.h>
+#அந்தர்பாவ <limits.h>
+#அந்தர்பாவ <string.h>
+#அந்தர்பாவ <assert.h>
 
 #define MAX_LOOP (NR_PROCS + NR_TASKS)
 
-int runqueues_ok_cpu(unsigned cpu)
+முழு runqueues_ok_cpu(unsigned cpu)
 {
-  int q, l = 0;
-  register struct proc *xp;
-  struct proc **rdy_head, **rdy_tail;
+  முழு q, l = 0;
+  பதிவு கட்டமைப்பு proc *xp;
+  கட்டமைப்பு proc **rdy_head, **rdy_tail;
 
   rdy_head = get_cpu_var(cpu, run_q_head);
   rdy_tail = get_cpu_var(cpu, run_q_tail);
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+  க்கு (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
 	xp->p_found = 0;
-	if (l++ > MAX_LOOP) panic("check error");
+	எனில் (l++ > MAX_LOOP) panic("check error");
   }
 
-  for (q=l=0; q < NR_SCHED_QUEUES; q++) {
-    if (rdy_head[q] && !rdy_tail[q]) {
+  க்கு (q=l=0; q < NR_SCHED_QUEUES; q++) {
+    எனில் (rdy_head[q] && !rdy_tail[q]) {
 	printf("head but no tail in %d\n", q);
-	return 0;
+	திரும்பு 0;
     }
-    if (!rdy_head[q] && rdy_tail[q]) {
+    எனில் (!rdy_head[q] && rdy_tail[q]) {
 	printf("tail but no head in %d\n", q);
-	return 0;
+	திரும்பு 0;
     }
-    if (rdy_tail[q] && rdy_tail[q]->p_nextready) {
+    எனில் (rdy_tail[q] && rdy_tail[q]->p_nextready) {
 	printf("tail and tail->next not null in %d\n", q);
-	return 0;
+	திரும்பு 0;
     }
-    for(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
-	const vir_bytes vxp = (vir_bytes) xp;
+    க்கு(xp = rdy_head[q]; xp; xp = xp->p_nextready) {
+	மாறிலி vir_bytes vxp = (vir_bytes) xp;
 	vir_bytes dxp;
-	if(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
+	எனில்(vxp < (vir_bytes) BEG_PROC_ADDR || vxp >= (vir_bytes) END_PROC_ADDR) {
   		printf("xp out of range\n");
-		return 0;
+		திரும்பு 0;
 	}
 	dxp = vxp - (vir_bytes) BEG_PROC_ADDR;
-	if(dxp % sizeof(struct proc)) {
+	எனில்(dxp % அளவு(கட்டமைப்பு proc)) {
   		printf("xp not a real pointer");
-		return 0;
+		திரும்பு 0;
 	}
-	if(!proc_ptr_ok(xp)) {
+	எனில்(!proc_ptr_ok(xp)) {
   		printf("xp bogus pointer");
-		return 0;
+		திரும்பு 0;
 	}
-	if (RTS_ISSET(xp, RTS_SLOT_FREE)) {
+	எனில் (RTS_ISSET(xp, RTS_SLOT_FREE)) {
 		printf("scheduling error: dead proc q %d %d\n",
 			q, xp->p_endpoint);
-		return 0;
+		திரும்பு 0;
 	}
-        if (!proc_is_runnable(xp)) {
+        எனில் (!proc_is_runnable(xp)) {
 		printf("scheduling error: unready on runq %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		திரும்பு 0;
         }
-        if (xp->p_priority != q) {
+        எனில் (xp->p_priority != q) {
 		printf("scheduling error: wrong priority q %d proc %d ep %d name %s\n",
 			q, xp->p_nr, xp->p_endpoint, xp->p_name);
-		return 0;
+		திரும்பு 0;
 	}
-	if (xp->p_found) {
+	எனில் (xp->p_found) {
 		printf("scheduling error: double sched q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		திரும்பு 0;
 	}
 	xp->p_found = 1;
-	if (!xp->p_nextready && rdy_tail[q] != xp) {
+	எனில் (!xp->p_nextready && rdy_tail[q] != xp) {
 		printf("sched err: last element not tail q %d proc %d\n",
 			q, xp->p_nr);
-		return 0;
+		திரும்பு 0;
 	}
-	if (l++ > MAX_LOOP) {
+	எனில் (l++ > MAX_LOOP) {
 		printf("loop in schedule queue?");
-		return 0;
+		திரும்பு 0;
 	}
     }
   }	
 
-  for (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
-	if(!proc_ptr_ok(xp)) {
+  க்கு (xp = BEG_PROC_ADDR; xp < END_PROC_ADDR; ++xp) {
+	எனில்(!proc_ptr_ok(xp)) {
 		printf("xp bogus pointer in proc table\n");
-		return 0;
+		திரும்பு 0;
 	}
-	if (isemptyp(xp))
-		continue;
-	if(proc_is_runnable(xp) && !xp->p_found) {
+	எனில் (isemptyp(xp))
+		தொடர்;
+	எனில்(proc_is_runnable(xp) && !xp->p_found) {
 		printf("sched error: ready proc %d not on queue\n", xp->p_nr);
-		return 0;
+		திரும்பு 0;
 	}
   }
 
   /* All is ok. */
-  return 1;
+  திரும்பு 1;
 }
 
 #ifdef CONFIG_SMP
-static int runqueues_ok_all(void)
+நிலையான முழு runqueues_ok_all(வெறுமை)
 {
 	unsigned c;
 
-	for (c = 0 ; c < ncpus; c++) {
-		if (!runqueues_ok_cpu(c))
-			return 0;
+	க்கு (c = 0 ; c < ncpus; c++) {
+		எனில் (!runqueues_ok_cpu(c))
+			திரும்பு 0;
 	}
-	return 1;	
+	திரும்பு 1;	
 }
 
-int runqueues_ok(void)
+முழு runqueues_ok(வெறுமை)
 {
-	return runqueues_ok_all();
+	திரும்பு runqueues_ok_all();
 }
 
-#else
+#இல்லையெனில்
 
-int runqueues_ok(void)
+முழு runqueues_ok(வெறுமை)
 {
-	return runqueues_ok_cpu(0);
+	திரும்பு runqueues_ok_cpu(0);
 }
 
 
 #endif
 
-char *
-rtsflagstr(const u32_t flags)
+எழுத்து *
+rtsflagstr(மாறிலி u32_t flags)
 {
-	static char str[100];
+	நிலையான எழுத்து str[100];
 	str[0] = '\0';
 
-#define FLAG(n) if(flags & n) { strlcat(str, #n " ", sizeof(str)); }
+#define FLAG(n) எனில்(flags & n) { strlcat(str, #n " ", அளவு(str)); }
 
 	FLAG(RTS_SLOT_FREE);
 	FLAG(RTS_PROC_STOP);
@@ -157,96 +157,96 @@ rtsflagstr(const u32_t flags)
 	FLAG(RTS_PREEMPTED);
 	FLAG(RTS_NO_QUANTUM);
 
-	return str;
+	திரும்பு str;
 }
 
-char *
-miscflagstr(const u32_t flags)
+எழுத்து *
+miscflagstr(மாறிலி u32_t flags)
 {
-	static char str[100];
+	நிலையான எழுத்து str[100];
 	str[0] = '\0';
 
 	FLAG(MF_REPLY_PEND);
 	FLAG(MF_DELIVERMSG);
 	FLAG(MF_KCALL_RESUME);
 
-	return str;
+	திரும்பு str;
 }
 
-char *
-schedulerstr(struct proc *scheduler)
+எழுத்து *
+schedulerstr(கட்டமைப்பு proc *scheduler)
 {
-	if (scheduler != NULL)
+	எனில் (scheduler != வெற்று)
 	{
-		return scheduler->p_name;
+		திரும்பு scheduler->p_name;
 	}
 
-	return "KERNEL";
+	திரும்பு "KERNEL";
 }
 
-static void
-print_proc_name(struct proc *pp)
+நிலையான வெறுமை
+print_proc_name(கட்டமைப்பு proc *pp)
 {
-	char *name = pp->p_name;
+	எழுத்து *name = pp->p_name;
 	endpoint_t ep = pp->p_endpoint;
 
-	if(name) {
+	எனில்(name) {
 		printf("%s(%d)", name, ep);
 	}
-	else {
+	இல்லையெனில் {
 		printf("%d", ep);
 	}
 }
 
-static void
+நிலையான வெறுமை
 print_endpoint(endpoint_t ep)
 {
-	int proc_nr;
-	struct proc *pp = NULL;
+	முழு proc_nr;
+	கட்டமைப்பு proc *pp = வெற்று;
 
-	switch(ep) {
-	case ANY:
+	தேர்வு(ep) {
+	நிலை ANY:
 		printf("ANY");
-	break;
-	case SELF:
+	நிறுத்து;
+	நிலை SELF:
 		printf("SELF");
-	break;
-	case NONE:
+	நிறுத்து;
+	நிலை NONE:
 		printf("NONE");
-	break;
-	default:
-		if(!isokendpt(ep, &proc_nr)) {
+	நிறுத்து;
+	இயல்பு:
+		எனில்(!isokendpt(ep, &proc_nr)) {
 			printf("??? %d\n", ep);
 		}
-		else {
+		இல்லையெனில் {
 			pp = proc_addr(proc_nr);
-			if(isemptyp(pp)) {
+			எனில்(isemptyp(pp)) {
 				printf("??? empty slot %d\n", proc_nr);
 			}
-			else {
+			இல்லையெனில் {
 				print_proc_name(pp);
 			}
 		}
-	break;
+	நிறுத்து;
 	}
 }
 
-static void
-print_sigmgr(struct proc *pp)
+நிலையான வெறுமை
+print_sigmgr(கட்டமைப்பு proc *pp)
 {
 	endpoint_t sig_mgr, bak_sig_mgr;
 	sig_mgr = priv(pp) ? priv(pp)->s_sig_mgr : NONE;
 	bak_sig_mgr = priv(pp) ? priv(pp)->s_bak_sig_mgr : NONE;
-	if(sig_mgr == NONE) { printf("no sigmgr"); return; }
+	எனில்(sig_mgr == NONE) { printf("no sigmgr"); திரும்பு; }
 	printf("sigmgr ");
 	print_endpoint(sig_mgr);
-	if(bak_sig_mgr != NONE) {
+	எனில்(bak_sig_mgr != NONE) {
 		printf(" / ");
 		print_endpoint(bak_sig_mgr);
 	}
 }
 
-void print_proc(struct proc *pp)
+வெறுமை print_proc(கட்டமைப்பு proc *pp)
 {
 	endpoint_t dep;
 
@@ -256,9 +256,9 @@ void print_proc(struct proc *pp)
 		pp->p_priority, pp->p_user_time,
 		pp->p_sys_time, ex64hi(pp->p_cycles),
 		ex64lo(pp->p_cycles), pp->p_cpu,
-#if defined(__i386__)
+#எனில் defined(__i386__)
 		pp->p_seg.p_cr3,
-#elif defined(__arm__)
+#அல்லதெனில் defined(__arm__)
 		pp->p_seg.p_ttbr,
 #endif
 		rtsflagstr(pp->p_rts_flags), miscflagstr(pp->p_misc_flags),
@@ -267,22 +267,22 @@ void print_proc(struct proc *pp)
 	print_sigmgr(pp);
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE) {
+	எனில்(dep != NONE) {
 		printf(" blocked on: ");
 		print_endpoint(dep);
 	}
 	printf("\n");
 }
 
-static void print_proc_depends(struct proc *pp, const int level)
+நிலையான வெறுமை print_proc_depends(கட்டமைப்பு proc *pp, மாறிலி முழு level)
 {
-	struct proc *depproc = NULL;
+	கட்டமைப்பு proc *depproc = வெற்று;
 	endpoint_t dep;
-#define COL { int i; for(i = 0; i < level; i++) printf("> "); }
+#define COL { முழு i; க்கு(i = 0; i < level; i++) printf("> "); }
 
-	if(level >= NR_PROCS) {
+	எனில்(level >= NR_PROCS) {
 		printf("loop??\n");
-		return;
+		திரும்பு;
 	}
 
 	COL
@@ -294,27 +294,27 @@ static void print_proc_depends(struct proc *pp, const int level)
 
 
 	dep = P_BLOCKEDON(pp);
-	if(dep != NONE && dep != ANY) {
-		int procno;
-		if(isokendpt(dep, &procno)) {
+	எனில்(dep != NONE && dep != ANY) {
+		முழு procno;
+		எனில்(isokendpt(dep, &procno)) {
 			depproc = proc_addr(procno);
-			if(isemptyp(depproc))
-				depproc = NULL;
+			எனில்(isemptyp(depproc))
+				depproc = வெற்று;
 		}
-		if (depproc)
+		எனில் (depproc)
 			print_proc_depends(depproc, level+1);
 	}
 }
 
-void print_proc_recursive(struct proc *pp)
+வெறுமை print_proc_recursive(கட்டமைப்பு proc *pp)
 {
 	print_proc_depends(pp, 0);
 }
 
-#if DEBUG_DUMPIPC || DEBUG_DUMPIPCF
-static const char *mtypename(int mtype, int *possible_callname)
+#எனில் DEBUG_DUMPIPC || DEBUG_DUMPIPCF
+நிலையான மாறிலி எழுத்து *mtypename(முழு mtype, முழு *possible_callname)
 {
-	char *callname = NULL, *errname = NULL;
+	எழுத்து *callname = வெற்று, *errname = வெற்று;
 	/* use generated file to recognize message types
 	 *
 	 * we try to match both error numbers and call numbers, as the
@@ -323,84 +323,84 @@ static const char *mtypename(int mtype, int *possible_callname)
 	 * whenever it might be a call number we tell the caller so the
 	 * call message fields can be decoded if known.
 	 */
-	switch(mtype) {
-#define IDENT(x) case x: callname = #x; *possible_callname = 1; break;
-#include "kernel/extracted-mtype.h"
+	தேர்வு(mtype) {
+#define IDENT(x) நிலை x: callname = #x; *possible_callname = 1; நிறுத்து;
+#அந்தர்பாவ "kernel/extracted-mtype.h"
 #undef IDENT
 	}
-	switch(mtype) {
-#define IDENT(x) case x: errname = #x; break;
-#include "kernel/extracted-errno.h"
+	தேர்வு(mtype) {
+#define IDENT(x) நிலை x: errname = #x; நிறுத்து;
+#அந்தர்பாவ "kernel/extracted-errno.h"
 #undef IDENT
 	}
 
 	/* no match */
-	if(!errname && !callname)
-		return NULL;
+	எனில்(!errname && !callname)
+		திரும்பு வெற்று;
 
 	/* 2 matches */
-	if(errname && callname) {
-		static char typename[100];
+	எனில்(errname && callname) {
+		நிலையான எழுத்து typename[100];
 		strcpy(typename, errname);
 		strcat(typename, " / ");
 		strcat(typename, callname);
-		return typename;
+		திரும்பு typename;
 	}
 
-	if(errname) return errname;
+	எனில்(errname) திரும்பு errname;
 
-	assert(callname);
-	return callname;
+	ப்ரதிஜ்ஞா(callname);
+	திரும்பு callname;
 }
 
-static void printproc(struct proc *rp)
+நிலையான வெறுமை printproc(கட்டமைப்பு proc *rp)
 {
-	if (rp)
+	எனில் (rp)
 		printf(" %s(%d)", rp->p_name, rp - proc);
-	else
+	இல்லையெனில்
 		printf(" kernel");
 }
 
-static void printparam(const char *name, const void *data, size_t size)
+நிலையான வெறுமை printparam(மாறிலி எழுத்து *name, மாறிலி வெறுமை *data, size_t size)
 {
 	printf(" %s=", name);
-	switch (size) {
-		case sizeof(char):	printf("%d", *(char *) data);	break;
-		case sizeof(short):	printf("%d", *(short *) data);	break;
-		case sizeof(int):	printf("%d", *(int *) data);	break;
-		default:		printf("(%u bytes)", size);	break;
+	தேர்வு (size) {
+		நிலை அளவு(எழுத்து):	printf("%d", *(எழுத்து *) data);	நிறுத்து;
+		நிலை அளவு(short):	printf("%d", *(short *) data);	நிறுத்து;
+		நிலை அளவு(முழு):	printf("%d", *(முழு *) data);	நிறுத்து;
+		இயல்பு:		printf("(%u bytes)", size);	நிறுத்து;
 	}
 }
 
 #ifdef DEBUG_DUMPIPC_NAMES
-static int namematch(char **names, int nnames, char *name)
+நிலையான முழு namematch(எழுத்து **names, முழு nnames, எழுத்து *name)
 {
-	int i;
-	for(i = 0; i < nnames; i++)
-		if(!strcmp(names[i], name))
-			return 1;
-	return 0;
+	முழு i;
+	க்கு(i = 0; i < nnames; i++)
+		எனில்(!strcmp(names[i], name))
+			திரும்பு 1;
+	திரும்பு 0;
 }
 #endif
 
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-	char operation, int printparams)
+வெறுமை printmsg(message *செய்தி, கட்டமைப்பு proc *src, கட்டமைப்பு proc *dst,
+	எழுத்து operation, முழு printparams)
 {
-	const char *name;
-	int mtype = msg->m_type, mightbecall = 0;
+	மாறிலி எழுத்து *name;
+	முழு mtype = செய்தி->m_type, mightbecall = 0;
 
 #ifdef DEBUG_DUMPIPC_NAMES
   {
-	char *names[] = DEBUG_DUMPIPC_NAMES;
-	int nnames = sizeof(names)/sizeof(names[0]);
+	எழுத்து *names[] = DEBUG_DUMPIPC_NAMES;
+	முழு nnames = அளவு(names)/அளவு(names[0]);
 
 	/* skip printing messages for messages neither to
 	 * or from DEBUG_DUMPIPC_EP if it is defined; either
 	 * can be NULL to indicate kernel
 	 */
-	if(!(src && namematch(names, nnames, src->p_name)) &&
+	எனில்(!(src && namematch(names, nnames, src->p_name)) &&
 	   !(dst && namematch(names, nnames, dst->p_name))) {
-		return;
+		திரும்பு;
 	}
   }
 #endif
@@ -410,39 +410,39 @@ void printmsg(message *msg, struct proc *src, struct proc *dst,
 	printproc(src);
 	printproc(dst);
 	name = mtypename(mtype, &mightbecall);
-	if (name) {
+	எனில் (name) {
 		printf(" %s(%d/0x%x)", name, mtype, mtype);
-	} else {
+	} இல்லையெனில் {
 		printf(" %d/0x%x", mtype, mtype);
 	}
 
-	if (mightbecall && printparams) {
-#define IDENT(x, y) if (mtype == x) printparam(#y, &msg->y, sizeof(msg->y));
-#include "kernel/extracted-mfield.h"
+	எனில் (mightbecall && printparams) {
+#define IDENT(x, y) எனில் (mtype == x) printparam(#y, &செய்தி->y, அளவு(செய்தி->y));
+#அந்தர்பாவ "kernel/extracted-mfield.h"
 #undef IDENT
 	}
 	printf("\n");
 }
 #endif
 
-#if DEBUG_IPCSTATS
+#எனில் DEBUG_IPCSTATS
 #define IPCPROCS (NR_PROCS+1)	/* number of slots we need */
 #define KERNELIPC NR_PROCS	/* slot number to use for kernel calls */
-static int messages[IPCPROCS][IPCPROCS];
+நிலையான முழு messages[IPCPROCS][IPCPROCS];
 
 #define PRINTSLOTS 20
-static struct {
-	int src, dst, messages;
+நிலையான கட்டமைப்பு {
+	முழு src, dst, messages;
 } winners[PRINTSLOTS];
-static int total, goodslots;
+நிலையான முழு total, goodslots;
 
-static void printstats(int ticks)
+நிலையான வெறுமை printstats(முழு ticks)
 {
-	int i;
-	for(i = 0; i < goodslots; i++) {
+	முழு i;
+	க்கு(i = 0; i < goodslots; i++) {
 #define name(s) (s == KERNELIPC ? "kernel" : proc_addr(s)->p_name)
 #define persec(n) (system_hz*(n)/ticks)
-		char	*n1 = name(winners[i].src),
+		எழுத்து	*n1 = name(winners[i].src),
 			*n2 = name(winners[i].dst);
 		printf("%2d.  %8s -> %8s  %9d/s\n",
 			i, n1, n2, persec(winners[i].messages));
@@ -450,53 +450,53 @@ static void printstats(int ticks)
 	printf("total %d/s\n", persec(total));
 }
 
-static void sortstats(void)
+நிலையான வெறுமை sortstats(வெறுமை)
 {
 	/* Print top message senders/receivers. */
-	int src_slot, dst_slot;
+	முழு src_slot, dst_slot;
 	total = goodslots = 0;
-	for(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
-		for(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
-			int w = PRINTSLOTS, rem,
+	க்கு(src_slot = 0; src_slot < IPCPROCS; src_slot++) {
+		க்கு(dst_slot = 0; dst_slot < IPCPROCS; dst_slot++) {
+			முழு w = PRINTSLOTS, rem,
 				n = messages[src_slot][dst_slot];
 			total += n;
-			while(w > 0 && n > winners[w-1].messages)
+			போது(w > 0 && n > winners[w-1].messages)
 				w--;
-			if(w >= PRINTSLOTS) continue;
+			எனில்(w >= PRINTSLOTS) தொடர்;
 
 			/* This combination has beaten the current winners
 			 * and should be inserted at position 'w.'
 			 */
 			rem = PRINTSLOTS-w-1;
-			assert(rem >= 0);
-			assert(rem < PRINTSLOTS);
-			if(rem > 0) {
-				assert(w+1 <= PRINTSLOTS-1);
-				assert(w >= 0);
+			ப்ரதிஜ்ஞா(rem >= 0);
+			ப்ரதிஜ்ஞா(rem < PRINTSLOTS);
+			எனில்(rem > 0) {
+				ப்ரதிஜ்ஞா(w+1 <= PRINTSLOTS-1);
+				ப்ரதிஜ்ஞா(w >= 0);
 				memmove(&winners[w+1], &winners[w],
-					rem*sizeof(winners[0]));
+					rem*அளவு(winners[0]));
 			}
 			winners[w].src = src_slot;
 			winners[w].dst = dst_slot;
 			winners[w].messages = n;
-			if(goodslots < PRINTSLOTS) goodslots++;
+			எனில்(goodslots < PRINTSLOTS) goodslots++;
 		}
 	}
 }
 
 #define proc2slot(p, s) { \
-	if(p) { s = p->p_nr; } \
-	else { s = KERNELIPC; } \
-	assert(s >= 0 && s < IPCPROCS); \
+	எனில்(p) { s = p->p_nr; } \
+	இல்லையெனில் { s = KERNELIPC; } \
+	ப்ரதிஜ்ஞா(s >= 0 && s < IPCPROCS); \
 }
 
-static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
+நிலையான வெறுமை statmsg(message *செய்தி, கட்டமைப்பு proc *srcp, கட்டமைப்பு proc *dstp)
 {
-	int src, dst, now, secs, dt;
-	static int lastprint;
+	முழு src, dst, now, secs, dt;
+	நிலையான முழு lastprint;
 
 	/* Stat message. */
-	assert(src);
+	ப்ரதிஜ்ஞா(src);
 	proc2slot(srcp, src);
 	proc2slot(dstp, dst);
 	messages[src][dst]++;
@@ -505,58 +505,58 @@ static void statmsg(message *msg, struct proc *srcp, struct proc *dstp)
 	now = get_monotonic();
 	dt = now - lastprint;
 	secs = dt/system_hz;
-	if(secs >= 30) {
-		memset(winners, 0, sizeof(winners));
+	எனில்(secs >= 30) {
+		memset(winners, 0, அளவு(winners));
 		sortstats();
 		printstats(dt);
-		memset(messages, 0, sizeof(messages));
+		memset(messages, 0, அளவு(messages));
 		lastprint = now;
 	}
 }
 #endif
 
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgkcall(message *msg, struct proc *proc)
+#எனில் DEBUG_IPC_HOOK
+வெறுமை hook_ipc_msgkcall(message *செய்தி, கட்டமைப்பு proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, proc, NULL, 'k', 1);
+#எனில் DEBUG_DUMPIPC
+	printmsg(செய்தி, proc, வெற்று, 'k', 1);
 #endif
 }
 
-void hook_ipc_msgkresult(message *msg, struct proc *proc)
+வெறுமை hook_ipc_msgkresult(message *செய்தி, கட்டமைப்பு proc *proc)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, NULL, proc, 'k', 0);
+#எனில் DEBUG_DUMPIPC
+	printmsg(செய்தி, வெற்று, proc, 'k', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, proc, NULL);
+#எனில் DEBUG_IPCSTATS
+	statmsg(செய்தி, proc, வெற்று);
 #endif
 }
 
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst)
+வெறுமை hook_ipc_msgrecv(message *செய்தி, கட்டமைப்பு proc *src, கட்டமைப்பு proc *dst)
 {
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 'r', 0);
+#எனில் DEBUG_DUMPIPC
+	printmsg(செய்தி, src, dst, 'r', 0);
 #endif
-#if DEBUG_IPCSTATS
-	statmsg(msg, src, dst);
-#endif
-}
-
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst)
-{
-#if DEBUG_DUMPIPC
-	printmsg(msg, src, dst, 's', 1);
+#எனில் DEBUG_IPCSTATS
+	statmsg(செய்தி, src, dst);
 #endif
 }
 
-void hook_ipc_clear(struct proc *p)
+வெறுமை hook_ipc_msgsend(message *செய்தி, கட்டமைப்பு proc *src, கட்டமைப்பு proc *dst)
 {
-#if DEBUG_IPCSTATS
-	int slot, i;
-	assert(p);
+#எனில் DEBUG_DUMPIPC
+	printmsg(செய்தி, src, dst, 's', 1);
+#endif
+}
+
+வெறுமை hook_ipc_clear(கட்டமைப்பு proc *p)
+{
+#எனில் DEBUG_IPCSTATS
+	முழு slot, i;
+	ப்ரதிஜ்ஞா(p);
 	proc2slot(p, slot);
-	for(i = 0; i < IPCPROCS; i++)
+	க்கு(i = 0; i < IPCPROCS; i++)
 		messages[slot][i] = messages[i][slot] = 0;
 #endif
 }

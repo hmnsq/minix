@@ -1,21 +1,21 @@
 
-#include "kernel/kernel.h"
+#அந்தர்பாவ "kernel/kernel.h"
 
-#if CONFIG_OXPCIE
+#எனில் CONFIG_OXPCIE
 
 /* Documentation is at http://www.plxtech.com/products/uart/oxpcie952 */
 
-#include "oxpcie.h"
-#include "serial.h"
+#அந்தர்பாவ "oxpcie.h"
+#அந்தர்பாவ "serial.h"
 
-static unsigned char *oxpcie_vaddr = NULL;
+நிலையான unsigned எழுத்து *oxpcie_vaddr = வெற்று;
 
-void oxpcie_set_vaddr(unsigned char *vaddr)
+வெறுமை oxpcie_set_vaddr(unsigned எழுத்து *vaddr)
 {
 	oxpcie_vaddr = vaddr;
 }
 
-static void oxpcie_init(void)
+நிலையான வெறுமை oxpcie_init(வெறுமை)
 {
 	printf("oxpcie_init\n");
 	/* Enable access to EFR and DLM+DLL */
@@ -45,39 +45,39 @@ static void oxpcie_init(void)
 	OXPCIE_CPR2 = 0;
 }
 
-void oxpcie_putc(char c)
+வெறுமை oxpcie_putc(எழுத்து c)
 {
-	static int inuse = 0;
+	நிலையான முழு inuse = 0;
 
-	if(vm_running && oxpcie_vaddr && !inuse) {
-        	int i;
-		static int init_done;
+	எனில்(vm_running && oxpcie_vaddr && !inuse) {
+        	முழு i;
+		நிலையான முழு init_done;
 		inuse = 1;
 
-		if(!init_done) {
+		எனில்(!init_done) {
 			oxpcie_init();
 			init_done = 1;
 		}
 
-        	for (i= 0; i<100000; i++) {
-			if(OXPCIE_LSR & LSR_THRE)
-                       		break;
+        	க்கு (i= 0; i<100000; i++) {
+			எனில்(OXPCIE_LSR & LSR_THRE)
+                       		நிறுத்து;
 		}
 		OXPCIE_THR = c;
 		inuse = 0;
 	}
 }
 
-int oxpcie_in(void)
+முழு oxpcie_in(வெறுமை)
 {
-	if(vm_running && oxpcie_vaddr) {
-		int lsr;
+	எனில்(vm_running && oxpcie_vaddr) {
+		முழு lsr;
 		lsr = OXPCIE_LSR;
-		if(lsr & LSR_DR)
-			return (int) OXPCIE_RBR;
+		எனில்(lsr & LSR_DR)
+			திரும்பு (முழு) OXPCIE_RBR;
 	}
 
-	return -1;
+	திரும்பு -1;
 }
 
 #endif

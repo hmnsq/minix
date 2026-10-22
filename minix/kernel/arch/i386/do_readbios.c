@@ -7,14 +7,14 @@
  *	m_lsys_krn_readbios.buf		buffer address in requesting process
  */
 
-#include "kernel/system.h"
+#அந்தர்பாவ "kernel/system.h"
 
 /*===========================================================================*
  *				do_readbios				     *
  *===========================================================================*/
-int do_readbios(struct proc * caller, message * m_ptr)
+முழு do_readbios(கட்டமைப்பு proc * caller, message * m_ptr)
 {
-  struct vir_addr src, dst;
+  கட்டமைப்பு vir_addr src, dst;
   size_t len = m_ptr->m_lsys_krn_readbios.size;
   vir_bytes limit;
 
@@ -29,9 +29,9 @@ int do_readbios(struct proc * caller, message * m_ptr)
 #define SUBRANGE(a,b,c,d) (VINRANGE((a), (c), (d)) && VINRANGE((b),(c),(d)))
 #define USERRANGE(a, b) SUBRANGE(src.offset, limit, (a), (b))
 
-  if(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
-     !USERRANGE(BASE_MEM_TOP, UPPER_MEM_END))
-  	return EPERM;
+  எனில்(!USERRANGE(BIOS_MEM_BEGIN, BIOS_MEM_END) &&
+     !USERRANGE(BASE_MEM_உச்சி, UPPER_MEM_END))
+  	திரும்பு EPERM;
 
-  return virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
+  திரும்பு virtual_copy_vmcheck(caller, &src, &dst, m_ptr->m_lsys_krn_readbios.size);
 }

@@ -2,61 +2,61 @@
 #ifndef _ARM_PROTO_H
 #define _ARM_PROTO_H
 
-#include <machine/vm.h>
+#அந்தர்பாவ <machine/vm.h>
 
-#define K_STACK_SIZE	ARM_PAGE_SIZE
+#define K_அடுக்கு_SIZE	ARM_PAGE_SIZE
 
 
 #ifndef __ASSEMBLY__
 
-#include "cpufunc.h"
+#அந்தர்பாவ "cpufunc.h"
 
 /* klib */
-__dead void reset(void);
-phys_bytes vir2phys(void *);
+__dead வெறுமை reset(வெறுமை);
+phys_bytes vir2phys(வெறுமை *);
 vir_bytes phys_memset(phys_bytes ph, u32_t c, phys_bytes bytes);
 
-void __switch_address_space(struct proc *p, struct proc **__ptproc);
+வெறுமை __switch_address_space(கட்டமைப்பு proc *p, கட்டமைப்பு proc **__ptproc);
 #define switch_address_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
-void __copy_msg_from_user_end(void);
-void __copy_msg_to_user_end(void);
-void __user_copy_msg_pointer_failure(void);
+வெறுமை __copy_msg_from_user_end(வெறுமை);
+வெறுமை __copy_msg_to_user_end(வெறுமை);
+வெறுமை __user_copy_msg_pointer_failure(வெறுமை);
 
 /* multiboot.c */
-void multiboot_init(void);
+வெறுமை multiboot_init(வெறுமை);
 
 /* protect.c */
-struct tss_s {
+கட்டமைப்பு tss_s {
   reg_t sp0;                    /* stack pointer to use during interrupt */
 } __attribute__((packed));
-int tss_init(unsigned cpu, void * kernel_stack);
+முழு tss_init(unsigned cpu, வெறுமை * kernel_அடுக்கு);
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
+வெறுமை add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
 phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
-void vm_enable_paging(void);
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
+வெறுமை vm_enable_paging(வெறுமை);
+வெறுமை cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
 phys_bytes pg_roundup(phys_bytes b);
-void pg_info(reg_t *, u32_t **);
-void pg_clear(void);
-void pg_identity(kinfo_t *);
-phys_bytes pg_load(void);
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+வெறுமை pg_info(reg_t *, u32_t **);
+வெறுமை pg_clear(வெறுமை);
+வெறுமை pg_identity(kinfo_t *);
+phys_bytes pg_load(வெறுமை);
+வெறுமை pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
+முழு pg_mapkernel(வெறுமை);
+வெறுமை pg_mapproc(கட்டமைப்பு proc *p, கட்டமைப்பு boot_image *ip, kinfo_t *cbi);
 
-EXTERN void * k_stacks_start;
-extern void * k_stacks;
+EXTERN வெறுமை * k_stacks_start;
+வெளி வெறுமை * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#define get_k_அடுக்கு_உச்சி(cpu)	((வெறுமை *)(((எழுத்து*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_அடுக்கு_SIZE))
 
 
 /*
  * Definition of a callback used when a memory map changed it's base address
  */
-typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
+வகைவரை முழு (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
 
 /*
  * struct used internally by memory.c to keep a list of
@@ -65,15 +65,15 @@ typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
  * The data doesn't need to be initialized. See omap_serial for
  * and example usage.
  */
-typedef struct kern_phys_map{
+வகைவரை கட்டமைப்பு kern_phys_map{
 	phys_bytes addr; /* The physical address to map */
 	vir_bytes size;  /* The size of the mapping */
 	vir_bytes id;	 /* an id passed to the callback */
-	int vm_flags;	 /* flags to be passed to vm map */
+	முழு vm_flags;	 /* flags to be passed to vm map */
 	kern_phys_map_mapped cb; /* the callback itself */
 	phys_bytes vir; /* The virtual address once remapped */
-	int index; 	/* index */
-	struct kern_phys_map *next; /* pointer to the next */
+	முழு index; 	/* index */
+	கட்டமைப்பு kern_phys_map *next; /* pointer to the next */
 } kern_phys_map ; 
 
 
@@ -103,22 +103,22 @@ typedef struct kern_phys_map{
  * mapping in the callback. It also is not possible to use printf for
  * the same reason.
  */
-int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
-		   int vm_flags, kern_phys_map * priv,
+முழு kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
+		   முழு vm_flags, kern_phys_map * priv,
 		   kern_phys_map_mapped cb, vir_bytes id);
 
 /*
  * Request a physical mapping and put the result in the given prt
  * Note that ptr will only be valid once the callback happened.
  */
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
-		       int vm_flags, kern_phys_map * priv, 
+முழு kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
+		       முழு vm_flags, kern_phys_map * priv, 
 		       vir_bytes ptr);
 
-void arch_ser_init(void);
+வெறுமை arch_ser_init(வெறுமை);
 
 /* functions defined in architecture-independent kernel source. */
-#include "kernel/proto.h"
+#அந்தர்பாவ "kernel/proto.h"
 
 #endif /* __ASSEMBLY__ */
 

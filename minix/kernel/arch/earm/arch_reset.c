@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#அந்தர்பாவ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#அந்தர்பாவ <unistd.h>
+#அந்தர்பாவ <ctype.h>
+#அந்தர்பாவ <string.h>
+#அந்தர்பாவ <machine/cpu.h>
+#அந்தர்பாவ <assert.h>
+#அந்தர்பாவ <signal.h>
+#அந்தர்பாவ <machine/vm.h>
+#அந்தர்பாவ <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#அந்தர்பாவ <minix/board.h>
+#அந்தர்பாவ <sys/reboot.h>
 
-#include <minix/u64.h>
+#அந்தர்பாவ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#அந்தர்பாவ "archconst.h"
+#அந்தர்பாவ "arch_proto.h"
+#அந்தர்பாவ "bsp_reset.h"
+#அந்தர்பாவ "bsp_serial.h"
+#அந்தர்பாவ "kernel/proc.h"
+#அந்தர்பாவ "kernel/debug.h"
+#அந்தர்பாவ "direct_utils.h"
+#அந்தர்பாவ <machine/multiboot.h>
 
-void
-halt_cpu(void)
+வெறுமை
+halt_cpu(வெறுமை)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm நிலையற்ற("dsb");
+	asm நிலையற்ற("cpsie i");
+	asm நிலையற்ற("wfi");
+	asm நிலையற்ற("cpsid i");
 }
 
-void
-reset(void)
+வெறுமை
+reset(வெறுமை)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	போது (1);
 }
 
-void
-poweroff(void)
+வெறுமை
+poweroff(வெறுமை)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	போது (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead வெறுமை
+arch_shutdown(முழு how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	எனில்((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	எனில்(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		க்கு (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,12 +69,12 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	போது (1);
 }
 
 #ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+வெறுமை
+ser_putc(எழுத்து c)
 {
 	bsp_ser_putc(c);
 }
