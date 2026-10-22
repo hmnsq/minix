@@ -3,20 +3,20 @@
  * a panic.
  */
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <signal.h>
-#include <string.h>
-#include <assert.h>
-#include <machine/vm.h>
+#અન્તર્ભાવ "kernel/kernel.h"
+#અન્તર્ભાવ "arch_proto.h"
+#અન્તર્ભાવ <signal.h>
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <assert.h>
+#અન્તર્ભાવ <machine/vm.h>
 
-struct ex_s {
-	char *msg;
-	int signum;
-	int minprocessor;
+સંરચના ex_s {
+	અક્ષર *સંદેશ;
+	પૂર્ણાંક signum;
+	પૂર્ણાંક minprocessor;
 };
 
-static struct ex_s ex_data[] = {
+સ્થિર સંરચના ex_s ex_data[] = {
 	{ "Divide error", SIGFPE, 86 },
 	{ "Debug exception", SIGTRAP, 86 },
 	{ "Nonmaskable interrupt", SIGBUS, 86 },
@@ -32,33 +32,33 @@ static struct ex_s ex_data[] = {
 	{ "Stack exception", SIGSEGV, 286 },	/* STACK_FAULT already used */
 	{ "General protection", SIGSEGV, 286 },
 	{ "Page fault", SIGSEGV, 386 },		/* not close */
-	{ NULL, SIGILL, 0 },			/* probably software trap */
+	{ ખાલી, SIGILL, 0 },			/* probably software trap */
 	{ "Coprocessor error", SIGFPE, 386 },
 	{ "Alignment check", SIGBUS, 386 },
 	{ "Machine check", SIGBUS, 386 },
 	{ "SIMD exception", SIGFPE, 386 },
 };
 
-static void inkernel_disaster(struct proc *saved_proc,
-	struct exception_frame *frame, struct ex_s *ep, int is_nested);
+સ્થિર શૂન્ય inkernel_disaster(સંરચના proc *saved_proc,
+	સંરચના exception_frame *frame, સંરચના ex_s *ep, પૂર્ણાંક is_nested);
 
-extern int catch_pagefaults;
+બાહ્ય પૂર્ણાંક catch_pagefaults;
 
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc);
+સ્થિર શૂન્ય proc_stacktrace_execute(સંરચના proc *whichproc, reg_t v_bp, reg_t pc);
 
-static void pagefault( struct proc *pr,
-			struct exception_frame * frame,
-			int is_nested)
+સ્થિર શૂન્ય pagefault( સંરચના proc *pr,
+			સંરચના exception_frame * frame,
+			પૂર્ણાંક is_nested)
 {
-	int in_physcopy = 0, in_memset = 0;
+	પૂર્ણાંક in_physcopy = 0, in_memset = 0;
 
 	reg_t pagefaultcr2;
 	message m_pagefault;
-	int err;
+	પૂર્ણાંક err;
 
 	pagefaultcr2 = read_cr2();
 
-#if 0
+#જો 0
 	printf("kernel: pagefault in pr %d, addr 0x%lx, his cr3 0x%lx, actual cr3 0x%lx\n",
 		pr->p_endpoint, pagefaultcr2, pr->p_seg.p_cr3, read_cr3());
 #endif
@@ -69,35 +69,35 @@ static void pagefault( struct proc *pr,
 	in_memset = (frame->eip > (vir_bytes) phys_memset) &&
 	   (frame->eip < (vir_bytes) memset_fault);
 
-	if((is_nested || iskernelp(pr)) &&
+	જો((is_nested || iskernelp(pr)) &&
 		catch_pagefaults && (in_physcopy || in_memset)) {
-#if 0
+#જો 0
 		printf("pf caught! addr 0x%lx\n", pagefaultcr2);
 #endif
-		if (is_nested) {
-			if(in_physcopy) {
-				assert(!in_memset);
+		જો (is_nested) {
+			જો(in_physcopy) {
+				પ્રતિજ્ઞા(!in_memset);
 				frame->eip = (reg_t) phys_copy_fault_in_kernel;
-			} else {
+			} નહીંતર {
 				frame->eip = (reg_t) memset_fault_in_kernel;
 			}
 		}
-		else {
+		નહીંતર {
 			pr->p_reg.pc = (reg_t) phys_copy_fault;
 			pr->p_reg.retreg = pagefaultcr2;
 		}
 	
-		return;
+		પાછા;
 	}
 
-	if(is_nested) {
+	જો(is_nested) {
 		printf("pagefault in kernel at pc 0x%lx address 0x%lx\n",
 			frame->eip, pagefaultcr2);
-		inkernel_disaster(pr, frame, NULL, is_nested);
+		inkernel_disaster(pr, frame, ખાલી, is_nested);
 	}
 
 	/* VM can't handle page faults. */
-	if(pr->p_endpoint == VM_PROC_NR) {
+	જો(pr->p_endpoint == VM_PROC_NR) {
 		/* Page fault we can't / don't want to
 		 * handle.
 		 */
@@ -109,7 +109,7 @@ static void pagefault( struct proc *pr,
 		printf("pc of pagefault: 0x%lx\n", frame->eip);
 		panic("pagefault in VM");
 
-		return;
+		પાછા;
 	}
 
 	/* Don't schedule this process until pagefault is handled. */
@@ -121,24 +121,24 @@ static void pagefault( struct proc *pr,
 	m_pagefault.VPF_ADDR = pagefaultcr2;
 	m_pagefault.VPF_FLAGS = frame->errcode;
 
-	if ((err = mini_send(pr, VM_PROC_NR,
+	જો ((err = mini_send(pr, VM_PROC_NR,
 					&m_pagefault, FROM_KERNEL))) {
 		panic("WARNING: pagefault: mini_send returned %d\n", err);
 	}
 
-	return;
+	પાછા;
 }
 
-static void inkernel_disaster(struct proc *saved_proc,
-	struct exception_frame * frame, struct ex_s *ep,
-	int is_nested)
+સ્થિર શૂન્ય inkernel_disaster(સંરચના proc *saved_proc,
+	સંરચના exception_frame * frame, સંરચના ex_s *ep,
+	પૂર્ણાંક is_nested)
 {
-#if USE_SYSDEBUG
-  if(ep) {
-	if (ep->msg == NULL)
+#જો USE_SYSDEBUG
+  જો(ep) {
+	જો (ep->સંદેશ == ખાલી)
 		printf("\nIntel-reserved exception %d\n", frame->vector);
-	  else
-		printf("\n%s\n", ep->msg);
+	  નહીંતર
+		printf("\n%s\n", ep->સંદેશ);
   }
 
   printf("cpu %d is_nested = %d ", cpuid, is_nested);
@@ -161,7 +161,7 @@ static void inkernel_disaster(struct proc *saved_proc,
   	proc_stacktrace_execute(proc_addr(SYSTEM), k_ebp, frame->eip);
   }
 
-  if (saved_proc) {
+  જો (saved_proc) {
 	  printf("scheduled was: process %d (%s), ", saved_proc->p_endpoint, saved_proc->p_name);
 	  printf("pc = 0x%x\n", (unsigned) saved_proc->p_reg.pc);
 	  proc_stacktrace(saved_proc);
@@ -177,43 +177,43 @@ static void inkernel_disaster(struct proc *saved_proc,
 /*===========================================================================*
  *				exception				     *
  *===========================================================================*/
-void exception_handler(int is_nested, struct exception_frame * frame)
+શૂન્ય exception_handler(પૂર્ણાંક is_nested, સંરચના exception_frame * frame)
 {
 /* An exception or unexpected interrupt has occurred. */
-  register struct ex_s *ep;
-  struct proc *saved_proc;
+  નોંધણી સંરચના ex_s *ep;
+  સંરચના proc *saved_proc;
 
   /* Save proc_ptr, because it may be changed by debug statements. */
   saved_proc = get_cpulocal_var(proc_ptr);
   
   ep = &ex_data[frame->vector];
 
-  if (frame->vector == 2) {		/* spurious NMI on some machines */
+  જો (frame->vector == 2) {		/* spurious NMI on some machines */
 	printf("got spurious NMI\n");
-	return;
+	પાછા;
   }
 
   /*
    * handle special cases for nested problems as they might be tricky or filter
    * them out quickly if the traps are not nested
    */
-  if (is_nested) {
+  જો (is_nested) {
 	/*
 	 * if a problem occured while copying a message from userspace because
 	 * of a wrong pointer supplied by userland, handle it the only way we
 	 * can handle it ...
 	 */
-	if (((void*)frame->eip >= (void*)copy_msg_to_user &&
-			(void*)frame->eip <= (void*)__copy_msg_to_user_end) ||
-			((void*)frame->eip >= (void*)copy_msg_from_user &&
-			(void*)frame->eip <= (void*)__copy_msg_from_user_end)) {
-		switch(frame->vector) {
+	જો (((શૂન્ય*)frame->eip >= (શૂન્ય*)copy_સંદેશ_to_user &&
+			(શૂન્ય*)frame->eip <= (શૂન્ય*)__copy_msg_to_user_end) ||
+			((શૂન્ય*)frame->eip >= (શૂન્ય*)copy_સંદેશ_from_user &&
+			(શૂન્ય*)frame->eip <= (શૂન્ય*)__copy_msg_from_user_end)) {
+		પસંદગી(frame->vector) {
 		/* these error are expected */
-		case PAGE_FAULT_VECTOR:
-		case PROTECTION_VECTOR:
+		સ્થિતિ PAGE_FAULT_VECTOR:
+		સ્થિતિ PROTECTION_VECTOR:
 			frame->eip = (reg_t) __user_copy_msg_pointer_failure;
-			return;
-		default:
+			પાછા;
+		મૂળભૂત:
 			panic("Copy involving a user pointer failed unexpectedly!");
 		}
 	}
@@ -221,15 +221,15 @@ void exception_handler(int is_nested, struct exception_frame * frame)
 	/* Pass any error resulting from restoring FPU state, as a FPU
 	 * exception to the process.
 	 */
-	if (((void*)frame->eip >= (void*)fxrstor &&
-			(void *)frame->eip <= (void*)__fxrstor_end) ||
-			((void*)frame->eip >= (void*)frstor &&
-			(void *)frame->eip <= (void*)__frstor_end)) {
+	જો (((શૂન્ય*)frame->eip >= (શૂન્ય*)fxrstor &&
+			(શૂન્ય *)frame->eip <= (શૂન્ય*)__fxrstor_end) ||
+			((શૂન્ય*)frame->eip >= (શૂન્ય*)frstor &&
+			(શૂન્ય *)frame->eip <= (શૂન્ય*)__frstor_end)) {
 		frame->eip = (reg_t) __frstor_failure;
-		return;
+		પાછા;
 	}
 
-  	if(frame->vector == DEBUG_VECTOR
+  	જો(frame->vector == DEBUG_VECTOR
 		&& (saved_proc->p_reg.psw & TRACEBIT)
 		&& (saved_proc->p_seg.p_kern_trap_style == KTS_NONE)) {
 		/* Getting a debug trap in the kernel is legitimate
@@ -242,7 +242,7 @@ void exception_handler(int is_nested, struct exception_frame * frame)
 
 		frame->eflags &= ~TRACEBIT;
 
-		return;
+		પાછા;
 
 		/* If control passes, this case is not recognized as legitimate
 		 * and we panic later on after all.
@@ -250,17 +250,17 @@ void exception_handler(int is_nested, struct exception_frame * frame)
 	}
   }
 
-  if(frame->vector == PAGE_FAULT_VECTOR) {
+  જો(frame->vector == PAGE_FAULT_VECTOR) {
 	pagefault(saved_proc, frame, is_nested);
-	return;
+	પાછા;
   }
 
   /* If an exception occurs while running a process, the is_nested variable
    * will be zero. Exceptions in interrupt handlers or system traps will make
    * is_nested non-zero.
    */
-  if (is_nested == 0 && ! iskernelp(saved_proc)) {
-#if 0
+  જો (is_nested == 0 && ! iskernelp(saved_proc)) {
+#જો 0
 	{
 
   		printf(
@@ -273,7 +273,7 @@ void exception_handler(int is_nested, struct exception_frame * frame)
 
 #endif
 	cause_sig(proc_nr(saved_proc), ep->signum);
-	return;
+	પાછા;
   }
 
   /* Exception in system code. This is not supposed to happen. */
@@ -282,45 +282,45 @@ void exception_handler(int is_nested, struct exception_frame * frame)
   panic("return from inkernel_disaster");
 }
 
-#if USE_SYSDEBUG
+#જો USE_SYSDEBUG
 /*===========================================================================*
  *				proc_stacktrace_execute			     *
  *===========================================================================*/
-static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc)
+સ્થિર શૂન્ય proc_stacktrace_execute(સંરચના proc *whichproc, reg_t v_bp, reg_t pc)
 {
 	reg_t v_hbp;
-	int iskernel;
-	int n = 0;
+	પૂર્ણાંક iskernel;
+	પૂર્ણાંક n = 0;
 
 	iskernel = iskernelp(whichproc);
 
 	printf("%-8.8s %6d 0x%lx ",
 		whichproc->p_name, whichproc->p_endpoint, pc);
 
-	while(v_bp) {
+	જ્યારે(v_bp) {
 		reg_t v_pc;
 
 #define PRCOPY(pr, pv, v, n) \
-  (iskernel ? (memcpy((char *) v, (char *) pv, n), OK) : \
+  (iskernel ? (memcpy((અક્ષર *) v, (અક્ષર *) pv, n), OK) : \
      data_copy(pr->p_endpoint, pv, KERNEL, (vir_bytes) (v), n))
 
-	        if(PRCOPY(whichproc, v_bp, &v_hbp, sizeof(v_hbp)) != OK) {
+	        જો(PRCOPY(whichproc, v_bp, &v_hbp, કદ(v_hbp)) != OK) {
 			printf("(v_bp 0x%lx ?)", v_bp);
-			break;
+			તોડો;
 		}
-		if(PRCOPY(whichproc, v_bp + sizeof(v_pc), &v_pc, sizeof(v_pc)) != OK) {
-			printf("(v_pc 0x%lx ?)", v_bp + sizeof(v_pc));
-			break;
+		જો(PRCOPY(whichproc, v_bp + કદ(v_pc), &v_pc, કદ(v_pc)) != OK) {
+			printf("(v_pc 0x%lx ?)", v_bp + કદ(v_pc));
+			તોડો;
 		}
 		printf("0x%lx ", (unsigned long) v_pc);
-		if(v_hbp != 0 && v_hbp <= v_bp) {
+		જો(v_hbp != 0 && v_hbp <= v_bp) {
 			printf("(hbp 0x%lx ?)", v_hbp);
-			break;
+			તોડો;
 		}
 		v_bp = v_hbp;
-		if(n++ > 50) {
+		જો(n++ > 50) {
 			printf("(truncated after %d steps) ", n);
-			break;
+			તોડો;
 		}
 	}
 	printf("\n");
@@ -330,17 +330,17 @@ static void proc_stacktrace_execute(struct proc *whichproc, reg_t v_bp, reg_t pc
 /*===========================================================================*
  *				proc_stacktrace			     *
  *===========================================================================*/
-void proc_stacktrace(struct proc *whichproc)
+શૂન્ય proc_stacktrace(સંરચના proc *whichproc)
 {
 	u32_t use_bp;
 
-	if(whichproc->p_seg.p_kern_trap_style == KTS_NONE) {
+	જો(whichproc->p_seg.p_kern_trap_style == KTS_NONE) {
 		printf("WARNING: stacktrace of running process\n");
 	}
 
-	switch(whichproc->p_seg.p_kern_trap_style) {
-		case KTS_SYSENTER:
-		case KTS_SYSCALL:
+	પસંદગી(whichproc->p_seg.p_kern_trap_style) {
+		સ્થિતિ KTS_SYSENTER:
+		સ્થિતિ KTS_SYSCALL:
 		{
 			u32_t sp = whichproc->p_reg.sp;
 
@@ -352,34 +352,34 @@ void proc_stacktrace(struct proc *whichproc)
 			 * kernel/arch/i386/usermapped_glo_ipc.S.
 			 */
 
-			if(data_copy(whichproc->p_endpoint, sp+16,
+			જો(data_copy(whichproc->p_endpoint, sp+16,
 			  KERNEL, (vir_bytes) &use_bp,
-				sizeof(use_bp)) != OK) {
+				કદ(use_bp)) != OK) {
 				printf("stacktrace: aborting, copy failed\n");
-				return;
+				પાછા;
 			}
 
-			break;
+			તોડો;
 		}
-		default:
+		મૂળભૂત:
 			/* Full context is available; use the stored ebp */
 			use_bp = whichproc->p_reg.fp;
-			break;
+			તોડો;
 	}
 
-#if USE_SYSDEBUG
+#જો USE_SYSDEBUG
 	proc_stacktrace_execute(whichproc, use_bp, whichproc->p_reg.pc);
 #endif /* USE_SYSDEBUG */
 }
 
-void enable_fpu_exception(void)
+શૂન્ય enable_fpu_exception(શૂન્ય)
 {
 	u32_t cr0 = read_cr0();
-	if(!(cr0 & I386_CR0_TS))
+	જો(!(cr0 & I386_CR0_TS))
 		write_cr0(cr0 | I386_CR0_TS);
 }
 
-void disable_fpu_exception(void)
+શૂન્ય disable_fpu_exception(શૂન્ય)
 {
 	clts();
 }

@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#અન્તર્ભાવ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#અન્તર્ભાવ <unistd.h>
+#અન્તર્ભાવ <ctype.h>
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <machine/cpu.h>
+#અન્તર્ભાવ <assert.h>
+#અન્તર્ભાવ <signal.h>
+#અન્તર્ભાવ <machine/vm.h>
+#અન્તર્ભાવ <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#અન્તર્ભાવ <minix/board.h>
+#અન્તર્ભાવ <sys/reboot.h>
 
-#include <minix/u64.h>
+#અન્તર્ભાવ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#અન્તર્ભાવ "archconst.h"
+#અન્તર્ભાવ "arch_proto.h"
+#અન્તર્ભાવ "bsp_reset.h"
+#અન્તર્ભાવ "bsp_serial.h"
+#અન્તર્ભાવ "kernel/proc.h"
+#અન્તર્ભાવ "kernel/debug.h"
+#અન્તર્ભાવ "direct_utils.h"
+#અન્તર્ભાવ <machine/multiboot.h>
 
-void
-halt_cpu(void)
+શૂન્ય
+halt_cpu(શૂન્ય)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm અસ્થિર("dsb");
+	asm અસ્થિર("cpsie i");
+	asm અસ્થિર("wfi");
+	asm અસ્થિર("cpsid i");
 }
 
-void
-reset(void)
+શૂન્ય
+reset(શૂન્ય)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	જ્યારે (1);
 }
 
-void
-poweroff(void)
+શૂન્ય
+poweroff(શૂન્ય)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	જ્યારે (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead શૂન્ય
+arch_shutdown(પૂર્ણાંક how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	જો((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	જો(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		માટે (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,12 +69,12 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	જ્યારે (1);
 }
 
 #ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+શૂન્ય
+ser_putc(અક્ષર c)
 {
 	bsp_ser_putc(c);
 }

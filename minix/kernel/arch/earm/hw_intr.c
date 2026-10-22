@@ -1,16 +1,16 @@
 /* hw_intr handles the hardware dependent part of the interrupts */
-#include "hw_intr.h"
-#include "bsp_intr.h"
+#અન્તર્ભાવ "hw_intr.h"
+#અન્તર્ભાવ "bsp_intr.h"
 
-void hw_intr_mask(int irq){
+શૂન્ય hw_intr_mask(પૂર્ણાંક irq){
 	bsp_irq_mask(irq);
 }
 
-void hw_intr_unmask(int irq){
+શૂન્ય hw_intr_unmask(પૂર્ણાંક irq){
 	bsp_irq_unmask(irq);
 }
 
-void hw_intr_ack(int irq){};
-void hw_intr_used(int irq){};
-void hw_intr_not_used(int irq){};
-void hw_intr_disable_all(void){};
+શૂન્ય hw_intr_ack(પૂર્ણાંક irq){};
+શૂન્ય hw_intr_used(પૂર્ણાંક irq){};
+શૂન્ય hw_intr_not_used(પૂર્ણાંક irq){};
+શૂન્ય hw_intr_disable_all(શૂન્ય){};

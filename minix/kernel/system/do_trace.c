@@ -9,15 +9,15 @@
  *   m_krn_lsys_sys_trace.data		data to be returned
  */
 
-#include "kernel/system.h"
-#include <sys/ptrace.h>
+#અન્તર્ભાવ "kernel/system.h"
+#અન્તર્ભાવ <sys/ptrace.h>
 
-#if USE_TRACE
+#જો USE_TRACE
 
 /*==========================================================================*
  *				do_trace				    *
  *==========================================================================*/
-int do_trace(struct proc * caller, message * m_ptr)
+પૂર્ણાંક do_trace(સંરચના proc * caller, message * m_ptr)
 {
 /* Handle the debugging commands supported by the ptrace system call
  * The commands are:
@@ -44,165 +44,165 @@ int do_trace(struct proc * caller, message * m_ptr)
  * come here.
  */
 
-  register struct proc *rp;
+  નોંધણી સંરચના proc *rp;
   vir_bytes tr_addr = m_ptr->m_lsys_krn_sys_trace.address;
   long tr_data = m_ptr->m_lsys_krn_sys_trace.data;
-  int tr_request = m_ptr->m_lsys_krn_sys_trace.request;
-  int tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
-  unsigned char ub;
-  int i;
+  પૂર્ણાંક tr_request = m_ptr->m_lsys_krn_sys_trace.request;
+  પૂર્ણાંક tr_proc_nr_e = m_ptr->m_lsys_krn_sys_trace.endpt, tr_proc_nr;
+  unsigned અક્ષર ub;
+  પૂર્ણાંક i;
 
 #define COPYTOPROC(addr, myaddr, length) {		\
-	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	સંરચના vir_addr fromaddr, toaddr;		\
+	પૂર્ણાંક r;	\
 	fromaddr.proc_nr_e = KERNEL;			\
 	toaddr.proc_nr_e = tr_proc_nr_e;		\
 	fromaddr.offset = (myaddr);			\
 	toaddr.offset = (addr);				\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	જો((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		પાછા r;\
 	}  \
 }
 
 #define COPYFROMPROC(addr, myaddr, length) {	\
-	struct vir_addr fromaddr, toaddr;		\
-	int r;	\
+	સંરચના vir_addr fromaddr, toaddr;		\
+	પૂર્ણાંક r;	\
 	fromaddr.proc_nr_e = tr_proc_nr_e;		\
 	toaddr.proc_nr_e = KERNEL;			\
 	fromaddr.offset = (addr);			\
 	toaddr.offset = (myaddr);			\
-	if((r=virtual_copy_vmcheck(caller, &fromaddr,	\
+	જો((r=virtual_copy_vmcheck(caller, &fromaddr,	\
 			&toaddr, length)) != OK) {	\
 		printf("Can't copy in sys_trace: %d\n", r);\
-		return r;\
+		પાછા r;\
 	}  \
 }
 
-  if(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) return(EINVAL);
-  if (iskerneln(tr_proc_nr)) return(EPERM);
+  જો(!isokendpt(tr_proc_nr_e, &tr_proc_nr)) પાછા(EINVAL);
+  જો (iskerneln(tr_proc_nr)) પાછા(EPERM);
 
   rp = proc_addr(tr_proc_nr);
-  if (isemptyp(rp)) return(EINVAL);
-  switch (tr_request) {
-  case T_STOP:			/* stop process */
+  જો (isemptyp(rp)) પાછા(EINVAL);
+  પસંદગી (tr_request) {
+  સ્થિતિ T_STOP:			/* stop process */
 	RTS_SET(rp, RTS_P_STOP);
 	/* clear syscall trace and single step flags */
 	rp->p_misc_flags &= ~(MF_SC_TRACE | MF_STEP);
-	return(OK);
+	પાછા(OK);
 
-  case T_GETINS:		/* return value from instruction space */
-	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
+  સ્થિતિ T_GETINS:		/* return value from instruction space */
+	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, કદ(long));
 	m_ptr->m_krn_lsys_sys_trace.data = tr_data;
-	break;
+	તોડો;
 
-  case T_GETDATA:		/* return value from data space */
-	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
+  સ્થિતિ T_GETDATA:		/* return value from data space */
+	COPYFROMPROC(tr_addr, (vir_bytes) &tr_data, કદ(long));
 	m_ptr->m_krn_lsys_sys_trace.data= tr_data;
-	break;
+	તોડો;
 
-  case T_GETUSER:		/* return value from process table */
-	if ((tr_addr & (sizeof(long) - 1)) != 0) return(EFAULT);
+  સ્થિતિ T_GETUSER:		/* return value from process table */
+	જો ((tr_addr & (કદ(long) - 1)) != 0) પાછા(EFAULT);
 
-	if (tr_addr <= sizeof(struct proc) - sizeof(long)) {
+	જો (tr_addr <= કદ(સંરચના proc) - કદ(long)) {
 		m_ptr->m_krn_lsys_sys_trace.data =
-		    *(long *) ((char *) rp + (int) tr_addr);
-		break;
+		    *(long *) ((અક્ષર *) rp + (પૂર્ણાંક) tr_addr);
+		તોડો;
 	}
 
 	/* The process's proc struct is followed by its priv struct.
 	 * The alignment here should be unnecessary, but better safe..
 	 */
-	i = sizeof(long) - 1;
-	tr_addr -= (sizeof(struct proc) + i) & ~i;
+	i = કદ(long) - 1;
+	tr_addr -= (કદ(સંરચના proc) + i) & ~i;
 
-	if (tr_addr > sizeof(struct priv) - sizeof(long)) return(EFAULT);
+	જો (tr_addr > કદ(સંરચના priv) - કદ(long)) પાછા(EFAULT);
 
 	m_ptr->m_krn_lsys_sys_trace.data =
-	    *(long *) ((char *) rp->p_priv + (int) tr_addr);
-	break;
+	    *(long *) ((અક્ષર *) rp->p_priv + (પૂર્ણાંક) tr_addr);
+	તોડો;
 
-  case T_SETINS:		/* set value in instruction space */
-	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
+  સ્થિતિ T_SETINS:		/* set value in instruction space */
+	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, કદ(long));
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_SETDATA:			/* set value in data space */
-	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, sizeof(long));
+  સ્થિતિ T_SETDATA:			/* set value in data space */
+	COPYTOPROC(tr_addr, (vir_bytes) &tr_data, કદ(long));
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_SETUSER:			/* set value in process table */
-	if ((tr_addr & (sizeof(reg_t) - 1)) != 0 ||
-	     tr_addr > sizeof(struct stackframe_s) - sizeof(reg_t))
-		return(EFAULT);
-	i = (int) tr_addr;
-#if defined(__i386__)
+  સ્થિતિ T_SETUSER:			/* set value in process table */
+	જો ((tr_addr & (કદ(reg_t) - 1)) != 0 ||
+	     tr_addr > કદ(સંરચના stackframe_s) - કદ(reg_t))
+		પાછા(EFAULT);
+	i = (પૂર્ણાંક) tr_addr;
+#જો defined(__i386__)
 	/* Altering segment registers might crash the kernel when it
 	 * tries to load them prior to restarting a process, so do
 	 * not allow it.
 	 */
-	if (i == (int) &((struct proc *) 0)->p_reg.cs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ds ||
-	    i == (int) &((struct proc *) 0)->p_reg.es ||
-	    i == (int) &((struct proc *) 0)->p_reg.gs ||
-	    i == (int) &((struct proc *) 0)->p_reg.fs ||
-	    i == (int) &((struct proc *) 0)->p_reg.ss)
-		return(EFAULT);
+	જો (i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.cs ||
+	    i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.ds ||
+	    i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.es ||
+	    i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.gs ||
+	    i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.fs ||
+	    i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.ss)
+		પાછા(EFAULT);
 
-	if (i == (int) &((struct proc *) 0)->p_reg.psw)
+	જો (i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.psw)
 		/* only selected bits are changeable */
 		SETPSW(rp, tr_data);
-	else
-		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
-#elif defined(__arm__)
-	if (i == (int) &((struct proc *) 0)->p_reg.psr) {
+	નહીંતર
+		*(reg_t *) ((અક્ષર *) &rp->p_reg + i) = (reg_t) tr_data;
+#અથવાજો defined(__arm__)
+	જો (i == (પૂર્ણાંક) &((સંરચના proc *) 0)->p_reg.psr) {
 		/* only selected bits are changeable */
 		SET_USR_PSR(rp, tr_data);
-	} else {
-		*(reg_t *) ((char *) &rp->p_reg + i) = (reg_t) tr_data;
+	} નહીંતર {
+		*(reg_t *) ((અક્ષર *) &rp->p_reg + i) = (reg_t) tr_data;
 	}
 #endif
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_DETACH:		/* detach tracer */
+  સ્થિતિ T_DETACH:		/* detach tracer */
 	rp->p_misc_flags &= ~MF_SC_ACTIVE;
 
 	/* fall through */
-  case T_RESUME:		/* resume execution */
+  સ્થિતિ T_RESUME:		/* resume execution */
 	RTS_UNSET(rp, RTS_P_STOP);
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_STEP:			/* set trace bit */
+  સ્થિતિ T_STEP:			/* set trace bit */
 	rp->p_misc_flags |= MF_STEP;
 	RTS_UNSET(rp, RTS_P_STOP);
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_SYSCALL:		/* trace system call */
+  સ્થિતિ T_SYSCALL:		/* trace system call */
 	rp->p_misc_flags |= MF_SC_TRACE;
 	RTS_UNSET(rp, RTS_P_STOP);
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  case T_READB_INS:		/* get value from instruction space */
+  સ્થિતિ T_READB_INS:		/* get value from instruction space */
 	COPYFROMPROC(tr_addr, (vir_bytes) &ub, 1);
 	m_ptr->m_krn_lsys_sys_trace.data = ub;
-	break;
+	તોડો;
 
-  case T_WRITEB_INS:		/* set value in instruction space */
-	ub = (unsigned char) (tr_data & 0xff);
+  સ્થિતિ T_WRITEB_INS:		/* set value in instruction space */
+	ub = (unsigned અક્ષર) (tr_data & 0xff);
 	COPYTOPROC(tr_addr, (vir_bytes) &ub, 1);
 	m_ptr->m_krn_lsys_sys_trace.data = 0;
-	break;
+	તોડો;
 
-  default:
-	return(EINVAL);
+  મૂળભૂત:
+	પાછા(EINVAL);
   }
-  return(OK);
+  પાછા(OK);
 }
 
 #endif /* USE_TRACE */

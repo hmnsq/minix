@@ -7,7 +7,7 @@
  * to blacklist/whitelist a set of ipc messages identified by sender or message
  * type.
  */
-#include <minix/ipc_filter.h>
+#અન્તર્ભાવ <minix/ipc_filter.h>
 
 /* IPC filter types. */
 #define IPCF_NONE        0	/* no ipc filter */
@@ -15,7 +15,7 @@
 #define IPCF_WHITELIST   2	/* whitelist filter type */
 
 /* IPC filter element macros. */
-EXTERN int _ipcf_nr;
+EXTERN પૂર્ણાંક _ipcf_nr;
 #define IPCF_EL_CHECK(E) \
 	((((E)->flags & IPCF_MATCH_M_TYPE) || \
 	((E)->flags & IPCF_MATCH_M_SOURCE)) && \
@@ -40,14 +40,14 @@ EXTERN int _ipcf_nr;
 #define IPCF_EL_MATCH(E,M) \
 	(IPCF_EL_MATCH_M_TYPE(E,M) && IPCF_EL_MATCH_M_SOURCE(E,M))
 
-struct ipc_filter_s {
-  int type;
-  int num_elements;
-  int flags;
-  struct ipc_filter_s *next;
+સંરચના ipc_filter_s {
+  પૂર્ણાંક type;
+  પૂર્ણાંક અંક_elements;
+  પૂર્ણાંક flags;
+  સંરચના ipc_filter_s *next;
   ipc_filter_el_t elements[IPCF_MAX_ELEMENTS];
 };
-typedef struct ipc_filter_s ipc_filter_t;
+પ્રકારવ્યાખ્યા સંરચના ipc_filter_s ipc_filter_t;
 
 /* IPC filter pool. */
 #define IPCF_POOL_SIZE          (2*NR_SYS_PROCS)
@@ -57,17 +57,17 @@ EXTERN ipc_filter_t ipc_filter_pool[IPCF_POOL_SIZE];
 #define IPCF_POOL_FREE_SLOT(S) ((S)->type = IPCF_NONE)
 #define IPCF_POOL_IS_FREE_SLOT(S) ((S)->type == IPCF_NONE)
 #define IPCF_POOL_ALLOCATE_SLOT(T,S) \
-	do { \
-		int i; \
-		*(S) = NULL; \
-		for (i = 0; i < IPCF_POOL_SIZE; i++) { \
-			if (IPCF_POOL_IS_FREE_SLOT(&ipc_filter_pool[i])) { \
+	કરો { \
+		પૂર્ણાંક i; \
+		*(S) = ખાલી; \
+		માટે (i = 0; i < IPCF_POOL_SIZE; i++) { \
+			જો (IPCF_POOL_IS_FREE_SLOT(&ipc_filter_pool[i])) { \
 				*(S) = &ipc_filter_pool[i]; \
 				(*(S))->type = T; \
-				break; \
+				તોડો; \
 			} \
 		} \
-	} while(0)
-#define IPCF_POOL_INIT(S) memset(&ipc_filter_pool,0,sizeof(ipc_filter_pool))
+	} જ્યારે(0)
+#define IPCF_POOL_INIT(S) memset(&ipc_filter_pool,0,કદ(ipc_filter_pool))
 
 #endif /* !IPC_FILTER_H */

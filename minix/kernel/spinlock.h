@@ -1,9 +1,9 @@
 #ifndef __SPINLOCK_H__
 #define __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#અન્તર્ભાવ "kernel/kernel.h"
 
-typedef struct spinlock {
+પ્રકારવ્યાખ્યા સંરચના spinlock {
 	atomic_t val;
 } spinlock_t;
 
@@ -16,20 +16,20 @@ typedef struct spinlock {
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
 
-#else
+#નહીંતર
 
 /* SMP */
 #define SPINLOCK_DEFINE(name)	spinlock_t name;
 #define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#define SPINLOCK_DECLARE(name)	બાહ્ય SPINLOCK_DEFINE(name)
+#define spinlock_init(sl) કરો { (sl)->val = 0; } જ્યારે (0)
 
-#if CONFIG_MAX_CPUS == 1
+#જો CONFIG_MAX_CPUS == 1
 #define spinlock_lock(sl)
 #define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
+#નહીંતર
+શૂન્ય arch_spinlock_lock(atomic_t * sl);
+શૂન્ય arch_spinlock_unlock(atomic_t * sl);
 #define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
 #define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
 #endif

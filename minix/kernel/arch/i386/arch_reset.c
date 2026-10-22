@@ -1,34 +1,34 @@
 
-#include "kernel/kernel.h"
+#અન્તર્ભાવ "kernel/kernel.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/cpufeature.h>
-#include <sys/reboot.h>
-#include <assert.h>
-#include <signal.h>
+#અન્તર્ભાવ <ctype.h>
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <machine/cmos.h>
+#અન્તર્ભાવ <machine/bios.h>
+#અન્તર્ભાવ <machine/cpu.h>
+#અન્તર્ભાવ <minix/cpufeature.h>
+#અન્તર્ભાવ <sys/reboot.h>
+#અન્તર્ભાવ <assert.h>
+#અન્તર્ભાવ <signal.h>
 
-#include <minix/u64.h>
+#અન્તર્ભાવ <minix/u64.h>
 
-#include "arch_proto.h"
-#include "oxpcie.h"
-#include "direct_utils.h"
+#અન્તર્ભાવ "arch_proto.h"
+#અન્તર્ભાવ "oxpcie.h"
+#અન્તર્ભાવ "direct_utils.h"
 
 #ifdef USE_ACPI
-#include "acpi.h"
+#અન્તર્ભાવ "acpi.h"
 #endif
 
 #define     KBCMDP          4       /* kbd controller port (O) */
 #define      KBC_PULSE0     0xfe    /* pulse output bit 0 */
 #define      IO_KBD          0x060           /* 8042 Keyboard */
 
-int cpu_has_tsc;
+પૂર્ણાંક cpu_has_tsc;
 
-void
-reset(void)
+શૂન્ય
+reset(શૂન્ય)
 {
         uint8_t b;
         /*
@@ -63,8 +63,8 @@ reset(void)
          * 0 before setting it if it isn't already clear.
          */
         b = inb(0x92);
-        if (b != 0xff) {
-                if ((b & 0x1) != 0)
+        જો (b != 0xff) {
+                જો ((b & 0x1) != 0)
                         outb(0x92, b & 0xfe);
                 outb(0x92, b | 0x1);
                 busy_delay_ms(500);  /* wait 0.5 sec to see if that did it */
@@ -74,29 +74,29 @@ reset(void)
 	x86_triplefault();
 
 	/* Give up on resetting */
-	while(1) {
+	જ્યારે(1) {
 		;
 	}
 }
 
-static __dead void
-halt(void)
+સ્થિર __dead શૂન્ય
+halt(શૂન્ય)
 {
-	for ( ; ; )
+	માટે ( ; ; )
 		halt_cpu();
 }
 
-static __dead void
-poweroff(void)
+સ્થિર __dead શૂન્ય
+poweroff(શૂન્ય)
 {
-	const char *shutdown_str;
+	અચલ અક્ષર *shutdown_str;
 
 #ifdef USE_ACPI
 	acpi_poweroff();
 #endif
 	/* Bochs/QEMU poweroff */
 	shutdown_str = "Shutdown";
-        while (*shutdown_str) outb(0x8900, *(shutdown_str++));
+        જ્યારે (*shutdown_str) outb(0x8900, *(shutdown_str++));
 
 	/* VMware magic power off; likely to halt CPU */
 	poweroff_vmware_clihlt();
@@ -105,19 +105,19 @@ poweroff(void)
 	halt();
 }
 
-__dead void arch_shutdown(int how)
+__dead શૂન્ય arch_shutdown(પૂર્ણાંક how)
 {
-	unsigned char unused_ch;
+	unsigned અક્ષર unused_ch;
 	/* Mask all interrupts, including the clock. */
 	outb( INT_CTLMASK, ~0);
 
 	/* Empty buffer */
-	while(direct_read_char(&unused_ch))
+	જ્યારે(direct_read_char(&unused_ch))
 		;
 
-	if(kinfo.minix_panicing) {
+	જો(kinfo.minix_panicing) {
 		/* Printing is done synchronously over serial. */
-		if (kinfo.do_serial_debug)
+		જો (kinfo.do_serial_debug)
 			reset();
 
 		/* Print accumulated diagnostics buffer and reset. */
@@ -125,20 +125,20 @@ __dead void arch_shutdown(int how)
 		direct_print("Minix panic. System diagnostics buffer:\n\n");
 		direct_print(kmess.kmess_buf);
 		direct_print("\nSystem has panicked, press any key to reboot");
-		while (!direct_read_char(&unused_ch))
+		જ્યારે (!direct_read_char(&unused_ch))
 			;
 		reset();
 	}
 		
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	જો((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	જો(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		માટે (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -151,20 +151,20 @@ __dead void arch_shutdown(int how)
 }
 
 #ifdef DEBUG_SERIAL
-void ser_putc(char c)
+શૂન્ય ser_putc(અક્ષર c)
 {
-        int i;
-        int lsr, thr;
+        પૂર્ણાંક i;
+        પૂર્ણાંક lsr, thr;
 
-#if CONFIG_OXPCIE
+#જો CONFIG_OXPCIE
         oxpcie_putc(c);
-#else
+#નહીંતર
         lsr= COM1_LSR;
         thr= COM1_THR;
-        for (i= 0; i<100000; i++)
+        માટે (i= 0; i<100000; i++)
         {
-                if (inb( lsr) & LSR_THRE)
-                        break;
+                જો (inb( lsr) & LSR_THRE)
+                        તોડો;
         }
         outb( thr, c);
 #endif

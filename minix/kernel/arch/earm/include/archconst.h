@@ -2,10 +2,10 @@
 #ifndef _ARM_ACONST_H
 #define _ARM_ACONST_H
 
-#include <machine/interrupt.h>
-#include <machine/memory.h>
-#include <machine/cpu.h>
-#include <arm/armreg.h>
+#અન્તર્ભાવ <machine/interrupt.h>
+#અન્તર્ભાવ <machine/memory.h>
+#અન્તર્ભાવ <machine/cpu.h>
+#અન્તર્ભાવ <arm/armreg.h>
 
 /* Program stack words and masks. */
 #define INIT_PSR      (PSR_USR32_MODE | PSR_F)    /* initial psr */
@@ -35,7 +35,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define ARM_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define ARM_ઢગલો_ટોચ_RESERVED	(2 * કદ(reg_t))
 
 /* only selected bits are changeable by user e.g.[31:9] and skip the 
  * mode bits. It is probably is a better idea to look at the current 

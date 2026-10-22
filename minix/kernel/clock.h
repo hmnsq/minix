@@ -1,20 +1,20 @@
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 
-#include "kernel/kernel.h"
-#include "arch_clock.h"
+#અન્તર્ભાવ "kernel/kernel.h"
+#અન્તર્ભાવ "arch_clock.h"
 
-int boot_cpu_init_timer(unsigned freq);
-int app_cpu_init_timer(unsigned freq);
+પૂર્ણાંક boot_cpu_init_timer(unsigned freq);
+પૂર્ણાંક app_cpu_init_timer(unsigned freq);
 
-int timer_int_handler(void);
+પૂર્ણાંક timer_int_handler(શૂન્ય);
 
-int init_local_timer(unsigned freq);
+પૂર્ણાંક init_local_timer(unsigned freq);
 /* stop the local timer ticking */
-void stop_local_timer(void);
+શૂન્ય stop_local_timer(શૂન્ય);
 /* let the time tick again with the original settings after it was stopped */
-void restart_local_timer(void);
-int register_local_timer_handler(irq_handler_t handler);
+શૂન્ય restart_local_timer(શૂન્ય);
+પૂર્ણાંક register_local_timer_handler(irq_handler_t handler);
 
 u64_t ms_2_cpu_time(unsigned ms);
 unsigned cpu_time_2_ms(u64_t cpu_time);

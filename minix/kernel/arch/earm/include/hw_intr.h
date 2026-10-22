@@ -2,14 +2,14 @@
 #define __HW_INTR_ARM_H__
 
 
-#include "kernel/kernel.h"
-void irq_handle(int irq);
+#અન્તર્ભાવ "kernel/kernel.h"
+શૂન્ય irq_handle(પૂર્ણાંક irq);
 
-void hw_intr_mask(int irq);
-void hw_intr_unmask(int irq);
-void hw_intr_ack(int irq);
-void hw_intr_used(int irq);
-void hw_intr_not_used(int irq);
-void hw_intr_disable_all(void);
+શૂન્ય hw_intr_mask(પૂર્ણાંક irq);
+શૂન્ય hw_intr_unmask(પૂર્ણાંક irq);
+શૂન્ય hw_intr_ack(પૂર્ણાંક irq);
+શૂન્ય hw_intr_used(પૂર્ણાંક irq);
+શૂન્ય hw_intr_not_used(પૂર્ણાંક irq);
+શૂન્ય hw_intr_disable_all(શૂન્ય);
 
 #endif /* __HW_INTR_ARM_H__ */

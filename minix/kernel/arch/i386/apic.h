@@ -95,19 +95,19 @@
 
 #ifndef __ASSEMBLY__
 
-#include "kernel/kernel.h"
+#અન્તર્ભાવ "kernel/kernel.h"
 
 EXTERN vir_bytes lapic_addr;
 EXTERN vir_bytes lapic_eoi_addr;
-EXTERN int ioapic_enabled;
-EXTERN int bsp_lapic_id;
+EXTERN પૂર્ણાંક ioapic_enabled;
+EXTERN પૂર્ણાંક bsp_lapic_id;
 
 #define MAX_NR_IOAPICS		32
 #define MAX_IOAPIC_IRQS		64
 
-EXTERN int ioapic_enabled;
+EXTERN પૂર્ણાંક ioapic_enabled;
 
-struct io_apic {
+સંરચના io_apic {
 	unsigned	id;
 	vir_bytes	addr; /* presently used address */
 	phys_bytes	paddr; /* where is it in phys space */
@@ -116,61 +116,61 @@ struct io_apic {
 	unsigned	gsi_base;
 };
 
-EXTERN struct io_apic io_apic[MAX_NR_IOAPICS];
+EXTERN સંરચના io_apic io_apic[MAX_NR_IOAPICS];
 EXTERN unsigned nioapics;
 
 EXTERN u32_t lapic_addr_vaddr; /* we remember the virtual address here until we
 				  switch to paging */
 
-int lapic_enable(unsigned cpu);
-void ioapic_unmask_irq(unsigned irq);
-void ioapic_mask_irq(unsigned irq);
-void ioapic_reset_pic(void);
+પૂર્ણાંક lapic_enable(unsigned cpu);
+શૂન્ય ioapic_unmask_irq(unsigned irq);
+શૂન્ય ioapic_mask_irq(unsigned irq);
+શૂન્ય ioapic_reset_pic(શૂન્ય);
 
-EXTERN int ioapic_enabled;
+EXTERN પૂર્ણાંક ioapic_enabled;
 EXTERN unsigned nioapics;
 
-void lapic_microsec_sleep(unsigned count);
-void ioapic_disable_irqs(u32_t irqs);
-void ioapic_enable_irqs(u32_t irqs);
+શૂન્ય lapic_microsec_sleep(unsigned ગણતરી);
+શૂન્ય ioapic_disable_irqs(u32_t irqs);
+શૂન્ય ioapic_enable_irqs(u32_t irqs);
 
-int lapic_enable(unsigned cpu);
-void lapic_disable(void);
+પૂર્ણાંક lapic_enable(unsigned cpu);
+શૂન્ય lapic_disable(શૂન્ય);
 
-void ioapic_disable_all(void);
-int ioapic_enable_all(void);
+શૂન્ય ioapic_disable_all(શૂન્ય);
+પૂર્ણાંક ioapic_enable_all(શૂન્ય);
 
-int detect_ioapics(void);
-void apic_idt_init(int reset);
+પૂર્ણાંક detect_ioapics(શૂન્ય);
+શૂન્ય apic_idt_init(પૂર્ણાંક reset);
 
 #ifdef CONFIG_SMP
-int apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
-int apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
-unsigned int apicid(void);
-void ioapic_set_id(u32_t addr, unsigned int id);
-#else
-int apic_single_cpu_init(void);
+પૂર્ણાંક apic_send_startup_ipi(unsigned cpu, phys_bytes trampoline);
+પૂર્ણાંક apic_send_init_ipi(unsigned cpu, phys_bytes trampoline);
+unsigned પૂર્ણાંક apicid(શૂન્ય);
+શૂન્ય ioapic_set_id(u32_t addr, unsigned પૂર્ણાંક id);
+#નહીંતર
+પૂર્ણાંક apic_single_cpu_init(શૂન્ય);
 #endif
 
-void lapic_set_timer_periodic(const unsigned freq);
-void lapic_set_timer_one_shot(const u32_t value);
-void lapic_stop_timer(void);
-void lapic_restart_timer(void);
+શૂન્ય lapic_set_timer_periodic(અચલ unsigned freq);
+શૂન્ય lapic_set_timer_one_shot(અચલ u32_t કિંમત);
+શૂન્ય lapic_stop_timer(શૂન્ય);
+શૂન્ય lapic_restart_timer(શૂન્ય);
 
-void ioapic_set_irq(unsigned irq);
-void ioapic_unset_irq(unsigned irq);
+શૂન્ય ioapic_set_irq(unsigned irq);
+શૂન્ય ioapic_unset_irq(unsigned irq);
 
 /* signal the end of interrupt handler to apic */
-#define apic_eoi() do { *((volatile u32_t *) lapic_eoi_addr) = 0; } while(0)
+#define apic_eoi() કરો { *((અસ્થિર u32_t *) lapic_eoi_addr) = 0; } જ્યારે(0)
 
-void ioapic_eoi(int irq);
+શૂન્ય ioapic_eoi(પૂર્ણાંક irq);
 
-void dump_apic_irq_state(void);
+શૂન્ય dump_apic_irq_state(શૂન્ય);
 
-void apic_send_ipi(unsigned vector, unsigned cpu, int type);
+શૂન્ય apic_send_ipi(unsigned vector, unsigned cpu, પૂર્ણાંક type);
 
-void apic_ipi_sched_intr(void);
-void apic_ipi_halt_intr(void);
+શૂન્ય apic_ipi_sched_intr(શૂન્ય);
+શૂન્ય apic_ipi_halt_intr(શૂન્ય);
 
 #define APIC_IPI_DEST			0
 #define APIC_IPI_SELF			1
@@ -187,14 +187,14 @@ void apic_ipi_halt_intr(void);
 	apic_send_ipi (vector, 0, APIC_IPI_TO_ALL_BUT_SELF);
 
 
-#include <minix/cpufeature.h>
+#અન્તર્ભાવ <minix/cpufeature.h>
 
 #define cpu_feature_apic_on_chip() _cpufeature(_CPUF_I386_APIC_ON_CHIP)
 
-#define lapic_read(what)	(*((volatile u32_t *)((what))))
-#define lapic_write(what, data)	do {			\
-	(*((volatile u32_t *)((what)))) = data;		\
-} while(0)
+#define lapic_read(what)	(*((અસ્થિર u32_t *)((what))))
+#define lapic_write(what, data)	કરો {			\
+	(*((અસ્થિર u32_t *)((what)))) = data;		\
+} જ્યારે(0)
 
 #endif /* __ASSEMBLY__ */
 

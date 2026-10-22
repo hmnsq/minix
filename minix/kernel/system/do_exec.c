@@ -8,43 +8,43 @@
  *   m_lsys_krn_sys_exec.ip		(new instruction pointer)
  *   m_lsys_krn_sys_exec.ps_str		(struct ps_strings *)
  */
-#include "kernel/system.h"
-#include <string.h>
-#include <minix/endpoint.h>
+#અન્તર્ભાવ "kernel/system.h"
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <minix/endpoint.h>
 
-#if USE_EXEC
+#જો USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+પૂર્ણાંક do_exec(સંરચના proc * caller, message * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
-  register struct proc *rp;
-  int proc_nr;
-  char name[PROC_NAME_LEN];
+  નોંધણી સંરચના proc *rp;
+  પૂર્ણાંક proc_nr;
+  અક્ષર name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  જો(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	પાછા EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  જો(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+  જો(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
 	KERNEL, (vir_bytes) name,
-	(phys_bytes) sizeof(name) - 1) != OK)
+	(phys_bytes) કદ(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
 
-  name[sizeof(name)-1] = '\0';
+  name[કદ(name)-1] = '\0';
 
   /* Set process state. */
   arch_proc_init(rp,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ip,
-	(u32_t) m_ptr->m_lsys_krn_sys_exec.stack,
+	(u32_t) m_ptr->m_lsys_krn_sys_exec.ઢગલો,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ps_str, name);
 
   /* No reply to EXEC call */
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  પાછા(OK);
 }
 #endif /* USE_EXEC */

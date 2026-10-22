@@ -18,7 +18,7 @@
 /* FIXME - padd the structure so that items in the array do not share cacheline
  * with other cpus */
 
-#else
+#નહીંતર
 
 /* single CPU */
 
@@ -34,32 +34,32 @@
 /*
  * The global cpu local variables in use
  */
-extern struct __cpu_local_vars {
+બાહ્ય સંરચના __cpu_local_vars {
 
 /* Process scheduling information and the kernel reentry count. */
-	struct proc *proc_ptr;/* pointer to currently running process */
-	struct proc *bill_ptr;/* process to bill for clock ticks */
-	struct proc idle_proc;/* stub for an idle process */
+	સંરચના proc *proc_ptr;/* pointer to currently running process */
+	સંરચના proc *bill_ptr;/* process to bill for clock ticks */
+	સંરચના proc idle_proc;/* stub for an idle process */
 
 /* 
  * signal whether pagefault is already being handled to detect recursive
  * pagefaults
  */
-	int pagefault_handled;
+	પૂર્ણાંક pagefault_handled;
 
 /*
  * which processpage tables are loaded right now. We need to know this because
  * some processes are loaded in each process pagetables and don't have their own
  * pagetables. Therefore we cannot use the proc_ptr pointer
  */
-	struct proc * ptproc;
+	સંરચના proc * ptproc;
 
 /* CPU private run queues */
-	struct proc * run_q_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */
-	struct proc * run_q_tail[NR_SCHED_QUEUES]; /* ptrs to ready list tails */
-	int cpu_is_idle; /* let the others know that you are idle */
+	સંરચના proc * run_q_head[NR_SCHED_QUEUES]; /* ptrs to ready list headers */
+	સંરચના proc * run_q_tail[NR_SCHED_QUEUES]; /* ptrs to ready list tails */
+	પૂર્ણાંક cpu_is_idle; /* let the others know that you are idle */
 
-	int idle_interrupted; /* to interrupt busy-idle
+	પૂર્ણાંક idle_interrupted; /* to interrupt busy-idle
 						     while profiling */
 
 	u64_t tsc_ctr_switch; /* when did we switched time accounting */
@@ -69,8 +69,8 @@ extern struct __cpu_local_vars {
 	u64_t cpu_last_idle;
 
 
-	char fpu_presence; /* whether the cpu has FPU or not */
-	struct proc * fpu_owner; /* who owns the FPU of the local cpu */
+	અક્ષર fpu_presence; /* whether the cpu has FPU or not */
+	સંરચના proc * fpu_owner; /* who owns the FPU of the local cpu */
 
 } __cpu_local_vars CPULOCAL_ARRAY;
 

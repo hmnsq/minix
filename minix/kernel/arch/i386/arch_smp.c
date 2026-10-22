@@ -6,71 +6,71 @@
 
 #define _SMP
 
-#include <unistd.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
+#અન્તર્ભાવ <unistd.h>
+#અન્તર્ભાવ <assert.h>
+#અન્તર્ભાવ <stdlib.h>
+#અન્તર્ભાવ <string.h>
+#અન્તર્ભાવ <machine/cmos.h>
+#અન્તર્ભાવ <machine/bios.h>
 
-#include "kernel/spinlock.h"
-#include "kernel/smp.h"
-#include "apic.h"
-#include "acpi.h"
-#include "kernel/clock.h"
+#અન્તર્ભાવ "kernel/spinlock.h"
+#અન્તર્ભાવ "kernel/smp.h"
+#અન્તર્ભાવ "apic.h"
+#અન્તર્ભાવ "acpi.h"
+#અન્તર્ભાવ "kernel/clock.h"
 
-#include "glo.h"
+#અન્તર્ભાવ "glo.h"
 
-void trampoline(void);
+શૂન્ય trampoline(શૂન્ય);
 
 /*
  * arguments for trampoline. We need to pass the logical cpu id, gdt and idt.
  * They have to be in location which is reachable using absolute addressing in
  * 16-bit mode
  */
-extern volatile u32_t __ap_id, __ap_pt;
-extern volatile struct desctableptr_s __ap_gdt, __ap_idt;
-extern u32_t __ap_gdt_tab, __ap_idt_tab;
-extern void * __trampoline_end;
+બાહ્ય અસ્થિર u32_t __ap_id, __ap_pt;
+બાહ્ય અસ્થિર સંરચના desctableptr_s __ap_gdt, __ap_idt;
+બાહ્ય u32_t __ap_gdt_tab, __ap_idt_tab;
+બાહ્ય શૂન્ય * __trampoline_end;
 
-extern u32_t busclock[CONFIG_MAX_CPUS];
-extern int panicking;
+બાહ્ય u32_t busclock[CONFIG_MAX_CPUS];
+બાહ્ય પૂર્ણાંક panicking;
 
-static int volatile ap_cpu_ready;
-static int volatile cpu_down;
+સ્થિર પૂર્ણાંક અસ્થિર ap_cpu_ready;
+સ્થિર પૂર્ણાંક અસ્થિર cpu_down;
 
 /* there can be at most 255 local APIC ids, each fits in 8 bits */
-static unsigned char apicid2cpuid[255];
-unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
+સ્થિર unsigned અક્ષર apicid2cpuid[255];
+unsigned અક્ષર cpuid2apicid[CONFIG_MAX_CPUS];
 
 SPINLOCK_DEFINE(smp_cpu_lock)
 SPINLOCK_DEFINE(dispq_lock)
 
-static void smp_reinit_vars(void);
+સ્થિર શૂન્ય smp_reinit_vars(શૂન્ય);
 
 /* These are initialized in protect.c */
-extern struct segdesc_s gdt[GDT_SIZE];
-extern struct gatedesc_s idt[IDT_SIZE];
-extern struct tss_s tss[CONFIG_MAX_CPUS];
-extern int prot_init_done;	/* Indicates they are ready */
+બાહ્ય સંરચના segdesc_s gdt[GDT_SIZE];
+બાહ્ય સંરચના gatedesc_s idt[IDT_SIZE];
+બાહ્ય સંરચના tss_s tss[CONFIG_MAX_CPUS];
+બાહ્ય પૂર્ણાંક prot_init_done;	/* Indicates they are ready */
 
-static phys_bytes trampoline_base;
+સ્થિર phys_bytes trampoline_base;
 
-static u32_t ap_lin_addr(void *vaddr)
+સ્થિર u32_t ap_lin_addr(શૂન્ય *vaddr)
 {
-	assert(trampoline_base);
-	return (u32_t) vaddr - (u32_t) &trampoline + trampoline_base;
+	પ્રતિજ્ઞા(trampoline_base);
+	પાછા (u32_t) vaddr - (u32_t) &trampoline + trampoline_base;
 }
 
 /*
  * copies the 16-bit AP trampoline code to the first 1M of memory
  */
-void copy_trampoline(void)
+શૂન્ય copy_trampoline(શૂન્ય)
 {
 	unsigned tramp_size, tramp_start = (unsigned)&trampoline;;
 
 	/* The trampoline code/data is made to be page-aligned. */
-	assert(!(tramp_start % I386_PAGE_SIZE));
+	પ્રતિજ્ઞા(!(tramp_start % I386_PAGE_SIZE));
 
 	tramp_size = (unsigned) &__trampoline_end - tramp_start;
 	trampoline_base = alloc_lowest(&kinfo, tramp_size);
@@ -78,44 +78,44 @@ void copy_trampoline(void)
 	/* The memory allocator finds the lowest available memory.. 
 	 * Verify it's low enough
 	 */
-	assert(trampoline_base + tramp_size < (1 << 20));
+	પ્રતિજ્ઞા(trampoline_base + tramp_size < (1 << 20));
 
 	/* prepare gdt and idt for the new cpus; make copies
 	 * of both the tables and the descriptors of them
 	 * in their boot addressing environment.
 	 */
-	assert(prot_init_done);
-	memcpy(&__ap_gdt_tab, gdt, sizeof(gdt));
-	memcpy(&__ap_idt_tab, gdt, sizeof(idt));
+	પ્રતિજ્ઞા(prot_init_done);
+	memcpy(&__ap_gdt_tab, gdt, કદ(gdt));
+	memcpy(&__ap_idt_tab, gdt, કદ(idt));
 	__ap_gdt.base = ap_lin_addr(&__ap_gdt_tab);
-	__ap_gdt.limit = sizeof(gdt)-1;
+	__ap_gdt.limit = કદ(gdt)-1;
 	__ap_idt.base = ap_lin_addr(&__ap_idt_tab);
-	__ap_idt.limit = sizeof(idt)-1;
+	__ap_idt.limit = કદ(idt)-1;
 
 	phys_copy((phys_bytes) trampoline, trampoline_base, tramp_size);
 }
 
-extern int booting_cpu;	/* tell protect.c what to do */
+બાહ્ય પૂર્ણાંક booting_cpu;	/* tell protect.c what to do */
 
-static void smp_start_aps(void)
+સ્થિર શૂન્ય smp_start_aps(શૂન્ય)
 {
 	unsigned cpu;
 	u32_t biosresetvector;
 	phys_bytes __ap_id_phys;
-	struct proc *bootstrap_pt = get_cpulocal_var(ptproc);
+	સંરચના proc *bootstrap_pt = get_cpulocal_var(ptproc);
 
 	/* TODO hack around the alignment problem */
 
-	phys_copy(0x467, (phys_bytes) &biosresetvector, sizeof(u32_t));
+	phys_copy(0x467, (phys_bytes) &biosresetvector, કદ(u32_t));
 
 	/* set the bios shutdown code to 0xA */
 	outb(RTC_INDEX, 0xF);
 	outb(RTC_IO, 0xA);
 
-	assert(bootstrap_pt);
-	assert(bootstrap_pt->p_seg.p_cr3);
+	પ્રતિજ્ઞા(bootstrap_pt);
+	પ્રતિજ્ઞા(bootstrap_pt->p_seg.p_cr3);
 	__ap_pt  = bootstrap_pt->p_seg.p_cr3;
-	assert(__ap_pt);
+	પ્રતિજ્ઞા(__ap_pt);
 
 	copy_trampoline();
 
@@ -124,43 +124,43 @@ static void smp_start_aps(void)
 		(phys_bytes) &__ap_id - (phys_bytes)&trampoline;
 
 	/* setup the warm reset vector */
-	phys_copy((phys_bytes) &trampoline_base, 0x467, sizeof(u32_t));
+	phys_copy((phys_bytes) &trampoline_base, 0x467, કદ(u32_t));
 
 	/* okay, we're ready to go.  boot all of the ap's now.  we loop through
 	 * using the processor's apic id values.
 	 */
-	for (cpu = 0; cpu < ncpus; cpu++) {
+	માટે (cpu = 0; cpu < ncpus; cpu++) {
 		ap_cpu_ready = -1;
 		/* Don't send INIT/SIPI to boot cpu.  */
-		if((apicid() == cpuid2apicid[cpu]) && 
+		જો((apicid() == cpuid2apicid[cpu]) && 
 				(apicid() == bsp_lapic_id)) {
-			continue;
+			ચાલુ;
 		}
 
 		__ap_id = booting_cpu = cpu;
-		phys_copy((phys_bytes) &__ap_id, __ap_id_phys, sizeof(__ap_id));
+		phys_copy((phys_bytes) &__ap_id, __ap_id_phys, કદ(__ap_id));
 		mfence();
-		if (apic_send_init_ipi(cpu, trampoline_base) ||
+		જો (apic_send_init_ipi(cpu, trampoline_base) ||
 				apic_send_startup_ipi(cpu, trampoline_base)) {
 			printf("WARNING cannot boot cpu %d\n", cpu);
-			continue;
+			ચાલુ;
 		}
 
 		/* wait for 5 secs for the processors to boot */
 		lapic_set_timer_one_shot(5000000); 
 
-		while (lapic_read(LAPIC_TIMER_CCR)) {
-			if (ap_cpu_ready == cpu) {
+		જ્યારે (lapic_read(LAPIC_TIMER_CCR)) {
+			જો (ap_cpu_ready == cpu) {
 				cpu_set_flag(cpu, CPU_IS_READY);
-				break;
+				તોડો;
 			}
 		}
-		if (ap_cpu_ready == -1) {
+		જો (ap_cpu_ready == -1) {
 			printf("WARNING : CPU %d didn't boot\n", cpu);
 		}
 	}
 
-	phys_copy((phys_bytes) &biosresetvector, 0x467, sizeof(u32_t));
+	phys_copy((phys_bytes) &biosresetvector, 0x467, કદ(u32_t));
 
 	outb(RTC_INDEX, 0xF);
 	outb(RTC_IO, 0);
@@ -169,34 +169,34 @@ static void smp_start_aps(void)
 	NOT_REACHABLE;
 }
 
-void smp_halt_cpu (void) 
+શૂન્ય smp_halt_cpu (શૂન્ય) 
 {
 	NOT_IMPLEMENTED;
 }
 
-void smp_shutdown_aps(void)
+શૂન્ય smp_shutdown_aps(શૂન્ય)
 {
 	unsigned cpu;
 
-	if (ncpus == 1)
-		goto exit_shutdown_aps;
+	જો (ncpus == 1)
+		જાઓ exit_shutdown_aps;
 
 	/* we must let the other cpus enter the kernel mode */
 	BKL_UNLOCK();
 
-	for (cpu = 0; cpu < ncpus; cpu++) {
-		if (cpu == cpuid)
-			continue;
-		if (!cpu_test_flag(cpu, CPU_IS_READY)) {
+	માટે (cpu = 0; cpu < ncpus; cpu++) {
+		જો (cpu == cpuid)
+			ચાલુ;
+		જો (!cpu_test_flag(cpu, CPU_IS_READY)) {
 			printf("CPU %d didn't boot\n", cpu);
-			continue;
+			ચાલુ;
 		}
 
 		cpu_down = -1;
 		barrier();
 		apic_send_ipi(APIC_SMP_CPU_HALT_VECTOR, cpu, APIC_IPI_DEST);
 		/* wait for the cpu to be down */
-		while (cpu_down != cpu);
+		જ્યારે (cpu_down != cpu);
 		printf("CPU %d is down\n", cpu);
 		cpu_clear_flag(cpu, CPU_IS_READY);
 	}
@@ -208,10 +208,10 @@ exit_shutdown_aps:
 
 	ncpus = 1; /* hopefully !!! */
 	lapic_addr = lapic_eoi_addr = 0;
-	return;
+	પાછા;
 }
 
-static void ap_finish_booting(void)
+સ્થિર શૂન્ય ap_finish_booting(શૂન્ય)
 {
 	unsigned cpu = cpuid;
 
@@ -234,7 +234,7 @@ static void ap_finish_booting(void)
 	lapic_enable(cpu);
 	fpu_init();
 
-	if (app_cpu_init_timer(system_hz)) {
+	જો (app_cpu_init_timer(system_hz)) {
 		panic("FATAL : failed to initialize timer interrupts CPU %d, "
 				"cannot continue without any clock source!", cpu);
 	}
@@ -250,13 +250,13 @@ static void ap_finish_booting(void)
 	NOT_REACHABLE;
 }
 
-void smp_ap_boot(void)
+શૂન્ય smp_ap_boot(શૂન્ય)
 {
-	switch_k_stack((char *)get_k_stack_top(__ap_id) -
-			X86_STACK_TOP_RESERVED, ap_finish_booting);
+	switch_k_ઢગલો((અક્ષર *)get_k_ઢગલો_ટોચ(__ap_id) -
+			X86_ઢગલો_ટોચ_RESERVED, ap_finish_booting);
 }
 
-static void smp_reinit_vars(void)
+સ્થિર શૂન્ય smp_reinit_vars(શૂન્ય)
 {
 	lapic_addr = lapic_eoi_addr = 0;
 	ioapic_enabled = 0;
@@ -264,34 +264,34 @@ static void smp_reinit_vars(void)
 	ncpus = 1;
 }
 
-static void tss_init_all(void)
+સ્થિર શૂન્ય tss_init_all(શૂન્ય)
 {
 	unsigned cpu;
 
-	for(cpu = 0; cpu < ncpus ; cpu++)
-		tss_init(cpu, get_k_stack_top(cpu)); 
+	માટે(cpu = 0; cpu < ncpus ; cpu++)
+		tss_init(cpu, get_k_ઢગલો_ટોચ(cpu)); 
 }
 
-static int discover_cpus(void)
+સ્થિર પૂર્ણાંક discover_cpus(શૂન્ય)
 {
-	struct acpi_madt_lapic * cpu;
+	સંરચના acpi_madt_lapic * cpu;
 
-	while (ncpus < CONFIG_MAX_CPUS && (cpu = acpi_get_lapic_next())) {
+	જ્યારે (ncpus < CONFIG_MAX_CPUS && (cpu = acpi_get_lapic_next())) {
 		apicid2cpuid[cpu->apic_id] = ncpus;
 		cpuid2apicid[ncpus] = cpu->apic_id;
 		printf("CPU %3d local APIC id %3d\n", ncpus, cpu->apic_id);
 		ncpus++;
 	}
 
-	return ncpus;
+	પાછા ncpus;
 }
 
-void smp_init (void)
+શૂન્ય smp_init (શૂન્ય)
 {
 	/* read the MP configuration */
-	if (!discover_cpus()) {
+	જો (!discover_cpus()) {
 		ncpus = 1;
-		goto uniproc_fallback;
+		જાઓ uniproc_fallback;
 	}
 
 	lapic_addr = LOCAL_APIC_DEF_ADDR;
@@ -305,24 +305,24 @@ void smp_init (void)
 	 */
 	bsp_cpu_id = apicid2cpuid[apicid()];
 
-	if (!lapic_enable(bsp_cpu_id)) {
+	જો (!lapic_enable(bsp_cpu_id)) {
 		printf("ERROR : failed to initialize BSP Local APIC\n");
-		goto uniproc_fallback;
+		જાઓ uniproc_fallback;
 	}
 
 	bsp_lapic_id = apicid();
 	
 	acpi_init();
 
-	if (!detect_ioapics()) {
+	જો (!detect_ioapics()) {
 		lapic_disable();
 		lapic_addr = 0x0;
-		goto uniproc_fallback;
+		જાઓ uniproc_fallback;
 	}
 
 	ioapic_enable_all();
 	
-	if (ioapic_enabled)
+	જો (ioapic_enabled)
 		machine.apic_enabled = 1;
 
 	/* set smp idt entries. */ 
@@ -331,10 +331,10 @@ void smp_init (void)
 
 	BOOT_VERBOSE(printf("SMP initialized\n"));
 
-	switch_k_stack((char *)get_k_stack_top(bsp_cpu_id) -
-			X86_STACK_TOP_RESERVED, smp_start_aps);
+	switch_k_ઢગલો((અક્ષર *)get_k_ઢગલો_ટોચ(bsp_cpu_id) -
+			X86_ઢગલો_ટોચ_RESERVED, smp_start_aps);
 	
-	return;
+	પાછા;
 
 uniproc_fallback:
 	apic_idt_init(1); /* Reset to PIC idt ! */
@@ -344,17 +344,17 @@ uniproc_fallback:
 	printf("WARNING : SMP initialization failed\n");
 }
 	
-void arch_smp_halt_cpu(void)
+શૂન્ય arch_smp_halt_cpu(શૂન્ય)
 {
 	/* say that we are down */
 	cpu_down = cpuid;
 	barrier();
 	/* unlock the BKL and don't continue */
 	BKL_UNLOCK();
-	for(;;);
+	માટે(;;);
 }
 
-void arch_send_smp_schedule_ipi(unsigned cpu)
+શૂન્ય arch_send_smp_schedule_ipi(unsigned cpu)
 {
 	apic_send_ipi(APIC_SMP_SCHED_PROC_VECTOR, cpu, APIC_IPI_DEST);
 }
