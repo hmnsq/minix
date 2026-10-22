@@ -1,91 +1,91 @@
-#include <assert.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
 
-#include "smp.h"
-#include "interrupt.h"
-#include "clock.h"
+#ଅନ୍ତର୍ଭାଵ "smp.h"
+#ଅନ୍ତର୍ଭାଵ "interrupt.h"
+#ଅନ୍ତର୍ଭାଵ "clock.h"
 
 unsigned ncpus;
 unsigned ht_per_core;
 unsigned bsp_cpu_id;
 
-struct cpu cpus[CONFIG_MAX_CPUS];
+ସଂରଚନା cpu cpus[CONFIG_MAX_CPUS];
 
 /* info passed to another cpu along with a sched ipi */
-struct sched_ipi_data {
-	volatile u32_t	flags;
-	volatile u32_t	data;
+ସଂରଚନା sched_ipi_data {
+	ଅସ୍ଥିର u32_t	flags;
+	ଅସ୍ଥିର u32_t	data;
 };
 
-static struct sched_ipi_data  sched_ipi_data[CONFIG_MAX_CPUS];
+ସ୍ଥିର ସଂରଚନା sched_ipi_data  sched_ipi_data[CONFIG_MAX_CPUS];
 
 #define SCHED_IPI_STOP_PROC	1
 #define SCHED_IPI_VM_INHIBIT	2
 #define SCHED_IPI_SAVE_CTX	4
 
-static volatile unsigned ap_cpus_booted;
+ସ୍ଥିର ଅସ୍ଥିର unsigned ap_cpus_booted;
 
 SPINLOCK_DEFINE(big_kernel_lock)
 SPINLOCK_DEFINE(boot_lock)
 
-void wait_for_APs_to_finish_booting(void)
+ଶୂନ୍ୟ wait_for_APs_to_finish_booting(ଶୂନ୍ୟ)
 {
 	unsigned n = 0;
-	int i;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା i;
 
 	/* check how many cpus are actually alive */
-	for (i = 0 ; i < ncpus ; i++) {
-		if (cpu_test_flag(i, CPU_IS_READY))
+	ପାଇଁ (i = 0 ; i < ncpus ; i++) {
+		ଯଦି (cpu_test_flag(i, CPU_IS_READY))
 			n++;
 	}
-	if (n != ncpus)
+	ଯଦି (n != ncpus)
 		printf("WARNING only %d out of %d cpus booted\n", n, ncpus);
 
 	/* we must let the other CPUs to run in kernel mode first */
 	BKL_UNLOCK();
-	while (ap_cpus_booted != (n - 1))
+	ଯେତେବେଳେ (ap_cpus_booted != (n - 1))
 		arch_pause();
 	/* now we have to take the lock again as we continue execution */
 	BKL_LOCK();
 }
 
-void ap_boot_finished(unsigned cpu)
+ଶୂନ୍ୟ ap_boot_finished(unsigned cpu)
 {
 	ap_cpus_booted++;
 }
 
-void smp_ipi_halt_handler(void)
+ଶୂନ୍ୟ smp_ipi_halt_handler(ଶୂନ୍ୟ)
 {
 	ipi_ack();
 	stop_local_timer();
 	arch_smp_halt_cpu();
 }
 
-void smp_schedule(unsigned cpu)
+ଶୂନ୍ୟ smp_schedule(unsigned cpu)
 {
 	arch_send_smp_schedule_ipi(cpu);
 }
 
-void smp_sched_handler(void);
+ଶୂନ୍ୟ smp_sched_handler(ଶୂନ୍ୟ);
 
 /*
  * tell another cpu about a task to do and return only after the cpu acks that
  * the task is finished. Also wait before it finishes task sent by another cpu
  * to the same one.
  */
-static void smp_schedule_sync(struct proc * p, unsigned task)
+ସ୍ଥିର ଶୂନ୍ୟ smp_schedule_sync(ସଂରଚନା proc * p, unsigned task)
 {
 	unsigned cpu = p->p_cpu;
 	unsigned mycpu = cpuid;
 
-	assert(cpu != mycpu);
+	ପ୍ରତିଜ୍ଞା(cpu != mycpu);
 	/*
 	 * if some other cpu made a request to the same cpu, wait until it is
 	 * done before proceeding
 	 */
-	if (sched_ipi_data[cpu].flags != 0) {
+	ଯଦି (sched_ipi_data[cpu].flags != 0) {
 		BKL_UNLOCK();
-		while (sched_ipi_data[cpu].flags != 0) {
-			if (sched_ipi_data[mycpu].flags) {
+		ଯେତେବେଳେ (sched_ipi_data[cpu].flags != 0) {
+			ଯଦି (sched_ipi_data[mycpu].flags) {
 				BKL_LOCK();
 				smp_sched_handler();
 				BKL_UNLOCK();
@@ -101,8 +101,8 @@ static void smp_schedule_sync(struct proc * p, unsigned task)
 
 	/* wait until the destination cpu finishes its job */
 	BKL_UNLOCK();
-	while (sched_ipi_data[cpu].flags != 0) {
-		if (sched_ipi_data[mycpu].flags) {
+	ଯେତେବେଳେ (sched_ipi_data[cpu].flags != 0) {
+		ଯଦି (sched_ipi_data[mycpu].flags) {
 			BKL_LOCK();
 			smp_sched_handler();
 			BKL_UNLOCK();
@@ -111,65 +111,65 @@ static void smp_schedule_sync(struct proc * p, unsigned task)
 	BKL_LOCK();
 }
 
-void smp_schedule_stop_proc(struct proc * p)
+ଶୂନ୍ୟ smp_schedule_stop_proc(ସଂରଚନା proc * p)
 {
-	if (proc_is_runnable(p))
+	ଯଦି (proc_is_runnable(p))
 		smp_schedule_sync(p, SCHED_IPI_STOP_PROC);
-	else
+	ଅନ୍ୟଥା
 		RTS_SET(p, RTS_PROC_STOP);
-	assert(RTS_ISSET(p, RTS_PROC_STOP));
+	ପ୍ରତିଜ୍ଞା(RTS_ISSET(p, RTS_PROC_STOP));
 }
 
-void smp_schedule_vminhibit(struct proc * p)
+ଶୂନ୍ୟ smp_schedule_vminhibit(ସଂରଚନା proc * p)
 {
-	if (proc_is_runnable(p))
+	ଯଦି (proc_is_runnable(p))
 		smp_schedule_sync(p, SCHED_IPI_VM_INHIBIT);
-	else
+	ଅନ୍ୟଥା
 		RTS_SET(p, RTS_VMINHIBIT);
-	assert(RTS_ISSET(p, RTS_VMINHIBIT));
+	ପ୍ରତିଜ୍ଞା(RTS_ISSET(p, RTS_VMINHIBIT));
 }
 
-void smp_schedule_stop_proc_save_ctx(struct proc * p)
+ଶୂନ୍ୟ smp_schedule_stop_proc_save_ctx(ସଂରଚନା proc * p)
 {
 	/*
 	 * stop the processes and force the complete context of the process to
 	 * be saved (i.e. including FPU state and such)
 	 */
 	smp_schedule_sync(p, SCHED_IPI_STOP_PROC | SCHED_IPI_SAVE_CTX);
-	assert(RTS_ISSET(p, RTS_PROC_STOP));
+	ପ୍ରତିଜ୍ଞା(RTS_ISSET(p, RTS_PROC_STOP));
 }
 
-void smp_schedule_migrate_proc(struct proc * p, unsigned dest_cpu)
+ଶୂନ୍ୟ smp_schedule_migrate_proc(ସଂରଚନା proc * p, unsigned dest_cpu)
 {
 	/*
 	 * stop the processes and force the complete context of the process to
 	 * be saved (i.e. including FPU state and such)
 	 */
 	smp_schedule_sync(p, SCHED_IPI_STOP_PROC | SCHED_IPI_SAVE_CTX);
-	assert(RTS_ISSET(p, RTS_PROC_STOP));
+	ପ୍ରତିଜ୍ଞା(RTS_ISSET(p, RTS_PROC_STOP));
 	
 	/* assign the new cpu and let the process run again */
 	p->p_cpu = dest_cpu;
 	RTS_UNSET(p, RTS_PROC_STOP);
 }
 
-void smp_sched_handler(void)
+ଶୂନ୍ୟ smp_sched_handler(ଶୂନ୍ୟ)
 {
 	unsigned flgs;
 	unsigned cpu = cpuid;
 
 	flgs = sched_ipi_data[cpu].flags;
 
-	if (flgs) {
-		struct proc * p;
-		p = (struct proc *)sched_ipi_data[cpu].data;
+	ଯଦି (flgs) {
+		ସଂରଚନା proc * p;
+		p = (ସଂରଚନା proc *)sched_ipi_data[cpu].data;
 
-		if (flgs & SCHED_IPI_STOP_PROC) {
+		ଯଦି (flgs & SCHED_IPI_STOP_PROC) {
 			RTS_SET(p, RTS_PROC_STOP);
 		}
-		if (flgs & SCHED_IPI_SAVE_CTX) {
+		ଯଦି (flgs & SCHED_IPI_SAVE_CTX) {
 			/* all context has been saved already, FPU remains */
-			if (proc_used_fpu(p) &&
+			ଯଦି (proc_used_fpu(p) &&
 					get_cpulocal_var(fpu_owner) == p) {
 				disable_fpu_exception();
 				save_local_fpu(p, FALSE /*retain*/);
@@ -177,7 +177,7 @@ void smp_sched_handler(void)
 				release_fpu(p);
 			}
 		}
-		if (flgs & SCHED_IPI_VM_INHIBIT) {
+		ଯଦି (flgs & SCHED_IPI_VM_INHIBIT) {
 			RTS_SET(p, RTS_VMINHIBIT);
 		}
 	}
@@ -191,14 +191,14 @@ void smp_sched_handler(void)
  * already called. It only serves the purpose of acknowledging the IPI and
  * preempting the current process if the CPU was not idle.
  */
-void smp_ipi_sched_handler(void)
+ଶୂନ୍ୟ smp_ipi_sched_handler(ଶୂନ୍ୟ)
 {
-	struct proc * curr;
+	ସଂରଚନା proc * curr;
 
 	ipi_ack();
 
 	curr = get_cpulocal_var(proc_ptr);
-	if (curr->p_endpoint != IDLE) {
+	ଯଦି (curr->p_endpoint != IDLE) {
 		RTS_SET(curr, RTS_PREEMPTED);
 	}
 }

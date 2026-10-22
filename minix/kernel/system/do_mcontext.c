@@ -11,96 +11,96 @@
  *   m_lsys_krn_sys_getmcontext.ctx_ptr	# pointer to mcontext structure
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <assert.h>
-#include <machine/mcontext.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/system.h"
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
+#ଅନ୍ତର୍ଭାଵ <machine/mcontext.h>
 
-#if USE_MCONTEXT 
+#ଯଦି USE_MCONTEXT 
 /*===========================================================================*
  *			      do_getmcontext				     *
  *===========================================================================*/
-int do_getmcontext(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_getmcontext(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* Retrieve machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  ପଞ୍ଜିକରଣ ସଂରଚନା proc *rp;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
-	return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ଯଦି (!isokendpt(m_ptr->m_lsys_krn_sys_getmcontext.endpt, &proc_nr))
+	ଫେରନ୍ତୁ(EINVAL);
+  ଯଦି (iskerneln(proc_nr)) ଫେରନ୍ତୁ(EPERM);
   rp = proc_addr(proc_nr);
 
-#if defined(__i386__)
-  if (!proc_used_fpu(rp))
-	return(OK);	/* No state to copy */
+#ଯଦି defined(__i386__)
+  ଯଦି (!proc_used_fpu(rp))
+	ଫେରନ୍ତୁ(OK);	/* No state to copy */
 #endif
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
+  ଯଦି ((r = data_copy(m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) ଆକାର(mcontext_t))) != OK)
+	ଫେରନ୍ତୁ(r);
 
   mc.mc_flags = 0;
-#if defined(__i386__)
+#ଯଦି defined(__i386__)
   /* Copy FPU state */
-  if (proc_used_fpu(rp)) {
+  ଯଦି (proc_used_fpu(rp)) {
 	/* make sure that the FPU context is saved into proc structure first */
 	save_fpu(rp);
 	mc.mc_flags = (rp->p_misc_flags & MF_FPU_INITIALIZED) ? _MC_FPU_SAVED : 0;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
+	ପ୍ରତିଜ୍ଞା(ଆକାର(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
 	memcpy(&(mc.__fpregs.__fp_reg_set), rp->p_seg.fpu_state, FPU_XFP_SIZE);
   } 
 #endif
 
 
   /* Copy the mcontext structure to the user's address space. */
-  if ((r = data_copy(KERNEL, (vir_bytes) &mc,
+  ଯଦି ((r = data_copy(KERNEL, (vir_bytes) &mc,
 	m_ptr->m_lsys_krn_sys_getmcontext.endpt,
 	m_ptr->m_lsys_krn_sys_getmcontext.ctx_ptr,
-	(phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+	(phys_bytes) ଆକାର(mcontext_t))) != OK)
+	ଫେରନ୍ତୁ(r);
 
-  return(OK);
+  ଫେରନ୍ତୁ(OK);
 }
 
 
 /*===========================================================================*
  *			      do_setmcontext				     *
  *===========================================================================*/
-int do_setmcontext(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_setmcontext(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* Set machine context of a process */
 
-  register struct proc *rp;
-  int proc_nr, r;
+  ପଞ୍ଜିକରଣ ସଂରଚନା proc *rp;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା proc_nr, r;
   mcontext_t mc;
 
-  if (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) return(EINVAL);
+  ଯଦି (!isokendpt(m_ptr->m_lsys_krn_sys_setmcontext.endpt, &proc_nr)) ଫେରନ୍ତୁ(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Get the mcontext structure into our address space.  */
-  if ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
+  ଯଦି ((r = data_copy(m_ptr->m_lsys_krn_sys_setmcontext.endpt,
 		m_ptr->m_lsys_krn_sys_setmcontext.ctx_ptr, KERNEL,
-		(vir_bytes) &mc, (phys_bytes) sizeof(mcontext_t))) != OK)
-	return(r);
+		(vir_bytes) &mc, (phys_bytes) ଆକାର(mcontext_t))) != OK)
+	ଫେରନ୍ତୁ(r);
 
-#if defined(__i386__)
+#ଯଦି defined(__i386__)
   /* Copy FPU state */
-  if (mc.mc_flags & _MC_FPU_SAVED) {
+  ଯଦି (mc.mc_flags & _MC_FPU_SAVED) {
 	rp->p_misc_flags |= MF_FPU_INITIALIZED;
-	assert(sizeof(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
+	ପ୍ରତିଜ୍ଞା(ଆକାର(mc.__fpregs.__fp_reg_set) == FPU_XFP_SIZE);
 	memcpy(rp->p_seg.fpu_state, &(mc.__fpregs.__fp_reg_set), FPU_XFP_SIZE);
-  } else
+  } ଅନ୍ୟଥା
 	rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU in either case */
   release_fpu(rp);
 #endif
 
-  return(OK);
+  ଫେରନ୍ତୁ(OK);
 }
 
 #endif

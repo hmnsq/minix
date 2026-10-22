@@ -5,9 +5,9 @@
 
 #ifndef __ASSEMBLY__
 
-#include "kernel/kernel.h"
-#include "arch_smp.h"
-#include "spinlock.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "arch_smp.h"
+#ଅନ୍ତର୍ଭାଵ "spinlock.h"
 
 /* number of CPUs (execution strands in the system */
 EXTERN unsigned ncpus;
@@ -26,19 +26,19 @@ EXTERN unsigned bsp_cpu_id;
  * suboptimal, the system must be able to run on the bootstrap processor as if
  * it was the only processor in the system
  */
-void smp_init(void);
+ଶୂନ୍ୟ smp_init(ଶୂନ୍ୟ);
 
 #define CPU_IS_BSP	1
 #define CPU_IS_READY	2
 
-struct cpu {
+ସଂରଚନା cpu {
 	u32_t flags;
 };
 
-EXTERN struct cpu cpus[CONFIG_MAX_CPUS];
+EXTERN ସଂରଚନା cpu cpus[CONFIG_MAX_CPUS];
 
-#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } while(0)
-#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } while(0)
+#define cpu_set_flag(cpu, flag)	କର { cpus[cpu].flags |= (flag); } ଯେତେବେଳେ(0)
+#define cpu_clear_flag(cpu, flag) କର { cpus[cpu].flags &= ~(flag); } ଯେତେବେଳେ(0)
 #define cpu_test_flag(cpu, flag) (cpus[cpu].flags & (flag))
 #define cpu_is_ready(cpu) cpu_test_flag(cpu, CPU_IS_READY)
 
@@ -51,29 +51,29 @@ SPINLOCK_DECLARE(big_kernel_lock)
  */
 SPINLOCK_DECLARE(boot_lock)
 	
-void wait_for_APs_to_finish_booting(void);
-void ap_boot_finished(unsigned cpu);
-void smp_shutdown_aps(void );
+ଶୂନ୍ୟ wait_for_APs_to_finish_booting(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ ap_boot_finished(unsigned cpu);
+ଶୂନ୍ୟ smp_shutdown_aps(ଶୂନ୍ୟ );
 
 /* IPI handlers */
-void smp_ipi_halt_handler(void);
-void smp_ipi_sched_handler(void);
+ଶୂନ୍ୟ smp_ipi_halt_handler(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ smp_ipi_sched_handler(ଶୂନ୍ୟ);
 
-void smp_schedule(unsigned cpu);
+ଶୂନ୍ୟ smp_schedule(unsigned cpu);
 /* stop a processes on a different cpu */
-void smp_schedule_stop_proc(struct proc * p);
+ଶୂନ୍ୟ smp_schedule_stop_proc(ସଂରଚନା proc * p);
 /* stop a process on a different cpu because its address space is being changed */
-void smp_schedule_vminhibit(struct proc * p);
+ଶୂନ୍ୟ smp_schedule_vminhibit(ସଂରଚନା proc * p);
 /* stop the process and for saving its full context */
-void smp_schedule_stop_proc_save_ctx(struct proc * p);
+ଶୂନ୍ୟ smp_schedule_stop_proc_save_ctx(ସଂରଚନା proc * p);
 /* migrate the full context of a process to the destination CPU */
-void smp_schedule_migrate_proc(struct proc * p, unsigned dest_cpu);
+ଶୂନ୍ୟ smp_schedule_migrate_proc(ସଂରଚନା proc * p, unsigned dest_cpu);
 
-void arch_send_smp_schedule_ipi(unsigned cpu);
-void arch_smp_halt_cpu(void);
+ଶୂନ୍ୟ arch_send_smp_schedule_ipi(unsigned cpu);
+ଶୂନ୍ୟ arch_smp_halt_cpu(ଶୂନ୍ୟ);
 
 /* deal with x-cpu scheduling event */
-void smp_sched_handler(void);
+ଶୂନ୍ୟ smp_sched_handler(ଶୂନ୍ୟ);
 
 #endif /* __ASSEMBLY__ */
 

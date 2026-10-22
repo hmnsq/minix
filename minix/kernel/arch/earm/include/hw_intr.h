@@ -2,14 +2,14 @@
 #define __HW_INTR_ARM_H__
 
 
-#include "kernel/kernel.h"
-void irq_handle(int irq);
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
+ଶୂନ୍ୟ irq_handle(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
 
-void hw_intr_mask(int irq);
-void hw_intr_unmask(int irq);
-void hw_intr_ack(int irq);
-void hw_intr_used(int irq);
-void hw_intr_not_used(int irq);
-void hw_intr_disable_all(void);
+ଶୂନ୍ୟ hw_intr_mask(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
+ଶୂନ୍ୟ hw_intr_unmask(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
+ଶୂନ୍ୟ hw_intr_ack(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
+ଶୂନ୍ୟ hw_intr_used(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
+ଶୂନ୍ୟ hw_intr_not_used(ପୂର୍ଣ୍ଣସଂଖ୍ୟା irq);
+ଶୂନ୍ୟ hw_intr_disable_all(ଶୂନ୍ୟ);
 
 #endif /* __HW_INTR_ARM_H__ */

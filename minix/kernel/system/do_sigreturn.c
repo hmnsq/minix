@@ -7,41 +7,41 @@
  *
  */
 
-#include "kernel/system.h"
-#include <string.h>
-#include <machine/cpu.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/system.h"
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <machine/cpu.h>
 
-#if USE_SIGRETURN 
+#ଯଦି USE_SIGRETURN 
 
 /*===========================================================================*
  *			      do_sigreturn				     *
  *===========================================================================*/
-int do_sigreturn(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_sigreturn(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* POSIX style signals require sys_sigreturn to put things in order before 
  * the signalled process can resume execution
  */
-  struct sigcontext sc;
-  register struct proc *rp;
-  int proc_nr, r;
+  ସଂରଚନା sigcontext sc;
+  ପଞ୍ଜିକରଣ ସଂରଚନା proc *rp;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା proc_nr, r;
 
-  if (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) return EINVAL;
-  if (iskerneln(proc_nr)) return EPERM;
+  ଯଦି (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) ଫେରନ୍ତୁ EINVAL;
+  ଯଦି (iskerneln(proc_nr)) ଫେରନ୍ତୁ EPERM;
   rp = proc_addr(proc_nr);
 
   /* Copy in the sigcontext structure. */
-  if ((r = data_copy(m_ptr->m_sigcalls.endpt,
+  ଯଦି ((r = data_copy(m_ptr->m_sigcalls.endpt,
 		 (vir_bytes)m_ptr->m_sigcalls.sigctx, KERNEL,
-		 (vir_bytes)&sc, sizeof(struct sigcontext))) != OK)
-	return r;
+		 (vir_bytes)&sc, ଆକାର(ସଂରଚନା sigcontext))) != OK)
+	ଫେରନ୍ତୁ r;
 
-#if defined(__i386__)
+#ଯଦି defined(__i386__)
   /* Restore user bits of psw from sc, maintain system bits from proc. */
   sc.sc_eflags  =  (sc.sc_eflags & X86_FLAGS_USER) |
                 (rp->p_reg.psw & ~X86_FLAGS_USER);
 #endif
 
-#if defined(__i386__)
+#ଯଦି defined(__i386__)
   /* Write back registers we allow to be restored, i.e.
    * not the segment ones.
    */
@@ -57,7 +57,7 @@ int do_sigreturn(struct proc * caller, message * m_ptr)
   rp->p_reg.sp = sc.sc_esp;
 #endif
 
-#if defined(__arm__)
+#ଯଦି defined(__arm__)
   rp->p_reg.psr = sc.sc_spsr;
   rp->p_reg.retreg = sc.sc_r0;
   rp->p_reg.r1 = sc.sc_r1;
@@ -80,10 +80,10 @@ int do_sigreturn(struct proc * caller, message * m_ptr)
   /* Restore the registers. */
   arch_proc_setcontext(rp, &rp->p_reg, 1, sc.trap_style);
 
-  if(sc.sc_magic != SC_MAGIC) { printf("kernel sigreturn: corrupt signal context\n"); }
+  ଯଦି(sc.sc_magic != SC_MAGIC) { printf("kernel sigreturn: corrupt signal context\n"); }
 
-#if defined(__i386__)
-  if (sc.sc_flags & MF_FPU_INITIALIZED)
+#ଯଦି defined(__i386__)
+  ଯଦି (sc.sc_flags & MF_FPU_INITIALIZED)
   {
 	memcpy(rp->p_seg.fpu_state, &sc.sc_fpu_state, FPU_XFP_SIZE);
 	rp->p_misc_flags |=  MF_FPU_INITIALIZED; /* Restore math usage flag. */
@@ -92,7 +92,7 @@ int do_sigreturn(struct proc * caller, message * m_ptr)
   }
 #endif
 
-  return OK;
+  ଫେରନ୍ତୁ OK;
 }
 #endif /* USE_SIGRETURN */
 

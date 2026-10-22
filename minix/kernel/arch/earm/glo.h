@@ -1,9 +1,9 @@
 #ifndef __GLO_ARM_H__
 #define __GLO_ARM_H__
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "arch_proto.h"
 
-EXTERN struct tss_s tss[CONFIG_MAX_CPUS];
+EXTERN ସଂରଚନା tss_s tss[CONFIG_MAX_CPUS];
 
 #endif /* __GLO_ARM_H__ */

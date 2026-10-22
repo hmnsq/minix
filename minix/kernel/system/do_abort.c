@@ -5,24 +5,24 @@
  *   m_lsys_krn_sys_abort.how 	(how to abort, possibly fetch monitor params)
  */
 
-#include "kernel/system.h"
-#include <unistd.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/system.h"
+#ଅନ୍ତର୍ଭାଵ <unistd.h>
 
-#if USE_ABORT
+#ଯଦି USE_ABORT
 
 /*===========================================================================*
  *				do_abort				     *
  *===========================================================================*/
-int do_abort(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_abort(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* Handle sys_abort. MINIX is unable to continue. This can originate e.g.
  * in the PM (normal abort) or TTY (after CTRL-ALT-DEL).
  */
-  int how = m_ptr->m_lsys_krn_sys_abort.how;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା how = m_ptr->m_lsys_krn_sys_abort.how;
 
   /* Now prepare to shutdown MINIX. */
   prepare_shutdown(how);
-  return(OK);				/* pro-forma (really EDISASTER) */
+  ଫେରନ୍ତୁ(OK);				/* pro-forma (really EDISASTER) */
 }
 
 #endif /* USE_ABORT */

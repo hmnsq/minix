@@ -7,22 +7,22 @@
  *    m_lsys_krn_sys_vdevio.vec_size	(number of ports to read or write)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/system.h"
+#ଅନ୍ତର୍ଭାଵ <minix/devio.h>
+#ଅନ୍ତର୍ଭାଵ <minix/endpoint.h>
 
-#if USE_VDEVIO
+#ଯଦି USE_VDEVIO
 
 /* Buffer for SYS_VDEVIO to copy (port,value)-pairs from/ to user. */
-static char vdevio_buf[VDEVIO_BUF_SIZE];      
-static pvb_pair_t * const pvb = (pvb_pair_t *) vdevio_buf;           
-static pvw_pair_t * const pvw = (pvw_pair_t *) vdevio_buf;      
-static pvl_pair_t * const pvl = (pvl_pair_t *) vdevio_buf;     
+ସ୍ଥିର ଅକ୍ଷର vdevio_buf[VDEVIO_BUF_SIZE];      
+ସ୍ଥିର pvb_pair_t * ଅଚଳ pvb = (pvb_pair_t *) vdevio_buf;           
+ସ୍ଥିର pvw_pair_t * ଅଚଳ pvw = (pvw_pair_t *) vdevio_buf;      
+ସ୍ଥିର pvl_pair_t * ଅଚଳ pvl = (pvl_pair_t *) vdevio_buf;     
 
 /*===========================================================================*
  *			        do_vdevio                                    *
  *===========================================================================*/
-int do_vdevio(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_vdevio(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* Perform a series of device I/O on behalf of a non-kernel process. The 
  * I/O addresses and I/O values are fetched from and returned to some buffer
@@ -30,135 +30,135 @@ int do_vdevio(struct proc * caller, message * m_ptr)
  * that I/O batch from being interrupted.
  * This is the counterpart of do_devio, which performs a single device I/O. 
  */ 
-  int vec_size;               /* size of vector */
-  int io_in;                  /* true if input */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା vec_size;               /* size of vector */
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା io_in;                  /* true if input */
   size_t bytes;               /* # bytes to be copied */
   port_t port;
-  int i, j, io_size, nr_io_range;
-  int io_dir, io_type;
-  struct priv *privp;
-  struct io_range *iorp;
-  int r;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା i, j, io_size, nr_io_range;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା io_dir, io_type;
+  ସଂରଚନା priv *privp;
+  ସଂରଚନା io_range *iorp;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା r;
     
   /* Get the request, size of the request vector, and check the values. */
   io_dir = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_DIRMASK;
   io_type = m_ptr->m_lsys_krn_sys_vdevio.request & _DIO_TYPEMASK;
-  if (io_dir == _DIO_INPUT) io_in = TRUE;
-  else if (io_dir == _DIO_OUTPUT) io_in = FALSE;
-  else return(EINVAL);
-  if ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) return(EINVAL);
-  switch (io_type) {
-      case _DIO_BYTE:
-	bytes = vec_size * sizeof(pvb_pair_t);
-	io_size= sizeof(u8_t);
-	break;
-      case _DIO_WORD:
-	bytes = vec_size * sizeof(pvw_pair_t);
-	io_size= sizeof(u16_t);
-	break;
-      case _DIO_LONG:
-	bytes = vec_size * sizeof(pvl_pair_t);
-	io_size= sizeof(u32_t);
-	break;
-      default:  return(EINVAL);   /* check type once and for all */
+  ଯଦି (io_dir == DIO_ନିବେଶ) io_in = TRUE;
+  ଅନ୍ୟଥା ଯଦି (io_dir == _DIO_OUTPUT) io_in = FALSE;
+  ଅନ୍ୟଥା ଫେରନ୍ତୁ(EINVAL);
+  ଯଦି ((vec_size = m_ptr->m_lsys_krn_sys_vdevio.vec_size) <= 0) ଫେରନ୍ତୁ(EINVAL);
+  ବାଛ (io_type) {
+      ସ୍ଥିତି _DIO_BYTE:
+	bytes = vec_size * ଆକାର(pvb_pair_t);
+	io_size= ଆକାର(u8_t);
+	ଭାଙ୍ଗ;
+      ସ୍ଥିତି _DIO_WORD:
+	bytes = vec_size * ଆକାର(pvw_pair_t);
+	io_size= ଆକାର(u16_t);
+	ଭାଙ୍ଗ;
+      ସ୍ଥିତି _DIO_LONG:
+	bytes = vec_size * ଆକାର(pvl_pair_t);
+	io_size= ଆକାର(u32_t);
+	ଭାଙ୍ଗ;
+      ପୂର୍ବନିର୍ଦ୍ଧାରିତ:  ଫେରନ୍ତୁ(EINVAL);   /* check type once and for all */
   }
-  if (bytes > sizeof(vdevio_buf))  return(E2BIG);
+  ଯଦି (bytes > ଆକାର(vdevio_buf))  ଫେରନ୍ତୁ(E2BIG);
 
   /* Copy (port,value)-pairs from user. */
-  if((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
+  ଯଦି((r=data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
     KERNEL, (vir_bytes) vdevio_buf, bytes)) != OK)
-	return r;
+	ଫେରନ୍ତୁ r;
 
   privp= priv(caller);
-  if (privp && (privp->s_flags & CHECK_IO_PORT))
+  ଯଦି (privp && (privp->s_flags & CHECK_IO_PORT))
   {
 	/* Check whether the I/O is allowed */
 	nr_io_range= privp->s_nr_io_range;
-	for (i=0; i<vec_size; i++)
+	ପାଇଁ (i=0; i<vec_size; i++)
 	{
-		switch (io_type) {
-		case _DIO_BYTE: port= pvb[i].port; break;
-		case _DIO_WORD: port= pvw[i].port; break;
-		default:	port= pvl[i].port; break;
+		ବାଛ (io_type) {
+		ସ୍ଥିତି _DIO_BYTE: port= pvb[i].port; ଭାଙ୍ଗ;
+		ସ୍ଥିତି _DIO_WORD: port= pvw[i].port; ଭାଙ୍ଗ;
+		ପୂର୍ବନିର୍ଦ୍ଧାରିତ:	port= pvl[i].port; ଭାଙ୍ଗ;
 		}
-		for (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
+		ପାଇଁ (j= 0, iorp= privp->s_io_tab; j<nr_io_range; j++, iorp++)
 		{
-			if (port >= iorp->ior_base &&
+			ଯଦି (port >= iorp->ior_base &&
 				port+io_size-1 <= iorp->ior_limit)
 			{
-				break;
+				ଭାଙ୍ଗ;
 			}
 		}
-		if (j >= nr_io_range)
+		ଯଦି (j >= nr_io_range)
 		{
 			printf(
 		"do_vdevio: I/O port check failed for proc %d, port 0x%x\n",
 				caller->p_endpoint, port);
-			return EPERM;
+			ଫେରନ୍ତୁ EPERM;
 		}
 	}
   }
 
   /* Perform actual device I/O for byte, word, and long values */
-  switch (io_type) {
-  case _DIO_BYTE: 					 /* byte values */
-      if (io_in) for (i=0; i<vec_size; i++) 
-		pvb[i].value = inb( pvb[i].port); 
-      else      for (i=0; i<vec_size; i++)
-		outb( pvb[i].port, pvb[i].value); 
-      break; 
-  case _DIO_WORD:					  /* word values */
-      if (io_in)
+  ବାଛ (io_type) {
+  ସ୍ଥିତି _DIO_BYTE: 					 /* byte values */
+      ଯଦି (io_in) ପାଇଁ (i=0; i<vec_size; i++) 
+		pvb[i].ମୂଲ୍ୟ = inb( pvb[i].port); 
+      ଅନ୍ୟଥା      ପାଇଁ (i=0; i<vec_size; i++)
+		outb( pvb[i].port, pvb[i].ମୂଲ୍ୟ); 
+      ଭାଙ୍ଗ; 
+  ସ୍ଥିତି _DIO_WORD:					  /* word values */
+      ଯଦି (io_in)
       {
-	for (i=0; i<vec_size; i++)  
+	ପାଇଁ (i=0; i<vec_size; i++)  
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
-		pvw[i].value = inw( pvw[i].port);  
+		ଯଦି (port & 1) ଯାଅ bad;
+		pvw[i].ମୂଲ୍ୟ = inw( pvw[i].port);  
 	}
       }
-      else
+      ଅନ୍ୟଥା
       {
-	for (i=0; i<vec_size; i++) 
+	ପାଇଁ (i=0; i<vec_size; i++) 
 	{
 		port= pvw[i].port;
-		if (port & 1) goto bad;
-		outw( pvw[i].port, pvw[i].value); 
+		ଯଦି (port & 1) ଯାଅ bad;
+		outw( pvw[i].port, pvw[i].ମୂଲ୍ୟ); 
 	}
       }
-      break; 
-  default:            					  /* long values */
-      if (io_in)
+      ଭାଙ୍ଗ; 
+  ପୂର୍ବନିର୍ଦ୍ଧାରିତ:            					  /* long values */
+      ଯଦି (io_in)
       {
-	for (i=0; i<vec_size; i++)
+	ପାଇଁ (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
-		pvl[i].value = inl(pvl[i].port);  
+		ଯଦି (port & 3) ଯାଅ bad;
+		pvl[i].ମୂଲ୍ୟ = inl(pvl[i].port);  
 	}
       }
-      else
+      ଅନ୍ୟଥା
       {
-	for (i=0; i<vec_size; i++)
+	ପାଇଁ (i=0; i<vec_size; i++)
 	{
 		port= pvl[i].port;
-		if (port & 3) goto bad;
-		outl( pvb[i].port, pvl[i].value); 
+		ଯଦି (port & 3) ଯାଅ bad;
+		outl( pvb[i].port, pvl[i].ମୂଲ୍ୟ); 
 	}
       }
   }
     
   /* Almost done, copy back results for input requests. */
-  if (io_in) 
-	if((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
+  ଯଦି (io_in) 
+	ଯଦି((r=data_copy(KERNEL, (vir_bytes) vdevio_buf,
 	  caller->p_endpoint, m_ptr->m_lsys_krn_sys_vdevio.vec_addr,
 	  (phys_bytes) bytes)) != OK)
-		return r;
-  return(OK);
+		ଫେରନ୍ତୁ r;
+  ଫେରନ୍ତୁ(OK);
 
 bad:
 	panic("do_vdevio: unaligned port: %d", port);
-	return EPERM;
+	ଫେରନ୍ତୁ EPERM;
 }
 
 #endif /* USE_VDEVIO */

@@ -8,43 +8,43 @@
  *   m_lsys_krn_sys_exec.ip		(new instruction pointer)
  *   m_lsys_krn_sys_exec.ps_str		(struct ps_strings *)
  */
-#include "kernel/system.h"
-#include <string.h>
-#include <minix/endpoint.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/system.h"
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <minix/endpoint.h>
 
-#if USE_EXEC
+#ଯଦି USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା do_exec(ସଂରଚନା proc * caller, message * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
-  register struct proc *rp;
-  int proc_nr;
-  char name[PROC_NAME_LEN];
+  ପଞ୍ଜିକରଣ ସଂରଚନା proc *rp;
+  ପୂର୍ଣ୍ଣସଂଖ୍ୟା proc_nr;
+  ଅକ୍ଷର name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  ଯଦି(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	ଫେରନ୍ତୁ EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  ଯଦି(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+  ଯଦି(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
 	KERNEL, (vir_bytes) name,
-	(phys_bytes) sizeof(name) - 1) != OK)
+	(phys_bytes) ଆକାର(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
 
-  name[sizeof(name)-1] = '\0';
+  name[ଆକାର(name)-1] = '\0';
 
   /* Set process state. */
   arch_proc_init(rp,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ip,
-	(u32_t) m_ptr->m_lsys_krn_sys_exec.stack,
+	(u32_t) m_ptr->m_lsys_krn_sys_exec.ଗଦା,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ps_str, name);
 
   /* No reply to EXEC call */
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  ଫେରନ୍ତୁ(OK);
 }
 #endif /* USE_EXEC */

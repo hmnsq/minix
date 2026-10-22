@@ -2,10 +2,10 @@
 #ifndef CONST_H
 #define CONST_H
 
-#include <minix/config.h>
-#include <minix/bitmap.h>
+#ଅନ୍ତର୍ଭାଵ <minix/config.h>
+#ଅନ୍ତର୍ଭାଵ <minix/bitmap.h>
 
-#include "debug.h"
+#ଅନ୍ତର୍ଭାଵ "debug.h"
 
 /* Translate an endpoint number to a process number, return success. */
 #ifndef isokendpt
@@ -33,7 +33,7 @@
 #ifndef USR_DATATOP
 #ifndef _MINIX_MAGIC
 #define USR_DATATOP 0xF0000000
-#else
+#ଅନ୍ୟଥା
 #define USR_DATATOP 0xE0000000	/* TODO: is this necessary? */
 #endif
 #endif

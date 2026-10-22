@@ -1,63 +1,63 @@
 /* system dependent functions for use inside the whole kernel. */
 
-#include "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <minix/cpufeature.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <machine/signal.h>
-#include <arm/armreg.h>
+#ଅନ୍ତର୍ଭାଵ <unistd.h>
+#ଅନ୍ତର୍ଭାଵ <ctype.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <minix/cpufeature.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
+#ଅନ୍ତର୍ଭାଵ <signal.h>
+#ଅନ୍ତର୍ଭାଵ <machine/vm.h>
+#ଅନ୍ତର୍ଭାଵ <machine/signal.h>
+#ଅନ୍ତର୍ଭାଵ <arm/armreg.h>
 
-#include <minix/u64.h>
+#ଅନ୍ତର୍ଭାଵ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "ccnt.h"
-#include "bsp_init.h"
-#include "bsp_serial.h"
+#ଅନ୍ତର୍ଭାଵ "archconst.h"
+#ଅନ୍ତର୍ଭାଵ "arch_proto.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/proc.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/debug.h"
+#ଅନ୍ତର୍ଭାଵ "ccnt.h"
+#ଅନ୍ତର୍ଭାଵ "bsp_init.h"
+#ଅନ୍ତର୍ଭାଵ "bsp_serial.h"
 
-#include "glo.h"
+#ଅନ୍ତର୍ଭାଵ "glo.h"
 
-void * k_stacks;
+ଶୂନ୍ୟ * k_stacks;
 
 
-void fpu_init(void)
+ଶୂନ୍ୟ fpu_init(ଶୂନ୍ୟ)
 {
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+ଶୂନ୍ୟ save_local_fpu(ସଂରଚନା proc *pr, ପୂର୍ଣ୍ଣସଂଖ୍ୟା retain)
 {
 }
 
-void save_fpu(struct proc *pr)
+ଶୂନ୍ୟ save_fpu(ସଂରଚନା proc *pr)
 {
 }
 
-void arch_proc_reset(struct proc *pr)
+ଶୂନ୍ୟ arch_proc_reset(ସଂରଚନା proc *pr)
 {
-	assert(pr->p_nr < NR_PROCS);
+	ପ୍ରତିଜ୍ଞା(pr->p_nr < NR_PROCS);
 
 	/* Clear process state. */
-	memset(&pr->p_reg, 0, sizeof(pr->p_reg));
-	if(iskerneln(pr->p_nr)) {
+	memset(&pr->p_reg, 0, ଆକାର(pr->p_reg));
+	ଯଦି(iskerneln(pr->p_nr)) {
 		pr->p_reg.psr = INIT_TASK_PSR;
-	} else {
+	} ଅନ୍ୟଥା {
 		pr->p_reg.psr = INIT_PSR;
 	}
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trapstyle)
+ଶୂନ୍ୟ arch_proc_setcontext(ସଂରଚନା proc *p, ସଂରଚନା stackframe_s *state,
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା isuser, ପୂର୍ଣ୍ଣସଂଖ୍ୟା trapstyle)
 {
-        assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-	        memcpy(&p->p_reg, state, sizeof(*state));
+        ପ୍ରତିଜ୍ଞା(ଆକାର(p->p_reg) == ଆକାର(*state));
+	ଯଦି(state != &p->p_reg) {
+	        memcpy(&p->p_reg, state, ଆକାର(*state));
 	}
 
         /* further code is instructed to not touch the context
@@ -65,29 +65,29 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
          */
         p->p_misc_flags |= MF_CONTEXT_SET;
 
-        if(!(p->p_rts_flags)) {
+        ଯଦି(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
                 print_proc(p);
                 util_stacktrace();
         }
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+ଶୂନ୍ୟ arch_set_secondary_ipc_return(ସଂରଚନା proc *p, u32_t val)
 {
 	p->p_reg.r1 = val;
 }
 
-int restore_fpu(struct proc *pr)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା restore_fpu(ସଂରଚନା proc *pr)
 {
-	return 0;
+	ଫେରନ୍ତୁ 0;
 }
 
-void cpu_identify(void)
+ଶୂନ୍ୟ cpu_identify(ଶୂନ୍ୟ)
 {
 	u32_t midr;
 	unsigned cpu = cpuid;
 
-	asm volatile("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
+	asm ଅସ୍ଥିର("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
 		     : [midr] "=r" (midr));
 
 	cpu_info[cpu].implementer = midr >> 24;
@@ -98,68 +98,68 @@ void cpu_identify(void)
 	cpu_info[cpu].freq = 660; /* 660 Mhz hardcoded */
 }
 
-void arch_init(void)
+ଶୂନ୍ୟ arch_init(ଶୂନ୍ୟ)
 {
-        u32_t value;
+        u32_t ମୂଲ୍ୟ;
 
-	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	k_stacks = (ଶୂନ୍ୟ*) &k_stacks_start;
+	ପ୍ରତିଜ୍ଞା(!((vir_bytes) k_stacks % K_ଗଦା_SIZE));
 
 #ifndef CONFIG_SMP
 	/*
 	 * use stack 0 and cpu id 0 on a single processor machine, SMP
 	 * configuration does this in smp_init() for all cpus at once
 	 */
-	tss_init(0, get_k_stack_top(0));
+	tss_init(0, get_k_ଗଦା_ଶୀର୍ଷ(0));
 #endif
 
 
         /* enable user space access to cycle counter */
         /* set cycle counter to 0: ARM ARM B4.1.113 and B4.1.117 */
-        asm volatile ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
-        value |= PMU_PMCR_C; /* Reset counter */
-        value |= PMU_PMCR_E; /* Enable counter hardware */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
+        asm ଅସ୍ଥିର ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (ମୂଲ୍ୟ));
+        ମୂଲ୍ୟ |= PMU_PMCR_C; /* Reset counter */
+        ମୂଲ୍ୟ |= PMU_PMCR_E; /* Enable counter hardware */
+        asm ଅସ୍ଥିର ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (ମୂଲ୍ୟ));
 
         /* enable CCNT counting: ARM ARM B4.1.116 */
-        value = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
+        ମୂଲ୍ୟ = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
+        asm ଅସ୍ଥିର ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (ମୂଲ୍ୟ));
 
         /* enable cycle counter in user mode: ARM ARM B4.1.124 */
-        value = PMU_PMUSERENR_EN;
-        asm volatile ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
+        ମୂଲ୍ୟ = PMU_PMUSERENR_EN;
+        asm ଅସ୍ଥିର ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (ମୂଲ୍ୟ));
 	bsp_init();
 }
 
 /*===========================================================================*
  *				do_ser_debug				     * 
  *===========================================================================*/
-void do_ser_debug(void)
+ଶୂନ୍ୟ do_ser_debug(ଶୂନ୍ୟ)
 {
 }
 
-void arch_do_syscall(struct proc *proc)
+ଶୂନ୍ୟ arch_do_syscall(ସଂରଚନା proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
-  assert(proc == get_cpulocal_var(proc_ptr));
+  ପ୍ରତିଜ୍ଞା(proc == get_cpulocal_var(proc_ptr));
   /* Make the system call, for real this time. */
   proc->p_reg.retreg =
 	  do_ipc(proc->p_reg.retreg, proc->p_reg.r1, proc->p_reg.r2);
 }
 
-reg_t svc_stack;
+reg_t svc_ଗଦା;
 
-struct proc * arch_finish_switch_to_user(void)
+ସଂରଚନା proc * arch_finish_switch_to_user(ଶୂନ୍ୟ)
 {
-	char * stk;
-	struct proc * p;
+	ଅକ୍ଷର * stk;
+	ସଂରଚନା proc * p;
 
 #ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
+	stk = (ଅକ୍ଷର *)tss[cpuid].sp0;
+#ଅନ୍ୟଥା
+	stk = (ଅକ୍ଷର *)tss[0].sp0;
 #endif
-	svc_stack = (reg_t)stk;
+	svc_ଗଦା = (reg_t)stk;
 	/* set pointer to the process to run on the stack */
 	p = get_cpulocal_var(proc_ptr);
 	*((reg_t *)stk) = (reg_t) p;
@@ -167,20 +167,20 @@ struct proc * arch_finish_switch_to_user(void)
 	/* turn interrupts on */
         p->p_reg.psr &= ~(PSR_I|PSR_F);
 
-	return p;
+	ଫେରନ୍ତୁ p;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+ଶୂନ୍ୟ fpu_sigcontext(ସଂରଚନା proc *pr, ସଂରଚନା sigframe_sigcontext *fr, ସଂରଚନା sigcontext *sc)
 {
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(ସଂରଚନା proc *p) { ଫେରନ୍ତୁ p->p_reg.sp; }
 
-void get_randomness(struct k_randomness *rand, int source)
+ଶୂନ୍ୟ get_randomness(ସଂରଚନା k_randomness *rand, ପୂର୍ଣ୍ଣସଂଖ୍ୟା source)
 {
 }
 
-void arch_ser_init(void)
+ଶୂନ୍ୟ arch_ser_init(ଶୂନ୍ୟ)
 {
 	bsp_ser_init();
 }
@@ -193,13 +193,13 @@ void arch_ser_init(void)
  * same value in which case it would only result in an extra TLB flush which is
  * not desirable
  */
-void __switch_address_space(struct proc *p, struct proc **__ptproc)
+ଶୂନ୍ୟ __switch_address_space(ସଂରଚନା proc *p, ସଂରଚନା proc **__ptproc)
 {
 	reg_t orig_ttbr, new_ttbr;
 
 	new_ttbr = p->p_seg.p_ttbr;
-	if (new_ttbr == 0)
-	    return;
+	ଯଦି (new_ttbr == 0)
+	    ଫେରନ୍ତୁ;
 
 	orig_ttbr = read_ttbr0();
 
@@ -207,12 +207,12 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	 * test if ttbr is loaded with the current value to avoid unnecessary
 	 * TLB flushes
 	 */
-	if (new_ttbr == orig_ttbr)
-	    return;
+	ଯଦି (new_ttbr == orig_ttbr)
+	    ଫେରନ୍ତୁ;
 
 	write_ttbr0(new_ttbr);
 
 	*__ptproc = p;
 
-	return;
+	ଫେରନ୍ତୁ;
 }

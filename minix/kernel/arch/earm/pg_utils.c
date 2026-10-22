@@ -1,110 +1,110 @@
-#include <minix/cpufeature.h>
+#ଅନ୍ତର୍ଭାଵ <minix/cpufeature.h>
 
-#include <minix/type.h>
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <machine/cpu.h>
-#include <arm/armreg.h>
+#ଅନ୍ତର୍ଭାଵ <minix/type.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "arch_proto.h"
+#ଅନ୍ତର୍ଭାଵ <machine/cpu.h>
+#ଅନ୍ତର୍ଭାଵ <arm/armreg.h>
 
-#include <string.h>
-#include <minix/type.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <minix/type.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+ବାହ୍ୟ ଅକ୍ଷର _kern_vir_base, _kern_phys_base, _kern_size;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+ସ୍ଥିର phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
+ସ୍ଥିର phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
+ସ୍ଥିର phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
 
 /* page directory we can use to map things */
-static u32_t pagedir[4096]  __aligned(16384);
+ସ୍ଥିର u32_t pagedir[4096]  __aligned(16384);
 
-void print_memmap(kinfo_t *cbi)
+ଶୂନ୍ୟ print_memmap(kinfo_t *cbi)
 {
-	int m;
-	assert(cbi->mmap_size < MAXMEMMAP);
-	for(m = 0; m < cbi->mmap_size; m++) {
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା m;
+	ପ୍ରତିଜ୍ଞା(cbi->mmap_size < MAXMEMMAP);
+	ପାଇଁ(m = 0; m < cbi->mmap_size; m++) {
 		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
 		printf("%08lx-%08lx ",addr, endit);
 	}
 	printf("\nsize %08lx\n", cbi->mmap_size);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+ଶୂନ୍ୟ cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
 {
-	int m;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା m;
 	phys_bytes o;
 
-	if((o=start % ARM_PAGE_SIZE))
+	ଯଦି((o=start % ARM_PAGE_SIZE))
 		start -= o;
-	if((o=end % ARM_PAGE_SIZE))
+	ଯଦି((o=end % ARM_PAGE_SIZE))
 		end += ARM_PAGE_SIZE - o;
 
-	assert(kernel_may_alloc);
+	ପ୍ରତିଜ୍ଞା(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
+	ପାଇଁ(m = 0; m < cbi->mmap_size; m++) {
 		phys_bytes substart = start, subend = end;
 		phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
 		    memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
 
 		/* adjust cut range to be a subset of the free memory */
-		if(substart < memaddr) substart = memaddr;
-		if(subend > memend) subend = memend;
-		if(substart >= subend) continue;
+		ଯଦି(substart < memaddr) substart = memaddr;
+		ଯଦି(subend > memend) subend = memend;
+		ଯଦି(substart >= subend) ଜାରି;
 
 		/* if there is any overlap, forget this one and add
 		 * 1-2 subranges back
 		 */
 		cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-		if(substart > memaddr)
+		ଯଦି(substart > memaddr)
 			add_memmap(cbi, memaddr, substart-memaddr);
-		if(subend < memend)
+		ଯଦି(subend < memend)
 			add_memmap(cbi, subend, memend-subend);
 	}
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+ଶୂନ୍ୟ add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-	int m;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା m;
 #define LIMIT 0xFFFFF000
 	/* Truncate available memory at 4GB as the rest of minix
 	 * currently can't deal with any bigger.
 	 */
-	if(addr > LIMIT) {
-		return;
+	ଯଦି(addr > LIMIT) {
+		ଫେରନ୍ତୁ;
 	}
 
-	if(addr + len > LIMIT) {
+	ଯଦି(addr + len > LIMIT) {
 		len -= (addr + len - LIMIT);
 	}
 
-	assert(cbi->mmap_size < MAXMEMMAP);
-	if(len == 0) {
-		return;
+	ପ୍ରତିଜ୍ଞା(cbi->mmap_size < MAXMEMMAP);
+	ଯଦି(len == 0) {
+		ଫେରନ୍ତୁ;
 	}
 	addr = roundup(addr, ARM_PAGE_SIZE);
 	len = rounddown(len, ARM_PAGE_SIZE);
 
-	assert(kernel_may_alloc);
+	ପ୍ରତିଜ୍ଞା(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
+        ପାଇଁ(m = 0; m < MAXMEMMAP; m++) {
 		phys_bytes highmark;
-		if(cbi->memmap[m].mm_length) {
-			continue;
+		ଯଦି(cbi->memmap[m].mm_length) {
+			ଜାରି;
 		}
 		cbi->memmap[m].mm_base_addr = addr;
 		cbi->memmap[m].mm_length = len;
 		cbi->memmap[m].type = MULTIBOOT_MEMORY_AVAILABLE;
-		if(m >= cbi->mmap_size) {
+		ଯଦି(m >= cbi->mmap_size) {
 			cbi->mmap_size = m+1;
 		}
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		ଯଦି(highmark > cbi->mem_ଉପର_phys) {
+			cbi->mem_ଉପର_phys = highmark;
 		}
-		return;
+		ଫେରନ୍ତୁ;
         }
 
 	panic("no available memmap slot");
@@ -114,34 +114,34 @@ u32_t *alloc_pagetable(phys_bytes *ph)
 {
 	u32_t *ret;
 #define PG_PAGETABLES 24
-	static u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) {
+	ସ୍ଥିର u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
+	ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା pt_inuse = 0;
+	ଯଦି(pt_inuse >= PG_PAGETABLES) {
 		panic("no more pagetables");
 	}
-	assert(sizeof(pagetables[pt_inuse]) == 1024);
+	ପ୍ରତିଜ୍ଞା(ଆକାର(pagetables[pt_inuse]) == 1024);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	ଫେରନ୍ତୁ ret;
 }
 
 #define PAGE_KB (ARM_PAGE_SIZE / 1024)
 
 phys_bytes pg_alloc_page(kinfo_t *cbi)
 {
-	int m;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା m;
 	multiboot_memory_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	ପ୍ରତିଜ୍ଞା(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
+	ପାଇଁ(m = 0; m < cbi->mmap_size; m++) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) {
-			continue;
+		ଯଦି(!mmap->mm_length) {
+			ଜାରି;
 		}
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % ARM_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % ARM_PAGE_SIZE));
+		ପ୍ରତିଜ୍ଞା(mmap->mm_length > 0);
+		ପ୍ରତିଜ୍ଞା(!(mmap->mm_length % ARM_PAGE_SIZE));
+		ପ୍ରତିଜ୍ଞା(!(mmap->mm_base_addr % ARM_PAGE_SIZE));
 
 		u32_t addr = mmap->mm_base_addr;
 		mmap->mm_base_addr += ARM_PAGE_SIZE;
@@ -149,13 +149,13 @@ phys_bytes pg_alloc_page(kinfo_t *cbi)
 
 		cbi->kernel_allocated_bytes_dynamic += ARM_PAGE_SIZE;
 
-		return addr;
+		ଫେରନ୍ତୁ addr;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+ଶୂନ୍ୟ pg_identity(kinfo_t *cbi)
 {
 	uint32_t i;
 	phys_bytes phys;
@@ -163,33 +163,33 @@ void pg_identity(kinfo_t *cbi)
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	ପ୍ରତିଜ୍ଞା(cbi->mem_ଉପର_phys);
 
         /* Set up an identity mapping page directory */
-	 for(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
+	 ପାଇଁ(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
 		u32_t flags = ARM_VM_SECTION
 			| ARM_VM_SECTION_USER
 			| ARM_VM_SECTION_DOMAIN;
 
 		phys = i * ARM_SECTION_SIZE;
 		/* mark mormal memory as cacheable. TODO: fix hard coded values */
-		if (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_END) {
+		ଯଦି (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_END) {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_CACHED;
-		} else {
+		} ଅନ୍ୟଥା {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_DEVICE;
 		}
         }
 }
 
-int pg_mapkernel(void)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା pg_mapkernel(ଶୂନ୍ୟ)
 {
-	int pde;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା pde;
 	u32_t mapped = 0, kern_phys = kern_phys_start;
 
-	assert(!(kern_vir_start % ARM_SECTION_SIZE));
-	assert(!(kern_phys_start % ARM_SECTION_SIZE));
+	ପ୍ରତିଜ୍ଞା(!(kern_vir_start % ARM_SECTION_SIZE));
+	ପ୍ରତିଜ୍ଞା(!(kern_phys_start % ARM_SECTION_SIZE));
 	pde = kern_vir_start / ARM_SECTION_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
+	ଯେତେବେଳେ(mapped < kern_kernlen) {
 		pagedir[pde] = (kern_phys & ARM_VM_SECTION_MASK) 
 			| ARM_VM_SECTION
 			| ARM_VM_SECTION_SUPER
@@ -199,10 +199,10 @@ int pg_mapkernel(void)
 		kern_phys += ARM_SECTION_SIZE;
 		pde++;
 	}
-	return pde;	/* free pde */
+	ଫେରନ୍ତୁ pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+ଶୂନ୍ୟ vm_enable_paging(ଶୂନ୍ୟ)
 {
 	u32_t sctlr;
 	u32_t actlr;
@@ -240,57 +240,57 @@ void vm_enable_paging(void)
 	write_sctlr(sctlr);
 }
 
-phys_bytes pg_load(void)
+phys_bytes pg_load(ଶୂନ୍ୟ)
 {
 	phys_bytes phpagedir = vir2phys(pagedir);
 	write_ttbr0(phpagedir);
-	return phpagedir;
+	ଫେରନ୍ତୁ phpagedir;
 }
 
-void pg_clear(void)
+ଶୂନ୍ୟ pg_clear(ଶୂନ୍ୟ)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	memset(pagedir, 0, ଆକାର(pagedir));
 }
 
 phys_bytes pg_rounddown(phys_bytes b)
 {
 	phys_bytes o;
-	if(!(o = b % ARM_PAGE_SIZE)) {
-		return b;
+	ଯଦି(!(o = b % ARM_PAGE_SIZE)) {
+		ଫେରନ୍ତୁ b;
 	}
-	return b  - o;
+	ଫେରନ୍ତୁ b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+ଶୂନ୍ୟ pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା mapped_pde = -1;
+	ସ୍ଥିର u32_t *pt = ଖାଲି;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା pde, pte;
 
-	assert(kernel_may_alloc);
+	ପ୍ରତିଜ୍ଞା(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % ARM_PAGE_SIZE));
-	} else  {
-		assert((vaddr % ARM_PAGE_SIZE) == (phys % ARM_PAGE_SIZE));
+	ଯଦି(phys == PG_ALLOCATEME) {
+		ପ୍ରତିଜ୍ଞା(!(vaddr % ARM_PAGE_SIZE));
+	} ଅନ୍ୟଥା  {
+		ପ୍ରତିଜ୍ଞା((vaddr % ARM_PAGE_SIZE) == (phys % ARM_PAGE_SIZE));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}
-	assert(vaddr < kern_vir_start);
+	ପ୍ରତିଜ୍ଞା(vaddr < kern_vir_start);
 
-	while(vaddr < vaddr_end) {
+	ଯେତେବେଳେ(vaddr < vaddr_end) {
 		phys_bytes source = phys;
-		assert(!(vaddr % ARM_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
+		ପ୍ରତିଜ୍ଞା(!(vaddr % ARM_PAGE_SIZE));
+		ଯଦି(phys == PG_ALLOCATEME) {
 			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % ARM_PAGE_SIZE));
+		} ଅନ୍ୟଥା {
+			ପ୍ରତିଜ୍ଞା(!(phys % ARM_PAGE_SIZE));
 		}
-		assert(!(source % ARM_PAGE_SIZE));
+		ପ୍ରତିଜ୍ଞା(!(source % ARM_PAGE_SIZE));
 		pde = ARM_VM_PDE(vaddr);
 		pte = ARM_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
+		ଯଦି(mapped_pde < pde) {
 			phys_bytes ph;
 			pt = alloc_pagetable(&ph);
 			pagedir[pde] = (ph & ARM_VM_PDE_MASK)
@@ -298,19 +298,19 @@ void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
 					| ARM_VM_PDE_DOMAIN;
 			mapped_pde = pde;
 		}
-		assert(pt);
+		ପ୍ରତିଜ୍ଞା(pt);
 		pt[pte] = (source & ARM_VM_PTE_MASK)
 			| ARM_VM_PAGETABLE
 			| ARM_VM_PTE_CACHED
 			| ARM_VM_PTE_USER;
 		vaddr += ARM_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME) {
+		ଯଦି(phys != PG_ALLOCATEME) {
 			phys += ARM_PAGE_SIZE;
 		}
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+ଶୂନ୍ୟ pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

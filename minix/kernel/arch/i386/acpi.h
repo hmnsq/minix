@@ -1,13 +1,13 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-#include "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
 
 /* ACPI root system description pointer */
-struct acpi_rsdp {
-	char	signature[8]; /* must be "RSD PTR " */
+ସଂରଚନା acpi_rsdp {
+	ଅକ୍ଷର	signature[8]; /* must be "RSD PTR " */
 	u8_t	checksum;
-	char	oemid[6];
+	ଅକ୍ଷର	oemid[6];
 	u8_t	revision;
 	u32_t	rsdt_addr;
 	u32_t	length;
@@ -18,19 +18,19 @@ struct acpi_rsdp {
 #define ACPI_SDT_SIGNATURE(name)	#name
 
 /* header common to all system description tables */
-struct acpi_sdt_header {
-	char	signature[ACPI_SDT_SIGNATURE_LEN];
+ସଂରଚନା acpi_sdt_header {
+	ଅକ୍ଷର	signature[ACPI_SDT_SIGNATURE_LEN];
 	u32_t	length;
 	u8_t	revision;
 	u8_t	checksum;
-	char	oemid[6];
-	char	oem_table_id[8];
+	ଅକ୍ଷର	oemid[6];
+	ଅକ୍ଷର	oem_table_id[8];
 	u32_t	oem_revision;
 	u32_t	creator_id;
 	u32_t	creator_revision;
 };
 
-struct acpi_generic_address {
+ସଂରଚନା acpi_generic_address {
 	u8_t address_space_id;
 	u8_t register_bit_width;
 	u8_t register_bit_offset;
@@ -38,9 +38,9 @@ struct acpi_generic_address {
 	u64_t address;
 };
 
-struct acpi_fadt_header
+ସଂରଚନା acpi_fadt_header
 {
-	struct acpi_sdt_header hdr;
+	ସଂରଚନା acpi_sdt_header hdr;
 	u32_t facs;
 	u32_t dsdt;
 	u8_t model;
@@ -79,23 +79,23 @@ struct acpi_fadt_header
 	u16_t iapc_boot_arch;
 	u8_t reserved1;
 	u32_t flags;
-	struct acpi_generic_address reset_reg;
-	u8_t reset_value;
+	ସଂରଚନା acpi_generic_address reset_reg;
+	u8_t reset_ମୂଲ୍ୟ;
 	u8_t reserved2[3];
 	u64_t xfacs;
 	u64_t xdsdt;
-	struct acpi_generic_address xpm1a_evt_blk;
-	struct acpi_generic_address xpm1b_evt_blk;
-	struct acpi_generic_address xpm1a_cnt_blk;
-	struct acpi_generic_address xpm1b_cnt_blk;
-	struct acpi_generic_address xpm2_cnt_blk;
-	struct acpi_generic_address xpm_tmr_blk;
-	struct acpi_generic_address xgpe0_blk;
-	struct acpi_generic_address xgpe1_blk;
+	ସଂରଚନା acpi_generic_address xpm1a_evt_blk;
+	ସଂରଚନା acpi_generic_address xpm1b_evt_blk;
+	ସଂରଚନା acpi_generic_address xpm1a_cnt_blk;
+	ସଂରଚନା acpi_generic_address xpm1b_cnt_blk;
+	ସଂରଚନା acpi_generic_address xpm2_cnt_blk;
+	ସଂରଚନା acpi_generic_address xpm_tmr_blk;
+	ସଂରଚନା acpi_generic_address xgpe0_blk;
+	ସଂରଚନା acpi_generic_address xgpe1_blk;
 };
 
-struct acpi_madt_hdr {
-	struct acpi_sdt_header	hdr;
+ସଂରଚନା acpi_madt_hdr {
+	ସଂରଚନା acpi_sdt_header	hdr;
 	u32_t			local_apic_address;
 	u32_t			flags;
 };
@@ -112,51 +112,51 @@ struct acpi_madt_hdr {
 #define ACPI_MADT_TYPE_Lx2APIC		9
 #define ACPI_MADT_TYPE_Lx2APIC_NMI	10
 
-struct acpi_madt_item_hdr{
+ସଂରଚନା acpi_madt_item_hdr{
 	u8_t	type;
 	u8_t	length;
 };
 
-struct acpi_madt_lapic {
-	struct acpi_madt_item_hdr hdr;
+ସଂରଚନା acpi_madt_lapic {
+	ସଂରଚନା acpi_madt_item_hdr hdr;
 	u8_t	acpi_cpu_id;
 	u8_t	apic_id;
 	u32_t	flags;
 };
 
-struct acpi_madt_ioapic {
-	struct acpi_madt_item_hdr hdr;
+ସଂରଚନା acpi_madt_ioapic {
+	ସଂରଚନା acpi_madt_item_hdr hdr;
 	u8_t	id;
 	u8_t	__reserved;
 	u32_t	address;
 	u32_t	global_int_base;
 };
 
-struct acpi_madt_int_src {
-	struct acpi_madt_item_hdr hdr;
+ସଂରଚନା acpi_madt_int_src {
+	ସଂରଚନା acpi_madt_item_hdr hdr;
 	u8_t	bus;
 	u8_t	bus_int;
 	u32_t	global_int;
 	u16_t	mps_flags;
 };
 
-struct acpi_madt_nmi {
-	struct acpi_madt_item_hdr hdr;
+ସଂରଚନା acpi_madt_nmi {
+	ସଂରଚନା acpi_madt_item_hdr hdr;
 	u16_t	flags;
 	u32_t	global_int;
 };
 
-void acpi_init(void);
+ଶୂନ୍ୟ acpi_init(ଶୂନ୍ୟ);
 
-void acpi_poweroff(void);
+ଶୂନ୍ୟ acpi_poweroff(ଶୂନ୍ୟ);
 
 /* 
  * Returns a pointer to the io acpi structure in the MADT table in ACPI. The
  * pointer is valid only until paging is turned off. No memory is allocated in
  * this function thus no memory needs to be freed
  */
-struct acpi_madt_ioapic * acpi_get_ioapic_next(void);
+ସଂରଚନା acpi_madt_ioapic * acpi_get_ioapic_next(ଶୂନ୍ୟ);
 /* same as above for local APICs */
-struct acpi_madt_lapic * acpi_get_lapic_next(void);
+ସଂରଚନା acpi_madt_lapic * acpi_get_lapic_next(ଶୂନ୍ୟ);
 
 #endif /* __ACPI_H__ */

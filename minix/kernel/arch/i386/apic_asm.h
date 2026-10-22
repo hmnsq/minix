@@ -3,77 +3,77 @@
 
 
 #ifndef __ASSEMBLY__
-#include "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
 
-void apic_hwint0(void);
-void apic_hwint1(void);
-void apic_hwint2(void);
-void apic_hwint3(void);
-void apic_hwint4(void);
-void apic_hwint5(void);
-void apic_hwint6(void);
-void apic_hwint7(void);
-void apic_hwint8(void);
-void apic_hwint9(void);
-void apic_hwint10(void);
-void apic_hwint11(void);
-void apic_hwint12(void);
-void apic_hwint13(void);
-void apic_hwint14(void);
-void apic_hwint15(void);
-void apic_hwint16(void);
-void apic_hwint17(void);
-void apic_hwint18(void);
-void apic_hwint19(void);
-void apic_hwint20(void);
-void apic_hwint21(void);
-void apic_hwint22(void);
-void apic_hwint23(void);
-void apic_hwint24(void);
-void apic_hwint25(void);
-void apic_hwint26(void);
-void apic_hwint27(void);
-void apic_hwint28(void);
-void apic_hwint29(void);
-void apic_hwint30(void);
-void apic_hwint31(void);
-void apic_hwint32(void);
-void apic_hwint33(void);
-void apic_hwint34(void);
-void apic_hwint35(void);
-void apic_hwint36(void);
-void apic_hwint37(void);
-void apic_hwint38(void);
-void apic_hwint39(void);
-void apic_hwint40(void);
-void apic_hwint41(void);
-void apic_hwint42(void);
-void apic_hwint43(void);
-void apic_hwint44(void);
-void apic_hwint45(void);
-void apic_hwint46(void);
-void apic_hwint47(void);
-void apic_hwint48(void);
-void apic_hwint49(void);
-void apic_hwint50(void);
-void apic_hwint51(void);
-void apic_hwint52(void);
-void apic_hwint53(void);
-void apic_hwint54(void);
-void apic_hwint55(void);
-void apic_hwint56(void);
-void apic_hwint57(void);
-void apic_hwint58(void);
-void apic_hwint59(void);
-void apic_hwint60(void);
-void apic_hwint61(void);
-void apic_hwint62(void);
-void apic_hwint63(void);
+ଶୂନ୍ୟ apic_hwint0(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint1(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint2(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint3(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint4(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint5(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint6(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint7(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint8(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint9(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint10(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint11(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint12(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint13(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint14(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint15(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint16(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint17(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint18(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint19(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint20(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint21(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint22(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint23(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint24(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint25(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint26(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint27(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint28(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint29(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint30(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint31(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint32(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint33(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint34(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint35(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint36(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint37(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint38(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint39(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint40(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint41(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint42(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint43(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint44(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint45(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint46(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint47(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint48(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint49(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint50(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint51(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint52(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint53(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint54(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint55(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint56(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint57(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint58(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint59(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint60(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint61(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint62(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_hwint63(ଶୂନ୍ୟ);
 
 /* The local APIC timer tick handlers */
-void lapic_timer_int_handler(void);
-void apic_spurios_intr(void);
-void apic_error_intr(void);
+ଶୂନ୍ୟ lapic_timer_int_handler(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_spurios_intr(ଶୂନ୍ୟ);
+ଶୂନ୍ୟ apic_error_intr(ଶୂନ୍ୟ);
 
 #endif
 
@@ -84,8 +84,8 @@ void apic_error_intr(void);
 #define LAPIC_INTR_DUMMY_HANDLER_SIZE	32
 
 #ifndef __ASSEMBLY__
-EXTERN char lapic_intr_dummy_handles_start;
-EXTERN char lapic_intr_dummy_handles_end;
+EXTERN ଅକ୍ଷର lapic_intr_dummy_handles_start;
+EXTERN ଅକ୍ଷର lapic_intr_dummy_handles_end;
 #endif
 
 #endif /* APIC_DEBUG */

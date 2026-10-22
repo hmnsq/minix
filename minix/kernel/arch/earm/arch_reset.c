@@ -1,67 +1,67 @@
-#include "kernel/kernel.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cpu.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <io.h>
+#ଅନ୍ତର୍ଭାଵ <unistd.h>
+#ଅନ୍ତର୍ଭାଵ <ctype.h>
+#ଅନ୍ତର୍ଭାଵ <string.h>
+#ଅନ୍ତର୍ଭାଵ <machine/cpu.h>
+#ଅନ୍ତର୍ଭାଵ <assert.h>
+#ଅନ୍ତର୍ଭାଵ <signal.h>
+#ଅନ୍ତର୍ଭାଵ <machine/vm.h>
+#ଅନ୍ତର୍ଭାଵ <io.h>
 
-#include <minix/board.h>
-#include <sys/reboot.h>
+#ଅନ୍ତର୍ଭାଵ <minix/board.h>
+#ଅନ୍ତର୍ଭାଵ <sys/reboot.h>
 
-#include <minix/u64.h>
+#ଅନ୍ତର୍ଭାଵ <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
-#include "bsp_serial.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "direct_utils.h"
-#include <machine/multiboot.h>
+#ଅନ୍ତର୍ଭାଵ "archconst.h"
+#ଅନ୍ତର୍ଭାଵ "arch_proto.h"
+#ଅନ୍ତର୍ଭାଵ "bsp_reset.h"
+#ଅନ୍ତର୍ଭାଵ "bsp_serial.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/proc.h"
+#ଅନ୍ତର୍ଭାଵ "kernel/debug.h"
+#ଅନ୍ତର୍ଭାଵ "direct_utils.h"
+#ଅନ୍ତର୍ଭାଵ <machine/multiboot.h>
 
-void
-halt_cpu(void)
+ଶୂନ୍ୟ
+halt_cpu(ଶୂନ୍ୟ)
 {
-	asm volatile("dsb");
-	asm volatile("cpsie i");
-	asm volatile("wfi");
-	asm volatile("cpsid i");
+	asm ଅସ୍ଥିର("dsb");
+	asm ଅସ୍ଥିର("cpsie i");
+	asm ଅସ୍ଥିର("wfi");
+	asm ଅସ୍ଥିର("cpsid i");
 }
 
-void
-reset(void)
+ଶୂନ୍ୟ
+reset(ଶୂନ୍ୟ)
 {
 	bsp_reset(); /* should not exit */
 	direct_print("Reset not supported.");
-	while (1);
+	ଯେତେବେଳେ (1);
 }
 
-void
-poweroff(void)
+ଶୂନ୍ୟ
+poweroff(ଶୂନ୍ୟ)
 {
 	bsp_poweroff();
 	/* fallback option: hang */
 	direct_print("Unable to power-off this device.");
-	while (1);
+	ଯେତେବେଳେ (1);
 }
 
-__dead void
-arch_shutdown(int how)
+__dead ଶୂନ୍ୟ
+arch_shutdown(ପୂର୍ଣ୍ଣସଂଖ୍ୟା how)
 {
 
-	if((how & RB_POWERDOWN) == RB_POWERDOWN) {
+	ଯଦି((how & RB_POWERDOWN) == RB_POWERDOWN) {
 		/* Power off if possible, hang otherwise */
 		poweroff();
 		NOT_REACHABLE;
 	}
 
-	if(how & RB_HALT) {
+	ଯଦି(how & RB_HALT) {
 		/* Hang */
-		for (; ; ) halt_cpu();
+		ପାଇଁ (; ; ) halt_cpu();
 		NOT_REACHABLE;
 	}
 
@@ -69,12 +69,12 @@ arch_shutdown(int how)
 	reset();
 	NOT_REACHABLE;
 
-	while (1);
+	ଯେତେବେଳେ (1);
 }
 
 #ifdef DEBUG_SERIAL
-void
-ser_putc(char c)
+ଶୂନ୍ୟ
+ser_putc(ଅକ୍ଷର c)
 {
 	bsp_ser_putc(c);
 }

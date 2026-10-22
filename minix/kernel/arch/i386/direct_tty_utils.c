@@ -1,43 +1,43 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#ଅନ୍ତର୍ଭାଵ <minix/minlib.h>
+#ଅନ୍ତର୍ଭାଵ <minix/cpufeature.h>
+#ଅନ୍ତର୍ଭାଵ <machine/partition.h>
+#ଅନ୍ତର୍ଭାଵ "string.h"
+#ଅନ୍ତର୍ଭାଵ "direct_utils.h"
+#ଅନ୍ତର୍ଭାଵ "serial.h"
+#ଅନ୍ତର୍ଭାଵ "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+ସ୍ଥିର ପୂର୍ଣ୍ଣସଂଖ୍ୟା print_ଧାଡ଼ି = 1, print_col = 1;
 
-#include <sys/video.h>
+#ଅନ୍ତର୍ଭାଵ <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+ବାହ୍ୟ ଅକ୍ଷର *video_mem;
+#define VIDOFFSET(ଧାଡ଼ି, col) ((ଧାଡ଼ି) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
+#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ-1,MULTIBOOT_CONSOLE_COLS-1)
 
-void direct_put_char(char c, int line, int col) 
+ଶୂନ୍ୟ direct_put_char(ଅକ୍ଷର c, ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଧାଡ଼ି, ପୂର୍ଣ୍ଣସଂଖ୍ୟା col) 
 {
-	int offset = VIDOFFSET(line, col);
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା offset = VIDOFFSET(ଧାଡ଼ି, col);
 	video_mem[offset] = c;
 	video_mem[offset+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+ସ୍ଥିର ଅକ୍ଷର direct_get_char(ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଧାଡ଼ି, ପୂର୍ଣ୍ଣସଂଖ୍ୟା col) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	ଫେରନ୍ତୁ video_mem[VIDOFFSET(ଧାଡ଼ି, col)];
 }
 
-void direct_cls(void)
+ଶୂନ୍ୟ direct_cls(ଶୂନ୍ୟ)
 {
 	/* Clear screen */
-	int i,j;
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
+	ପାଇଁ(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
+		ପାଇଁ(j = 0; j < MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ; j++)
 			direct_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_ଧାଡ଼ି = print_col = 0;
 
 	/* Tell video hardware origin is 0. */
 	outb(C_6845+INDEX, VID_ORG);
@@ -46,59 +46,59 @@ void direct_cls(void)
 	outb(C_6845+DATA, 0);
 }
 
-static void direct_scroll_up(int lines) 
+ସ୍ଥିର ଶୂନ୍ୟ direct_scroll_up(ପୂର୍ଣ୍ଣସଂଖ୍ୟା ଧାଡ଼ିଗୁଡ଼ିକ) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
+	ପୂର୍ଣ୍ଣସଂଖ୍ୟା i, j;
+	ପାଇଁ (i = 0; i < MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ; i++ ) {
+		ପାଇଁ (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
+			ଅକ୍ଷର c = 0;
+			ଯଦି(i < MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ-ଧାଡ଼ିଗୁଡ଼ିକ)
+				c = direct_get_char(i + ଧାଡ଼ିଗୁଡ଼ିକ, j);
 			direct_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_ଧାଡ଼ି-= ଧାଡ଼ିଗୁଡ଼ିକ;
 }
 
-void direct_print_char(char c)
+ଶୂନ୍ୟ direct_print_char(ଅକ୍ଷର c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ଯେତେବେଳେ (print_ଧାଡ଼ି >= MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ)
 		direct_scroll_up(1);
 
 #define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+	ଯଦି(c == '\t') {
+		ଯଦି(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} ଅନ୍ୟଥା {
+			କର {
+				direct_put_char(' ', print_ଧାଡ଼ି, print_col++);
+			} ଯେତେବେଳେ(print_col % TABWIDTH);
+			ଫେରନ୍ତୁ;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
+	ଯଦି (c == '\n') {
+		ଯେତେବେଳେ (print_col < MULTIBOOT_CONSOLE_COLS)
+			direct_put_char(' ', print_ଧାଡ଼ି, print_col++);
+		print_ଧାଡ଼ି++;
 		print_col = 0;
-		return;
+		ଫେରନ୍ତୁ;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	direct_put_char(c, print_ଧାଡ଼ି, print_col++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
+	ଯଦି (print_col >= MULTIBOOT_CONSOLE_COLS) {
+		print_ଧାଡ଼ି++;
 		print_col = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
+	ଯେତେବେଳେ (print_ଧାଡ଼ି >= MULTIBOOT_CONSOLE_ଧାଡ଼ିଗୁଡ଼ିକ)
 		direct_scroll_up(1);
 }
 
-void direct_print(const char *str)
+ଶୂନ୍ୟ direct_print(ଅଚଳ ଅକ୍ଷର *str)
 {
-	while (*str) {
+	ଯେତେବେଳେ (*str) {
 		direct_print_char(*str);
 		str++;
 	}
@@ -110,21 +110,21 @@ void direct_print(const char *str)
 #define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
 #define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+ପୂର୍ଣ୍ଣସଂଖ୍ୟା direct_read_char(unsigned ଅକ୍ଷର *ch)
 {
 	unsigned long sb;
 
 	sb = inb(KB_STATUS);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	ଯଦି (!(sb & KB_OUT_FULL)) {
+		ଫେରନ୍ତୁ 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	ଯଦି (!(sb & KB_AUX_BYTE))
+		ଫେରନ୍ତୁ 1;
 
-	return 0;
+	ଫେରନ୍ତୁ 0;
 }
 

@@ -71,7 +71,7 @@ ENTRY(__main)
 /*				phys_insw				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_insw(Port_t port, phys_bytes buf, size_t count); 
+ * ସର୍ବସାଧାରଣ void phys_insw(Port_t port, phys_bytes buf, size_t count); 
  * Input an array from an I/O port.  Absolute address version of insw(). 
  */
 /* transfer data from (disk controller) port to memory */
@@ -95,7 +95,7 @@ ENTRY(phys_insw)
 /*				phys_insb				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_insb(Port_t port, phys_bytes buf, size_t count); 
+ * ସର୍ବସାଧାରଣ void phys_insb(Port_t port, phys_bytes buf, size_t count); 
  * Input an array from an I/O port.  Absolute address version of insb(). 
  */
 /* transfer data from (disk controller) port to memory byte by byte */
@@ -118,7 +118,7 @@ ENTRY(phys_insb)
 /*				phys_outsw				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_outsw(Port_t port, phys_bytes buf, size_t count); 
+ * ସର୍ବସାଧାରଣ void phys_outsw(Port_t port, phys_bytes buf, size_t count); 
  * Output an array to an I/O port.  Absolute address version of outsw(). 
  */
 /* transfer data from memory to (disk controller) port */
@@ -142,7 +142,7 @@ ENTRY(phys_outsw)
 /*				phys_outsb				     */
 /*===========================================================================*/
 /* 
- * PUBLIC void phys_outsb(Port_t port, phys_bytes buf, size_t count);
+ * ସର୍ବସାଧାରଣ void phys_outsb(Port_t port, phys_bytes buf, size_t count);
  * Output an array to an I/O port.  Absolute address version of outsb().
  */
 /* transfer data from memory to (disk controller) port byte by byte */
@@ -165,7 +165,7 @@ ENTRY(phys_outsb)
 /*				phys_copy				     */
 /*===========================================================================*/
 /*
- * PUBLIC phys_bytes phys_copy(phys_bytes source, phys_bytes destination,
+ * ସର୍ବସାଧାରଣ phys_bytes phys_copy(phys_bytes source, phys_bytes destination,
  *			phys_bytes bytecount); 
  * Copy a block of data from anywhere to anywhere in physical memory.
  */
@@ -347,7 +347,7 @@ ENTRY(__user_copy_msg_pointer_failure)
 /*				phys_memset				     */
 /*===========================================================================*/
 /*
- * PUBLIC void phys_memset(phys_bytes dst, unsigned long pattern, 
+ * ସର୍ବସାଧାରଣ void phys_memset(phys_bytes dst, unsigned long pattern, 
  *	phys_bytes bytecount); 
  * Fill a block of physical memory with pattern. 
  */
@@ -384,7 +384,7 @@ LABEL(memset_fault_in_kernel)		/* kernel can send us here */
 /*				x86_triplefault				     */
 /*===========================================================================*/
 /*
- * PUBLIC void x86_triplefault(); 
+ * ସର୍ବସାଧାରଣ void x86_triplefault(); 
  * Reset the system by loading IDT with offset 0 and interrupting. 
  */
 ENTRY(x86_triplefault)
@@ -400,7 +400,7 @@ idt_zero:
 /*			      	halt_cpu				     */
 /*===========================================================================*/
 /*
- * PUBLIC void halt_cpu(void);
+ * ସର୍ବସାଧାରଣ void halt_cpu(void);
  * reanables interrupts and puts the cpu in the halts state. Once an interrupt
  * is handled the execution resumes by disabling interrupts and continues
  */
@@ -417,7 +417,7 @@ ENTRY(halt_cpu)
 /*			poweroff_vmware_clihlt				     */
 /*===========================================================================*/
 /*
- * PUBLIC void poweroff_vmware_clihlt(void);
+ * ସର୍ବସାଧାରଣ void poweroff_vmware_clihlt(void);
  * VMware detects this peculiar sequence and forces the virtual machine off
  * when the parameter gui.exitOnCLIHLT is set to TRUE.
  * Otherwise this sequence just hangs the CPU, requiring a power down action.
@@ -446,7 +446,7 @@ ENTRY(poweroff_vmware_clihlt)
 /*			      read_flags				     */
 /*===========================================================================*/
 /*
- * PUBLIC unsigned long read_cpu_flags(void);
+ * ସର୍ବସାଧାରଣ unsigned long read_cpu_flags(void);
  * Read CPU status flags from C.
  */
 ENTRY(read_cpu_flags)
@@ -487,7 +487,7 @@ ENTRY(clts)
 ENTRY(fnstsw)
 	xor     %eax, %eax
 
-	/* DO NOT CHANGE THE OPERAND!!! gas2ack does not handle it yet */
+	/* DO ନୁହେଁ CHANGE THE OPERAND!!! gas2ack does not handle it yet */
 	fnstsw	%ax
 	ret
 
@@ -596,7 +596,7 @@ ENTRY(ia32_msr_write)
 /*===========================================================================*/
 /*			      __switch_address_space			     */
 /*===========================================================================*/
-/* PUBLIC void __switch_address_space(struct proc *p, struct ** ptproc)
+/* ସର୍ବସାଧାରଣ void __switch_address_space(struct proc *p, struct ** ptproc)
  *
  * sets the %cr3 register to the supplied value if it is not already set to the
  * same value in which case it would only result in an extra TLB flush which is
@@ -649,7 +649,7 @@ ENTRY(refresh_tlb)
 /*===========================================================================*/
 /*			      smp_get_htt				     */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_htt(void); */
+/*  ସର୍ବସାଧାରଣ int smp_get_htt(void); */
 /*  return true if the processor is hyper-threaded. */
 ENTRY(smp_get_htt)
 	push	%ebp
@@ -673,7 +673,7 @@ ENTRY(smp_get_htt)
 /*===========================================================================*/
 /*			      smp_get_num_htt				     */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_num_htt(void); */
+/*  ସର୍ବସାଧାରଣ int smp_get_num_htt(void); */
 /*  Get the number of hyper-threaded processor cores */
 ENTRY(smp_get_num_htt)
 	push	%ebp
@@ -697,7 +697,7 @@ ENTRY(smp_get_num_htt)
 /*===========================================================================*/
 /*			      smp_get_cores				    */
 /*===========================================================================*/
-/*  PUBLIC int smp_get_cores(void); */
+/*  ସର୍ବସାଧାରଣ int smp_get_cores(void); */
 /*  Get the number of cores. */
 ENTRY(smp_get_cores)
 	push	%ebp
@@ -771,7 +771,7 @@ ENTRY(arch_spinlock_unlock)
 /*===========================================================================*/
 /*			      mfence					     */
 /*===========================================================================*/
-/*  PUBLIC void mfence (void); */
+/*  ସର୍ବସାଧାରଣ void mfence (void); */
 /*  architecture specific memory barrier routine. */
 ENTRY(mfence)
 	mfence
@@ -780,7 +780,7 @@ ENTRY(mfence)
 /*===========================================================================*/
 /*			      arch_pause				     */
 /*===========================================================================*/
-/*  PUBLIC void arch_pause (void); */
+/*  ସର୍ବସାଧାରଣ void arch_pause (void); */
 /*  architecture specific pause routine. */
 ENTRY(arch_pause)
 	pause
@@ -789,7 +789,7 @@ ENTRY(arch_pause)
 /*===========================================================================*/
 /*			      read_ebp				     	     */
 /*===========================================================================*/
-/*  PUBLIC u16_t cpuid(void) */
+/*  ସର୍ବସାଧାରଣ u16_t cpuid(void) */
 ENTRY(read_ebp)
 	mov	%ebp, %eax
 	ret
