@@ -2,8 +2,8 @@
 #ifndef _I386_ACONST_H
 #define _I386_ACONST_H 1
 
-#include <machine/interrupt.h>
-#include <machine/memory.h>
+#ضمن <machine/interrupt.h>
+#ضمن <machine/memory.h>
 
 /* Constants for protected mode. */
 
@@ -146,7 +146,7 @@
  * defines how many bytes are reserved at the top of the kernel stack for global
  * information like currently scheduled process or current cpu id
  */
-#define X86_STACK_TOP_RESERVED	(2 * sizeof(reg_t))
+#define X86_STACK_TOP_RESERVED	(2 * حجم(reg_t))
 
 #define PG_ALLOCATEME ((phys_bytes)-1)
 

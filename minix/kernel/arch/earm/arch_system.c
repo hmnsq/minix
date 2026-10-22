@@ -1,63 +1,63 @@
 /* system dependent functions for use inside the whole kernel. */
 
-#include "kernel/kernel.h"
+#ضمن "kernel/kernel.h"
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <minix/cpufeature.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
-#include <machine/signal.h>
-#include <arm/armreg.h>
+#ضمن <unistd.h>
+#ضمن <ctype.h>
+#ضمن <string.h>
+#ضمن <minix/cpufeature.h>
+#ضمن <assert.h>
+#ضمن <signal.h>
+#ضمن <machine/vm.h>
+#ضمن <machine/signal.h>
+#ضمن <arm/armreg.h>
 
-#include <minix/u64.h>
+#ضمن <minix/u64.h>
 
-#include "archconst.h"
-#include "arch_proto.h"
-#include "kernel/proc.h"
-#include "kernel/debug.h"
-#include "ccnt.h"
-#include "bsp_init.h"
-#include "bsp_serial.h"
+#ضمن "archconst.h"
+#ضمن "arch_proto.h"
+#ضمن "kernel/proc.h"
+#ضمن "kernel/debug.h"
+#ضمن "ccnt.h"
+#ضمن "bsp_init.h"
+#ضمن "bsp_serial.h"
 
-#include "glo.h"
+#ضمن "glo.h"
 
-void * k_stacks;
+فراغ * k_stacks;
 
 
-void fpu_init(void)
+فراغ fpu_init(فراغ)
 {
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+فراغ save_local_fpu(بنية proc *pr, صحيح retain)
 {
 }
 
-void save_fpu(struct proc *pr)
+فراغ save_fpu(بنية proc *pr)
 {
 }
 
-void arch_proc_reset(struct proc *pr)
+فراغ arch_proc_reset(بنية proc *pr)
 {
-	assert(pr->p_nr < NR_PROCS);
+	أكد(pr->p_nr < NR_PROCS);
 
 	/* Clear process state. */
-	memset(&pr->p_reg, 0, sizeof(pr->p_reg));
-	if(iskerneln(pr->p_nr)) {
+	memset(&pr->p_reg, 0, حجم(pr->p_reg));
+	𐤀𐤌(iskerneln(pr->p_nr)) {
 		pr->p_reg.psr = INIT_TASK_PSR;
-	} else {
+	} وإلا {
 		pr->p_reg.psr = INIT_PSR;
 	}
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trapstyle)
+فراغ arch_proc_setcontext(بنية proc *p, بنية stackframe_s *state,
+	صحيح isuser, صحيح trapstyle)
 {
-        assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-	        memcpy(&p->p_reg, state, sizeof(*state));
+        أكد(حجم(p->p_reg) == حجم(*state));
+	𐤀𐤌(state != &p->p_reg) {
+	        memcpy(&p->p_reg, state, حجم(*state));
 	}
 
         /* further code is instructed to not touch the context
@@ -65,29 +65,29 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
          */
         p->p_misc_flags |= MF_CONTEXT_SET;
 
-        if(!(p->p_rts_flags)) {
+        𐤀𐤌(!(p->p_rts_flags)) {
                 printf("WARNINIG: setting full context of runnable process\n");
                 print_proc(p);
                 util_stacktrace();
         }
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+فراغ arch_set_secondary_ipc_return(بنية proc *p, u32_t val)
 {
 	p->p_reg.r1 = val;
 }
 
-int restore_fpu(struct proc *pr)
+صحيح restore_fpu(بنية proc *pr)
 {
-	return 0;
+	أرجع 0;
 }
 
-void cpu_identify(void)
+فراغ cpu_identify(فراغ)
 {
 	u32_t midr;
 	unsigned cpu = cpuid;
 
-	asm volatile("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
+	asm متطاير("mrc p15, 0, %[midr], c0, c0, 0 @ read MIDR\n\t"
 		     : [midr] "=r" (midr));
 
 	cpu_info[cpu].implementer = midr >> 24;
@@ -98,12 +98,12 @@ void cpu_identify(void)
 	cpu_info[cpu].freq = 660; /* 660 Mhz hardcoded */
 }
 
-void arch_init(void)
+فراغ arch_init(فراغ)
 {
         u32_t value;
 
-	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	k_stacks = (فراغ*) &k_stacks_start;
+	أكد(!((vir_bytes) k_stacks % K_STACK_SIZE));
 
 #ifndef CONFIG_SMP
 	/*
@@ -116,32 +116,32 @@ void arch_init(void)
 
         /* enable user space access to cycle counter */
         /* set cycle counter to 0: ARM ARM B4.1.113 and B4.1.117 */
-        asm volatile ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
+        asm متطاير ("MRC p15, 0, %0, c9, c12, 0\t\n": "=r" (value));
         value |= PMU_PMCR_C; /* Reset counter */
         value |= PMU_PMCR_E; /* Enable counter hardware */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
+        asm متطاير ("MCR p15, 0, %0, c9, c12, 0\t\n": : "r" (value));
 
         /* enable CCNT counting: ARM ARM B4.1.116 */
         value = PMU_PMCNTENSET_C; /* Enable PMCCNTR cycle counter */
-        asm volatile ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
+        asm متطاير ("MCR p15, 0, %0, c9, c12, 1\t\n": : "r" (value));
 
         /* enable cycle counter in user mode: ARM ARM B4.1.124 */
         value = PMU_PMUSERENR_EN;
-        asm volatile ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
+        asm متطاير ("MCR p15, 0, %0, c9, c14, 0\t\n": : "r" (value));
 	bsp_init();
 }
 
 /*===========================================================================*
  *				do_ser_debug				     * 
  *===========================================================================*/
-void do_ser_debug(void)
+فراغ do_ser_debug(فراغ)
 {
 }
 
-void arch_do_syscall(struct proc *proc)
+فراغ arch_do_syscall(بنية proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
-  assert(proc == get_cpulocal_var(proc_ptr));
+  أكد(proc == get_cpulocal_var(proc_ptr));
   /* Make the system call, for real this time. */
   proc->p_reg.retreg =
 	  do_ipc(proc->p_reg.retreg, proc->p_reg.r1, proc->p_reg.r2);
@@ -149,15 +149,15 @@ void arch_do_syscall(struct proc *proc)
 
 reg_t svc_stack;
 
-struct proc * arch_finish_switch_to_user(void)
+بنية proc * arch_finish_switch_to_user(فراغ)
 {
-	char * stk;
-	struct proc * p;
+	حرف * stk;
+	بنية proc * p;
 
 #ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
+	stk = (حرف *)tss[cpuid].sp0;
+#وإلا
+	stk = (حرف *)tss[0].sp0;
 #endif
 	svc_stack = (reg_t)stk;
 	/* set pointer to the process to run on the stack */
@@ -167,20 +167,20 @@ struct proc * arch_finish_switch_to_user(void)
 	/* turn interrupts on */
         p->p_reg.psr &= ~(PSR_I|PSR_F);
 
-	return p;
+	أرجع p;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+فراغ fpu_sigcontext(بنية proc *pr, بنية sigframe_sigcontext *fr, بنية sigcontext *sc)
 {
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(بنية proc *p) { أرجع p->p_reg.sp; }
 
-void get_randomness(struct k_randomness *rand, int source)
+فراغ get_randomness(بنية k_randomness *rand, صحيح source)
 {
 }
 
-void arch_ser_init(void)
+فراغ arch_ser_init(فراغ)
 {
 	bsp_ser_init();
 }
@@ -193,13 +193,13 @@ void arch_ser_init(void)
  * same value in which case it would only result in an extra TLB flush which is
  * not desirable
  */
-void __switch_address_space(struct proc *p, struct proc **__ptproc)
+فراغ __switch_address_space(بنية proc *p, بنية proc **__ptproc)
 {
 	reg_t orig_ttbr, new_ttbr;
 
 	new_ttbr = p->p_seg.p_ttbr;
-	if (new_ttbr == 0)
-	    return;
+	𐤀𐤌 (new_ttbr == 0)
+	    أرجع;
 
 	orig_ttbr = read_ttbr0();
 
@@ -207,12 +207,12 @@ void __switch_address_space(struct proc *p, struct proc **__ptproc)
 	 * test if ttbr is loaded with the current value to avoid unnecessary
 	 * TLB flushes
 	 */
-	if (new_ttbr == orig_ttbr)
-	    return;
+	𐤀𐤌 (new_ttbr == orig_ttbr)
+	    أرجع;
 
 	write_ttbr0(new_ttbr);
 
 	*__ptproc = p;
 
-	return;
+	أرجع;
 }
