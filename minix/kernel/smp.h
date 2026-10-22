@@ -1,22 +1,22 @@
-#ifndef __SMP_H__
-#define __SMP_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __SMP_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __SMP_H__
 
-#ifdef CONFIG_SMP
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
 
-#ifndef __ASSEMBLY__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __ASSEMBLY__
 
-#include "kernel/kernel.h"
-#include "arch_smp.h"
-#include "spinlock.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "arch_smp.h"
+#ಅನ್ತರ್ಭಾವ "spinlock.h"
 
 /* number of CPUs (execution strands in the system */
-EXTERN unsigned ncpus;
+EXTERN ಚಿಹ್ನೆರಹಿತ ncpus;
 /* Number of virtual strands per physical core */
-EXTERN unsigned ht_per_core;
+EXTERN ಚಿಹ್ನೆರಹಿತ ht_ಪ್ರತಿ_core;
 /* which cpu is bootstrapping */
-EXTERN unsigned bsp_cpu_id;
+EXTERN ಚಿಹ್ನೆರಹಿತ bsp_cpu_id;
 
-#define cpu_is_bsp(cpu)	(bsp_cpu_id == cpu)
+#ವ್ಯಾಖ್ಯಾನಿಸು cpu_is_bsp(cpu)	(bsp_cpu_id == cpu)
 
 /*
  * SMP initialization is largely architecture dependent and each architecture
@@ -26,57 +26,57 @@ EXTERN unsigned bsp_cpu_id;
  * suboptimal, the system must be able to run on the bootstrap processor as if
  * it was the only processor in the system
  */
-void smp_init(void);
+ಶೂನ್ಯ smp_init(ಶೂನ್ಯ);
 
-#define CPU_IS_BSP	1
-#define CPU_IS_READY	2
+#ವ್ಯಾಖ್ಯಾನಿಸು CPU_IS_BSP	1
+#ವ್ಯಾಖ್ಯಾನಿಸು CPU_IS_READY	2
 
-struct cpu {
+ರಚನೆ cpu {
 	u32_t flags;
 };
 
-EXTERN struct cpu cpus[CONFIG_MAX_CPUS];
+EXTERN ರಚನೆ cpu cpus[CONFIG_MAX_CPUS];
 
-#define cpu_set_flag(cpu, flag)	do { cpus[cpu].flags |= (flag); } while(0)
-#define cpu_clear_flag(cpu, flag) do { cpus[cpu].flags &= ~(flag); } while(0)
-#define cpu_test_flag(cpu, flag) (cpus[cpu].flags & (flag))
-#define cpu_is_ready(cpu) cpu_test_flag(cpu, CPU_IS_READY)
+#ವ್ಯಾಖ್ಯಾನಿಸು cpu_ಗಣ_flag(cpu, flag)	ಮಾಡು { cpus[cpu].flags |= (flag); } ಆಗ(0)
+#ವ್ಯಾಖ್ಯಾನಿಸು cpu_clear_flag(cpu, flag) ಮಾಡು { cpus[cpu].flags &= ~(flag); } ಆಗ(0)
+#ವ್ಯಾಖ್ಯಾನಿಸು cpu_test_flag(cpu, flag) (cpus[cpu].flags & (flag))
+#ವ್ಯಾಖ್ಯಾನಿಸು cpu_is_ready(cpu) cpu_test_flag(cpu, CPU_IS_READY)
 
 /*
  * Big Kernel Lock prevents more then one cpu executing the kernel code
  */
-SPINLOCK_DECLARE(big_kernel_lock)
+SPINLOCK_DECLARE(big_kernel_ಬೀಗ)
 /*
  * to sync the booting APs
  */
-SPINLOCK_DECLARE(boot_lock)
+SPINLOCK_DECLARE(boot_ಬೀಗ)
 	
-void wait_for_APs_to_finish_booting(void);
-void ap_boot_finished(unsigned cpu);
-void smp_shutdown_aps(void );
+ಶೂನ್ಯ wait_for_APs_ಗಮ್ಯ_ಮುಕ್ತಾಯ_booting(ಶೂನ್ಯ);
+ಶೂನ್ಯ ap_boot_ಪೂರ್ಣಗೊಂಡ(ಚಿಹ್ನೆರಹಿತ cpu);
+ಶೂನ್ಯ smp_shutdown_aps(ಶೂನ್ಯ );
 
 /* IPI handlers */
-void smp_ipi_halt_handler(void);
-void smp_ipi_sched_handler(void);
+ಶೂನ್ಯ smp_ipi_halt_handler(ಶೂನ್ಯ);
+ಶೂನ್ಯ smp_ipi_sched_handler(ಶೂನ್ಯ);
 
-void smp_schedule(unsigned cpu);
+ಶೂನ್ಯ smp_ವೇಳಾಪಟ್ಟಿ(ಚಿಹ್ನೆರಹಿತ cpu);
 /* stop a processes on a different cpu */
-void smp_schedule_stop_proc(struct proc * p);
+ಶೂನ್ಯ smp_ವೇಳಾಪಟ್ಟಿ_stop_proc(ರಚನೆ proc * p);
 /* stop a process on a different cpu because its address space is being changed */
-void smp_schedule_vminhibit(struct proc * p);
+ಶೂನ್ಯ smp_ವೇಳಾಪಟ್ಟಿ_vminhibit(ರಚನೆ proc * p);
 /* stop the process and for saving its full context */
-void smp_schedule_stop_proc_save_ctx(struct proc * p);
+ಶೂನ್ಯ smp_ವೇಳಾಪಟ್ಟಿ_stop_proc_save_ctx(ರಚನೆ proc * p);
 /* migrate the full context of a process to the destination CPU */
-void smp_schedule_migrate_proc(struct proc * p, unsigned dest_cpu);
+ಶೂನ್ಯ smp_ವೇಳಾಪಟ್ಟಿ_migrate_proc(ರಚನೆ proc * p, ಚಿಹ್ನೆರಹಿತ dest_cpu);
 
-void arch_send_smp_schedule_ipi(unsigned cpu);
-void arch_smp_halt_cpu(void);
+ಶೂನ್ಯ arch_send_smp_ವೇಳಾಪಟ್ಟಿ_ipi(ಚಿಹ್ನೆರಹಿತ cpu);
+ಶೂನ್ಯ arch_smp_halt_cpu(ಶೂನ್ಯ);
 
 /* deal with x-cpu scheduling event */
-void smp_sched_handler(void);
+ಶೂನ್ಯ smp_sched_handler(ಶೂನ್ಯ);
 
-#endif /* __ASSEMBLY__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __ASSEMBLY__ */
 
-#endif /* CONFIG_SMP */
+#ಆದರೆ_ಅಂತ್ಯ /* CONFIG_SMP */
 
-#endif /* __SMP_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __SMP_H__ */

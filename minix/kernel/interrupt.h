@@ -1,6 +1,6 @@
-#ifndef __INTERRUPT_H__
-#define __INTERRUPT_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __INTERRUPT_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __INTERRUPT_H__
 
-#include "hw_intr.h"
+#ಅನ್ತರ್ಭಾವ "hw_intr.h"
 
-#endif /* __INTERRUPT_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __INTERRUPT_H__ */

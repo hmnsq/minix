@@ -33,7 +33,7 @@ IMPORT(multiboot_init)
 /*===========================================================================*/
 /*				MINIX				     */
 /*===========================================================================*/
-.global MINIX
+.ವೈಶ್ವಿಕ MINIX
 MINIX:
 /* this is the entry point for the MINIX kernel */
 	jmp multiboot_init
@@ -74,7 +74,7 @@ multiboot_init:
 
         push    %ebx	/* multiboot information struct */
 	push	%eax	/* multiboot magic number */
-        call    _C_LABEL(pre_init)
+        ಕರೆ    _C_LABEL(pre_init)
 
 	/* Kernel is mapped high now and ready to go, with
 	 * the boot info pointer returnd in %eax. Set the
@@ -84,7 +84,7 @@ multiboot_init:
 	mov	$k_initial_stktop, %esp
 	push	$0	/* Terminate stack */
 	push	%eax
-        call    _C_LABEL(kmain)
+        ಕರೆ    _C_LABEL(kmain)
 
 	/* not reached */
 hang:

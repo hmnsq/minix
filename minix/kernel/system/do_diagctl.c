@@ -9,60 +9,60 @@
  *	m_lsys_krn_sys_diagctl.endpt
  */
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
 
 /*===========================================================================*
  *			        do_diagctl				     *
  *===========================================================================*/
-int do_diagctl(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_diagctl(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-  vir_bytes len, buf;
-  static char mybuf[DIAG_BUFSIZE];
-  int s, i, proc_nr;
+  vir_ಬೈಟುಗಳು len, buf;
+  ಸ್ಥಿರ ಅಕ್ಷರ mybuf[DIAG_BUFSIZE];
+  ಪೂರ್ಣಾಂಕ s, i, proc_nr;
 
-  switch (m_ptr->m_lsys_krn_sys_diagctl.code) {
-    case DIAGCTL_CODE_DIAG:
+  ಆಯ್ಕೆ (m_ptr->m_lsys_krn_sys_diagctl.ಸಂಕೇತ_2) {
+    ಸ್ಥಿತಿ DIAGCTL_ಸಂಕೇತ_DIAG:
         buf = m_ptr->m_lsys_krn_sys_diagctl.buf;
         len = m_ptr->m_lsys_krn_sys_diagctl.len;
-	if(len < 1 || len > DIAG_BUFSIZE) {
-		printf("do_diagctl: diag for %d: len %d out of range\n",
+	ಆದರೆ(len < 1 || len > DIAG_BUFSIZE) {
+		ಬರೆ("do_diagctl: diag for %d: len %d out of range\n",
 			caller->p_endpoint, len);
-		return EINVAL;
+		ಹಿಂತಿರುಗಿ EINVAL;
 	}
-	if((s=data_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
-					(vir_bytes) mybuf, len)) != OK) {
-		printf("do_diagctl: diag for %d: len %d: copy failed: %d\n",
+	ಆದರೆ((s=ದತ್ತಾಂಶ_copy_vmcheck(caller, caller->p_endpoint, buf, KERNEL,
+					(vir_ಬೈಟುಗಳು) mybuf, len)) != OK) {
+		ಬರೆ("do_diagctl: diag for %d: len %d: copy failed: %d\n",
 			caller->p_endpoint, len, s);
-		return s;
+		ಹಿಂತಿರುಗಿ s;
 	}
-	for(i = 0; i < len; i++)
+	ಗಾಗಿ(i = 0; i < len; i++)
 		kputc(mybuf[i]);
-	kputc(END_OF_KMESS);
-	return OK;
-    case DIAGCTL_CODE_STACKTRACE:
-	if(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
-		return EINVAL;
+	kputc(ಕೊನೆ_ದ_KMESS);
+	ಹಿಂತಿರುಗಿ OK;
+    ಸ್ಥಿತಿ DIAGCTL_ಸಂಕೇತ_STACKTRACE:
+	ಆದರೆ(!isokendpt(m_ptr->m_lsys_krn_sys_diagctl.endpt, &proc_nr))
+		ಹಿಂತಿರುಗಿ EINVAL;
 	proc_stacktrace(proc_addr(proc_nr));
-	return OK;
-    case DIAGCTL_CODE_REGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	ಹಿಂತಿರುಗಿ OK;
+    ಸ್ಥಿತಿ DIAGCTL_ಸಂಕೇತ_ರಿಜಿಸ್ಟರ್:
+	ಆದರೆ (!(priv(caller)->s_flags & SYS_PROC))
+		ಹಿಂತಿರುಗಿ EPERM;
 	priv(caller)->s_diag_sig = TRUE;
 	/* If the message log is not empty, send a first notification
 	 * immediately. After bootup the log is basically never empty.
 	 */
-	if (kmess.km_size > 0 && !kinfo.do_serial_debug)
+	ಆದರೆ (kmess.km_ಗಾತ್ರ > 0 && !kinfo.do_serial_debug)
 		send_sig(caller->p_endpoint, SIGKMESS);
-	return OK;
-    case DIAGCTL_CODE_UNREGISTER:
-	if (!(priv(caller)->s_flags & SYS_PROC))
-		return EPERM;
+	ಹಿಂತಿರುಗಿ OK;
+    ಸ್ಥಿತಿ DIAGCTL_ಸಂಕೇತ_UNREGISTER:
+	ಆದರೆ (!(priv(caller)->s_flags & SYS_PROC))
+		ಹಿಂತಿರುಗಿ EPERM;
 	priv(caller)->s_diag_sig = FALSE;
-	return OK;
-    default:
-	printf("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.code);
-        return(EINVAL);
+	ಹಿಂತಿರುಗಿ OK;
+    ಪೂರ್ವನಿಯೋಜಿತ:
+	ಬರೆ("do_diagctl: invalid request %d\n", m_ptr->m_lsys_krn_sys_diagctl.ಸಂಕೇತ_2);
+        ಹಿಂತಿರುಗಿ(EINVAL);
   }
 }
 

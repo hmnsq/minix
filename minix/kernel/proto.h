@@ -1,33 +1,33 @@
 /* Function prototypes. */
 
 /* FIXME this is a hack how to avoid inclusion conflicts */
-#ifdef __kernel__
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ __kernel__
 
-#ifndef PROTO_H
-#define PROTO_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ PROTO_H
+#ವ್ಯಾಖ್ಯಾನಿಸು PROTO_H
 
-#include <minix/safecopies.h>
-#include <machine/archtypes.h>
-#include <machine/signal.h>
-#include <machine/frame.h>
+#ಅನ್ತರ್ಭಾವ <minix/safecopies.h>
+#ಅನ್ತರ್ಭಾವ <machine/archtypes.h>
+#ಅನ್ತರ್ಭಾವ <machine/signal.h>
+#ಅನ್ತರ್ಭಾವ <machine/frame.h>
 
 /* Struct declarations. */
-struct proc;
-struct ipc_filter_s;
+ರಚನೆ proc;
+ರಚನೆ ipc_filter_s;
 
 /* clock.c */
-void init_clock(void);
-clock_t get_realtime(void);
-void set_realtime(clock_t);
-void set_adjtime_delta(int32_t);
-clock_t get_monotonic(void);
-void set_boottime(time_t);
-time_t get_boottime(void);
-void set_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, int arg);
-void reset_kernel_timer(minix_timer_t *tp);
-void ser_dump_proc(void);
+ಶೂನ್ಯ init_clock(ಶೂನ್ಯ);
+clock_t get_realtime(ಶೂನ್ಯ);
+ಶೂನ್ಯ ಗಣ_realtime(clock_t);
+ಶೂನ್ಯ ಗಣ_adjtime_delta(int32_t);
+clock_t get_monotonic(ಶೂನ್ಯ);
+ಶೂನ್ಯ ಗಣ_boottime(time_t);
+time_t get_boottime(ಶೂನ್ಯ);
+ಶೂನ್ಯ ಗಣ_kernel_timer(minix_timer_t *tp, clock_t t, tmr_func_t f, ಪೂರ್ಣಾಂಕ arg);
+ಶೂನ್ಯ reset_kernel_timer(minix_timer_t *tp);
+ಶೂನ್ಯ ser_dump_proc(ಶೂನ್ಯ);
 
-void cycles_accounting_init(void);
+ಶೂನ್ಯ ಚಕ್ರಗಳು_accounting_init(ಶೂನ್ಯ);
 /*
  * This functions start and stop accounting for process, kernel or idle cycles.
  * It inherently have to account for some kernel cycles for process too,
@@ -35,217 +35,217 @@ void cycles_accounting_init(void);
  * possible before returning to userspace. These function is architecture
  * dependent
  */
-void context_stop(struct proc * p);
+ಶೂನ್ಯ context_stop(ರಚನೆ proc * p);
 /* this is a wrapper to make calling it from assembly easier */
-void context_stop_idle(void);
-void get_cpu_ticks(unsigned int cpu, uint64_t ticks[MINIX_CPUSTATES]);
-int restore_fpu(struct proc *);
-void save_fpu(struct proc *);
-void save_local_fpu(struct proc *, int retain);
-void fpu_sigcontext(struct proc *, struct sigframe_sigcontext *fr, struct
+ಶೂನ್ಯ context_stop_idle(ಶೂನ್ಯ);
+ಶೂನ್ಯ get_cpu_ticks(ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ cpu, uint64_t ticks[MINIX_CPUSTATES]);
+ಪೂರ್ಣಾಂಕ restore_fpu(ರಚನೆ proc *);
+ಶೂನ್ಯ save_fpu(ರಚನೆ proc *);
+ಶೂನ್ಯ save_local_fpu(ರಚನೆ proc *, ಪೂರ್ಣಾಂಕ retain);
+ಶೂನ್ಯ fpu_sigcontext(ರಚನೆ proc *, ರಚನೆ sigframe_sigcontext *fr, ರಚನೆ
 	sigcontext *sc);
 
 /* main.c */
-#ifndef UNPAGED
-#define kmain __k_unpaged_kmain
-#endif
-void kmain(kinfo_t *cbi);
-void prepare_shutdown(int how);
-__dead void minix_shutdown(int how);
-void bsp_finish_booting(void);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ UNPAGED
+#ವ್ಯಾಖ್ಯಾನಿಸು kmain __k_unpaged_kmain
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ kmain(kinfo_t *cbi);
+ಶೂನ್ಯ prepare_shutdown(ಪೂರ್ಣಾಂಕ how);
+__dead ಶೂನ್ಯ minix_shutdown(ಪೂರ್ಣಾಂಕ how);
+ಶೂನ್ಯ bsp_ಮುಕ್ತಾಯ_booting(ಶೂನ್ಯ);
 
 /* proc.c */
 
-int do_ipc(reg_t r1, reg_t r2, reg_t r3);
-void proc_init(void);
-int cancel_async(struct proc *src, struct proc *dst);
-int has_pending_notify(struct proc * caller, int src_p);
-int has_pending_asend(struct proc * caller, int src_p);
-void unset_notify_pending(struct proc * caller, int src_p);
-int mini_notify(const struct proc *src, endpoint_t dst);
-void vm_suspend(struct proc *caller, const struct proc *target,
-        const vir_bytes linaddr, const vir_bytes len, const int type,
-        const int writeflag);
-void enqueue(struct proc *rp);
-void dequeue(struct proc *rp);
-void switch_to_user(void);
-void arch_proc_reset(struct proc *rp);
-void arch_proc_setcontext(struct proc *rp, struct stackframe_s *state,
-	int user, int restorestyle);
-struct proc * arch_finish_switch_to_user(void);
-struct proc *endpoint_lookup(endpoint_t ep);
-#if DEBUG_ENABLE_IPC_WARNINGS
-int isokendpt_f(const char *file, int line, endpoint_t e, int *p, int
+ಪೂರ್ಣಾಂಕ do_ipc(reg_t r1, reg_t r2, reg_t r3);
+ಶೂನ್ಯ proc_init(ಶೂನ್ಯ);
+ಪೂರ್ಣಾಂಕ cancel_async(ರಚನೆ proc *src, ರಚನೆ proc *dst);
+ಪೂರ್ಣಾಂಕ has_pending_notify(ರಚನೆ proc * caller, ಪೂರ್ಣಾಂಕ src_p);
+ಪೂರ್ಣಾಂಕ has_pending_asend(ರಚನೆ proc * caller, ಪೂರ್ಣಾಂಕ src_p);
+ಶೂನ್ಯ unset_notify_pending(ರಚನೆ proc * caller, ಪೂರ್ಣಾಂಕ src_p);
+ಪೂರ್ಣಾಂಕ mini_notify(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *src, endpoint_t dst);
+ಶೂನ್ಯ vm_suspend(ರಚನೆ proc *caller, ಸ್ಥಿರಾಂಕ ರಚನೆ proc *ಗುರಿ,
+        ಸ್ಥಿರಾಂಕ vir_ಬೈಟುಗಳು linaddr, ಸ್ಥಿರಾಂಕ vir_ಬೈಟುಗಳು len, ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ type,
+        ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ writeflag);
+ಶೂನ್ಯ ಸರತಿಗೆ_ಸೇರಿಸು(ರಚನೆ proc *rp);
+ಶೂನ್ಯ ಸರತಿಯಿಂದ_ತೆಗೆ(ರಚನೆ proc *rp);
+ಶೂನ್ಯ switch_ಗಮ್ಯ_user(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_proc_reset(ರಚನೆ proc *rp);
+ಶೂನ್ಯ arch_proc_setcontext(ರಚನೆ proc *rp, ರಚನೆ stackframe_s *state,
+	ಪೂರ್ಣಾಂಕ user, ಪೂರ್ಣಾಂಕ restorestyle);
+ರಚನೆ proc * arch_ಮುಕ್ತಾಯ_switch_ಗಮ್ಯ_user(ಶೂನ್ಯ);
+ರಚನೆ proc *endpoint_lookup(endpoint_t ep);
+#ಆದರೆ DEBUG_ENABLE_IPC_WARNINGS
+ಪೂರ್ಣಾಂಕ isokendpt_f(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *file, ಪೂರ್ಣಾಂಕ ಸಾಲು, endpoint_t e, ಪೂರ್ಣಾಂಕ *p, ಪೂರ್ಣಾಂಕ
 	f);
-#define isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
-#else
-int isokendpt_f(endpoint_t e, int *p, int f);
-#define isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
-#endif
-void proc_no_time(struct proc *p);
-void reset_proc_accounting(struct proc *p);
-void flag_account(struct proc *p, int flag);
-int try_deliver_senda(struct proc *caller_ptr, asynmsg_t *table, size_t
-	size);
+#ವ್ಯಾಖ್ಯಾನಿಸು isokendpt_d(e, p, f) isokendpt_f(__FILE__, __LINE__, (e), (p), (f))
+#ಇಲ್ಲದಿದ್ದರೆ
+ಪೂರ್ಣಾಂಕ isokendpt_f(endpoint_t e, ಪೂರ್ಣಾಂಕ *p, ಪೂರ್ಣಾಂಕ f);
+#ವ್ಯಾಖ್ಯಾನಿಸು isokendpt_d(e, p, f) isokendpt_f((e), (p), (f))
+#ಆದರೆ_ಅಂತ್ಯ
+ಶೂನ್ಯ proc_no_ಸಮಯ(ರಚನೆ proc *p);
+ಶೂನ್ಯ reset_proc_accounting(ರಚನೆ proc *p);
+ಶೂನ್ಯ flag_account(ರಚನೆ proc *p, ಪೂರ್ಣಾಂಕ flag);
+ಪೂರ್ಣಾಂಕ try_deliver_senda(ರಚನೆ proc *caller_ptr, asynmsg_t *ಕೋಷ್ಟಕ, size_t
+	ಗಾತ್ರ_2);
 
 /* start.c */
-void cstart(void);
-char *env_get(const char *key);
+ಶೂನ್ಯ cstart(ಶೂನ್ಯ);
+ಅಕ್ಷರ *env_get(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *ಕೀಲಿ);
 
 /* system.c */
-int get_priv(register struct proc *rc, int proc_type);
-void set_sendto_bit(const struct proc *rc, int id);
-void unset_sendto_bit(const struct proc *rc, int id);
-void fill_sendto_mask(const struct proc *rc, sys_map_t *map);
-int send_sig(endpoint_t proc_nr, int sig_nr);
-void cause_sig(proc_nr_t proc_nr, int sig_nr);
-void sig_delay_done(struct proc *rp);
-void send_diag_sig(void);
-void kernel_call(message *m_user, struct proc * caller);
-void system_init(void);
-void clear_endpoint(struct proc *rc);
-void clear_ipc_refs(struct proc *rc, int caller_ret);
-void kernel_call_resume(struct proc *p);
-int sched_proc(struct proc *rp, int priority, int quantum, int cpu, int niced);
-int add_ipc_filter(struct proc *rp, int type,
-    vir_bytes address, size_t length);
-void clear_ipc_filters(struct proc *rp);
-int check_ipc_filter(struct ipc_filter_s *ipcf, int fill_flags);
-int allow_ipc_filtered_msg(struct proc *rp, endpoint_t src_e,
-    vir_bytes m_src_v, message *m_src_p);
-int allow_ipc_filtered_memreq(struct proc *src_rp, struct proc *dst_rp);
-int priv_add_irq(struct proc *rp, int irq);
-int priv_add_io(struct proc *rp, struct io_range *ior);
-int priv_add_mem(struct proc *rp, struct minix_mem_range *memr);
+ಪೂರ್ಣಾಂಕ get_priv(ನೋಂದಣಿ ರಚನೆ proc *rc, ಪೂರ್ಣಾಂಕ proc_type);
+ಶೂನ್ಯ ಗಣ_sendto_ಬಿಟ್(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *rc, ಪೂರ್ಣಾಂಕ id);
+ಶೂನ್ಯ unset_sendto_ಬಿಟ್(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *rc, ಪೂರ್ಣಾಂಕ id);
+ಶೂನ್ಯ fill_sendto_ಮುಖವಾಡ(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *rc, sys_map_t *map);
+ಪೂರ್ಣಾಂಕ send_sig(endpoint_t proc_nr, ಪೂರ್ಣಾಂಕ sig_nr);
+ಶೂನ್ಯ cause_sig(proc_nr_t proc_nr, ಪೂರ್ಣಾಂಕ sig_nr);
+ಶೂನ್ಯ sig_delay_ಮುಗಿದ(ರಚನೆ proc *rp);
+ಶೂನ್ಯ send_diag_sig(ಶೂನ್ಯ);
+ಶೂನ್ಯ kernel_call(ಸಂದೇಶ *m_user, ರಚನೆ proc * caller);
+ಶೂನ್ಯ system_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ clear_endpoint(ರಚನೆ proc *rc);
+ಶೂನ್ಯ clear_ipc_refs(ರಚನೆ proc *rc, ಪೂರ್ಣಾಂಕ caller_ret);
+ಶೂನ್ಯ kernel_call_resume(ರಚನೆ proc *p);
+ಪೂರ್ಣಾಂಕ sched_proc(ರಚನೆ proc *rp, ಪೂರ್ಣಾಂಕ ಆದ್ಯತೆ, ಪೂರ್ಣಾಂಕ ಕಾಲಾಂಶ, ಪೂರ್ಣಾಂಕ cpu, ಪೂರ್ಣಾಂಕ niced);
+ಪೂರ್ಣಾಂಕ ಕೂಡಿಸು_ipc_filter(ರಚನೆ proc *rp, ಪೂರ್ಣಾಂಕ type,
+    vir_ಬೈಟುಗಳು ವಿಳಾಸ, size_t ಉದ್ದಳತೆ);
+ಶೂನ್ಯ clear_ipc_filters(ರಚನೆ proc *rp);
+ಪೂರ್ಣಾಂಕ check_ipc_filter(ರಚನೆ ipc_filter_s *ipcf, ಪೂರ್ಣಾಂಕ fill_flags);
+ಪೂರ್ಣಾಂಕ allow_ipc_filtered_ಸಂದೇಶ(ರಚನೆ proc *rp, endpoint_t src_e,
+    vir_ಬೈಟುಗಳು m_src_v, ಸಂದೇಶ *m_src_p);
+ಪೂರ್ಣಾಂಕ allow_ipc_filtered_memreq(ರಚನೆ proc *src_rp, ರಚನೆ proc *dst_rp);
+ಪೂರ್ಣಾಂಕ priv_ಕೂಡಿಸು_irq(ರಚನೆ proc *rp, ಪೂರ್ಣಾಂಕ irq);
+ಪೂರ್ಣಾಂಕ priv_ಕೂಡಿಸು_io(ರಚನೆ proc *rp, ರಚನೆ io_range *ior);
+ಪೂರ್ಣಾಂಕ priv_ಕೂಡಿಸು_mem(ರಚನೆ proc *rp, ರಚನೆ minix_mem_range *memr);
 
 /* system/do_vtimer.c */
-void vtimer_check(struct proc *rp);
+ಶೂನ್ಯ vtimer_check(ರಚನೆ proc *rp);
 
 /* interrupt.c */
-void put_irq_handler(irq_hook_t *hook, int irq, irq_handler_t handler);
-void rm_irq_handler(const irq_hook_t *hook);
-void enable_irq(const irq_hook_t *hook);
-int disable_irq(const irq_hook_t *hook);
+ಶೂನ್ಯ put_irq_handler(irq_hook_t *hook, ಪೂರ್ಣಾಂಕ irq, irq_handler_t handler);
+ಶೂನ್ಯ rm_irq_handler(ಸ್ಥಿರಾಂಕ irq_hook_t *hook);
+ಶೂನ್ಯ enable_irq(ಸ್ಥಿರಾಂಕ irq_hook_t *hook);
+ಪೂರ್ಣಾಂಕ disable_irq(ಸ್ಥಿರಾಂಕ irq_hook_t *hook);
 
-void interrupts_enable(void);
-void interrupts_disable(void);
+ಶೂನ್ಯ interrupts_enable(ಶೂನ್ಯ);
+ಶೂನ್ಯ interrupts_disable(ಶೂನ್ಯ);
 
 /* debug.c */
-int runqueues_ok(void);
-#ifndef CONFIG_SMP
-#define runqueues_ok_local runqueues_ok
-#else
-#define runqueues_ok_local() runqueues_ok_cpu(cpuid)
-int runqueues_ok_cpu(unsigned cpu);
-#endif
-char *rtsflagstr(u32_t flags);
-char *miscflagstr(u32_t flags);
-char *schedulerstr(struct proc *scheduler);
+ಪೂರ್ಣಾಂಕ runqueues_ok(ಶೂನ್ಯ);
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ CONFIG_SMP
+#ವ್ಯಾಖ್ಯಾನಿಸು runqueues_ok_local runqueues_ok
+#ಇಲ್ಲದಿದ್ದರೆ
+#ವ್ಯಾಖ್ಯಾನಿಸು runqueues_ok_local() runqueues_ok_cpu(cpuid)
+ಪೂರ್ಣಾಂಕ runqueues_ok_cpu(ಚಿಹ್ನೆರಹಿತ cpu);
+#ಆದರೆ_ಅಂತ್ಯ
+ಅಕ್ಷರ *rtsflagstr(u32_t flags);
+ಅಕ್ಷರ *miscflagstr(u32_t flags);
+ಅಕ್ಷರ *schedulerstr(ರಚನೆ proc *scheduler);
 /* prints process information */
-void print_proc(struct proc *pp);
+ಶೂನ್ಯ print_proc(ರಚನೆ proc *pp);
 /* prints the given process and recursively all processes it depends on */
-void print_proc_recursive(struct proc *pp);
-void printmsg(message *msg, struct proc *src, struct proc *dst,
-    char operation, int printparams);
-#if DEBUG_IPC_HOOK
-void hook_ipc_msgrecv(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgsend(message *msg, struct proc *src, struct proc *dst);
-void hook_ipc_msgkcall(message *msg, struct proc *proc);
-void hook_ipc_msgkresult(message *msg, struct proc *proc);
-void hook_ipc_clear(struct proc *proc);
-#endif
+ಶೂನ್ಯ print_proc_recursive(ರಚನೆ proc *pp);
+ಶೂನ್ಯ printmsg(ಸಂದೇಶ *ಸಂದೇಶ_2, ರಚನೆ proc *src, ರಚನೆ proc *dst,
+    ಅಕ್ಷರ operation, ಪೂರ್ಣಾಂಕ printparams);
+#ಆದರೆ DEBUG_IPC_HOOK
+ಶೂನ್ಯ hook_ipc_msgrecv(ಸಂದೇಶ *ಸಂದೇಶ_2, ರಚನೆ proc *src, ರಚನೆ proc *dst);
+ಶೂನ್ಯ hook_ipc_msgsend(ಸಂದೇಶ *ಸಂದೇಶ_2, ರಚನೆ proc *src, ರಚನೆ proc *dst);
+ಶೂನ್ಯ hook_ipc_msgkcall(ಸಂದೇಶ *ಸಂದೇಶ_2, ರಚನೆ proc *proc);
+ಶೂನ್ಯ hook_ipc_msgkresult(ಸಂದೇಶ *ಸಂದೇಶ_2, ರಚನೆ proc *proc);
+ಶೂನ್ಯ hook_ipc_clear(ರಚನೆ proc *proc);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* system/do_safecopy.c */
-struct cp_sfinfo; /* external callers may only provide NULL */
-int verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_bytes, int,
-	vir_bytes, vir_bytes *, endpoint_t *, struct cp_sfinfo *);
+ರಚನೆ cp_sfinfo; /* external callers may only provide NULL */
+ಪೂರ್ಣಾಂಕ verify_grant(endpoint_t, endpoint_t, cp_grant_id_t, vir_ಬೈಟುಗಳು, ಪೂರ್ಣಾಂಕ,
+	vir_ಬೈಟುಗಳು, vir_ಬೈಟುಗಳು *, endpoint_t *, ರಚನೆ cp_sfinfo *);
 
 /* system/do_diagctl.c */
-int do_diagctl(struct proc * caller, message *m);
+ಪೂರ್ಣಾಂಕ do_diagctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m);
 
-#if SPROFILE
+#ಆದರೆ SPROFILE
 /* profile.c */
-void init_profile_clock(u32_t);
-void stop_profile_clock(void);
-#endif
+ಶೂನ್ಯ init_profile_clock(u32_t);
+ಶೂನ್ಯ stop_profile_clock(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* functions defined in architecture-dependent files. */
-void prot_init(void);
-void arch_post_init(void);
-void arch_set_secondary_ipc_return(struct proc *, u32_t val);
-phys_bytes phys_copy(phys_bytes source, phys_bytes dest, phys_bytes
-	count);
-void phys_copy_fault(void);
-void phys_copy_fault_in_kernel(void);
-void memset_fault(void);
-void memset_fault_in_kernel(void);
-#define virtual_copy(src, dst, bytes) \
-				virtual_copy_f(NULL, src, dst, bytes, 0)
-#define virtual_copy_vmcheck(caller, src, dst, bytes) \
-				virtual_copy_f(caller, src, dst, bytes, 1)
-int virtual_copy_f(struct proc * caller, struct vir_addr *src, struct
-	vir_addr *dst, vir_bytes bytes, int vmcheck);
-int data_copy(endpoint_t from, vir_bytes from_addr, endpoint_t to,
-	vir_bytes to_addr, size_t bytes);
-int data_copy_vmcheck(struct proc *, endpoint_t from, vir_bytes
-	from_addr, endpoint_t to, vir_bytes to_addr, size_t bytes);
-phys_bytes umap_virtual(struct proc* rp, int seg, vir_bytes vir_addr,
-	vir_bytes bytes);
-phys_bytes seg2phys(u16_t);
-int vm_memset(struct proc *caller, endpoint_t who, phys_bytes dst,
-	int pattern, phys_bytes count);
-int intr_init(int);
-void halt_cpu(void);
-void arch_init(void);
-void arch_boot_proc(struct boot_image *b, struct proc *p);
-void cpu_identify(void);
+ಶೂನ್ಯ prot_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_post_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_ಗಣ_secondary_ipc_return(ರಚನೆ proc *, u32_t val);
+phys_ಬೈಟುಗಳು phys_copy(phys_ಬೈಟುಗಳು ಮೂಲ, phys_ಬೈಟುಗಳು dest, phys_ಬೈಟುಗಳು
+	ಎಣಿಕೆ_2);
+ಶೂನ್ಯ phys_copy_fault(ಶೂನ್ಯ);
+ಶೂನ್ಯ phys_copy_fault_ಒಳ_kernel(ಶೂನ್ಯ);
+ಶೂನ್ಯ memset_fault(ಶೂನ್ಯ);
+ಶೂನ್ಯ memset_fault_ಒಳ_kernel(ಶೂನ್ಯ);
+#ವ್ಯಾಖ್ಯಾನಿಸು virtual_copy(src, dst, ಬೈಟುಗಳು) \
+				virtual_copy_f(ಖಾಲಿ, src, dst, ಬೈಟುಗಳು, 0)
+#ವ್ಯಾಖ್ಯಾನಿಸು virtual_copy_vmcheck(caller, src, dst, ಬೈಟುಗಳು) \
+				virtual_copy_f(caller, src, dst, ಬೈಟುಗಳು, 1)
+ಪೂರ್ಣಾಂಕ virtual_copy_f(ರಚನೆ proc * caller, ರಚನೆ vir_addr *src, ರಚನೆ
+	vir_addr *dst, vir_ಬೈಟುಗಳು ಬೈಟುಗಳು, ಪೂರ್ಣಾಂಕ vmcheck);
+ಪೂರ್ಣಾಂಕ ದತ್ತಾಂಶ_copy(endpoint_t from, vir_ಬೈಟುಗಳು from_addr, endpoint_t ಗಮ್ಯ,
+	vir_ಬೈಟುಗಳು ಗಮ್ಯ_addr, size_t ಬೈಟುಗಳು);
+ಪೂರ್ಣಾಂಕ ದತ್ತಾಂಶ_copy_vmcheck(ರಚನೆ proc *, endpoint_t from, vir_ಬೈಟುಗಳು
+	from_addr, endpoint_t ಗಮ್ಯ, vir_ಬೈಟುಗಳು ಗಮ್ಯ_addr, size_t ಬೈಟುಗಳು);
+phys_ಬೈಟುಗಳು umap_virtual(ರಚನೆ proc* rp, ಪೂರ್ಣಾಂಕ seg, vir_ಬೈಟುಗಳು vir_addr,
+	vir_ಬೈಟುಗಳು ಬೈಟುಗಳು);
+phys_ಬೈಟುಗಳು seg2phys(u16_t);
+ಪೂರ್ಣಾಂಕ vm_memset(ರಚನೆ proc *caller, endpoint_t who, phys_ಬೈಟುಗಳು dst,
+	ಪೂರ್ಣಾಂಕ ನಮೂನೆ, phys_ಬೈಟುಗಳು ಎಣಿಕೆ_2);
+ಪೂರ್ಣಾಂಕ intr_init(ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ halt_cpu(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_boot_proc(ರಚನೆ boot_image *b, ರಚನೆ proc *p);
+ಶೂನ್ಯ cpu_identify(ಶೂನ್ಯ);
 /* arch dependent FPU initialization per CPU */
-void fpu_init(void);
+ಶೂನ್ಯ fpu_init(ಶೂನ್ಯ);
 /* returns true if pfu is present and initialized */
-int is_fpu(void);
-void ser_putc(char);
-__dead void arch_shutdown(int);
-void restore_user_context(struct proc * p);
-void read_tsc(u32_t *high, u32_t *low);
-int arch_init_profile_clock(u32_t freq);
-void arch_stop_profile_clock(void);
-void arch_ack_profile_clock(void);
-void do_ser_debug(void);
-int arch_get_params(char *parm, int max);
-void memory_init(void);
-void mem_clear_mapcache(void);
-void arch_proc_init(struct proc *pr, u32_t, u32_t, u32_t, char *);
-int arch_do_vmctl(message *m_ptr, struct proc *p);
-int vm_contiguous(const struct proc *targetproc, vir_bytes vir_buf,
-	size_t count);
-void proc_stacktrace(struct proc *proc);
-int vm_lookup(const struct proc *proc, vir_bytes virtual, phys_bytes
-	*result, u32_t *ptent);
-size_t vm_lookup_range(const struct proc *proc,
-       vir_bytes vir_addr, phys_bytes *phys_addr, size_t bytes);
-void arch_do_syscall(struct proc *proc);
-int arch_phys_map(int index, phys_bytes *addr, phys_bytes *len, int
+ಪೂರ್ಣಾಂಕ is_fpu(ಶೂನ್ಯ);
+ಶೂನ್ಯ ser_putc(ಅಕ್ಷರ);
+__dead ಶೂನ್ಯ arch_shutdown(ಪೂರ್ಣಾಂಕ);
+ಶೂನ್ಯ restore_user_context(ರಚನೆ proc * p);
+ಶೂನ್ಯ read_tsc(u32_t *ಮೇಲಿನ, u32_t *ಕೆಳಗಿನ);
+ಪೂರ್ಣಾಂಕ arch_init_profile_clock(u32_t freq);
+ಶೂನ್ಯ arch_stop_profile_clock(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_ack_profile_clock(ಶೂನ್ಯ);
+ಶೂನ್ಯ do_ser_debug(ಶೂನ್ಯ);
+ಪೂರ್ಣಾಂಕ arch_get_params(ಅಕ್ಷರ *parm, ಪೂರ್ಣಾಂಕ max);
+ಶೂನ್ಯ ಸ್ಮರಣೆ_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ mem_clear_mapcache(ಶೂನ್ಯ);
+ಶೂನ್ಯ arch_proc_init(ರಚನೆ proc *pr, u32_t, u32_t, u32_t, ಅಕ್ಷರ *);
+ಪೂರ್ಣಾಂಕ arch_do_vmctl(ಸಂದೇಶ *m_ptr, ರಚನೆ proc *p);
+ಪೂರ್ಣಾಂಕ vm_contiguous(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *targetproc, vir_ಬೈಟುಗಳು vir_buf,
+	size_t ಎಣಿಕೆ_2);
+ಶೂನ್ಯ proc_stacktrace(ರಚನೆ proc *proc);
+ಪೂರ್ಣಾಂಕ vm_lookup(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *proc, vir_ಬೈಟುಗಳು ವಾಸ್ತವಿಕ, phys_ಬೈಟುಗಳು
+	*ಫಲಿತಾಂಶ, u32_t *ptent);
+size_t vm_lookup_range(ಸ್ಥಿರಾಂಕ ರಚನೆ proc *proc,
+       vir_ಬೈಟುಗಳು vir_addr, phys_ಬೈಟುಗಳು *phys_addr, size_t ಬೈಟುಗಳು);
+ಶೂನ್ಯ arch_do_syscall(ರಚನೆ proc *proc);
+ಪೂರ್ಣಾಂಕ arch_phys_map(ಪೂರ್ಣಾಂಕ ಸೂಚ್ಯಂಕ, phys_ಬೈಟುಗಳು *addr, phys_ಬೈಟುಗಳು *len, ಪೂರ್ಣಾಂಕ
 	*flags);
-int arch_phys_map_reply(int index, vir_bytes addr);
-reg_t arch_get_sp(struct proc *p);
-int arch_enable_paging(struct proc * caller);
-int vm_check_range(struct proc *caller,
-       struct proc *target, vir_bytes vir_addr, size_t bytes, int writable);
+ಪೂರ್ಣಾಂಕ arch_phys_map_ಉತ್ತರ(ಪೂರ್ಣಾಂಕ ಸೂಚ್ಯಂಕ, vir_ಬೈಟುಗಳು addr);
+reg_t arch_get_sp(ರಚನೆ proc *p);
+ಪೂರ್ಣಾಂಕ arch_enable_paging(ರಚನೆ proc * caller);
+ಪೂರ್ಣಾಂಕ vm_check_range(ರಚನೆ proc *caller,
+       ರಚನೆ proc *ಗುರಿ, vir_ಬೈಟುಗಳು vir_addr, size_t ಬೈಟುಗಳು, ಪೂರ್ಣಾಂಕ writable);
 
-int copy_msg_from_user(message * user_mbuf, message * dst);
-int copy_msg_to_user(message * src, message * user_mbuf);
-void switch_address_space(struct proc * p);
-void release_address_space(struct proc *pr);
+ಪೂರ್ಣಾಂಕ copy_ಸಂದೇಶ_from_user(ಸಂದೇಶ * user_mbuf, ಸಂದೇಶ * dst);
+ಪೂರ್ಣಾಂಕ copy_ಸಂದೇಶ_ಗಮ್ಯ_user(ಸಂದೇಶ * src, ಸಂದೇಶ * user_mbuf);
+ಶೂನ್ಯ switch_ವಿಳಾಸ_space(ರಚನೆ proc * p);
+ಶೂನ್ಯ release_ವಿಳಾಸ_space(ರಚನೆ proc *pr);
 
-void enable_fpu_exception(void);
-void disable_fpu_exception(void);
-void release_fpu(struct proc * p);
-void arch_pause(void);
-short cpu_load(void);
-void busy_delay_ms(int ms);
+ಶೂನ್ಯ enable_fpu_exception(ಶೂನ್ಯ);
+ಶೂನ್ಯ disable_fpu_exception(ಶೂನ್ಯ);
+ಶೂನ್ಯ release_fpu(ರಚನೆ proc * p);
+ಶೂನ್ಯ arch_pause(ಶೂನ್ಯ);
+ಗಿಡ್ಡ cpu_ತುಂಬು(ಶೂನ್ಯ);
+ಶೂನ್ಯ busy_delay_ms(ಪೂರ್ಣಾಂಕ ms);
 
 /* utility.c */
-void cpu_print_freq(unsigned cpu);
-#endif /* __kernel__ */
+ಶೂನ್ಯ cpu_print_freq(ಚಿಹ್ನೆರಹಿತ cpu);
+#ಆದರೆ_ಅಂತ್ಯ /* __kernel__ */
 
-#endif /* PROTO_H */
+#ಆದರೆ_ಅಂತ್ಯ /* PROTO_H */

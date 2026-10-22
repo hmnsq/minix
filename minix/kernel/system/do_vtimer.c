@@ -8,77 +8,77 @@
  *    m2_l2:	VT_ENDPT		(process to which the timer belongs)
  */
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
-#include <signal.h>
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
-#if USE_VTIMER
+#ಆದರೆ USE_VTIMER
 
 /*===========================================================================*
  *				do_vtimer				     *
  *===========================================================================*/
-int do_vtimer(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_vtimer(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
 /* Set and/or retrieve the value of one of a process' virtual timers. */
-  struct proc *rp;		/* pointer to process the timer belongs to */
-  register int pt_flag;		/* the misc on/off flag for the req.d timer */
-  register clock_t *pt_left;	/* pointer to the process' ticks-left field */ 
-  clock_t old_value;		/* the previous number of ticks left */
-  int proc_nr, proc_nr_e;
+  ರಚನೆ proc *rp;		/* pointer to process the timer belongs to */
+  ನೋಂದಣಿ ಪೂರ್ಣಾಂಕ pt_flag;		/* the misc on/off flag for the req.d timer */
+  ನೋಂದಣಿ clock_t *pt_ಎಡ;	/* pointer to the process' ticks-left field */ 
+  clock_t old_ಮೌಲ್ಯ;		/* the previous number of ticks left */
+  ಪೂರ್ಣಾಂಕ proc_nr, proc_nr_e;
 
   /* The requesting process must be privileged. */
-  if (! (priv(caller)->s_flags & SYS_PROC)) return(EPERM);
+  ಆದರೆ (! (priv(caller)->s_flags & SYS_PROC)) ಹಿಂತಿರುಗಿ(EPERM);
 
-  if (m_ptr->VT_WHICH != VT_VIRTUAL && m_ptr->VT_WHICH != VT_PROF)
-      return(EINVAL);
+  ಆದರೆ (m_ptr->VT_WHICH != VT_VIRTUAL && m_ptr->VT_WHICH != VT_PROF)
+      ಹಿಂತಿರುಗಿ(EINVAL);
 
   /* The target process must be valid. */
   proc_nr_e = (m_ptr->VT_ENDPT == SELF) ? caller->p_endpoint : m_ptr->VT_ENDPT;
-  if (!isokendpt(proc_nr_e, &proc_nr)) return(EINVAL);
+  ಆದರೆ (!isokendpt(proc_nr_e, &proc_nr)) ಹಿಂತಿರುಗಿ(EINVAL);
   rp = proc_addr(proc_nr);
 
   /* Determine which flag and which field in the proc structure we want to
    * retrieve and/or modify. This saves us having to differentiate between
    * VT_VIRTUAL and VT_PROF multiple times below.
    */
-  if (m_ptr->VT_WHICH == VT_VIRTUAL) {
+  ಆದರೆ (m_ptr->VT_WHICH == VT_VIRTUAL) {
       pt_flag = MF_VIRT_TIMER;
-      pt_left = &rp->p_virt_left;
-  } else { /* VT_PROF */
+      pt_ಎಡ = &rp->p_virt_ಎಡ;
+  } ಇಲ್ಲದಿದ್ದರೆ { /* VT_PROF */
       pt_flag = MF_PROF_TIMER;
-      pt_left = &rp->p_prof_left;
+      pt_ಎಡ = &rp->p_prof_ಎಡ;
   }
 
   /* Retrieve the old value. */
-  if (rp->p_misc_flags & pt_flag) {
-      old_value = *pt_left;
-  } else {
-      old_value = 0;
+  ಆದರೆ (rp->p_misc_flags & pt_flag) {
+      old_ಮೌಲ್ಯ = *pt_ಎಡ;
+  } ಇಲ್ಲದಿದ್ದರೆ {
+      old_ಮೌಲ್ಯ = 0;
   }
 
-  if (m_ptr->VT_SET) {
+  ಆದರೆ (m_ptr->VT_ಗಣ) {
       rp->p_misc_flags &= ~pt_flag;	/* disable virtual timer */
 
-      if (m_ptr->VT_VALUE > 0) {
-          *pt_left = m_ptr->VT_VALUE;	/* set new timer value */
+      ಆದರೆ (m_ptr->VT_ಮೌಲ್ಯ > 0) {
+          *pt_ಎಡ = m_ptr->VT_ಮೌಲ್ಯ;	/* set new timer value */
           rp->p_misc_flags |= pt_flag;	/* (re)enable virtual timer */
-      } else {
-          *pt_left = 0;			/* clear timer value */
+      } ಇಲ್ಲದಿದ್ದರೆ {
+          *pt_ಎಡ = 0;			/* clear timer value */
       }
   }
 
-  m_ptr->VT_VALUE = old_value;
+  m_ptr->VT_ಮೌಲ್ಯ = old_ಮೌಲ್ಯ;
 
-  return(OK);
+  ಹಿಂತಿರುಗಿ(OK);
 }
 
-#endif /* USE_VTIMER */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_VTIMER */
 
 /*===========================================================================*
  *				vtimer_check				     *
  *===========================================================================*/
-void vtimer_check(struct proc * rp)
+ಶೂನ್ಯ vtimer_check(ರಚನೆ proc * rp)
 {
   /* This is called from the clock task, so we can be interrupted by the clock
    * interrupt, but not by the system task. Therefore we only have to protect
@@ -88,16 +88,16 @@ void vtimer_check(struct proc * rp)
    */
 
   /* Check if the virtual timer expired. If so, send a SIGVTALRM signal. */
-  if ((rp->p_misc_flags & MF_VIRT_TIMER) && rp->p_virt_left == 0) {
+  ಆದರೆ ((rp->p_misc_flags & MF_VIRT_TIMER) && rp->p_virt_ಎಡ == 0) {
       rp->p_misc_flags &= ~MF_VIRT_TIMER;
-      rp->p_virt_left = 0;
+      rp->p_virt_ಎಡ = 0;
       cause_sig(rp->p_nr, SIGVTALRM);
   }
 
   /* Check if the profile timer expired. If so, send a SIGPROF signal. */
-  if ((rp->p_misc_flags & MF_PROF_TIMER) && rp->p_prof_left == 0) {
+  ಆದರೆ ((rp->p_misc_flags & MF_PROF_TIMER) && rp->p_prof_ಎಡ == 0) {
       rp->p_misc_flags &= ~MF_PROF_TIMER;
-      rp->p_prof_left = 0;
+      rp->p_prof_ಎಡ = 0;
       cause_sig(rp->p_nr, SIGPROF);
   }
 }

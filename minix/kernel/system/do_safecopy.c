@@ -13,62 +13,62 @@
  *      m_lsys_kern_vsafecopy.vec_size   number of significant elements in vector
  */
 
-#include <assert.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
 
-#include "kernel/system.h"
-#include "kernel/vm.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/vm.h"
 
-#define MAX_INDIRECT_DEPTH 5	/* up to how many indirect grants to follow? */
+#ವ್ಯಾಖ್ಯಾನಿಸು MAX_ಪರೋಕ್ಷ_ಆಳ 5	/* up to how many indirect grants to follow? */
 
-#define MEM_TOP 0xFFFFFFFFUL
+#ವ್ಯಾಖ್ಯಾನಿಸು MEM_ತುದಿ 0xFFFFFFFFUL
 
-static int safecopy(struct proc *, endpoint_t, endpoint_t,
-	cp_grant_id_t, size_t, vir_bytes, vir_bytes, int);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ safecopy(ರಚನೆ proc *, endpoint_t, endpoint_t,
+	cp_grant_id_t, size_t, vir_ಬೈಟುಗಳು, vir_ಬೈಟುಗಳು, ಪೂರ್ಣಾಂಕ);
 
-#define HASGRANTTABLE(gr) \
-	(priv(gr) && priv(gr)->s_grant_table)
+#ವ್ಯಾಖ್ಯಾನಿಸು HASGRANTTABLE(gr) \
+	(priv(gr) && priv(gr)->s_grant_ಕೋಷ್ಟಕ)
 
-struct cp_sfinfo {		/* information for handling soft faults */
-	int try;		/* if nonzero, try copy only, stop on fault */
+ರಚನೆ cp_sfinfo {		/* information for handling soft faults */
+	ಪೂರ್ಣಾಂಕ try;		/* if nonzero, try copy only, stop on fault */
 	endpoint_t endpt;	/* endpoint owning grant with CPF_TRY flag */
-	vir_bytes addr;		/* address to write mark upon soft fault */
-	cp_grant_id_t value;	/* grant ID to use as mark value to write */
+	vir_ಬೈಟುಗಳು addr;		/* address to write mark upon soft fault */
+	cp_grant_id_t ಮೌಲ್ಯ;	/* grant ID to use as mark value to write */
 };
 
 /*===========================================================================*
  *				verify_grant				     *
  *===========================================================================*/
-int verify_grant(
+ಪೂರ್ಣಾಂಕ verify_grant(
   endpoint_t granter,		/* copyee */
   endpoint_t grantee,		/* copyer */
   cp_grant_id_t grant,		/* grant id */
-  vir_bytes bytes,		/* copy size */
-  int access,			/* direction (read/write) */
-  vir_bytes offset_in,		/* copy offset within grant */
-  vir_bytes *offset_result,	/* copy offset within virtual address space */
+  vir_ಬೈಟುಗಳು ಬೈಟುಗಳು,		/* copy size */
+  ಪೂರ್ಣಾಂಕ access,			/* direction (read/write) */
+  vir_ಬೈಟುಗಳು ಸ್ಥಾನಾಂತರ_ಒಳ,		/* copy offset within grant */
+  vir_ಬೈಟುಗಳು *ಸ್ಥಾನಾಂತರ_ಫಲಿತಾಂಶ,	/* copy offset within virtual address space */
   endpoint_t *e_granter,	/* new granter (magic grants) */
-  struct cp_sfinfo *sfinfo	/* storage for soft fault information */
+  ರಚನೆ cp_sfinfo *sfinfo	/* storage for soft fault information */
 )
 {
 	cp_grant_t g;
-	int proc_nr;
-	const struct proc *granter_proc;
-	int grant_idx, grant_seq;
-	int depth = 0;
+	ಪೂರ್ಣಾಂಕ proc_nr;
+	ಸ್ಥಿರಾಂಕ ರಚನೆ proc *granter_proc;
+	ಪೂರ್ಣಾಂಕ grant_idx, grant_seq;
+	ಪೂರ್ಣಾಂಕ ಆಳ = 0;
 
-	do {
+	ಮಾಡು {
 		/* Get granter process slot (if valid), and check range of
 		 * grant id.
 		 */
-		if(!isokendpt(granter, &proc_nr) ) {
-			printf(
-			"grant verify failed: invalid granter %d\n", (int) granter);
-			return(EINVAL);
+		ಆದರೆ(!isokendpt(granter, &proc_nr) ) {
+			ಬರೆ(
+			"grant verify failed: invalid granter %d\n", (ಪೂರ್ಣಾಂಕ) granter);
+			ಹಿಂತಿರುಗಿ(EINVAL);
 		}
-		if(!GRANT_VALID(grant)) {
-			printf(
-			"grant verify failed: invalid grant %d\n", (int) grant);
-			return(EINVAL);
+		ಆದರೆ(!GRANT_VALID(grant)) {
+			ಬರೆ(
+			"grant verify failed: invalid grant %d\n", (ಪೂರ್ಣಾಂಕ) grant);
+			ಹಿಂತಿರುಗಿ(EINVAL);
 		}
 		granter_proc = proc_addr(proc_nr);
 
@@ -80,12 +80,12 @@ int verify_grant(
 		 * while until the grant table is final. This is necessary to
 		 * avoid races at live update time.
 		 */
-		if(priv(granter_proc)->s_grant_endpoint != granter_proc->p_endpoint) {
-			if(!access) {
-				return OK;
+		ಆದರೆ(priv(granter_proc)->s_grant_endpoint != granter_proc->p_endpoint) {
+			ಆದರೆ(!access) {
+				ಹಿಂತಿರುಗಿ OK;
 			}
-			else if(!HASGRANTTABLE(granter_proc) || grantee != priv(granter_proc)->s_grant_endpoint) {
-				return ENOTREADY;
+			ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ(!HASGRANTTABLE(granter_proc) || grantee != priv(granter_proc)->s_grant_endpoint) {
+				ಹಿಂತಿರುಗಿ ENOTREADY;
 			}
 		}
 
@@ -93,24 +93,24 @@ int verify_grant(
 		 * priv. structure, or the grant table in the priv. structure
 		 * is too small for the grant, return EPERM.
 		 */
-		if(!HASGRANTTABLE(granter_proc)) {
-			printf(
+		ಆದರೆ(!HASGRANTTABLE(granter_proc)) {
+			ಬರೆ(
 			"grant verify failed: granter %d has no grant table\n",
 			granter);
-			return(EPERM);
+			ಹಿಂತಿರುಗಿ(EPERM);
 		}
 
 		grant_idx = GRANT_IDX(grant);
 		grant_seq = GRANT_SEQ(grant);
 
-		if(priv(granter_proc)->s_grant_entries <= grant_idx) {
-				printf(
+		ಆದರೆ(priv(granter_proc)->s_grant_entries <= grant_idx) {
+				ಬರೆ(
 				"verify_grant: grant verify failed in ep %d "
 				"proc %d: grant 0x%x (#%d) out of range "
 				"for table size %d\n",
 					granter, proc_nr, grant, grant_idx,
 					priv(granter_proc)->s_grant_entries);
-			return(EPERM);
+			ಹಿಂತಿರುಗಿ(EPERM);
 		}
 
 		/* Copy the grant entry corresponding to this ID's index to see
@@ -118,26 +118,26 @@ int verify_grant(
 		 * has (presumably) set an invalid grant table entry by
 		 * returning EPERM, just like with an invalid grant id.
 		 */
-		if(data_copy(granter, priv(granter_proc)->s_grant_table +
-			sizeof(g) * grant_idx,
-			KERNEL, (vir_bytes) &g, sizeof(g)) != OK) {
-			printf(
+		ಆದರೆ(ದತ್ತಾಂಶ_copy(granter, priv(granter_proc)->s_grant_ಕೋಷ್ಟಕ +
+			ಗಾತ್ರ(g) * grant_idx,
+			KERNEL, (vir_ಬೈಟುಗಳು) &g, ಗಾತ್ರ(g)) != OK) {
+			ಬರೆ(
 			"verify_grant: grant verify: data_copy failed\n");
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Check validity: flags and sequence number. */
-		if((g.cp_flags & (CPF_USED | CPF_VALID)) !=
-			(CPF_USED | CPF_VALID)) {
-			printf("verify_grant: grant failed: invalid flags "
+		ಆದರೆ((g.cp_flags & (CPF_ಬಳಸಿದ | CPF_VALID)) !=
+			(CPF_ಬಳಸಿದ | CPF_VALID)) {
+			ಬರೆ("verify_grant: grant failed: invalid flags "
 			    "(0x%x, 0x%lx)\n", grant, g.cp_flags);
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
-		if (g.cp_seq != grant_seq) {
-			printf("verify_grant: grant failed: invalid sequence "
+		ಆದರೆ (g.cp_seq != grant_seq) {
+			ಬರೆ("verify_grant: grant failed: invalid sequence "
 			    "(0x%x, %d vs %d)\n", grant, grant_seq, g.cp_seq);
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* The given grant may be an indirect grant, that is, a grant
@@ -145,170 +145,170 @@ int verify_grant(
 		 * granter (i.e., for which it is the grantee). This can lead
 		 * to a chain of indirect grants which must be followed back.
 		 */
-		if((g.cp_flags & CPF_INDIRECT)) {
+		ಆದರೆ((g.cp_flags & CPF_ಪರೋಕ್ಷ)) {
 			/* Stop after a few iterations. There may be a loop. */
-			if (depth == MAX_INDIRECT_DEPTH) {
-				printf(
+			ಆದರೆ (ಆಳ == MAX_ಪರೋಕ್ಷ_ಆಳ) {
+				ಬರೆ(
 					"verify grant: indirect grant verify "
 					"failed: exceeded maximum depth\n");
-				return ELOOP;
+				ಹಿಂತಿರುಗಿ ELOOP;
 			}
-			depth++;
+			ಆಳ++;
 
 			/* Verify actual grantee. */
-			if(g.cp_u.cp_indirect.cp_who_to != grantee &&
+			ಆದರೆ(g.cp_u.cp_ಪರೋಕ್ಷ.cp_who_ಗಮ್ಯ != grantee &&
 				grantee != ANY &&
-				g.cp_u.cp_indirect.cp_who_to != ANY) {
-				printf(
+				g.cp_u.cp_ಪರೋಕ್ಷ.cp_who_ಗಮ್ಯ != ANY) {
+				ಬರೆ(
 					"verify_grant: indirect grant verify "
 					"failed: bad grantee\n");
-				return EPERM;
+				ಹಿಂತಿರುಗಿ EPERM;
 			}
 
 			/* Start over with new granter, grant, and grantee. */
 			grantee = granter;
-			granter = g.cp_u.cp_indirect.cp_who_from;
-			grant = g.cp_u.cp_indirect.cp_grant;
+			granter = g.cp_u.cp_ಪರೋಕ್ಷ.cp_who_from;
+			grant = g.cp_u.cp_ಪರೋಕ್ಷ.cp_grant;
 		}
-	} while(g.cp_flags & CPF_INDIRECT);
+	} ಆಗ(g.cp_flags & CPF_ಪರೋಕ್ಷ);
 
 	/* Check access of grant. */
-	if(((g.cp_flags & access) != access)) {
-		printf(
+	ಆದರೆ(((g.cp_flags & access) != access)) {
+		ಬರೆ(
 	"verify_grant: grant verify failed: access invalid; want 0x%x, have 0x%x\n",
 			access, g.cp_flags);
-		return EPERM;
+		ಹಿಂತಿರುಗಿ EPERM;
 	}
 
-	if((g.cp_flags & CPF_DIRECT)) {
+	ಆದರೆ((g.cp_flags & CPF_ನೇರ)) {
 		/* Don't fiddle around with grants that wrap, arithmetic
 		 * below may be confused.
 		 */
-		if(MEM_TOP - g.cp_u.cp_direct.cp_len + 1 <
-			g.cp_u.cp_direct.cp_start) {
-			printf(
+		ಆದರೆ(MEM_ತುದಿ - g.cp_u.cp_ನೇರ.cp_len + 1 <
+			g.cp_u.cp_ನೇರ.cp_ಆರಂಭ) {
+			ಬರೆ(
 		"verify_grant: direct grant verify failed: len too long\n");
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify actual grantee. */
-		if(g.cp_u.cp_direct.cp_who_to != grantee && grantee != ANY
-			&& g.cp_u.cp_direct.cp_who_to != ANY) {
-			printf(
+		ಆದರೆ(g.cp_u.cp_ನೇರ.cp_who_ಗಮ್ಯ != grantee && grantee != ANY
+			&& g.cp_u.cp_ನೇರ.cp_who_ಗಮ್ಯ != ANY) {
+			ಬರೆ(
 		"verify_grant: direct grant verify failed: bad grantee\n");
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify actual copy range. */
-		if((offset_in+bytes < offset_in) ||
-		    offset_in+bytes > g.cp_u.cp_direct.cp_len) {
-			printf(
+		ಆದರೆ((ಸ್ಥಾನಾಂತರ_ಒಳ+ಬೈಟುಗಳು < ಸ್ಥಾನಾಂತರ_ಒಳ) ||
+		    ಸ್ಥಾನಾಂತರ_ಒಳ+ಬೈಟುಗಳು > g.cp_u.cp_ನೇರ.cp_len) {
+			ಬರೆ(
 		"verify_grant: direct grant verify failed: bad size or range. "
 		"granted %d bytes @ 0x%lx; wanted %d bytes @ 0x%lx\n",
-				g.cp_u.cp_direct.cp_len,
-				g.cp_u.cp_direct.cp_start,
-				bytes, offset_in);
-			return EPERM;
+				g.cp_u.cp_ನೇರ.cp_len,
+				g.cp_u.cp_ನೇರ.cp_ಆರಂಭ,
+				ಬೈಟುಗಳು, ಸ್ಥಾನಾಂತರ_ಒಳ);
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify successful - tell caller what address it is. */
-		*offset_result = g.cp_u.cp_direct.cp_start + offset_in;
+		*ಸ್ಥಾನಾಂತರ_ಫಲಿತಾಂಶ = g.cp_u.cp_ನೇರ.cp_ಆರಂಭ + ಸ್ಥಾನಾಂತರ_ಒಳ;
 		*e_granter = granter;
-	} else if(g.cp_flags & CPF_MAGIC) {
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ(g.cp_flags & CPF_MAGIC) {
 		/* Currently, it is hardcoded that only VFS and MIB may do
 		 * magic grants.  TODO: this should be a system.conf flag.
 		 */
-		if(granter != VFS_PROC_NR && granter != MIB_PROC_NR) {
-			printf(
+		ಆದರೆ(granter != VFS_PROC_NR && granter != MIB_PROC_NR) {
+			ಬರೆ(
 		"verify_grant: magic grant verify failed: granter (%d) "
 		"not allowed\n", granter);
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify actual grantee. */
-		if(g.cp_u.cp_magic.cp_who_to != grantee && grantee != ANY
-			&& g.cp_u.cp_direct.cp_who_to != ANY) {
-			printf(
+		ಆದರೆ(g.cp_u.cp_magic.cp_who_ಗಮ್ಯ != grantee && grantee != ANY
+			&& g.cp_u.cp_ನೇರ.cp_who_ಗಮ್ಯ != ANY) {
+			ಬರೆ(
 		"verify_grant: magic grant verify failed: bad grantee\n");
-			return EPERM;
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify actual copy range. */
-		if((offset_in+bytes < offset_in) ||
-		    offset_in+bytes > g.cp_u.cp_magic.cp_len) {
-			printf(
+		ಆದರೆ((ಸ್ಥಾನಾಂತರ_ಒಳ+ಬೈಟುಗಳು < ಸ್ಥಾನಾಂತರ_ಒಳ) ||
+		    ಸ್ಥಾನಾಂತರ_ಒಳ+ಬೈಟುಗಳು > g.cp_u.cp_magic.cp_len) {
+			ಬರೆ(
 		"verify_grant: magic grant verify failed: bad size or range. "
 		"granted %d bytes @ 0x%lx; wanted %d bytes @ 0x%lx\n",
 				g.cp_u.cp_magic.cp_len,
-				g.cp_u.cp_magic.cp_start,
-				bytes, offset_in);
-			return EPERM;
+				g.cp_u.cp_magic.cp_ಆರಂಭ,
+				ಬೈಟುಗಳು, ಸ್ಥಾನಾಂತರ_ಒಳ);
+			ಹಿಂತಿರುಗಿ EPERM;
 		}
 
 		/* Verify successful - tell caller what address it is. */
-		*offset_result = g.cp_u.cp_magic.cp_start + offset_in;
+		*ಸ್ಥಾನಾಂತರ_ಫಲಿತಾಂಶ = g.cp_u.cp_magic.cp_ಆರಂಭ + ಸ್ಥಾನಾಂತರ_ಒಳ;
 		*e_granter = g.cp_u.cp_magic.cp_who_from;
-	} else {
-		printf(
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		ಬರೆ(
 		"verify_grant: grant verify failed: unknown grant type\n");
-		return EPERM;
+		ಹಿಂತಿರುಗಿ EPERM;
 	}
 
 	/* If requested, store information regarding soft faults. */
-	if (sfinfo != NULL && (sfinfo->try = !!(g.cp_flags & CPF_TRY))) {
+	ಆದರೆ (sfinfo != ಖಾಲಿ && (sfinfo->try = !!(g.cp_flags & CPF_TRY))) {
 		sfinfo->endpt = granter;
-		sfinfo->addr = priv(granter_proc)->s_grant_table +
-		    sizeof(g) * grant_idx + offsetof(cp_grant_t, cp_faulted);
-		sfinfo->value = grant;
+		sfinfo->addr = priv(granter_proc)->s_grant_ಕೋಷ್ಟಕ +
+		    ಗಾತ್ರ(g) * grant_idx + offsetof(cp_grant_t, cp_faulted);
+		sfinfo->ಮೌಲ್ಯ = grant;
 	}
 
-	return OK;
+	ಹಿಂತಿರುಗಿ OK;
 }
 
 /*===========================================================================*
  *				safecopy				     *
  *===========================================================================*/
-static int safecopy(
-  struct proc * caller,
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ safecopy(
+  ರಚನೆ proc * caller,
   endpoint_t granter,
   endpoint_t grantee,
   cp_grant_id_t grantid,
-  size_t bytes,
-  vir_bytes g_offset,
-  vir_bytes addr,
-  int access			/* CPF_READ for a copy from granter to grantee, CPF_WRITE
+  size_t ಬೈಟುಗಳು,
+  vir_ಬೈಟುಗಳು g_ಸ್ಥಾನಾಂತರ,
+  vir_ಬೈಟುಗಳು addr,
+  ಪೂರ್ಣಾಂಕ access			/* CPF_READ for a copy from granter to grantee, CPF_WRITE
 				 * for a copy from grantee to granter.
 				 */
 )
 {
-	static struct vir_addr v_src, v_dst;
-	static vir_bytes v_offset;
+	ಸ್ಥಿರ ರಚನೆ vir_addr v_src, v_dst;
+	ಸ್ಥಿರ vir_ಬೈಟುಗಳು v_ಸ್ಥಾನಾಂತರ;
 	endpoint_t new_granter, *src, *dst;
-	int r;
-	struct cp_sfinfo sfinfo;
+	ಪೂರ್ಣಾಂಕ r;
+	ರಚನೆ cp_sfinfo sfinfo;
 
-	if(granter == NONE || grantee == NONE) {
-		printf("safecopy: nonsense processes\n");
-		return EFAULT;
+	ಆದರೆ(granter == NONE || grantee == NONE) {
+		ಬರೆ("safecopy: nonsense processes\n");
+		ಹಿಂತಿರುಗಿ EFAULT;
 	}
 
 	/* Decide who is src and who is dst. */
-	if(access & CPF_READ) {
+	ಆದರೆ(access & CPF_READ) {
 		src = &granter;
 		dst = &grantee;
-	} else {
+	} ಇಲ್ಲದಿದ್ದರೆ {
 		src = &grantee;
 		dst = &granter;
 	}
 
 	/* Verify permission exists. */
-	if((r=verify_grant(granter, grantee, grantid, bytes, access,
-	    g_offset, &v_offset, &new_granter, &sfinfo)) != OK) {
-		if(r == ENOTREADY) return r;
-			printf(
+	ಆದರೆ((r=verify_grant(granter, grantee, grantid, ಬೈಟುಗಳು, access,
+	    g_ಸ್ಥಾನಾಂತರ, &v_ಸ್ಥಾನಾಂತರ, &new_granter, &sfinfo)) != OK) {
+		ಆದರೆ(r == ENOTREADY) ಹಿಂತಿರುಗಿ r;
+			ಬರೆ(
 		"grant %d verify to copy %d->%d by %d failed: err %d\n",
 				grantid, *src, *dst, grantee, r);
-		return r;
+		ಹಿಂತಿರುಗಿ r;
 	}
 
 	/* verify_grant() can redirect the grantee to someone else,
@@ -324,16 +324,16 @@ static int safecopy(
 	 * Depending on the access, this is the source or destination
 	 * address.
 	 */
-	if(access & CPF_READ) {
-		v_src.offset = v_offset;
-		v_dst.offset = (vir_bytes) addr;
-	} else {
-		v_src.offset = (vir_bytes) addr;
-		v_dst.offset = v_offset;
+	ಆದರೆ(access & CPF_READ) {
+		v_src.ಸ್ಥಾನಾಂತರ = v_ಸ್ಥಾನಾಂತರ;
+		v_dst.ಸ್ಥಾನಾಂತರ = (vir_ಬೈಟುಗಳು) addr;
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		v_src.ಸ್ಥಾನಾಂತರ = (vir_ಬೈಟುಗಳು) addr;
+		v_dst.ಸ್ಥಾನಾಂತರ = v_ಸ್ಥಾನಾಂತರ;
 	}
 
 	/* Do the regular copy. */
-	if (sfinfo.try) {
+	ಆದರೆ (sfinfo.try) {
 		/*
 		 * Try copying without transparently faulting in pages.
 		 * TODO: while CPF_TRY is meant to protect against deadlocks on
@@ -343,8 +343,8 @@ static int safecopy(
 		 * a good idea to go through VM even in this case, and have VM
 		 * fail (only) if the affected page belongs to a file mapping.
 		 */
-		r = virtual_copy(&v_src, &v_dst, bytes);
-		if (r == EFAULT_SRC || r == EFAULT_DST) {
+		r = virtual_copy(&v_src, &v_dst, ಬೈಟುಗಳು);
+		ಆದರೆ (r == EFAULT_SRC || r == EFAULT_DST) {
 			/*
 			 * Mark the magic grant as having experienced a soft
 			 * fault during its lifetime.  The exact value does not
@@ -352,97 +352,97 @@ static int safecopy(
 			 * sequence number) as a form of protection in the
 			 * light of CPU concurrency.
 			 */
-			r = data_copy(KERNEL, (vir_bytes)&sfinfo.value,
-			    sfinfo.endpt, sfinfo.addr, sizeof(sfinfo.value));
+			r = ದತ್ತಾಂಶ_copy(KERNEL, (vir_ಬೈಟುಗಳು)&sfinfo.ಮೌಲ್ಯ,
+			    sfinfo.endpt, sfinfo.addr, ಗಾತ್ರ(sfinfo.ಮೌಲ್ಯ));
 			/*
 			 * Failure means the creator of the magic grant messed
 			 * up, which can only be unintentional, so report..
 			 */
-			if (r != OK)
-				printf("Kernel: writing soft fault marker %d "
+			ಆದರೆ (r != OK)
+				ಬರೆ("Kernel: writing soft fault marker %d "
 				    "into %d at 0x%lx failed (%d)\n",
-				    sfinfo.value, sfinfo.endpt, sfinfo.addr,
+				    sfinfo.ಮೌಲ್ಯ, sfinfo.endpt, sfinfo.addr,
 				    r);
 
-			return EFAULT;
+			ಹಿಂತಿರುಗಿ EFAULT;
 		}
-		return r;
+		ಹಿಂತಿರುಗಿ r;
 	}
-	return virtual_copy_vmcheck(caller, &v_src, &v_dst, bytes);
+	ಹಿಂತಿರುಗಿ virtual_copy_vmcheck(caller, &v_src, &v_dst, ಬೈಟುಗಳು);
 }
 
 /*===========================================================================*
  *				do_safecopy_to				     *
  *===========================================================================*/
-int do_safecopy_to(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_safecopy_ಗಮ್ಯ(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-	return safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_to, caller->p_endpoint,
+	ಹಿಂತಿರುಗಿ safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_ಗಮ್ಯ, caller->p_endpoint,
 		(cp_grant_id_t) m_ptr->m_lsys_kern_safecopy.gid,
-		m_ptr->m_lsys_kern_safecopy.bytes, m_ptr->m_lsys_kern_safecopy.offset,
-		(vir_bytes) m_ptr->m_lsys_kern_safecopy.address, CPF_WRITE);
+		m_ptr->m_lsys_kern_safecopy.ಬೈಟುಗಳು, m_ptr->m_lsys_kern_safecopy.ಸ್ಥಾನಾಂತರ,
+		(vir_ಬೈಟುಗಳು) m_ptr->m_lsys_kern_safecopy.ವಿಳಾಸ, CPF_WRITE);
 }
 
 /*===========================================================================*
  *				do_safecopy_from			     *
  *===========================================================================*/
-int do_safecopy_from(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_safecopy_from(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-	return safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_to, caller->p_endpoint,
+	ಹಿಂತಿರುಗಿ safecopy(caller, m_ptr->m_lsys_kern_safecopy.from_ಗಮ್ಯ, caller->p_endpoint,
 		(cp_grant_id_t) m_ptr->m_lsys_kern_safecopy.gid,
-		m_ptr->m_lsys_kern_safecopy.bytes, m_ptr->m_lsys_kern_safecopy.offset,
-		(vir_bytes) m_ptr->m_lsys_kern_safecopy.address, CPF_READ);
+		m_ptr->m_lsys_kern_safecopy.ಬೈಟುಗಳು, m_ptr->m_lsys_kern_safecopy.ಸ್ಥಾನಾಂತರ,
+		(vir_ಬೈಟುಗಳು) m_ptr->m_lsys_kern_safecopy.ವಿಳಾಸ, CPF_READ);
 }
 
 /*===========================================================================*
  *				do_vsafecopy				     *
  *===========================================================================*/
-int do_vsafecopy(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_vsafecopy(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-	static struct vscp_vec vec[SCPVEC_NR];
-	static struct vir_addr src, dst;
-	int r, i, els;
-	size_t bytes;
+	ಸ್ಥಿರ ರಚನೆ vscp_vec vec[SCPVEC_NR];
+	ಸ್ಥಿರ ರಚನೆ vir_addr src, dst;
+	ಪೂರ್ಣಾಂಕ r, i, els;
+	size_t ಬೈಟುಗಳು;
 
 	/* Set vector copy parameters. */
 	src.proc_nr_e = caller->p_endpoint;
-	assert(src.proc_nr_e != NONE);
-	src.offset = (vir_bytes) m_ptr->m_lsys_kern_vsafecopy.vec_addr;
+	ಪ್ರತಿಜ್ಞಾ(src.proc_nr_e != NONE);
+	src.ಸ್ಥಾನಾಂತರ = (vir_ಬೈಟುಗಳು) m_ptr->m_lsys_kern_vsafecopy.vec_addr;
 	dst.proc_nr_e = KERNEL;
-	dst.offset = (vir_bytes) vec;
+	dst.ಸ್ಥಾನಾಂತರ = (vir_ಬೈಟುಗಳು) vec;
 
 	/* No. of vector elements. */
-	els = m_ptr->m_lsys_kern_vsafecopy.vec_size;
-	bytes = els * sizeof(struct vscp_vec);
+	els = m_ptr->m_lsys_kern_vsafecopy.vec_ಗಾತ್ರ;
+	ಬೈಟುಗಳು = els * ಗಾತ್ರ(ರಚನೆ vscp_vec);
 
 	/* Obtain vector of copies. */
-	if((r=virtual_copy_vmcheck(caller, &src, &dst, bytes)) != OK)
-		return r;
+	ಆದರೆ((r=virtual_copy_vmcheck(caller, &src, &dst, ಬೈಟುಗಳು)) != OK)
+		ಹಿಂತಿರುಗಿ r;
 
 	/* Perform safecopies. */
-	for(i = 0; i < els; i++) {
-		int access;
+	ಗಾಗಿ(i = 0; i < els; i++) {
+		ಪೂರ್ಣಾಂಕ access;
 		endpoint_t granter;
-		if(vec[i].v_from == SELF) {
+		ಆದರೆ(vec[i].v_from == SELF) {
 			access = CPF_WRITE;
-			granter = vec[i].v_to;
-		} else if(vec[i].v_to == SELF) {
+			granter = vec[i].v_ಗಮ್ಯ;
+		} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ(vec[i].v_ಗಮ್ಯ == SELF) {
 			access = CPF_READ;
 			granter = vec[i].v_from;
-		} else {
-			printf("vsafecopy: %d: element %d/%d: no SELF found\n",
+		} ಇಲ್ಲದಿದ್ದರೆ {
+			ಬರೆ("vsafecopy: %d: element %d/%d: no SELF found\n",
 				caller->p_endpoint, i, els);
-			return EINVAL;
+			ಹಿಂತಿರುಗಿ EINVAL;
 		}
 
 		/* Do safecopy for this element. */
-		if((r=safecopy(caller, granter, caller->p_endpoint,
+		ಆದರೆ((r=safecopy(caller, granter, caller->p_endpoint,
 			vec[i].v_gid,
-			vec[i].v_bytes, vec[i].v_offset,
+			vec[i].v_ಬೈಟುಗಳು, vec[i].v_ಸ್ಥಾನಾಂತರ,
 			vec[i].v_addr, access)) != OK) {
-			return r;
+			ಹಿಂತಿರುಗಿ r;
 		}
 	}
 
-	return OK;
+	ಹಿಂತಿರುಗಿ OK;
 }
 

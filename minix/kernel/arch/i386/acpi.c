@@ -1,410 +1,410 @@
 
-#include <string.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
 
-#include "acpi.h"
-#include "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "acpi.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
 
-typedef int ((* acpi_read_t)(phys_bytes addr, void * buff, size_t size));
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಪೂರ್ಣಾಂಕ ((* acpi_read_t)(phys_ಬೈಟುಗಳು addr, ಶೂನ್ಯ * buff, size_t ಗಾತ್ರ_2));
 
-struct acpi_rsdp acpi_rsdp;
+ರಚನೆ acpi_rsdp acpi_rsdp;
 
-static acpi_read_t read_func;
+ಸ್ಥಿರ acpi_read_t read_func;
 
-#define MAX_RSDT	35 /* ACPI defines 35 signatures */
-#define SLP_EN_CODE	(1 << 13) /* ACPI SLP_EN_CODE code */
-#define AMI_PACKAGE_OP_CODE (0x12)
-#define AMI_NAME_OP_CODE (0x8)
-#define AMI_BYTE_PREFIX_CODE (0xA)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK (0xC0)
-#define AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT (6)
-#define AMI_MIN_PACKAGE_LENGTH (1)
-#define AMI_NUM_ELEMENTS_LENGTH (1)
-#define AMI_SLP_TYPA_SHIFT (10)
-#define AMI_SLP_TYPB_SHIFT (10)
-#define AMI_S5_NAME_OP_OFFSET_1 (-1)
-#define AMI_S5_NAME_OP_OFFSET_2 (-2)
-#define AMI_S5_PACKAGE_OP_OFFSET (4)
-#define AMI_S5_PACKET_LENGTH_OFFSET (5)
+#ವ್ಯಾಖ್ಯಾನಿಸು MAX_RSDT	35 /* ACPI defines 35 signatures */
+#ವ್ಯಾಖ್ಯಾನಿಸು SLP_EN_ಸಂಕೇತ	(1 << 13) /* ACPI SLP_EN_CODE code */
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_PACKAGE_OP_ಸಂಕೇತ (0x12)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_NAME_OP_ಸಂಕೇತ (0x8)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_BYTE_ಪೂರ್ವಪ್ರತ್ಯಯ_ಸಂಕೇತ (0xA)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_PACKAGE_ಉದ್ದಳತೆ_ENCODING_ಬಿಟ್ಟುಗಳು_ಮುಖವಾಡ (0xC0)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_PACKAGE_ಉದ್ದಳತೆ_ENCODING_ಬಿಟ್ಟುಗಳು_ಸರಿಸು (6)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_MIN_PACKAGE_ಉದ್ದಳತೆ (1)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_ಅಂಕೆ_ELEMENTS_ಉದ್ದಳತೆ (1)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_SLP_TYPA_ಸರಿಸು (10)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_SLP_TYPB_ಸರಿಸು (10)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_1 (-1)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_2 (-2)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_S5_PACKAGE_OP_ಸ್ಥಾನಾಂತರ (4)
+#ವ್ಯಾಖ್ಯಾನಿಸು AMI_S5_PACKET_ಉದ್ದಳತೆ_ಸ್ಥಾನಾಂತರ (5)
 
-static struct acpi_rsdt {
-	struct acpi_sdt_header	hdr;
-	u32_t			data[MAX_RSDT];
+ಸ್ಥಿರ ರಚನೆ acpi_rsdt {
+	ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ	hdr;
+	u32_t			ದತ್ತಾಂಶ[MAX_RSDT];
 } rsdt;
 	
-static struct {
-	char	signature [ACPI_SDT_SIGNATURE_LEN + 1];
-	size_t	length;
+ಸ್ಥಿರ ರಚನೆ {
+	ಅಕ್ಷರ	signature [ACPI_SDT_SIGNATURE_LEN + 1];
+	size_t	ಉದ್ದಳತೆ;
 } sdt_trans[MAX_RSDT];
 
-static int sdt_count;
-static u16_t pm1a_cnt_blk = 0;
-static u16_t pm1b_cnt_blk = 0;
-static u16_t slp_typa = 0;
-static u16_t slp_typb = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ sdt_ಎಣಿಕೆ;
+ಸ್ಥಿರ u16_t pm1a_cnt_blk = 0;
+ಸ್ಥಿರ u16_t pm1b_cnt_blk = 0;
+ಸ್ಥಿರ u16_t slp_typa = 0;
+ಸ್ಥಿರ u16_t slp_typb = 0;
 
-static int acpi_check_csum(struct acpi_sdt_header * tb, size_t size)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ acpi_check_csum(ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ * tb, size_t ಗಾತ್ರ_2)
 {
-	u8_t total = 0;
-	int i;
-	for (i = 0; i < size; i++)
-		total += ((unsigned char *)tb)[i];
-	return total == 0 ? 0 : -1;
+	u8_t ಒಟ್ಟು = 0;
+	ಪೂರ್ಣಾಂಕ i;
+	ಗಾಗಿ (i = 0; i < ಗಾತ್ರ_2; i++)
+		ಒಟ್ಟು += ((ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *)tb)[i];
+	ಹಿಂತಿರುಗಿ ಒಟ್ಟು == 0 ? 0 : -1;
 }
 
-static int acpi_check_signature(const char * orig, const char * match)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ acpi_check_signature(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ * orig, ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ * ಹೊಂದಿಕೆ)
 {
-	return strncmp(orig, match, ACPI_SDT_SIGNATURE_LEN);
+	ಹಿಂತಿರುಗಿ ಅಕ್ಷರಸರಣಿ_ಹೋಲಿಕೆ(orig, ಹೊಂದಿಕೆ, ACPI_SDT_SIGNATURE_LEN);
 }
 
-static u32_t acpi_phys2vir(u32_t p)
+ಸ್ಥಿರ u32_t acpi_phys2vir(u32_t p)
 {
-	if(!vm_running) {
+	ಆದರೆ(!vm_running) {
 		DEBUGEXTRA(("acpi: returning 0x%lx as vir addr\n", p));
-		return p;
+		ಹಿಂತಿರುಗಿ p;
 	}
 	panic("acpi: can't get virtual address of arbitrary physical address");
 }
 
-static int acpi_phys_copy(phys_bytes phys, void *target, size_t len)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ acpi_phys_copy(phys_ಬೈಟುಗಳು phys, ಶೂನ್ಯ *ಗುರಿ, size_t len)
 {
-	if(!vm_running) {
-		memcpy(target, (void *) phys, len);
-		return 0;
+	ಆದರೆ(!vm_running) {
+		ಸ್ಮರಣೆ_ನಕಲು(ಗುರಿ, (ಶೂನ್ಯ *) phys, len);
+		ಹಿಂತಿರುಗಿ 0;
 	}
 	panic("can't acpi_phys_copy with vm");
 }
 
-static int acpi_read_sdt_at(phys_bytes addr,
-				struct acpi_sdt_header * tb,
-				size_t size,
-				const char * name)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ acpi_read_sdt_at(phys_ಬೈಟುಗಳು addr,
+				ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ * tb,
+				size_t ಗಾತ್ರ_2,
+				ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ * name)
 {
-	struct acpi_sdt_header hdr;
+	ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ hdr;
 
 	/* if NULL is supplied, we only return the size of the table */
-	if (tb == NULL) {
-		if (read_func(addr, &hdr, sizeof(struct acpi_sdt_header))) {
-			printf("ERROR acpi cannot read %s header\n", name);
-			return -1;
+	ಆದರೆ (tb == ಖಾಲಿ) {
+		ಆದರೆ (read_func(addr, &hdr, ಗಾತ್ರ(ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ))) {
+			ಬರೆ("ERROR acpi cannot read %s header\n", name);
+			ಹಿಂತಿರುಗಿ -1;
 		}
 
-		return hdr.length;
+		ಹಿಂತಿರುಗಿ hdr.ಉದ್ದಳತೆ;
 	}
 
-	if (read_func(addr, tb, sizeof(struct acpi_sdt_header))) {
-		printf("ERROR acpi cannot read %s header\n", name);
-		return -1;
+	ಆದರೆ (read_func(addr, tb, ಗಾತ್ರ(ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ))) {
+		ಬರೆ("ERROR acpi cannot read %s header\n", name);
+		ಹಿಂತಿರುಗಿ -1;
 	}
 
-	if (acpi_check_signature(tb->signature, name)) {
-		printf("ERROR acpi %s signature does not match\n", name);
-		return -1;
+	ಆದರೆ (acpi_check_signature(tb->signature, name)) {
+		ಬರೆ("ERROR acpi %s signature does not match\n", name);
+		ಹಿಂತಿರುಗಿ -1;
 	}
 
-	if (size < tb->length) {
-		printf("ERROR acpi buffer too small for %s\n", name);
-		return -1;
+	ಆದರೆ (ಗಾತ್ರ_2 < tb->ಉದ್ದಳತೆ) {
+		ಬರೆ("ERROR acpi buffer too small for %s\n", name);
+		ಹಿಂತಿರುಗಿ -1;
 	}
 
-	if (read_func(addr, tb, size)) {
-		printf("ERROR acpi cannot read %s\n", name);
-		return -1;
+	ಆದರೆ (read_func(addr, tb, ಗಾತ್ರ_2)) {
+		ಬರೆ("ERROR acpi cannot read %s\n", name);
+		ಹಿಂತಿರುಗಿ -1;
 	}
 
-	if (acpi_check_csum(tb, tb->length)) {
-		printf("ERROR acpi %s checksum does not match\n", name);
-		return -1;
+	ಆದರೆ (acpi_check_csum(tb, tb->ಉದ್ದಳತೆ)) {
+		ಬರೆ("ERROR acpi %s checksum does not match\n", name);
+		ಹಿಂತಿರುಗಿ -1;
 	}
 
-	return tb->length;
+	ಹಿಂತಿರುಗಿ tb->ಉದ್ದಳತೆ;
 }
 
-phys_bytes acpi_get_table_base(const char * name)
+phys_ಬೈಟುಗಳು acpi_get_ಕೋಷ್ಟಕ_ತಳ(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ * name)
 {
-	int i;
+	ಪೂರ್ಣಾಂಕ i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	ಗಾಗಿ(i = 0; i < sdt_ಎಣಿಕೆ; i++) {
+		ಆದರೆ (ಅಕ್ಷರಸರಣಿ_ಹೋಲಿಕೆ(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return (phys_bytes) rsdt.data[i];
+			ಹಿಂತಿರುಗಿ (phys_ಬೈಟುಗಳು) rsdt.ದತ್ತಾಂಶ[i];
 	}
 
-	return (phys_bytes) NULL;
+	ಹಿಂತಿರುಗಿ (phys_ಬೈಟುಗಳು) ಖಾಲಿ;
 }
 
-size_t acpi_get_table_length(const char * name)
+size_t acpi_get_ಕೋಷ್ಟಕ_ಉದ್ದಳತೆ(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ * name)
 {
-	int i;
+	ಪೂರ್ಣಾಂಕ i;
 
-	for(i = 0; i < sdt_count; i++) {
-		if (strncmp(name, sdt_trans[i].signature,
+	ಗಾಗಿ(i = 0; i < sdt_ಎಣಿಕೆ; i++) {
+		ಆದರೆ (ಅಕ್ಷರಸರಣಿ_ಹೋಲಿಕೆ(name, sdt_trans[i].signature,
 					ACPI_SDT_SIGNATURE_LEN) == 0)
-			return sdt_trans[i].length;
+			ಹಿಂತಿರುಗಿ sdt_trans[i].ಉದ್ದಳತೆ;
 	}
 
-	return 0;
+	ಹಿಂತಿರುಗಿ 0;
 }
 
-static void * acpi_madt_get_typed_item(struct acpi_madt_hdr * hdr,
-					unsigned char type,
-					unsigned idx)
+ಸ್ಥಿರ ಶೂನ್ಯ * acpi_madt_get_typed_ಅಂಶ(ರಚನೆ acpi_madt_hdr * hdr,
+					ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ type,
+					ಚಿಹ್ನೆರಹಿತ idx)
 {
-	u8_t * t, * end;
-	int i;
+	u8_t * t, * ಕೊನೆ;
+	ಪೂರ್ಣಾಂಕ i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + ಗಾತ್ರ(ರಚನೆ acpi_madt_hdr);
+	ಕೊನೆ = (u8_t *) hdr + hdr->hdr.ಉದ್ದಳತೆ;
 
 	i = 0;
-	while(t < end) {
-		if (type == ((struct acpi_madt_item_hdr *) t)->type) {
-			if (i == idx)
-				return t;
-			else
+	ಆಗ(t < ಕೊನೆ) {
+		ಆದರೆ (type == ((ರಚನೆ acpi_madt_ಅಂಶ_hdr *) t)->type) {
+			ಆದರೆ (i == idx)
+				ಹಿಂತಿರುಗಿ t;
+			ಇಲ್ಲದಿದ್ದರೆ
 				i++;
 		}
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+		t += ((ರಚನೆ acpi_madt_ಅಂಶ_hdr *) t)->ಉದ್ದಳತೆ;
 	}
 
-	return NULL;
+	ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 }
 
-#if 0
-static void * acpi_madt_get_item(struct acpi_madt_hdr * hdr,
-				unsigned idx)
+#ಆದರೆ 0
+ಸ್ಥಿರ ಶೂನ್ಯ * acpi_madt_get_ಅಂಶ(ರಚನೆ acpi_madt_hdr * hdr,
+				ಚಿಹ್ನೆರಹಿತ idx)
 {
-	u8_t * t, * end;
-	int i;
+	u8_t * t, * ಕೊನೆ;
+	ಪೂರ್ಣಾಂಕ i;
 
-	t = (u8_t *) hdr + sizeof(struct acpi_madt_hdr);
-	end = (u8_t *) hdr + hdr->hdr.length;
+	t = (u8_t *) hdr + ಗಾತ್ರ(ರಚನೆ acpi_madt_hdr);
+	ಕೊನೆ = (u8_t *) hdr + hdr->hdr.ಉದ್ದಳತೆ;
 
-	for(i = 0 ; i <= idx && t < end; i++) {
-		if (i == idx)
-			return t;
-		t += ((struct acpi_madt_item_hdr *) t)->length;
+	ಗಾಗಿ(i = 0 ; i <= idx && t < ಕೊನೆ; i++) {
+		ಆದರೆ (i == idx)
+			ಹಿಂತಿರುಗಿ t;
+		t += ((ರಚನೆ acpi_madt_ಅಂಶ_hdr *) t)->ಉದ್ದಳತೆ;
 	}
 
-	return NULL;
+	ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-static int acpi_rsdp_test(void * buff)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ acpi_rsdp_test(ಶೂನ್ಯ * buff)
 {
-	struct acpi_rsdp * rsdp = (struct acpi_rsdp *) buff;
+	ರಚನೆ acpi_rsdp * rsdp = (ರಚನೆ acpi_rsdp *) buff;
 
-	if (!platform_tbl_checksum_ok(buff, 20))
-		return 0;
-	if (strncmp(rsdp->signature, "RSD PTR ", 8))
-		return 0;
+	ಆದರೆ (!platform_tbl_checksum_ok(buff, 20))
+		ಹಿಂತಿರುಗಿ 0;
+	ಆದರೆ (ಅಕ್ಷರಸರಣಿ_ಹೋಲಿಕೆ(rsdp->signature, "RSD PTR ", 8))
+		ಹಿಂತಿರುಗಿ 0;
 
-	return 1;
+	ಹಿಂತಿರುಗಿ 1;
 }
 
-static int get_acpi_rsdp(void)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_acpi_rsdp(ಶೂನ್ಯ)
 {
 	u16_t ebda;
 	/*
 	 * Read 40:0Eh - to find the starting address of the EBDA.
 	 */
-	acpi_phys_copy (0x40E, &ebda, sizeof(ebda));
-	if (ebda) {
+	acpi_phys_copy (0x40E, &ebda, ಗಾತ್ರ(ebda));
+	ಆದರೆ (ebda) {
 		ebda <<= 4;
-		if(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
-					sizeof(acpi_rsdp), &machine.acpi_rsdp,
+		ಆದರೆ(platform_tbl_ptr(ebda, ebda + 0x400, 16, &acpi_rsdp,
+					ಗಾತ್ರ(acpi_rsdp), &machine.acpi_rsdp,
 					acpi_rsdp_test))
-			return 1;
+			ಹಿಂತಿರುಗಿ 1;
 	} 
 
 	/* try BIOS read only mem space */
-	if(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
-				sizeof(acpi_rsdp), &machine.acpi_rsdp,
+	ಆದರೆ(platform_tbl_ptr(0xE0000, 0x100000, 16, &acpi_rsdp,
+				ಗಾತ್ರ(acpi_rsdp), &machine.acpi_rsdp,
 				acpi_rsdp_test))
-		return 1;
+		ಹಿಂತಿರುಗಿ 1;
 	
 	machine.acpi_rsdp = 0; /* RSDP cannot be found at this address therefore
 				  it is a valid negative value */
-	return 0;
+	ಹಿಂತಿರುಗಿ 0;
 }
 
-static void acpi_init_poweroff(void)
+ಸ್ಥಿರ ಶೂನ್ಯ acpi_init_poweroff(ಶೂನ್ಯ)
 {
-	u8_t *ptr = NULL;
-	u8_t *start = NULL;
-	u8_t *end = NULL;
-	struct acpi_fadt_header *fadt_header = NULL;
-	struct acpi_rsdt * dsdt_header = NULL;
-	char *msg = NULL;
+	u8_t *ptr = ಖಾಲಿ;
+	u8_t *ಆರಂಭ = ಖಾಲಿ;
+	u8_t *ಕೊನೆ = ಖಾಲಿ;
+	ರಚನೆ acpi_fadt_ಶೀರ್ಷಿಕೆ *fadt_ಶೀರ್ಷಿಕೆ = ಖಾಲಿ;
+	ರಚನೆ acpi_rsdt * dsdt_ಶೀರ್ಷಿಕೆ = ಖಾಲಿ;
+	ಅಕ್ಷರ *ಸಂದೇಶ_2 = ಖಾಲಿ;
 
 	/* Everything used here existed since ACPI spec 1.0 */
 	/* So we can safely use them */
-	fadt_header = (struct acpi_fadt_header *)
-		acpi_phys2vir(acpi_get_table_base("FACP"));
-	if (fadt_header == NULL) {
-		msg = "Could not load FACP";
-		goto exit;
+	fadt_ಶೀರ್ಷಿಕೆ = (ರಚನೆ acpi_fadt_ಶೀರ್ಷಿಕೆ *)
+		acpi_phys2vir(acpi_get_ಕೋಷ್ಟಕ_ತಳ("FACP"));
+	ಆದರೆ (fadt_ಶೀರ್ಷಿಕೆ == ಖಾಲಿ) {
+		ಸಂದೇಶ_2 = "Could not load FACP";
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 	}
 
-	dsdt_header = (struct acpi_rsdt *)
-		acpi_phys2vir((phys_bytes) fadt_header->dsdt);
-	if (dsdt_header == NULL) {
-		msg = "Could not load DSDT";
-		goto exit;
+	dsdt_ಶೀರ್ಷಿಕೆ = (ರಚನೆ acpi_rsdt *)
+		acpi_phys2vir((phys_ಬೈಟುಗಳು) fadt_ಶೀರ್ಷಿಕೆ->dsdt);
+	ಆದರೆ (dsdt_ಶೀರ್ಷಿಕೆ == ಖಾಲಿ) {
+		ಸಂದೇಶ_2 = "Could not load DSDT";
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 	}
 
-	pm1a_cnt_blk = fadt_header->pm1a_cnt_blk;
-	pm1b_cnt_blk = fadt_header->pm1b_cnt_blk;
+	pm1a_cnt_blk = fadt_ಶೀರ್ಷಿಕೆ->pm1a_cnt_blk;
+	pm1b_cnt_blk = fadt_ಶೀರ್ಷಿಕೆ->pm1b_cnt_blk;
 
-	ptr = start = (u8_t *) dsdt_header->data;
-	end = start + dsdt_header->hdr.length - 4;
+	ptr = ಆರಂಭ = (u8_t *) dsdt_ಶೀರ್ಷಿಕೆ->ದತ್ತಾಂಶ;
+	ಕೊನೆ = ಆರಂಭ + dsdt_ಶೀರ್ಷಿಕೆ->hdr.ಉದ್ದಳತೆ - 4;
 
 	/* See http://forum.osdev.org/viewtopic.php?t=16990 */
 	/* for layout of \_S5 */
-	while (ptr < end && memcmp(ptr, "_S5_", 4) != 0)
+	ಆಗ (ptr < ಕೊನೆ && memcmp(ptr, "_S5_", 4) != 0)
 		ptr++;
 
-	msg = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
-	if (ptr >= end || ptr == start)
-		goto exit;
+	ಸಂದೇಶ_2 = "Could not read S5 data. Use default SLP_TYPa and SLP_TYPb";
+	ಆದರೆ (ptr >= ಕೊನೆ || ptr == ಆರಂಭ)
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 
 	/* validate AML structure */
-	if (*(ptr + AMI_S5_PACKAGE_OP_OFFSET) != AMI_PACKAGE_OP_CODE)
-		goto exit;
+	ಆದರೆ (*(ptr + AMI_S5_PACKAGE_OP_ಸ್ಥಾನಾಂತರ) != AMI_PACKAGE_OP_ಸಂಕೇತ)
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 
-	if ((ptr < start + (-AMI_S5_NAME_OP_OFFSET_2) ||
-		(*(ptr + AMI_S5_NAME_OP_OFFSET_2) != AMI_NAME_OP_CODE ||
-		 *(ptr + AMI_S5_NAME_OP_OFFSET_2 + 1) != '\\')) &&
-		*(ptr + AMI_S5_NAME_OP_OFFSET_1) != AMI_NAME_OP_CODE)
-		goto exit;
+	ಆದರೆ ((ptr < ಆರಂಭ + (-AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_2) ||
+		(*(ptr + AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_2) != AMI_NAME_OP_ಸಂಕೇತ ||
+		 *(ptr + AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_2 + 1) != '\\')) &&
+		*(ptr + AMI_S5_NAME_OP_ಸ್ಥಾನಾಂತರ_1) != AMI_NAME_OP_ಸಂಕೇತ)
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 
-	ptr += AMI_S5_PACKET_LENGTH_OFFSET;
-	if (ptr >= end)
-		goto exit;
+	ptr += AMI_S5_PACKET_ಉದ್ದಳತೆ_ಸ್ಥಾನಾಂತರ;
+	ಆದರೆ (ptr >= ಕೊನೆ)
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 
 	/* package length */
-	ptr += ((*ptr & AMI_PACKAGE_LENGTH_ENCODING_BITS_MASK) >>
-		AMI_PACKAGE_LENGTH_ENCODING_BITS_SHIFT) +
-		AMI_MIN_PACKAGE_LENGTH + AMI_NUM_ELEMENTS_LENGTH;
-	if (ptr >= end)
-		goto exit;
+	ptr += ((*ptr & AMI_PACKAGE_ಉದ್ದಳತೆ_ENCODING_ಬಿಟ್ಟುಗಳು_ಮುಖವಾಡ) >>
+		AMI_PACKAGE_ಉದ್ದಳತೆ_ENCODING_ಬಿಟ್ಟುಗಳು_ಸರಿಸು) +
+		AMI_MIN_PACKAGE_ಉದ್ದಳತೆ + AMI_ಅಂಕೆ_ELEMENTS_ಉದ್ದಳತೆ;
+	ಆದರೆ (ptr >= ಕೊನೆ)
+		ಹೋಗು ನಿರ್ಗಮಿಸು;
 
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ಆದರೆ (*ptr == AMI_BYTE_ಪೂರ್ವಪ್ರತ್ಯಯ_ಸಂಕೇತ)
 		ptr++; /* skip byte prefix */
 
-	slp_typa = (*ptr) << AMI_SLP_TYPA_SHIFT;
+	slp_typa = (*ptr) << AMI_SLP_TYPA_ಸರಿಸು;
 
 	ptr++; /* move to SLP_TYPb */
-	if (*ptr == AMI_BYTE_PREFIX_CODE)
+	ಆದರೆ (*ptr == AMI_BYTE_ಪೂರ್ವಪ್ರತ್ಯಯ_ಸಂಕೇತ)
 		ptr++; /* skip byte prefix */
 
-	slp_typb = (*ptr) << AMI_SLP_TYPB_SHIFT;
+	slp_typb = (*ptr) << AMI_SLP_TYPB_ಸರಿಸು;
 
-	msg = "poweroff initialized";
+	ಸಂದೇಶ_2 = "poweroff initialized";
 
-exit:
-	if (msg) {
-		DEBUGBASIC(("acpi: %s\n", msg));
+ನಿರ್ಗಮಿಸು:
+	ಆದರೆ (ಸಂದೇಶ_2) {
+		DEBUGBASIC(("acpi: %s\n", ಸಂದೇಶ_2));
 	}
 }
 
-void acpi_init(void)
+ಶೂನ್ಯ acpi_init(ಶೂನ್ಯ)
 {
-	int s, i;
+	ಪೂರ್ಣಾಂಕ s, i;
 	read_func = acpi_phys_copy;
 
-	if (!get_acpi_rsdp()) {
-		printf("WARNING : Cannot configure ACPI\n");
-		return;
+	ಆದರೆ (!get_acpi_rsdp()) {
+		ಬರೆ("WARNING : Cannot configure ACPI\n");
+		ಹಿಂತಿರುಗಿ;
 	}
 	
-	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (struct acpi_sdt_header *) &rsdt,
-			sizeof(struct acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
+	s = acpi_read_sdt_at(acpi_rsdp.rsdt_addr, (ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ *) &rsdt,
+			ಗಾತ್ರ(ರಚನೆ acpi_rsdt), ACPI_SDT_SIGNATURE(RSDT));
 
-	sdt_count = (s - sizeof(struct acpi_sdt_header)) / sizeof(u32_t);
+	sdt_ಎಣಿಕೆ = (s - ಗಾತ್ರ(ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ)) / ಗಾತ್ರ(u32_t);
 
-	for (i = 0; i < sdt_count; i++) {
-		struct acpi_sdt_header hdr;
-		int j;
-		if (read_func(rsdt.data[i], &hdr, sizeof(struct acpi_sdt_header))) {
-			printf("ERROR acpi cannot read header at 0x%x\n",
-								rsdt.data[i]);
-			return;
+	ಗಾಗಿ (i = 0; i < sdt_ಎಣಿಕೆ; i++) {
+		ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ hdr;
+		ಪೂರ್ಣಾಂಕ j;
+		ಆದರೆ (read_func(rsdt.ದತ್ತಾಂಶ[i], &hdr, ಗಾತ್ರ(ರಚನೆ acpi_sdt_ಶೀರ್ಷಿಕೆ))) {
+			ಬರೆ("ERROR acpi cannot read header at 0x%x\n",
+								rsdt.ದತ್ತಾಂಶ[i]);
+			ಹಿಂತಿರುಗಿ;
 		}
 
-		for (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
+		ಗಾಗಿ (j = 0 ; j < ACPI_SDT_SIGNATURE_LEN; j++)
 			sdt_trans[i].signature[j] = hdr.signature[j];
 		sdt_trans[i].signature[ACPI_SDT_SIGNATURE_LEN] = '\0';
-		sdt_trans[i].length = hdr.length;
+		sdt_trans[i].ಉದ್ದಳತೆ = hdr.ಉದ್ದಳತೆ;
 	}
 
 	acpi_init_poweroff();
 }
 
-struct acpi_madt_ioapic * acpi_get_ioapic_next(void)
+ರಚನೆ acpi_madt_ioapic * acpi_get_ioapic_ಮುಂದಿನ(ಶೂನ್ಯ)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ idx = 0;
+	ಸ್ಥಿರ ರಚನೆ acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_ioapic * ret;
+	ರಚನೆ acpi_madt_ioapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
-			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+	ಆದರೆ (idx == 0) {
+		madt_hdr = (ರಚನೆ acpi_madt_hdr *)
+			acpi_phys2vir(acpi_get_ಕೋಷ್ಟಕ_ತಳ("APIC"));
+		ಆದರೆ (madt_hdr == ಖಾಲಿ)
+			ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 	}
 
-	ret = (struct acpi_madt_ioapic *)
-		acpi_madt_get_typed_item(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
-	if (ret)
+	ret = (ರಚನೆ acpi_madt_ioapic *)
+		acpi_madt_get_typed_ಅಂಶ(madt_hdr, ACPI_MADT_TYPE_IOAPIC, idx);
+	ಆದರೆ (ret)
 		idx++;
 
-	return ret;
+	ಹಿಂತಿರುಗಿ ret;
 }
 
-struct acpi_madt_lapic * acpi_get_lapic_next(void)
+ರಚನೆ acpi_madt_lapic * acpi_get_lapic_ಮುಂದಿನ(ಶೂನ್ಯ)
 {
-	static unsigned idx = 0;
-	static struct acpi_madt_hdr * madt_hdr;
+	ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ idx = 0;
+	ಸ್ಥಿರ ರಚನೆ acpi_madt_hdr * madt_hdr;
 
-	struct acpi_madt_lapic * ret;
+	ರಚನೆ acpi_madt_lapic * ret;
 
-	if (idx == 0) {
-		madt_hdr = (struct acpi_madt_hdr *)
-			acpi_phys2vir(acpi_get_table_base("APIC"));
-		if (madt_hdr == NULL)
-			return NULL;
+	ಆದರೆ (idx == 0) {
+		madt_hdr = (ರಚನೆ acpi_madt_hdr *)
+			acpi_phys2vir(acpi_get_ಕೋಷ್ಟಕ_ತಳ("APIC"));
+		ಆದರೆ (madt_hdr == ಖಾಲಿ)
+			ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 	}
 
-	for (;;) {
-		ret = (struct acpi_madt_lapic *)
-			acpi_madt_get_typed_item(madt_hdr,
+	ಗಾಗಿ (;;) {
+		ret = (ರಚನೆ acpi_madt_lapic *)
+			acpi_madt_get_typed_ಅಂಶ(madt_hdr,
 					ACPI_MADT_TYPE_LAPIC, idx);
-		if (!ret)
-			break;
+		ಆದರೆ (!ret)
+			ನಿಲ್ಲಿಸು;
 
 		idx++;
 
 		/* report only usable CPUs */
-		if (ret->flags & 1)
-			break;
+		ಆದರೆ (ret->flags & 1)
+			ನಿಲ್ಲಿಸು;
 	}
 
-	return ret;
+	ಹಿಂತಿರುಗಿ ret;
 }
 
-void __k_unpaged_acpi_poweroff(void)
+ಶೂನ್ಯ __k_unpaged_acpi_poweroff(ಶೂನ್ಯ)
 {
 	/* NO OP poweroff symbol*/
 }
 
-void acpi_poweroff(void)
+ಶೂನ್ಯ acpi_poweroff(ಶೂನ್ಯ)
 {
-	if (pm1a_cnt_blk == 0) {
-		return;
+	ಆದರೆ (pm1a_cnt_blk == 0) {
+		ಹಿಂತಿರುಗಿ;
 	}
-	outw(pm1a_cnt_blk, slp_typa | SLP_EN_CODE);
-	if (pm1b_cnt_blk != 0) {
-		outw(pm1b_cnt_blk, slp_typb | SLP_EN_CODE);
+	outw(pm1a_cnt_blk, slp_typa | SLP_EN_ಸಂಕೇತ);
+	ಆದರೆ (pm1b_cnt_blk != 0) {
+		outw(pm1b_cnt_blk, slp_typb | SLP_EN_ಸಂಕೇತ);
 	}
 }

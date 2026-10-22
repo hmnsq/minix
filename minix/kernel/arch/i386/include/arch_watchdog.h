@@ -1,9 +1,9 @@
-#ifndef __I386_WATCHDOG_H__
-#define __I386_WATCHDOG_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __I386_WATCHDOG_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __I386_WATCHDOG_H__
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-struct nmi_frame {
+ರಚನೆ nmi_ಚೌಕಟ್ಟು {
 	reg_t	eax;
 	reg_t	ecx;
 	reg_t	edx;
@@ -21,8 +21,8 @@ struct nmi_frame {
 	reg_t	eflags;
 };
 
-int i386_watchdog_start(void);
+ಪೂರ್ಣಾಂಕ i386_watchdog_ಆರಂಭ(ಶೂನ್ಯ);
 
-#define nmi_in_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
+#ವ್ಯಾಖ್ಯಾನಿಸು nmi_ಒಳ_kernel(f)	((f)->cs == KERN_CS_SELECTOR)
 
-#endif /* __I386_WATCHDOG_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __I386_WATCHDOG_H__ */

@@ -7,36 +7,36 @@
  *
  */
 
-#include "kernel/system.h"
-#include <signal.h>
-#include <string.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <signal.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
 
-#if USE_SIGSEND
+#ಆದರೆ USE_SIGSEND
 
 /*===========================================================================*
  *			      do_sigsend				     *
  *===========================================================================*/
-int do_sigsend(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_sigsend(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
 /* Handle sys_sigsend, POSIX-style signal handling. */
 
-  struct sigmsg smsg;
-  register struct proc *rp;
-  struct sigframe_sigcontext fr, *frp;
-  int proc_nr, r;
-#if defined(__i386__)
+  ರಚನೆ sigmsg smsg;
+  ನೋಂದಣಿ ರಚನೆ proc *rp;
+  ರಚನೆ sigframe_sigcontext fr, *frp;
+  ಪೂರ್ಣಾಂಕ proc_nr, r;
+#ಆದರೆ defined(__i386__)
   reg_t new_fp;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-  if (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) return EINVAL;
-  if (iskerneln(proc_nr)) return EPERM;
+  ಆದರೆ (!isokendpt(m_ptr->m_sigcalls.endpt, &proc_nr)) ಹಿಂತಿರುಗಿ EINVAL;
+  ಆದರೆ (iskerneln(proc_nr)) ಹಿಂತಿರುಗಿ EPERM;
   rp = proc_addr(proc_nr);
 
   /* Get the sigmsg structure into our address space.  */
-  if ((r = data_copy_vmcheck(caller, caller->p_endpoint,
-		(vir_bytes)m_ptr->m_sigcalls.sigctx, KERNEL,
-		(vir_bytes)&smsg, (phys_bytes) sizeof(struct sigmsg))) != OK)
-	return r;
+  ಆದರೆ ((r = ದತ್ತಾಂಶ_copy_vmcheck(caller, caller->p_endpoint,
+		(vir_ಬೈಟುಗಳು)m_ptr->m_sigcalls.sigctx, KERNEL,
+		(vir_ಬೈಟುಗಳು)&smsg, (phys_ಬೈಟುಗಳು) ಗಾತ್ರ(ರಚನೆ sigmsg))) != OK)
+	ಹಿಂತಿರುಗಿ r;
 
   /* WARNING: the following code may be run more than once even for a single
    * signal delivery. Do not change registers here. See the comment below.
@@ -44,13 +44,13 @@ int do_sigsend(struct proc * caller, message * m_ptr)
 
   /* Compute the user stack pointer where sigframe will start. */
   smsg.sm_stkptr = arch_get_sp(rp);
-  frp = (struct sigframe_sigcontext *) smsg.sm_stkptr - 1;
+  frp = (ರಚನೆ sigframe_sigcontext *) smsg.sm_stkptr - 1;
 
   /* Copy the registers to the sigcontext structure. */
-  memset(&fr, 0, sizeof(fr));
+  memset(&fr, 0, ಗಾತ್ರ(fr));
   fr.sf_scp = &frp->sf_sc;
 
-#if defined(__i386__)
+#ಆದರೆ defined(__i386__)
   fr.sf_sc.sc_gs = rp->p_reg.gs;
   fr.sf_sc.sc_fs = rp->p_reg.fs;
   fr.sf_sc.sc_es = rp->p_reg.es;
@@ -76,19 +76,19 @@ int do_sigsend(struct proc * caller, message * m_ptr)
 
   fr.sf_sc.trap_style = rp->p_seg.p_kern_trap_style;
 
-  if (fr.sf_sc.trap_style == KTS_NONE) {
-  	printf("do_sigsend: sigsend an unsaved process\n");
-	return EINVAL;
+  ಆದರೆ (fr.sf_sc.trap_style == KTS_NONE) {
+  	ಬರೆ("do_sigsend: sigsend an unsaved process\n");
+	ಹಿಂತಿರುಗಿ EINVAL;
   }
 
-  if (proc_used_fpu(rp)) {
+  ಆದರೆ (proc_ಬಳಸಿದ_fpu(rp)) {
 	/* save the FPU context before saving it to the sig context */
 	save_fpu(rp);
-	memcpy(&fr.sf_sc.sc_fpu_state, rp->p_seg.fpu_state, FPU_XFP_SIZE);
+	ಸ್ಮರಣೆ_ನಕಲು(&fr.sf_sc.sc_fpu_state, rp->p_seg.fpu_state, FPU_XFP_ಗಾತ್ರ);
   }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(__arm__)
+#ಆದರೆ defined(__arm__)
   fr.sf_sc.sc_spsr = rp->p_reg.psr;
   fr.sf_sc.sc_r0 = rp->p_reg.retreg;
   fr.sf_sc.sc_r1 = rp->p_reg.r1;
@@ -107,10 +107,10 @@ int do_sigsend(struct proc * caller, message * m_ptr)
   fr.sf_sc.sc_usr_lr = rp->p_reg.lr;
   fr.sf_sc.sc_svc_lr = 0;	/* ? */
   fr.sf_sc.sc_pc = rp->p_reg.pc;	/* R15 */
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* Finish the sigcontext initialization. */
-  fr.sf_sc.sc_mask = smsg.sm_mask;
+  fr.sf_sc.sc_ಮುಖವಾಡ = smsg.sm_ಮುಖವಾಡ;
   fr.sf_sc.sc_flags = rp->p_misc_flags & MF_FPU_INITIALIZED;
   fr.sf_sc.sc_magic = SC_MAGIC;
 
@@ -118,10 +118,10 @@ int do_sigsend(struct proc * caller, message * m_ptr)
   fpu_sigcontext(rp, &fr, &fr.sf_sc);
 
   /* Copy the sigframe structure to the user's stack. */
-  if ((r = data_copy_vmcheck(caller, KERNEL, (vir_bytes)&fr,
-		m_ptr->m_sigcalls.endpt, (vir_bytes)frp,
-		(vir_bytes)sizeof(struct sigframe_sigcontext))) != OK)
-      return r;
+  ಆದರೆ ((r = ದತ್ತಾಂಶ_copy_vmcheck(caller, KERNEL, (vir_ಬೈಟುಗಳು)&fr,
+		m_ptr->m_sigcalls.endpt, (vir_ಬೈಟುಗಳು)frp,
+		(vir_ಬೈಟುಗಳು)ಗಾತ್ರ(ರಚನೆ sigframe_sigcontext))) != OK)
+      ಹಿಂತಿರುಗಿ r;
 
   /* WARNING: up to the statement above, the code may run multiple times, since
    * copying out the frame/context may fail with VMSUSPEND the first time. For
@@ -134,33 +134,33 @@ int do_sigsend(struct proc * caller, message * m_ptr)
   rp->p_reg.sp = (reg_t) frp;
   rp->p_reg.pc = (reg_t) smsg.sm_sighandler;
 
-#if defined(__i386__)
+#ಆದರೆ defined(__i386__)
   rp->p_reg.fp = new_fp;
-#elif defined(__arm__)
+#ಅಥವಾಆದರೆ defined(__arm__)
   /* use the ARM link register to set the return address from the signal
    * handler
    */
   rp->p_reg.lr = (reg_t) smsg.sm_sigreturn;
-  if(rp->p_reg.lr & 1) { printf("sigsend: LSB LR makes no sense.\n"); }
+  ಆದರೆ(rp->p_reg.lr & 1) { ಬರೆ("sigsend: LSB LR makes no sense.\n"); }
 
   /* pass signal handler parameters in registers */
   rp->p_reg.retreg = (reg_t) smsg.sm_signo;
   rp->p_reg.r1 = 0;	/* sf_code */
   rp->p_reg.r2 = (reg_t) fr.sf_scp;
-  rp->p_misc_flags |= MF_CONTEXT_SET;
-#endif
+  rp->p_misc_flags |= MF_CONTEXT_ಗಣ;
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* Signal handler should get clean FPU. */
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
 
-  if(!RTS_ISSET(rp, RTS_PROC_STOP)) {
-	printf("system: warning: sigsend a running process\n");
-	printf("caller stack: ");
+  ಆದರೆ(!RTS_ISSET(rp, RTS_PROC_STOP)) {
+	ಬರೆ("system: warning: sigsend a running process\n");
+	ಬರೆ("caller stack: ");
 	proc_stacktrace(caller);
   }
 
-  return OK;
+  ಹಿಂತಿರುಗಿ OK;
 }
 
-#endif /* USE_SIGSEND */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_SIGSEND */
 

@@ -1,43 +1,43 @@
-#ifndef __SPINLOCK_H__
-#define __SPINLOCK_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __SPINLOCK_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __SPINLOCK_H__
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-typedef struct spinlock {
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ spinlock {
 	atomic_t val;
 } spinlock_t;
 
-#ifndef CONFIG_SMP
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ CONFIG_SMP
 
-#define SPINLOCK_DEFINE(name)
-#define PRIVATE_SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)
-#define spinlock_init(sl)
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
+#ವ್ಯಾಖ್ಯಾನಿಸು SPINLOCK_DEFINE(name)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಖಾಸಗಿ_SPINLOCK_DEFINE(name)
+#ವ್ಯಾಖ್ಯಾನಿಸು SPINLOCK_DECLARE(name)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_init(sl)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_ಬೀಗ(sl)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_unlock(sl)
 
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 
 /* SMP */
-#define SPINLOCK_DEFINE(name)	spinlock_t name;
-#define PRIVATE_SPINLOCK_DEFINE(name)	PRIVATE SPINLOCK_DEFINE(name)
-#define SPINLOCK_DECLARE(name)	extern SPINLOCK_DEFINE(name)
-#define spinlock_init(sl) do { (sl)->val = 0; } while (0)
+#ವ್ಯಾಖ್ಯಾನಿಸು SPINLOCK_DEFINE(name)	spinlock_t name;
+#ವ್ಯಾಖ್ಯಾನಿಸು ಖಾಸಗಿ_SPINLOCK_DEFINE(name)	ಖಾಸಗಿ_2 SPINLOCK_DEFINE(name)
+#ವ್ಯಾಖ್ಯಾನಿಸು SPINLOCK_DECLARE(name)	ಬಾಹ್ಯ SPINLOCK_DEFINE(name)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_init(sl) ಮಾಡು { (sl)->val = 0; } ಆಗ (0)
 
-#if CONFIG_MAX_CPUS == 1
-#define spinlock_lock(sl)
-#define spinlock_unlock(sl)
-#else
-void arch_spinlock_lock(atomic_t * sl);
-void arch_spinlock_unlock(atomic_t * sl);
-#define spinlock_lock(sl)	arch_spinlock_lock((atomic_t*) sl)
-#define spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
-#endif
+#ಆದರೆ CONFIG_MAX_CPUS == 1
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_ಬೀಗ(sl)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_unlock(sl)
+#ಇಲ್ಲದಿದ್ದರೆ
+ಶೂನ್ಯ arch_spinlock_ಬೀಗ(atomic_t * sl);
+ಶೂನ್ಯ arch_spinlock_unlock(atomic_t * sl);
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_ಬೀಗ(sl)	arch_spinlock_ಬೀಗ((atomic_t*) sl)
+#ವ್ಯಾಖ್ಯಾನಿಸು spinlock_unlock(sl)	arch_spinlock_unlock((atomic_t*) sl)
+#ಆದರೆ_ಅಂತ್ಯ
 
 
-#endif /* CONFIG_SMP */
+#ಆದರೆ_ಅಂತ್ಯ /* CONFIG_SMP */
 
-#define BKL_LOCK()	spinlock_lock(&big_kernel_lock)
-#define BKL_UNLOCK()	spinlock_unlock(&big_kernel_lock)
+#ವ್ಯಾಖ್ಯಾನಿಸು BKL_ಬೀಗ()	spinlock_ಬೀಗ(&big_kernel_ಬೀಗ)
+#ವ್ಯಾಖ್ಯಾನಿಸು BKL_UNLOCK()	spinlock_unlock(&big_kernel_ಬೀಗ)
 
-#endif /* __SPINLOCK_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __SPINLOCK_H__ */

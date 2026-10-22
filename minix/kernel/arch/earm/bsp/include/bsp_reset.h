@@ -1,9 +1,9 @@
-#ifndef _BSP_RESET_H_
-#define _BSP_RESET_H_
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ _BSP_RESET_H_
+#ವ್ಯಾಖ್ಯಾನಿಸು _BSP_RESET_H_
 
-void bsp_reset_init(void);
-void bsp_reset(void);
-void bsp_poweroff(void);
-void bsp_disable_watchdog(void);
+ಶೂನ್ಯ bsp_reset_init(ಶೂನ್ಯ);
+ಶೂನ್ಯ bsp_reset(ಶೂನ್ಯ);
+ಶೂನ್ಯ bsp_poweroff(ಶೂನ್ಯ);
+ಶೂನ್ಯ bsp_disable_watchdog(ಶೂನ್ಯ);
 
-#endif /* _BSP_RESET_H_ */
+#ಆದರೆ_ಅಂತ್ಯ /* _BSP_RESET_H_ */

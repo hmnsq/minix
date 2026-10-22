@@ -7,101 +7,101 @@
  *   m_lsys_krn_sys_devio.value		(value to write/ return value read)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/devio.h>
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
-#if USE_DEVIO
+#ಆದರೆ USE_DEVIO
 
 /*===========================================================================*
  *			        do_devio                                     *
  *===========================================================================*/
-int do_devio(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_devio(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-    struct priv *privp;
-    port_t port;
-    struct io_range *iorp;
-    int i, size, nr_io_range;
-    int io_type, io_dir;
+    ರಚನೆ priv *privp;
+    ಪೋರ್ಟ್_t ಪೋರ್ಟ್;
+    ರಚನೆ io_range *iorp;
+    ಪೂರ್ಣಾಂಕ i, ಗಾತ್ರ_2, nr_io_range;
+    ಪೂರ್ಣಾಂಕ io_type, io_dir;
 
     io_type = m_ptr->m_lsys_krn_sys_devio.request & _DIO_TYPEMASK;
     io_dir  = m_ptr->m_lsys_krn_sys_devio.request & _DIO_DIRMASK;
 
-    switch (io_type)
+    ಆಯ್ಕೆ (io_type)
     {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	ಸ್ಥಿತಿ _DIO_BYTE: ಗಾತ್ರ_2= 1; ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ DIO_ಶಬ್ದ: ಗಾತ್ರ_2= 2; ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ _DIO_LONG: ಗಾತ್ರ_2= 4; ನಿಲ್ಲಿಸು;
+	ಪೂರ್ವನಿಯೋಜಿತ: ಗಾತ್ರ_2= 4; ನಿಲ್ಲಿಸು;	/* Be conservative */
     }
 
     privp= priv(caller);
-    if (!privp)
+    ಆದರೆ (!privp)
     {
-	printf("no priv structure!\n");
-	goto doit;
+	ಬರೆ("no priv structure!\n");
+	ಹೋಗು doit;
     }
-    if (privp->s_flags & CHECK_IO_PORT)
+    ಆದರೆ (privp->s_flags & CHECK_IO_ಪೋರ್ಟ್)
     {
-	port= m_ptr->m_lsys_krn_sys_devio.port;
+	ಪೋರ್ಟ್= m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	ಗಾಗಿ (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		ಆದರೆ (ಪೋರ್ಟ್ >= iorp->ior_ತಳ && ಪೋರ್ಟ್+ಗಾತ್ರ_2-1 <= iorp->ior_ಎಲ್ಲೆ)
+			ನಿಲ್ಲಿಸು;
 	}
-	if (i >= nr_io_range)
+	ಆದರೆ (i >= nr_io_range)
 	{
-			printf("do_devio: port 0x%x (size %d) not allowed\n",
-				m_ptr->m_lsys_krn_sys_devio.port, size);
-		return EPERM;
+			ಬರೆ("do_devio: port 0x%x (size %d) not allowed\n",
+				m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್, ಗಾತ್ರ_2);
+		ಹಿಂತಿರುಗಿ EPERM;
 	}
     }
 
 doit:
-    if (m_ptr->m_lsys_krn_sys_devio.port & (size-1))
+    ಆದರೆ (m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್ & (ಗಾತ್ರ_2-1))
     {
-		printf("do_devio: unaligned port 0x%x (size %d)\n",
-			m_ptr->m_lsys_krn_sys_devio.port, size);
-	return EPERM;
+		ಬರೆ("do_devio: unaligned port 0x%x (size %d)\n",
+			m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್, ಗಾತ್ರ_2);
+	ಹಿಂತಿರುಗಿ EPERM;
     }
 
 /* Process a single I/O request for byte, word, and long values. */
-    if (io_dir == _DIO_INPUT) { 
-      switch (io_type) {
+    ಆದರೆ (io_dir == DIO_ಒಳಹರಿವು) { 
+      ಆಯ್ಕೆ (io_type) {
 	/* maybe "it" should not be called ports */
-        case _DIO_BYTE:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inb(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_WORD:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inw(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-        case _DIO_LONG:
-		m_ptr->m_krn_lsys_sys_devio.value =
-			inl(m_ptr->m_lsys_krn_sys_devio.port);
-		break;
-    	default: return(EINVAL);
+        ಸ್ಥಿತಿ _DIO_BYTE:
+		m_ptr->m_krn_lsys_sys_devio.ಮೌಲ್ಯ =
+			inb(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್);
+		ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ DIO_ಶಬ್ದ:
+		m_ptr->m_krn_lsys_sys_devio.ಮೌಲ್ಯ =
+			inw(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್);
+		ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ _DIO_LONG:
+		m_ptr->m_krn_lsys_sys_devio.ಮೌಲ್ಯ =
+			inl(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್);
+		ನಿಲ್ಲಿಸು;
+    	ಪೂರ್ವನಿಯೋಜಿತ: ಹಿಂತಿರುಗಿ(EINVAL);
       } 
-    } else { 
-      switch (io_type) {
-	case _DIO_BYTE:
-		outb(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_WORD:
-		outw(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-	case _DIO_LONG:
-		outl(m_ptr->m_lsys_krn_sys_devio.port,
-			m_ptr->m_lsys_krn_sys_devio.value);
-		break;
-    	default: return(EINVAL);
+    } ಇಲ್ಲದಿದ್ದರೆ { 
+      ಆಯ್ಕೆ (io_type) {
+	ಸ್ಥಿತಿ _DIO_BYTE:
+		outb(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್,
+			m_ptr->m_lsys_krn_sys_devio.ಮೌಲ್ಯ);
+		ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ DIO_ಶಬ್ದ:
+		outw(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್,
+			m_ptr->m_lsys_krn_sys_devio.ಮೌಲ್ಯ);
+		ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ _DIO_LONG:
+		outl(m_ptr->m_lsys_krn_sys_devio.ಪೋರ್ಟ್,
+			m_ptr->m_lsys_krn_sys_devio.ಮೌಲ್ಯ);
+		ನಿಲ್ಲಿಸು;
+    	ಪೂರ್ವನಿಯೋಜಿತ: ಹಿಂತಿರುಗಿ(EINVAL);
       } 
     }
-    return(OK);
+    ಹಿಂತಿರುಗಿ(OK);
 }
 
-#endif /* USE_DEVIO */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_DEVIO */

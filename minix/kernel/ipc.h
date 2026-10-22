@@ -1,29 +1,29 @@
-#ifndef IPC_H
-#define IPC_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ IPC_H
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_H
 
 /* This header file defines constants for MINIX inter-process communication.
  * These definitions are used in the file proc.c.
  */
-#include <minix/com.h>
-#include <minix/ipcconst.h>
+#ಅನ್ತರ್ಭಾವ <minix/com.h>
+#ಅನ್ತರ್ಭಾವ <minix/ipcconst.h>
 
 /* Masks and flags for system calls. */
-#define NON_BLOCKING    0x0080  /* do not block if target not ready */
-#define FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
+#ವ್ಯಾಖ್ಯಾನಿಸು NON_BLOCKING    0x0080  /* do not block if target not ready */
+#ವ್ಯಾಖ್ಯಾನಿಸು FROM_KERNEL     0x0100  /* message from kernel on behalf of a process */
 
-#define WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
+#ವ್ಯಾಖ್ಯಾನಿಸು WILLRECEIVE(src_e,dst_ptr,m_src_v,m_src_p) \
 	((RTS_ISSET(dst_ptr, RTS_RECEIVING) && \
 	!RTS_ISSET(dst_ptr, RTS_SENDING)) && \
 	CANRECEIVE(dst_ptr->p_getfrom_e,src_e,dst_ptr,m_src_v,m_src_p))
 
-#define CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
+#ವ್ಯಾಖ್ಯಾನಿಸು CANRECEIVE(receive_e,src_e,dst_ptr,m_src_v,m_src_p) \
 	(((receive_e) == ANY || (receive_e) == (src_e)) && \
-	(priv(dst_ptr)->s_ipcf == NULL || \
-	allow_ipc_filtered_msg(dst_ptr,src_e,m_src_v,m_src_p)))
+	(priv(dst_ptr)->s_ipcf == ಖಾಲಿ || \
+	allow_ipc_filtered_ಸಂದೇಶ(dst_ptr,src_e,m_src_v,m_src_p)))
 
 /* IPC status code macros. */
-#define IPC_STATUS_GET(p)	((p)->p_reg.IPC_STATUS_REG)
-#define IPC_STATUS_CLEAR(p)	((p)->p_reg.IPC_STATUS_REG = 0)
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_ಸ್ಥಿತಿ_GET(p)	((p)->p_reg.IPC_ಸ್ಥಿತಿ_REG)
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_ಸ್ಥಿತಿ_CLEAR(p)	((p)->p_reg.IPC_ಸ್ಥಿತಿ_REG = 0)
 
 /*
  * XXX: the following check is used to set the status code only on RECEIVE.
@@ -37,14 +37,14 @@
  * A possible reliable solution is to improve our Posix signal handling
  * implementation and guarantee SENDREC atomicity w.r.t. the process context.
  */
-#define IPC_STATUS_ADD(p, m)	do { \
-        if(!((p)->p_misc_flags & MF_REPLY_PEND)) { \
-            (p)->p_reg.IPC_STATUS_REG |= (m); \
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_ಸ್ಥಿತಿ_ಕೂಡಿಸು(p, m)	ಮಾಡು { \
+        ಆದರೆ(!((p)->p_misc_flags & MF_ಉತ್ತರ_PEND)) { \
+            (p)->p_reg.IPC_ಸ್ಥಿತಿ_REG |= (m); \
         } \
-    } while(0)
-#define IPC_STATUS_ADD_CALL(p, call) \
-    IPC_STATUS_ADD(p, IPC_STATUS_CALL_TO(call))
-#define IPC_STATUS_ADD_FLAGS(p, flags) \
-    IPC_STATUS_ADD(p, IPC_STATUS_FLAGS(flags))
+    } ಆಗ(0)
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_ಸ್ಥಿತಿ_ಕೂಡಿಸು_CALL(p, call) \
+    IPC_ಸ್ಥಿತಿ_ಕೂಡಿಸು(p, IPC_ಸ್ಥಿತಿ_CALL_ಗಮ್ಯ(call))
+#ವ್ಯಾಖ್ಯಾನಿಸು IPC_ಸ್ಥಿತಿ_ಕೂಡಿಸು_FLAGS(p, flags) \
+    IPC_ಸ್ಥಿತಿ_ಕೂಡಿಸು(p, IPC_ಸ್ಥಿತಿ_FLAGS(flags))
 
-#endif /* IPC_H */
+#ಆದರೆ_ಅಂತ್ಯ /* IPC_H */

@@ -16,213 +16,213 @@
  *
  */
 
-#include <string.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
 
-#if USE_GETINFO
+#ಆದರೆ USE_GETINFO
 
-#include <minix/u64.h>
-#include <sys/resource.h>
+#ಅನ್ತರ್ಭಾವ <minix/u64.h>
+#ಅನ್ತರ್ಭಾವ <sys/resource.h>
 
 /*===========================================================================*
  *			        update_idle_time			     *
  *===========================================================================*/
-static void update_idle_time(void)
+ಸ್ಥಿರ ಶೂನ್ಯ update_idle_ಸಮಯ(ಶೂನ್ಯ)
 {
-	int i;
-	struct proc * idl = proc_addr(IDLE);
+	ಪೂರ್ಣಾಂಕ i;
+	ರಚನೆ proc * idl = proc_addr(IDLE);
 
-	idl->p_cycles = make64(0, 0);
+	idl->p_ಚಕ್ರಗಳು = make64(0, 0);
 
-	for (i = 0; i < CONFIG_MAX_CPUS ; i++) {
-		idl->p_cycles += get_cpu_var(i, idle_proc).p_cycles;
+	ಗಾಗಿ (i = 0; i < CONFIG_MAX_CPUS ; i++) {
+		idl->p_ಚಕ್ರಗಳು += get_cpu_var(i, idle_proc).p_ಚಕ್ರಗಳು;
 	}
 }
 
 /*===========================================================================*
  *			        do_getinfo				     *
  *===========================================================================*/
-int do_getinfo(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_getinfo(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
 /* Request system information to be copied to caller's address space. This
  * call simply copies entire data structures to the caller.
  */
-  size_t length;
-  vir_bytes src_vir; 
-  int nr_e, nr, r;
-  int wipe_rnd_bin = -1;
-  struct proc *p;
-  struct rusage r_usage;
+  size_t ಉದ್ದಳತೆ;
+  vir_ಬೈಟುಗಳು src_vir; 
+  ಪೂರ್ಣಾಂಕ nr_e, nr, r;
+  ಪೂರ್ಣಾಂಕ wipe_rnd_bin = -1;
+  ರಚನೆ proc *p;
+  ರಚನೆ rusage r_usage;
 
   /* Set source address and length based on request type. */
-  switch (m_ptr->m_lsys_krn_sys_getinfo.request) {
-    case GET_MACHINE: {
-        length = sizeof(struct machine);
-        src_vir = (vir_bytes) &machine;
-        break;
+  ಆಯ್ಕೆ (m_ptr->m_lsys_krn_sys_getinfo.request) {
+    ಸ್ಥಿತಿ GET_MACHINE: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ machine);
+        src_vir = (vir_ಬೈಟುಗಳು) &machine;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_KINFO: {
-        length = sizeof(struct kinfo);
-        src_vir = (vir_bytes) &kinfo;
-        break;
+    ಸ್ಥಿತಿ GET_KINFO: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ kinfo);
+        src_vir = (vir_ಬೈಟುಗಳು) &kinfo;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_LOADINFO: {
-        length = sizeof(struct loadinfo);
-        src_vir = (vir_bytes) &kloadinfo;
-        break;
+    ಸ್ಥಿತಿ GET_LOADINFO: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ loadinfo);
+        src_vir = (vir_ಬೈಟುಗಳು) &kloadinfo;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_CPUINFO: {
-        length = sizeof(cpu_info);
-        src_vir = (vir_bytes) &cpu_info;
-        break;
+    ಸ್ಥಿತಿ GET_CPUINFO: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(cpu_info);
+        src_vir = (vir_ಬೈಟುಗಳು) &cpu_info;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_HZ: {
-        length = sizeof(system_hz);
-        src_vir = (vir_bytes) &system_hz;
-        break;
+    ಸ್ಥಿತಿ GET_HZ: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(system_hz);
+        src_vir = (vir_ಬೈಟುಗಳು) &system_hz;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_IMAGE: {
-        length = sizeof(struct boot_image) * NR_BOOT_PROCS;
-        src_vir = (vir_bytes) image;
-        break;
+    ಸ್ಥಿತಿ GET_IMAGE: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ boot_image) * NR_BOOT_PROCS;
+        src_vir = (vir_ಬೈಟುಗಳು) image;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_IRQHOOKS: {
-        length = sizeof(struct irq_hook) * NR_IRQ_HOOKS;
-        src_vir = (vir_bytes) irq_hooks;
-        break;
+    ಸ್ಥಿತಿ GET_IRQHOOKS: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ irq_hook) * NR_IRQ_HOOKS;
+        src_vir = (vir_ಬೈಟುಗಳು) irq_hooks;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_PROCTAB: {
-	update_idle_time();
-        length = sizeof(struct proc) * (NR_PROCS + NR_TASKS);
-        src_vir = (vir_bytes) proc;
-        break;
+    ಸ್ಥಿತಿ GET_PROCTAB: {
+	update_idle_ಸಮಯ();
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ proc) * (NR_PROCS + NR_TASKS);
+        src_vir = (vir_ಬೈಟುಗಳು) proc;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_PRIVTAB: {
-        length = sizeof(struct priv) * (NR_SYS_PROCS);
-        src_vir = (vir_bytes) priv;
-        break;
+    ಸ್ಥಿತಿ GET_PRIVTAB: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ priv) * (NR_SYS_PROCS);
+        src_vir = (vir_ಬೈಟುಗಳು) priv;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_PROC: {
+    ಸ್ಥಿತಿ GET_PROC: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
 		caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct proc);
-        src_vir = (vir_bytes) proc_addr(nr);
-        break;
+	ಆದರೆ(!isokendpt(nr_e, &nr)) ಹಿಂತಿರುಗಿ EINVAL; /* validate request */
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ proc);
+        src_vir = (vir_ಬೈಟುಗಳು) proc_addr(nr);
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_PRIV: {
+    ಸ್ಥಿತಿ GET_PRIV: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
-        length = sizeof(struct priv);
-        src_vir = (vir_bytes) priv_addr(nr_to_id(nr));
-        break;
+        ಆದರೆ(!isokendpt(nr_e, &nr)) ಹಿಂತಿರುಗಿ EINVAL; /* validate request */
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(ರಚನೆ priv);
+        src_vir = (vir_ಬೈಟುಗಳು) priv_addr(nr_ಗಮ್ಯ_id(nr));
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_REGS: {
+    ಸ್ಥಿತಿ GET_REGS: {
         nr_e = (m_ptr->m_lsys_krn_sys_getinfo.val_len2_e == SELF) ?
             caller->p_endpoint : m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-        if(!isokendpt(nr_e, &nr)) return EINVAL; /* validate request */
+        ಆದರೆ(!isokendpt(nr_e, &nr)) ಹಿಂತಿರುಗಿ EINVAL; /* validate request */
         p = proc_addr(nr);
-        length = sizeof(p->p_reg);
-        src_vir = (vir_bytes) &p->p_reg;
-        break;
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(p->p_reg);
+        src_vir = (vir_ಬೈಟುಗಳು) &p->p_reg;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_WHOAMI: {
-	int len;
+    ಸ್ಥಿತಿ GET_WHOAMI: {
+	ಪೂರ್ಣಾಂಕ len;
 	m_ptr->m_krn_lsys_sys_getwhoami.endpt = caller->p_endpoint;
-	len = MIN(sizeof(m_ptr->m_krn_lsys_sys_getwhoami.name),
-		sizeof(caller->p_name))-1;
+	len = MIN(ಗಾತ್ರ(m_ptr->m_krn_lsys_sys_getwhoami.name),
+		ಗಾತ್ರ(caller->p_name))-1;
 	strncpy(m_ptr->m_krn_lsys_sys_getwhoami.name, caller->p_name, len);
 	m_ptr->m_krn_lsys_sys_getwhoami.name[len] = '\0';
 	m_ptr->m_krn_lsys_sys_getwhoami.privflags = priv(caller)->s_flags;
         m_ptr->m_krn_lsys_sys_getwhoami.initflags = priv(caller)->s_init_flags;
-	return OK;
+	ಹಿಂತಿರುಗಿ OK;
     }
-    case GET_MONPARAMS: {
-        src_vir = (vir_bytes) kinfo.param_buf;
-	length = sizeof(kinfo.param_buf);
-        break;
+    ಸ್ಥಿತಿ GET_MONPARAMS: {
+        src_vir = (vir_ಬೈಟುಗಳು) kinfo.param_buf;
+	ಉದ್ದಳತೆ = ಗಾತ್ರ(kinfo.param_buf);
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_RANDOMNESS: {		
-        static struct k_randomness copy;	/* copy to keep counters */
-	int i;
+    ಸ್ಥಿತಿ GET_RANDOMNESS: {		
+        ಸ್ಥಿರ ರಚನೆ k_randomness copy;	/* copy to keep counters */
+	ಪೂರ್ಣಾಂಕ i;
 
         copy = krandom;
-        for (i= 0; i<RANDOM_SOURCES; i++) {
-  		krandom.bin[i].r_size = 0;	/* invalidate random data */
-  		krandom.bin[i].r_next = 0;
+        ಗಾಗಿ (i= 0; i<RANDOM_SOURCES; i++) {
+  		krandom.bin[i].r_ಗಾತ್ರ = 0;	/* invalidate random data */
+  		krandom.bin[i].r_ಮುಂದಿನ = 0;
 	}
-    	length = sizeof(copy);
-    	src_vir = (vir_bytes) &copy;
-    	break;
+    	ಉದ್ದಳತೆ = ಗಾತ್ರ(copy);
+    	src_vir = (vir_ಬೈಟುಗಳು) &copy;
+    	ನಿಲ್ಲಿಸು;
     }
-    case GET_RANDOMNESS_BIN: {		
-	int bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+    ಸ್ಥಿತಿ GET_RANDOMNESS_BIN: {		
+	ಪೂರ್ಣಾಂಕ bin = m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
 
-	if(bin < 0 || bin >= RANDOM_SOURCES) {
-		printf("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
-		return EINVAL;
+	ಆದರೆ(bin < 0 || bin >= RANDOM_SOURCES) {
+		ಬರೆ("SYSTEM: GET_RANDOMNESS_BIN: %d out of range\n", bin);
+		ಹಿಂತಿರುಗಿ EINVAL;
 	}
 
-	if(krandom.bin[bin].r_size < RANDOM_ELEMENTS)
-		return ENOENT;
+	ಆದರೆ(krandom.bin[bin].r_ಗಾತ್ರ < RANDOM_ELEMENTS)
+		ಹಿಂತಿರುಗಿ ENOENT;
 
-    	length = sizeof(krandom.bin[bin]);
-    	src_vir = (vir_bytes) &krandom.bin[bin];
+    	ಉದ್ದಳತೆ = ಗಾತ್ರ(krandom.bin[bin]);
+    	src_vir = (vir_ಬೈಟುಗಳು) &krandom.bin[bin];
 
 	wipe_rnd_bin = bin;
 
-    	break;
+    	ನಿಲ್ಲಿಸು;
     }
-    case GET_IRQACTIDS: {
-        length = sizeof(irq_actids);
-        src_vir = (vir_bytes) irq_actids;
-        break;
+    ಸ್ಥಿತಿ GET_IRQACTIDS: {
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(irq_actids);
+        src_vir = (vir_ಬೈಟುಗಳು) irq_actids;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_IDLETSC: {
-	struct proc * idl;
-	update_idle_time();
+    ಸ್ಥಿತಿ GET_IDLETSC: {
+	ರಚನೆ proc * idl;
+	update_idle_ಸಮಯ();
 	idl = proc_addr(IDLE);
-        length = sizeof(idl->p_cycles);
-        src_vir = (vir_bytes) &idl->p_cycles;
-        break;
+        ಉದ್ದಳತೆ = ಗಾತ್ರ(idl->p_ಚಕ್ರಗಳು);
+        src_vir = (vir_ಬೈಟುಗಳು) &idl->p_ಚಕ್ರಗಳು;
+        ನಿಲ್ಲಿಸು;
     }
-    case GET_CPUTICKS: {
+    ಸ್ಥಿತಿ GET_CPUTICKS: {
 	uint64_t ticks[MINIX_CPUSTATES];
-	unsigned int cpu;
-	cpu = (unsigned int)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
-	if (cpu >= CONFIG_MAX_CPUS)
-		return EINVAL;
+	ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ cpu;
+	cpu = (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)m_ptr->m_lsys_krn_sys_getinfo.val_len2_e;
+	ಆದರೆ (cpu >= CONFIG_MAX_CPUS)
+		ಹಿಂತಿರುಗಿ EINVAL;
 	get_cpu_ticks(cpu, ticks);
-	length = sizeof(ticks);
-	src_vir = (vir_bytes)ticks;
-	break;
+	ಉದ್ದಳತೆ = ಗಾತ್ರ(ticks);
+	src_vir = (vir_ಬೈಟುಗಳು)ticks;
+	ನಿಲ್ಲಿಸು;
     }
-    default:
-	printf("do_getinfo: invalid request %d\n",
+    ಪೂರ್ವನಿಯೋಜಿತ:
+	ಬರೆ("do_getinfo: invalid request %d\n",
 		m_ptr->m_lsys_krn_sys_getinfo.request);
-        return(EINVAL);
+        ಹಿಂತಿರುಗಿ(EINVAL);
   }
 
   /* Try to make the actual copy for the requested data. */
-  if (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
-	length > m_ptr->m_lsys_krn_sys_getinfo.val_len)
-	return (E2BIG);
+  ಆದರೆ (m_ptr->m_lsys_krn_sys_getinfo.val_len > 0 &&
+	ಉದ್ದಳತೆ > m_ptr->m_lsys_krn_sys_getinfo.val_len)
+	ಹಿಂತಿರುಗಿ (E2BIG);
 
-  r = data_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
-	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, length);
+  r = ದತ್ತಾಂಶ_copy_vmcheck(caller, KERNEL, src_vir, caller->p_endpoint,
+	m_ptr->m_lsys_krn_sys_getinfo.val_ptr, ಉದ್ದಳತೆ);
 
-  if(r != OK) return r;
+  ಆದರೆ(r != OK) ಹಿಂತಿರುಗಿ r;
 
-	if(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
-		krandom.bin[wipe_rnd_bin].r_size = 0;
-		krandom.bin[wipe_rnd_bin].r_next = 0;
+	ಆದರೆ(wipe_rnd_bin >= 0 && wipe_rnd_bin < RANDOM_SOURCES) {
+		krandom.bin[wipe_rnd_bin].r_ಗಾತ್ರ = 0;
+		krandom.bin[wipe_rnd_bin].r_ಮುಂದಿನ = 0;
 	}
 
-  return(OK);
+  ಹಿಂತಿರುಗಿ(OK);
 }
 
-#endif /* USE_GETINFO */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_GETINFO */
 

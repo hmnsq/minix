@@ -1,62 +1,62 @@
 
-#ifndef _ARM_PROTO_H
-#define _ARM_PROTO_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ _ARM_PROTO_H
+#ವ್ಯಾಖ್ಯಾನಿಸು _ARM_PROTO_H
 
-#include <machine/vm.h>
+#ಅನ್ತರ್ಭಾವ <machine/vm.h>
 
-#define K_STACK_SIZE	ARM_PAGE_SIZE
+#ವ್ಯಾಖ್ಯಾನಿಸು K_ರಾಶಿ_ಗಾತ್ರ	ARM_ಪುಟ_ಗಾತ್ರ
 
 
-#ifndef __ASSEMBLY__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __ASSEMBLY__
 
-#include "cpufunc.h"
+#ಅನ್ತರ್ಭಾವ "cpufunc.h"
 
 /* klib */
-__dead void reset(void);
-phys_bytes vir2phys(void *);
-vir_bytes phys_memset(phys_bytes ph, u32_t c, phys_bytes bytes);
+__dead ಶೂನ್ಯ reset(ಶೂನ್ಯ);
+phys_ಬೈಟುಗಳು vir2phys(ಶೂನ್ಯ *);
+vir_ಬೈಟುಗಳು phys_memset(phys_ಬೈಟುಗಳು ph, u32_t c, phys_ಬೈಟುಗಳು ಬೈಟುಗಳು);
 
-void __switch_address_space(struct proc *p, struct proc **__ptproc);
-#define switch_address_space(proc)	\
+ಶೂನ್ಯ __switch_address_space(ರಚನೆ proc *p, ರಚನೆ proc **__ptproc);
+#ವ್ಯಾಖ್ಯಾನಿಸು switch_ವಿಳಾಸ_space(proc)	\
 	__switch_address_space(proc, get_cpulocal_var_ptr(ptproc))
 
-void __copy_msg_from_user_end(void);
-void __copy_msg_to_user_end(void);
-void __user_copy_msg_pointer_failure(void);
+ಶೂನ್ಯ __copy_msg_from_user_end(ಶೂನ್ಯ);
+ಶೂನ್ಯ __copy_msg_to_user_end(ಶೂನ್ಯ);
+ಶೂನ್ಯ __user_copy_msg_pointer_failure(ಶೂನ್ಯ);
 
 /* multiboot.c */
-void multiboot_init(void);
+ಶೂನ್ಯ multiboot_init(ಶೂನ್ಯ);
 
 /* protect.c */
-struct tss_s {
+ರಚನೆ tss_s {
   reg_t sp0;                    /* stack pointer to use during interrupt */
 } __attribute__((packed));
-int tss_init(unsigned cpu, void * kernel_stack);
+ಪೂರ್ಣಾಂಕ tss_init(ಚಿಹ್ನೆರಹಿತ cpu, ಶೂನ್ಯ * kernel_ರಾಶಿ);
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
-phys_bytes alloc_lowest(kinfo_t *cbi, phys_bytes len);
-void vm_enable_paging(void);
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end);
-phys_bytes pg_roundup(phys_bytes b);
-void pg_info(reg_t *, u32_t **);
-void pg_clear(void);
-void pg_identity(kinfo_t *);
-phys_bytes pg_load(void);
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end, kinfo_t *cbi);
-int pg_mapkernel(void);
-void pg_mapproc(struct proc *p, struct boot_image *ip, kinfo_t *cbi);
+ಶೂನ್ಯ ಕೂಡಿಸು_memmap(kinfo_t *cbi, u64_t addr, u64_t len);
+phys_ಬೈಟುಗಳು alloc_ಅತಿಕಡಿಮೆ(kinfo_t *cbi, phys_ಬೈಟುಗಳು len);
+ಶೂನ್ಯ vm_enable_paging(ಶೂನ್ಯ);
+ಶೂನ್ಯ cut_memmap(kinfo_t *cbi, phys_ಬೈಟುಗಳು ಆರಂಭ, phys_ಬೈಟುಗಳು ಕೊನೆ);
+phys_ಬೈಟುಗಳು pg_roundup(phys_ಬೈಟುಗಳು b);
+ಶೂನ್ಯ pg_info(reg_t *, u32_t **);
+ಶೂನ್ಯ pg_clear(ಶೂನ್ಯ);
+ಶೂನ್ಯ pg_ತಟಸ್ಥ(kinfo_t *);
+phys_ಬೈಟುಗಳು pg_ತುಂಬು(ಶೂನ್ಯ);
+ಶೂನ್ಯ pg_map(phys_ಬೈಟುಗಳು phys, vir_ಬೈಟುಗಳು vaddr, vir_ಬೈಟುಗಳು vaddr_ಕೊನೆ, kinfo_t *cbi);
+ಪೂರ್ಣಾಂಕ pg_mapkernel(ಶೂನ್ಯ);
+ಶೂನ್ಯ pg_mapproc(ರಚನೆ proc *p, ರಚನೆ boot_image *ip, kinfo_t *cbi);
 
-EXTERN void * k_stacks_start;
-extern void * k_stacks;
+EXTERN ಶೂನ್ಯ * k_stacks_ಆರಂಭ;
+ಬಾಹ್ಯ ಶೂನ್ಯ * k_stacks;
 
-#define get_k_stack_top(cpu)	((void *)(((char*)(k_stacks)) \
-					+ 2 * ((cpu) + 1) * K_STACK_SIZE))
+#ವ್ಯಾಖ್ಯಾನಿಸು get_k_ರಾಶಿ_ತುದಿ(cpu)	((ಶೂನ್ಯ *)(((ಅಕ್ಷರ*)(k_stacks)) \
+					+ 2 * ((cpu) + 1) * K_ರಾಶಿ_ಗಾತ್ರ))
 
 
 /*
  * Definition of a callback used when a memory map changed it's base address
  */
-typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಪೂರ್ಣಾಂಕ (*kern_phys_map_mapped)(vir_ಬೈಟುಗಳು id, vir_ಬೈಟುಗಳು new_addr );
 
 /*
  * struct used internally by memory.c to keep a list of
@@ -65,15 +65,15 @@ typedef int (*kern_phys_map_mapped)(vir_bytes id, vir_bytes new_addr );
  * The data doesn't need to be initialized. See omap_serial for
  * and example usage.
  */
-typedef struct kern_phys_map{
-	phys_bytes addr; /* The physical address to map */
-	vir_bytes size;  /* The size of the mapping */
-	vir_bytes id;	 /* an id passed to the callback */
-	int vm_flags;	 /* flags to be passed to vm map */
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ kern_phys_map{
+	phys_ಬೈಟುಗಳು addr; /* The physical address to map */
+	vir_ಬೈಟುಗಳು ಗಾತ್ರ_2;  /* The size of the mapping */
+	vir_ಬೈಟುಗಳು id;	 /* an id passed to the callback */
+	ಪೂರ್ಣಾಂಕ vm_flags;	 /* flags to be passed to vm map */
 	kern_phys_map_mapped cb; /* the callback itself */
-	phys_bytes vir; /* The virtual address once remapped */
-	int index; 	/* index */
-	struct kern_phys_map *next; /* pointer to the next */
+	phys_ಬೈಟುಗಳು vir; /* The virtual address once remapped */
+	ಪೂರ್ಣಾಂಕ ಸೂಚ್ಯಂಕ; 	/*ಸೂಚ್ಯಂಕ*/
+	ರಚನೆ kern_phys_map *ಮುಂದಿನ; /* pointer to the next */
 } kern_phys_map ; 
 
 
@@ -103,23 +103,23 @@ typedef struct kern_phys_map{
  * mapping in the callback. It also is not possible to use printf for
  * the same reason.
  */
-int kern_req_phys_map( phys_bytes base_address, vir_bytes io_size,
-		   int vm_flags, kern_phys_map * priv,
-		   kern_phys_map_mapped cb, vir_bytes id);
+ಪೂರ್ಣಾಂಕ kern_req_phys_map( phys_ಬೈಟುಗಳು ತಳ_ವಿಳಾಸ, vir_ಬೈಟುಗಳು io_ಗಾತ್ರ,
+		   ಪೂರ್ಣಾಂಕ vm_flags, kern_phys_map * priv,
+		   kern_phys_map_mapped cb, vir_ಬೈಟುಗಳು id);
 
 /*
  * Request a physical mapping and put the result in the given prt
  * Note that ptr will only be valid once the callback happened.
  */
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, 
-		       int vm_flags, kern_phys_map * priv, 
-		       vir_bytes ptr);
+ಪೂರ್ಣಾಂಕ kern_phys_map_ptr( phys_ಬೈಟುಗಳು ತಳ_ವಿಳಾಸ, vir_ಬೈಟುಗಳು io_ಗಾತ್ರ, 
+		       ಪೂರ್ಣಾಂಕ vm_flags, kern_phys_map * priv, 
+		       vir_ಬೈಟುಗಳು ptr);
 
-void arch_ser_init(void);
+ಶೂನ್ಯ arch_ser_init(ಶೂನ್ಯ);
 
 /* functions defined in architecture-independent kernel source. */
-#include "kernel/proto.h"
+#ಅನ್ತರ್ಭಾವ "kernel/proto.h"
 
-#endif /* __ASSEMBLY__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __ASSEMBLY__ */
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

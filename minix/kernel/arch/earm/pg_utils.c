@@ -1,208 +1,208 @@
-#include <minix/cpufeature.h>
+#ಅನ್ತರ್ಭಾವ <minix/cpufeature.h>
 
-#include <minix/type.h>
-#include <assert.h>
-#include "kernel/kernel.h"
-#include "arch_proto.h"
-#include <machine/cpu.h>
-#include <arm/armreg.h>
+#ಅನ್ತರ್ಭಾವ <minix/type.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ <machine/cpu.h>
+#ಅನ್ತರ್ಭಾವ <arm/armreg.h>
 
-#include <string.h>
-#include <minix/type.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <minix/type.h>
 
 /* These are set/computed in kernel.lds. */
-extern char _kern_vir_base, _kern_phys_base, _kern_size;
+ಬಾಹ್ಯ ಅಕ್ಷರ kern_vir_ತಳ, kern_phys_ತಳ, kern_ಗಾತ್ರ;
 
 /* Retrieve the absolute values to something we can use. */
-static phys_bytes kern_vir_start = (phys_bytes) &_kern_vir_base;
-static phys_bytes kern_phys_start = (phys_bytes) &_kern_phys_base;
-static phys_bytes kern_kernlen = (phys_bytes) &_kern_size;
+ಸ್ಥಿರ phys_ಬೈಟುಗಳು kern_vir_ಆರಂಭ = (phys_ಬೈಟುಗಳು) &kern_vir_ತಳ;
+ಸ್ಥಿರ phys_ಬೈಟುಗಳು kern_phys_ಆರಂಭ = (phys_ಬೈಟುಗಳು) &kern_phys_ತಳ;
+ಸ್ಥಿರ phys_ಬೈಟುಗಳು kern_kernlen = (phys_ಬೈಟುಗಳು) &kern_ಗಾತ್ರ;
 
 /* page directory we can use to map things */
-static u32_t pagedir[4096]  __aligned(16384);
+ಸ್ಥಿರ u32_t pagedir[4096]  __aligned(16384);
 
-void print_memmap(kinfo_t *cbi)
+ಶೂನ್ಯ print_memmap(kinfo_t *cbi)
 {
-	int m;
-	assert(cbi->mmap_size < MAXMEMMAP);
-	for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes addr = cbi->memmap[m].mm_base_addr, endit = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
-		printf("%08lx-%08lx ",addr, endit);
+	ಪೂರ್ಣಾಂಕ m;
+	ಪ್ರತಿಜ್ಞಾ(cbi->mmap_ಗಾತ್ರ < MAXMEMMAP);
+	ಗಾಗಿ(m = 0; m < cbi->mmap_ಗಾತ್ರ; m++) {
+		phys_ಬೈಟುಗಳು addr = cbi->memmap[m].mm_ತಳ_addr, endit = cbi->memmap[m].mm_ತಳ_addr + cbi->memmap[m].mm_ಉದ್ದಳತೆ;
+		ಬರೆ("%08lx-%08lx ",addr, endit);
 	}
-	printf("\nsize %08lx\n", cbi->mmap_size);
+	ಬರೆ("\nsize %08lx\n", cbi->mmap_ಗಾತ್ರ);
 }
 
-void cut_memmap(kinfo_t *cbi, phys_bytes start, phys_bytes end)
+ಶೂನ್ಯ cut_memmap(kinfo_t *cbi, phys_ಬೈಟುಗಳು ಆರಂಭ, phys_ಬೈಟುಗಳು ಕೊನೆ)
 {
-	int m;
-	phys_bytes o;
+	ಪೂರ್ಣಾಂಕ m;
+	phys_ಬೈಟುಗಳು o;
 
-	if((o=start % ARM_PAGE_SIZE))
-		start -= o;
-	if((o=end % ARM_PAGE_SIZE))
-		end += ARM_PAGE_SIZE - o;
+	ಆದರೆ((o=ಆರಂಭ % ARM_ಪುಟ_ಗಾತ್ರ))
+		ಆರಂಭ -= o;
+	ಆದರೆ((o=ಕೊನೆ % ARM_ಪುಟ_ಗಾತ್ರ))
+		ಕೊನೆ += ARM_ಪುಟ_ಗಾತ್ರ - o;
 
-	assert(kernel_may_alloc);
+	ಪ್ರತಿಜ್ಞಾ(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
-		phys_bytes substart = start, subend = end;
-		phys_bytes memaddr = cbi->memmap[m].mm_base_addr,
-		    memend = cbi->memmap[m].mm_base_addr + cbi->memmap[m].mm_length;
+	ಗಾಗಿ(m = 0; m < cbi->mmap_ಗಾತ್ರ; m++) {
+		phys_ಬೈಟುಗಳು substart = ಆರಂಭ, subend = ಕೊನೆ;
+		phys_ಬೈಟುಗಳು memaddr = cbi->memmap[m].mm_ತಳ_addr,
+		    memend = cbi->memmap[m].mm_ತಳ_addr + cbi->memmap[m].mm_ಉದ್ದಳತೆ;
 
 		/* adjust cut range to be a subset of the free memory */
-		if(substart < memaddr) substart = memaddr;
-		if(subend > memend) subend = memend;
-		if(substart >= subend) continue;
+		ಆದರೆ(substart < memaddr) substart = memaddr;
+		ಆದರೆ(subend > memend) subend = memend;
+		ಆದರೆ(substart >= subend) ಮುಂದುವರಿ;
 
 		/* if there is any overlap, forget this one and add
 		 * 1-2 subranges back
 		 */
-		cbi->memmap[m].mm_base_addr = cbi->memmap[m].mm_length = 0;
-		if(substart > memaddr)
-			add_memmap(cbi, memaddr, substart-memaddr);
-		if(subend < memend)
-			add_memmap(cbi, subend, memend-subend);
+		cbi->memmap[m].mm_ತಳ_addr = cbi->memmap[m].mm_ಉದ್ದಳತೆ = 0;
+		ಆದರೆ(substart > memaddr)
+			ಕೂಡಿಸು_memmap(cbi, memaddr, substart-memaddr);
+		ಆದರೆ(subend < memend)
+			ಕೂಡಿಸು_memmap(cbi, subend, memend-subend);
 	}
 }
 
-void add_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
+ಶೂನ್ಯ ಕೂಡಿಸು_memmap(kinfo_t *cbi, u64_t addr, u64_t len)
 {
-	int m;
-#define LIMIT 0xFFFFF000
+	ಪೂರ್ಣಾಂಕ m;
+#ವ್ಯಾಖ್ಯಾನಿಸು ಎಲ್ಲೆ 0xFFFFF000
 	/* Truncate available memory at 4GB as the rest of minix
 	 * currently can't deal with any bigger.
 	 */
-	if(addr > LIMIT) {
-		return;
+	ಆದರೆ(addr > ಎಲ್ಲೆ) {
+		ಹಿಂತಿರುಗಿ;
 	}
 
-	if(addr + len > LIMIT) {
-		len -= (addr + len - LIMIT);
+	ಆದರೆ(addr + len > ಎಲ್ಲೆ) {
+		len -= (addr + len - ಎಲ್ಲೆ);
 	}
 
-	assert(cbi->mmap_size < MAXMEMMAP);
-	if(len == 0) {
-		return;
+	ಪ್ರತಿಜ್ಞಾ(cbi->mmap_ಗಾತ್ರ < MAXMEMMAP);
+	ಆದರೆ(len == 0) {
+		ಹಿಂತಿರುಗಿ;
 	}
-	addr = roundup(addr, ARM_PAGE_SIZE);
-	len = rounddown(len, ARM_PAGE_SIZE);
+	addr = roundup(addr, ARM_ಪುಟ_ಗಾತ್ರ);
+	len = rounddown(len, ARM_ಪುಟ_ಗಾತ್ರ);
 
-	assert(kernel_may_alloc);
+	ಪ್ರತಿಜ್ಞಾ(kernel_may_alloc);
 
-        for(m = 0; m < MAXMEMMAP; m++) {
-		phys_bytes highmark;
-		if(cbi->memmap[m].mm_length) {
-			continue;
+        ಗಾಗಿ(m = 0; m < MAXMEMMAP; m++) {
+		phys_ಬೈಟುಗಳು highmark;
+		ಆದರೆ(cbi->memmap[m].mm_ಉದ್ದಳತೆ) {
+			ಮುಂದುವರಿ;
 		}
-		cbi->memmap[m].mm_base_addr = addr;
-		cbi->memmap[m].mm_length = len;
-		cbi->memmap[m].type = MULTIBOOT_MEMORY_AVAILABLE;
-		if(m >= cbi->mmap_size) {
-			cbi->mmap_size = m+1;
+		cbi->memmap[m].mm_ತಳ_addr = addr;
+		cbi->memmap[m].mm_ಉದ್ದಳತೆ = len;
+		cbi->memmap[m].type = MULTIBOOT_ಸ್ಮರಣೆ_ಲಭ್ಯ;
+		ಆದರೆ(m >= cbi->mmap_ಗಾತ್ರ) {
+			cbi->mmap_ಗಾತ್ರ = m+1;
 		}
 		highmark = addr + len;
-		if(highmark > cbi->mem_high_phys) {
-			cbi->mem_high_phys = highmark;
+		ಆದರೆ(highmark > cbi->mem_ಮೇಲಿನ_phys) {
+			cbi->mem_ಮೇಲಿನ_phys = highmark;
 		}
-		return;
+		ಹಿಂತಿರುಗಿ;
         }
 
 	panic("no available memmap slot");
 }
 
-u32_t *alloc_pagetable(phys_bytes *ph)
+u32_t *alloc_pagetable(phys_ಬೈಟುಗಳು *ph)
 {
 	u32_t *ret;
-#define PG_PAGETABLES 24
-	static u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
-	static int pt_inuse = 0;
-	if(pt_inuse >= PG_PAGETABLES) {
+#ವ್ಯಾಖ್ಯಾನಿಸು PG_PAGETABLES 24
+	ಸ್ಥಿರ u32_t pagetables[PG_PAGETABLES][256]  __aligned(1024);
+	ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ pt_inuse = 0;
+	ಆದರೆ(pt_inuse >= PG_PAGETABLES) {
 		panic("no more pagetables");
 	}
-	assert(sizeof(pagetables[pt_inuse]) == 1024);
+	ಪ್ರತಿಜ್ಞಾ(ಗಾತ್ರ(pagetables[pt_inuse]) == 1024);
 	ret = pagetables[pt_inuse++];
 	*ph = vir2phys(ret);
-	return ret;
+	ಹಿಂತಿರುಗಿ ret;
 }
 
-#define PAGE_KB (ARM_PAGE_SIZE / 1024)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಪುಟ_KB (ARM_ಪುಟ_ಗಾತ್ರ / 1024)
 
-phys_bytes pg_alloc_page(kinfo_t *cbi)
+phys_ಬೈಟುಗಳು pg_alloc_ಪುಟ(kinfo_t *cbi)
 {
-	int m;
-	multiboot_memory_map_t *mmap;
+	ಪೂರ್ಣಾಂಕ m;
+	multiboot_ಸ್ಮರಣೆ_map_t *mmap;
 
-	assert(kernel_may_alloc);
+	ಪ್ರತಿಜ್ಞಾ(kernel_may_alloc);
 
-	for(m = 0; m < cbi->mmap_size; m++) {
+	ಗಾಗಿ(m = 0; m < cbi->mmap_ಗಾತ್ರ; m++) {
 		mmap = &cbi->memmap[m];
-		if(!mmap->mm_length) {
-			continue;
+		ಆದರೆ(!mmap->mm_ಉದ್ದಳತೆ) {
+			ಮುಂದುವರಿ;
 		}
-		assert(mmap->mm_length > 0);
-		assert(!(mmap->mm_length % ARM_PAGE_SIZE));
-		assert(!(mmap->mm_base_addr % ARM_PAGE_SIZE));
+		ಪ್ರತಿಜ್ಞಾ(mmap->mm_ಉದ್ದಳತೆ > 0);
+		ಪ್ರತಿಜ್ಞಾ(!(mmap->mm_ಉದ್ದಳತೆ % ARM_ಪುಟ_ಗಾತ್ರ));
+		ಪ್ರತಿಜ್ಞಾ(!(mmap->mm_ತಳ_addr % ARM_ಪುಟ_ಗಾತ್ರ));
 
-		u32_t addr = mmap->mm_base_addr;
-		mmap->mm_base_addr += ARM_PAGE_SIZE;
-		mmap->mm_length  -= ARM_PAGE_SIZE;
+		u32_t addr = mmap->mm_ತಳ_addr;
+		mmap->mm_ತಳ_addr += ARM_ಪುಟ_ಗಾತ್ರ;
+		mmap->mm_ಉದ್ದಳತೆ  -= ARM_ಪುಟ_ಗಾತ್ರ;
 
-		cbi->kernel_allocated_bytes_dynamic += ARM_PAGE_SIZE;
+		cbi->kernel_allocated_ಬೈಟುಗಳು_dynamic += ARM_ಪುಟ_ಗಾತ್ರ;
 
-		return addr;
+		ಹಿಂತಿರುಗಿ addr;
 	}
 
 	panic("can't find free memory");
 }
 
-void pg_identity(kinfo_t *cbi)
+ಶೂನ್ಯ pg_ತಟಸ್ಥ(kinfo_t *cbi)
 {
 	uint32_t i;
-	phys_bytes phys;
+	phys_ಬೈಟುಗಳು phys;
 
 	/* We map memory that does not correspond to physical memory
 	 * as non-cacheable. Make sure we know what it is.
 	 */
-	assert(cbi->mem_high_phys);
+	ಪ್ರತಿಜ್ಞಾ(cbi->mem_ಮೇಲಿನ_phys);
 
         /* Set up an identity mapping page directory */
-	 for(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
+	 ಗಾಗಿ(i = 0; i < ARM_VM_DIR_ENTRIES; i++) {
 		u32_t flags = ARM_VM_SECTION
 			| ARM_VM_SECTION_USER
 			| ARM_VM_SECTION_DOMAIN;
 
-		phys = i * ARM_SECTION_SIZE;
+		phys = i * ARM_SECTION_ಗಾತ್ರ;
 		/* mark mormal memory as cacheable. TODO: fix hard coded values */
-		if (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_END) {
+		ಆದರೆ (phys >= PHYS_MEM_BEGIN && phys <= PHYS_MEM_ಕೊನೆ) {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_CACHED;
-		} else {
+		} ಇಲ್ಲದಿದ್ದರೆ {
 			pagedir[i] =  phys | flags | ARM_VM_SECTION_DEVICE;
 		}
         }
 }
 
-int pg_mapkernel(void)
+ಪೂರ್ಣಾಂಕ pg_mapkernel(ಶೂನ್ಯ)
 {
-	int pde;
-	u32_t mapped = 0, kern_phys = kern_phys_start;
+	ಪೂರ್ಣಾಂಕ pde;
+	u32_t mapped = 0, kern_phys = kern_phys_ಆರಂಭ;
 
-	assert(!(kern_vir_start % ARM_SECTION_SIZE));
-	assert(!(kern_phys_start % ARM_SECTION_SIZE));
-	pde = kern_vir_start / ARM_SECTION_SIZE; /* start pde */
-	while(mapped < kern_kernlen) {
-		pagedir[pde] = (kern_phys & ARM_VM_SECTION_MASK) 
+	ಪ್ರತಿಜ್ಞಾ(!(kern_vir_ಆರಂಭ % ARM_SECTION_ಗಾತ್ರ));
+	ಪ್ರತಿಜ್ಞಾ(!(kern_phys_ಆರಂಭ % ARM_SECTION_ಗಾತ್ರ));
+	pde = kern_vir_ಆರಂಭ / ARM_SECTION_ಗಾತ್ರ; /* start pde */
+	ಆಗ(mapped < kern_kernlen) {
+		pagedir[pde] = (kern_phys & ARM_VM_SECTION_ಮುಖವಾಡ) 
 			| ARM_VM_SECTION
 			| ARM_VM_SECTION_SUPER
 			| ARM_VM_SECTION_DOMAIN
 			| ARM_VM_SECTION_CACHED;
-		mapped += ARM_SECTION_SIZE;
-		kern_phys += ARM_SECTION_SIZE;
+		mapped += ARM_SECTION_ಗಾತ್ರ;
+		kern_phys += ARM_SECTION_ಗಾತ್ರ;
 		pde++;
 	}
-	return pde;	/* free pde */
+	ಹಿಂತಿರುಗಿ pde;	/* free pde */
 }
 
-void vm_enable_paging(void)
+ಶೂನ್ಯ vm_enable_paging(ಶೂನ್ಯ)
 {
 	u32_t sctlr;
 	u32_t actlr;
@@ -232,7 +232,7 @@ void vm_enable_paging(void)
 	sctlr |= CPU_CONTROL_32BD_ENABLE;
 
 	/* Enable L2 cache (cortex-a8) */
-	#define CORTEX_A8_L2EN   (0x02)
+	#ವ್ಯಾಖ್ಯಾನಿಸು CORTEX_A8_L2EN   (0x02)
 	actlr = read_actlr();
 	actlr |= CORTEX_A8_L2EN;
 	write_actlr(actlr);
@@ -240,77 +240,77 @@ void vm_enable_paging(void)
 	write_sctlr(sctlr);
 }
 
-phys_bytes pg_load(void)
+phys_ಬೈಟುಗಳು pg_ತುಂಬು(ಶೂನ್ಯ)
 {
-	phys_bytes phpagedir = vir2phys(pagedir);
+	phys_ಬೈಟುಗಳು phpagedir = vir2phys(pagedir);
 	write_ttbr0(phpagedir);
-	return phpagedir;
+	ಹಿಂತಿರುಗಿ phpagedir;
 }
 
-void pg_clear(void)
+ಶೂನ್ಯ pg_clear(ಶೂನ್ಯ)
 {
-	memset(pagedir, 0, sizeof(pagedir));
+	memset(pagedir, 0, ಗಾತ್ರ(pagedir));
 }
 
-phys_bytes pg_rounddown(phys_bytes b)
+phys_ಬೈಟುಗಳು pg_rounddown(phys_ಬೈಟುಗಳು b)
 {
-	phys_bytes o;
-	if(!(o = b % ARM_PAGE_SIZE)) {
-		return b;
+	phys_ಬೈಟುಗಳು o;
+	ಆದರೆ(!(o = b % ARM_ಪುಟ_ಗಾತ್ರ)) {
+		ಹಿಂತಿರುಗಿ b;
 	}
-	return b  - o;
+	ಹಿಂತಿರುಗಿ b  - o;
 }
 
-void pg_map(phys_bytes phys, vir_bytes vaddr, vir_bytes vaddr_end,
+ಶೂನ್ಯ pg_map(phys_ಬೈಟುಗಳು phys, vir_ಬೈಟುಗಳು vaddr, vir_ಬೈಟುಗಳು vaddr_ಕೊನೆ,
 	kinfo_t *cbi)
 {
-	static int mapped_pde = -1;
-	static u32_t *pt = NULL;
-	int pde, pte;
+	ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ mapped_pde = -1;
+	ಸ್ಥಿರ u32_t *pt = ಖಾಲಿ;
+	ಪೂರ್ಣಾಂಕ pde, pte;
 
-	assert(kernel_may_alloc);
+	ಪ್ರತಿಜ್ಞಾ(kernel_may_alloc);
 
-	if(phys == PG_ALLOCATEME) {
-		assert(!(vaddr % ARM_PAGE_SIZE));
-	} else  {
-		assert((vaddr % ARM_PAGE_SIZE) == (phys % ARM_PAGE_SIZE));
+	ಆದರೆ(phys == PG_ALLOCATEME) {
+		ಪ್ರತಿಜ್ಞಾ(!(vaddr % ARM_ಪುಟ_ಗಾತ್ರ));
+	} ಇಲ್ಲದಿದ್ದರೆ  {
+		ಪ್ರತಿಜ್ಞಾ((vaddr % ARM_ಪುಟ_ಗಾತ್ರ) == (phys % ARM_ಪುಟ_ಗಾತ್ರ));
 		vaddr = pg_rounddown(vaddr);
 		phys = pg_rounddown(phys);
 	}
-	assert(vaddr < kern_vir_start);
+	ಪ್ರತಿಜ್ಞಾ(vaddr < kern_vir_ಆರಂಭ);
 
-	while(vaddr < vaddr_end) {
-		phys_bytes source = phys;
-		assert(!(vaddr % ARM_PAGE_SIZE));
-		if(phys == PG_ALLOCATEME) {
-			source = pg_alloc_page(cbi);
-		} else {
-			assert(!(phys % ARM_PAGE_SIZE));
+	ಆಗ(vaddr < vaddr_ಕೊನೆ) {
+		phys_ಬೈಟುಗಳು ಮೂಲ = phys;
+		ಪ್ರತಿಜ್ಞಾ(!(vaddr % ARM_ಪುಟ_ಗಾತ್ರ));
+		ಆದರೆ(phys == PG_ALLOCATEME) {
+			ಮೂಲ = pg_alloc_ಪುಟ(cbi);
+		} ಇಲ್ಲದಿದ್ದರೆ {
+			ಪ್ರತಿಜ್ಞಾ(!(phys % ARM_ಪುಟ_ಗಾತ್ರ));
 		}
-		assert(!(source % ARM_PAGE_SIZE));
+		ಪ್ರತಿಜ್ಞಾ(!(ಮೂಲ % ARM_ಪುಟ_ಗಾತ್ರ));
 		pde = ARM_VM_PDE(vaddr);
 		pte = ARM_VM_PTE(vaddr);
-		if(mapped_pde < pde) {
-			phys_bytes ph;
+		ಆದರೆ(mapped_pde < pde) {
+			phys_ಬೈಟುಗಳು ph;
 			pt = alloc_pagetable(&ph);
-			pagedir[pde] = (ph & ARM_VM_PDE_MASK)
+			pagedir[pde] = (ph & ARM_VM_PDE_ಮುಖವಾಡ)
 					| ARM_VM_PAGEDIR
 					| ARM_VM_PDE_DOMAIN;
 			mapped_pde = pde;
 		}
-		assert(pt);
-		pt[pte] = (source & ARM_VM_PTE_MASK)
+		ಪ್ರತಿಜ್ಞಾ(pt);
+		pt[pte] = (ಮೂಲ & ARM_VM_PTE_ಮುಖವಾಡ)
 			| ARM_VM_PAGETABLE
 			| ARM_VM_PTE_CACHED
 			| ARM_VM_PTE_USER;
-		vaddr += ARM_PAGE_SIZE;
-		if(phys != PG_ALLOCATEME) {
-			phys += ARM_PAGE_SIZE;
+		vaddr += ARM_ಪುಟ_ಗಾತ್ರ;
+		ಆದರೆ(phys != PG_ALLOCATEME) {
+			phys += ARM_ಪುಟ_ಗಾತ್ರ;
 		}
 	}
 }
 
-void pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
+ಶೂನ್ಯ pg_info(reg_t *pagedir_ph, u32_t **pagedir_v)
 {
 	*pagedir_ph = vir2phys(pagedir);
 	*pagedir_v = pagedir;

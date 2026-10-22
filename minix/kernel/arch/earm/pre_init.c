@@ -1,49 +1,49 @@
-#define UNPAGED 1	/* for proper kmain() prototype */
+#ವ್ಯಾಖ್ಯಾನಿಸು UNPAGED 1	/* for proper kmain() prototype */
 
-#include "kernel/kernel.h"
-#include <assert.h>
-#include <stdlib.h>
-#include <minix/minlib.h>
-#include <minix/const.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <minix/com.h>
-#include <sys/types.h>
-#include <sys/param.h>
-#include <sys/reboot.h>
-#include "string.h"
-#include "arch_proto.h"
-#include "direct_utils.h"
-#include "bsp_serial.h"
-#include "glo.h"
-#include <machine/multiboot.h>
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <stdlib.h>
+#ಅನ್ತರ್ಭಾವ <minix/minlib.h>
+#ಅನ್ತರ್ಭಾವ <minix/const.h>
+#ಅನ್ತರ್ಭಾವ <minix/type.h>
+#ಅನ್ತರ್ಭಾವ <minix/board.h>
+#ಅನ್ತರ್ಭಾವ <minix/com.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <sys/param.h>
+#ಅನ್ತರ್ಭಾವ <sys/reboot.h>
+#ಅನ್ತರ್ಭಾವ "string.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "direct_utils.h"
+#ಅನ್ತರ್ಭಾವ "bsp_serial.h"
+#ಅನ್ತರ್ಭಾವ "glo.h"
+#ಅನ್ತರ್ಭಾವ <machine/multiboot.h>
 
-#if USE_SYSDEBUG
-#define MULTIBOOT_VERBOSE 1
-#endif
+#ಆದರೆ USE_SYSDEBUG
+#ವ್ಯಾಖ್ಯಾನಿಸು MULTIBOOT_VERBOSE 1
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* to-be-built kinfo struct, diagnostics buffer */
 kinfo_t kinfo;
-struct kmessages kmessages;
+ರಚನೆ kmessages kmessages;
 
 /* pg_utils.c uses this; in this phase, there is a 1:1 mapping. */
-phys_bytes vir2phys(void *addr) { return (phys_bytes) addr; }
+phys_ಬೈಟುಗಳು vir2phys(ಶೂನ್ಯ *addr) { ಹಿಂತಿರುಗಿ (phys_ಬೈಟುಗಳು) addr; }
 
-static void setup_mbi(multiboot_info_t *mbi, char *bootargs);
+ಸ್ಥಿರ ಶೂನ್ಯ ಸಿದ್ಧತೆ_mbi(multiboot_info_t *mbi, ಅಕ್ಷರ *bootargs);
 
 /* String length used for mb_itoa */
-#define ITOA_BUFFER_SIZE 20
+#ವ್ಯಾಖ್ಯಾನಿಸು ITOA_ಬಫರ್_ಗಾತ್ರ 20
 
 /* Kernel may use memory */
-int kernel_may_alloc = 1;
+ಪೂರ್ಣಾಂಕ kernel_may_alloc = 1;
 
 /* kernel bss */
-extern u32_t _edata;
-extern u32_t _end;
+ಬಾಹ್ಯ u32_t _edata;
+ಬಾಹ್ಯ u32_t ಕೊನೆ_2;
 
 /* kernel unpaged bss */
-extern char _kern_unpaged_edata;
-extern char _kern_unpaged_end;
+ಬಾಹ್ಯ ಅಕ್ಷರ _kern_unpaged_edata;
+ಬಾಹ್ಯ ಅಕ್ಷರ kern_unpaged_ಕೊನೆ;
 
 /**
  *
@@ -60,146 +60,146 @@ extern char _kern_unpaged_end;
  *       the end char
  *
 **/
-int find_value(char * content,char * key,char *value,int value_max_len){
+ಪೂರ್ಣಾಂಕ ಕಂಡುಹಿಡಿ_ಮೌಲ್ಯ(ಅಕ್ಷರ * content,ಅಕ್ಷರ * ಕೀಲಿ,ಅಕ್ಷರ *ಮೌಲ್ಯ,ಪೂರ್ಣಾಂಕ ಮೌಲ್ಯ_max_len){
 
-	char *iter,*keyp;
-	int key_len,content_len,match_len,value_len;
+	ಅಕ್ಷರ *iter,*keyp;
+	ಪೂರ್ಣಾಂಕ ಕೀಲಿ_len,content_len,ಹೊಂದಿಕೆ_len,ಮೌಲ್ಯ_len;
 
 	/* return if the input is invalid */
-	if  (key == NULL || content == NULL || value == NULL) {
-		return 1;
+	ಆದರೆ  (ಕೀಲಿ == ಖಾಲಿ || content == ಖಾಲಿ || ಮೌಲ್ಯ == ಖಾಲಿ) {
+		ಹಿಂತಿರುಗಿ 1;
 	}
 
 	/* find the key and content length */
-	key_len = content_len =0;
-	for(iter = key ; *iter != '\0'; iter++, key_len++);
-	for(iter = content ; *iter != '\0'; iter++, content_len++);
+	ಕೀಲಿ_len = content_len =0;
+	ಗಾಗಿ(iter = ಕೀಲಿ ; *iter != '\0'; iter++, ಕೀಲಿ_len++);
+	ಗಾಗಿ(iter = content ; *iter != '\0'; iter++, content_len++);
 
 	/* return if key or content length invalid */
-	if (key_len == 0 || content_len == 0) {
-		return 1;
+	ಆದರೆ (ಕೀಲಿ_len == 0 || content_len == 0) {
+		ಹಿಂತಿರುಗಿ 1;
 	}
 
 	/* now find the key in the contents */
-	match_len =0;
-	for (iter = content ,keyp=key; match_len < key_len && *iter != '\0' ; iter++) {
-		if (*iter == *keyp) {
-			match_len++;
+	ಹೊಂದಿಕೆ_len =0;
+	ಗಾಗಿ (iter = content ,keyp=ಕೀಲಿ; ಹೊಂದಿಕೆ_len < ಕೀಲಿ_len && *iter != '\0' ; iter++) {
+		ಆದರೆ (*iter == *keyp) {
+			ಹೊಂದಿಕೆ_len++;
 			keyp++;
-			continue;
+			ಮುಂದುವರಿ;
 		} 
 		/* The current key does not match the value , reset */
-		match_len =0;
-		keyp=key;
+		ಹೊಂದಿಕೆ_len =0;
+		keyp=ಕೀಲಿ;
 	}
 
-	if (match_len == key_len) {
-		printf("key found at %d %s\n", match_len, &content[match_len]);
-		value_len = 0;
+	ಆದರೆ (ಹೊಂದಿಕೆ_len == ಕೀಲಿ_len) {
+		ಬರೆ("key found at %d %s\n", ಹೊಂದಿಕೆ_len, &content[ಹೊಂದಿಕೆ_len]);
+		ಮೌಲ್ಯ_len = 0;
 		/* copy the content to the value char iter already points to the first 
 		   char value */
-		while(*iter != '\0' && *iter != ' ' && value_len  + 1< value_max_len) {
-			*value++ = *iter++;
-			value_len++;
+		ಆಗ(*iter != '\0' && *iter != ' ' && ಮೌಲ್ಯ_len  + 1< ಮೌಲ್ಯ_max_len) {
+			*ಮೌಲ್ಯ++ = *iter++;
+			ಮೌಲ್ಯ_len++;
 		}
-		*value='\0';
-		return 0;
+		*ಮೌಲ್ಯ='\0';
+		ಹಿಂತಿರುಗಿ 0;
 	}
-	return 1; /* not found */
+	ಹಿಂತಿರುಗಿ 1; /* not found */
 }
 
-static int mb_set_param(char *bigbuf,char *name,char *value, kinfo_t *cbi)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ mb_ಗಣ_param(ಅಕ್ಷರ *bigbuf,ಅಕ್ಷರ *name,ಅಕ್ಷರ *ಮೌಲ್ಯ, kinfo_t *cbi)
 {
 	/* bigbuf contains a list of key=value pairs separated by \0 char.
 	 * The list itself is ended by a second \0 terminator*/
-	char *p = bigbuf;
-	char *bufend = bigbuf + MULTIBOOT_PARAM_BUF_SIZE;
-	char *q;
-	int namelen = strlen(name);
-	int valuelen = strlen(value);
+	ಅಕ್ಷರ *p = bigbuf;
+	ಅಕ್ಷರ *bufend = bigbuf + MULTIBOOT_PARAM_BUF_ಗಾತ್ರ;
+	ಅಕ್ಷರ *q;
+	ಪೂರ್ಣಾಂಕ namelen = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(name);
+	ಪೂರ್ಣಾಂಕ valuelen = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ(ಮೌಲ್ಯ);
 
 	/* Some variables we recognize */
-	if(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
-	if(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(value); }
+	ಆದರೆ(!strcmp(name, SERVARNAME)) { cbi->do_serial_debug = 1; }
+	ಆದರೆ(!strcmp(name, SERBAUDVARNAME)) { cbi->serial_debug_baud = atoi(ಮೌಲ್ಯ); }
 
 	/* Delete the item if already exists */
-	while (*p) {
-		if (strncmp(p, name, namelen) == 0 && p[namelen] == '=') {
+	ಆಗ (*p) {
+		ಆದರೆ (ಅಕ್ಷರಸರಣಿ_ಹೋಲಿಕೆ(p, name, namelen) == 0 && p[namelen] == '=') {
 			q = p;
 			/* let q point to the end of the entry */
-			while (*q) q++; 
+			ಆಗ (*q) q++; 
 			/* now copy the remained of the buffer */
-			for (q++; q < bufend; q++, p++)
+			ಗಾಗಿ (q++; q < bufend; q++, p++)
 				*p = *q;
-			break;
+			ನಿಲ್ಲಿಸು;
 		}
 
 		/* find the end of the buffer */
-		while (*p++);
+		ಆಗ (*p++);
 		p++;
 	}
 	
 
 	/* find the first empty spot */
-	for (p = bigbuf; p < bufend && (*p || *(p + 1)); p++);
+	ಗಾಗಿ (p = bigbuf; p < bufend && (*p || *(p + 1)); p++);
 
 	/* unless we are the first entry step over the delimiter */
-	if (p > bigbuf) p++;
+	ಆದರೆ (p > bigbuf) p++;
 	
 	/* Make sure there's enough space for the new parameter */
-	if (p + namelen + valuelen + 3 > bufend) {
-		return -1;
+	ಆದರೆ (p + namelen + valuelen + 3 > bufend) {
+		ಹಿಂತಿರುಗಿ -1;
 	}
 	
 	strcpy(p, name);
 	p[namelen] = '=';
-	strcpy(p + namelen + 1, value);
+	strcpy(p + namelen + 1, ಮೌಲ್ಯ);
 	p[namelen + valuelen + 1] = 0;
 	p[namelen + valuelen + 2] = 0; /* end with a second delimiter */
-	return 0;
+	ಹಿಂತಿರುಗಿ 0;
 }
 
-int overlaps(multiboot_module_t *mod, int n, int cmp_mod)
+ಪೂರ್ಣಾಂಕ overlaps(multiboot_module_t *mod, ಪೂರ್ಣಾಂಕ n, ಪೂರ್ಣಾಂಕ cmp_mod)
 {
 	multiboot_module_t *cmp = &mod[cmp_mod];
-	int m;
+	ಪೂರ್ಣಾಂಕ m;
 
-#define INRANGE(mod, v) ((v) >= mod->mod_start && (v) <= thismod->mod_end)
-#define OVERLAP(mod1, mod2) (INRANGE(mod1, mod2->mod_start) || \
-	    INRANGE(mod1, mod2->mod_end))
-	for(m = 0; m < n; m++) {
+#ವ್ಯಾಖ್ಯಾನಿಸು INRANGE(mod, v) ((v) >= mod->mod_ಆರಂಭ && (v) <= thismod->mod_ಕೊನೆ)
+#ವ್ಯಾಖ್ಯಾನಿಸು OVERLAP(mod1, mod2) (INRANGE(mod1, mod2->mod_ಆರಂಭ) || \
+	    INRANGE(mod1, mod2->mod_ಕೊನೆ))
+	ಗಾಗಿ(m = 0; m < n; m++) {
 		multiboot_module_t *thismod = &mod[m];
-		if(m == cmp_mod) continue;
-		if(OVERLAP(thismod, cmp)) {
-			return 1;
+		ಆದರೆ(m == cmp_mod) ಮುಂದುವರಿ;
+		ಆದರೆ(OVERLAP(thismod, cmp)) {
+			ಹಿಂತಿರುಗಿ 1;
 		}
 	}
-	return 0;
+	ಹಿಂತಿರುಗಿ 0;
 }
 
 /* XXX: hard-coded stuff for modules */
-#define MB_MODS_NR NR_BOOT_MODULES
-#define MB_MODS_BASE  0x82000000
-#define MB_MODS_ALIGN 0x00800000 /* 8 MB */
-#define MB_MMAP_START 0x80000000
-#define MB_MMAP_SIZE  0x10000000 /* 256 MB */
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_MODS_NR NR_BOOT_MODULES
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_MODS_ತಳ  0x82000000
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_MODS_ALIGN 0x00800000 /* 8 MB */
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_MMAP_ಆರಂಭ 0x80000000
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_MMAP_ಗಾತ್ರ  0x10000000 /* 256 MB */
 
 multiboot_module_t mb_modlist[MB_MODS_NR];
-multiboot_memory_map_t mb_memmap;
+multiboot_ಸ್ಮರಣೆ_map_t mb_memmap;
 
-void setup_mbi(multiboot_info_t *mbi, char *bootargs)
+ಶೂನ್ಯ ಸಿದ್ಧತೆ_mbi(multiboot_info_t *mbi, ಅಕ್ಷರ *bootargs)
 {
-	memset(mbi, 0, sizeof(*mbi));
+	memset(mbi, 0, ಗಾತ್ರ(*mbi));
 	mbi->flags = MULTIBOOT_INFO_MODS | MULTIBOOT_INFO_MEM_MAP |
 			MULTIBOOT_INFO_CMDLINE;
-	mbi->mi_mods_count = MB_MODS_NR;
+	mbi->mi_mods_ಎಣಿಕೆ = MB_MODS_NR;
 	mbi->mods_addr = (u32_t)&mb_modlist;
 
-	int i;
-	for (i = 0; i < MB_MODS_NR; ++i) {
-		mb_modlist[i].mod_start = MB_MODS_BASE + i * MB_MODS_ALIGN;
-		mb_modlist[i].mod_end = mb_modlist[i].mod_start + MB_MODS_ALIGN
-		    - ARM_PAGE_SIZE;
+	ಪೂರ್ಣಾಂಕ i;
+	ಗಾಗಿ (i = 0; i < MB_MODS_NR; ++i) {
+		mb_modlist[i].mod_ಆರಂಭ = MB_MODS_ತಳ + i * MB_MODS_ALIGN;
+		mb_modlist[i].mod_ಕೊನೆ = mb_modlist[i].mod_ಆರಂಭ + MB_MODS_ALIGN
+		    - ARM_ಪುಟ_ಗಾತ್ರ;
 		mb_modlist[i].cmdline = 0;
 	}
 
@@ -207,37 +207,37 @@ void setup_mbi(multiboot_info_t *mbi, char *bootargs)
 	mbi->cmdline = (u32_t) bootargs;
 
 	mbi->mmap_addr =(u32_t)&mb_memmap;
-	mbi->mmap_length = sizeof(mb_memmap);
+	mbi->mmap_ಉದ್ದಳತೆ = ಗಾತ್ರ(mb_memmap);
 
-	mb_memmap.size = sizeof(multiboot_memory_map_t);
-	mb_memmap.mm_base_addr = MB_MMAP_START;
-	mb_memmap.mm_length  = MB_MMAP_SIZE;
-	mb_memmap.type = MULTIBOOT_MEMORY_AVAILABLE;
+	mb_memmap.ಗಾತ್ರ_2 = ಗಾತ್ರ(multiboot_ಸ್ಮರಣೆ_map_t);
+	mb_memmap.mm_ತಳ_addr = MB_MMAP_ಆರಂಭ;
+	mb_memmap.mm_ಉದ್ದಳತೆ  = MB_MMAP_ಗಾತ್ರ;
+	mb_memmap.type = MULTIBOOT_ಸ್ಮರಣೆ_ಲಭ್ಯ;
 }
 
-void get_parameters(kinfo_t *cbi, char *bootargs)
+ಶೂನ್ಯ get_parameters(kinfo_t *cbi, ಅಕ್ಷರ *bootargs)
 {
-	multiboot_memory_map_t *mmap;
+	multiboot_ಸ್ಮರಣೆ_map_t *mmap;
 	multiboot_info_t *mbi = &cbi->mbi;
-	int var_i,value_i, m, k;
-	char *p;
-	extern char _kern_phys_base, _kern_vir_base, _kern_size,
-	    _kern_unpaged_start, _kern_unpaged_end;
-	phys_bytes kernbase = (phys_bytes) &_kern_phys_base,
-	    kernsize = (phys_bytes) &_kern_size;
-#define BUF 1024
-	static char cmdline[BUF];
+	ಪೂರ್ಣಾಂಕ var_i,ಮೌಲ್ಯ_i, m, k;
+	ಅಕ್ಷರ *p;
+	ಬಾಹ್ಯ ಅಕ್ಷರ kern_phys_ತಳ, kern_vir_ತಳ, kern_ಗಾತ್ರ,
+	    kern_unpaged_ಆರಂಭ, kern_unpaged_ಕೊನೆ;
+	phys_ಬೈಟುಗಳು kernbase = (phys_ಬೈಟುಗಳು) &kern_phys_ತಳ,
+	    kernsize = (phys_ಬೈಟುಗಳು) &kern_ಗಾತ್ರ;
+#ವ್ಯಾಖ್ಯಾನಿಸು BUF 1024
+	ಸ್ಥಿರ ಅಕ್ಷರ cmdline[BUF];
 
 	/* get our own copy of the multiboot info struct and module list */
-	setup_mbi(mbi, bootargs);
+	ಸಿದ್ಧತೆ_mbi(mbi, bootargs);
 
 	/* Set various bits of info for the higher-level kernel. */
-	cbi->mem_high_phys = 0;
-	cbi->user_sp = (vir_bytes) &_kern_vir_base;
-	cbi->vir_kern_start = (vir_bytes) &_kern_vir_base;
-	cbi->bootstrap_start = (vir_bytes) &_kern_unpaged_start;
-	cbi->bootstrap_len = (vir_bytes) &_kern_unpaged_end -
-		cbi->bootstrap_start;
+	cbi->mem_ಮೇಲಿನ_phys = 0;
+	cbi->user_sp = (vir_ಬೈಟುಗಳು) &kern_vir_ತಳ;
+	cbi->vir_kern_ಆರಂಭ = (vir_ಬೈಟುಗಳು) &kern_vir_ತಳ;
+	cbi->bootstrap_ಆರಂಭ = (vir_ಬೈಟುಗಳು) &kern_unpaged_ಆರಂಭ;
+	cbi->bootstrap_len = (vir_ಬೈಟುಗಳು) &kern_unpaged_ಕೊನೆ -
+		cbi->bootstrap_ಆರಂಭ;
 	cbi->kmess = &kmess;
 
 	/* set some configurable defaults */
@@ -245,34 +245,34 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	cbi->serial_debug_baud = 115200;
 
 	/* parse boot command line */
-	if (mbi->flags&MULTIBOOT_INFO_CMDLINE) {
-		static char var[BUF];
-		static char value[BUF];
+	ಆದರೆ (mbi->flags&MULTIBOOT_INFO_CMDLINE) {
+		ಸ್ಥಿರ ಅಕ್ಷರ var[BUF];
+		ಸ್ಥಿರ ಅಕ್ಷರ ಮೌಲ್ಯ[BUF];
 
 		/* Override values with cmdline argument */
-		memcpy(cmdline, (void *) mbi->cmdline, BUF);
+		ಸ್ಮರಣೆ_ನಕಲು(cmdline, (ಶೂನ್ಯ *) mbi->cmdline, BUF);
 		p = cmdline;
-		while (*p) {
+		ಆಗ (*p) {
 			var_i = 0;
-			value_i = 0;
-			while (*p == ' ') p++; /* skip spaces */
-			if (!*p) break; /* is this the end? */
-			while (*p && *p != '=' && *p != ' ' && var_i < BUF - 1)
+			ಮೌಲ್ಯ_i = 0;
+			ಆಗ (*p == ' ') p++; /* skip spaces */
+			ಆದರೆ (!*p) ನಿಲ್ಲಿಸು; /* is this the end? */
+			ಆಗ (*p && *p != '=' && *p != ' ' && var_i < BUF - 1)
 				var[var_i++] = *p++ ;
 			var[var_i] = 0;
-			if (*p++ != '=') continue; /* skip if not name=value */
-			while (*p && *p != ' ' && value_i < BUF - 1) {
-				value[value_i++] = *p++ ;
+			ಆದರೆ (*p++ != '=') ಮುಂದುವರಿ; /* skip if not name=value */
+			ಆಗ (*p && *p != ' ' && ಮೌಲ್ಯ_i < BUF - 1) {
+				ಮೌಲ್ಯ[ಮೌಲ್ಯ_i++] = *p++ ;
 			}
-			value[value_i] = 0;
+			ಮೌಲ್ಯ[ಮೌಲ್ಯ_i] = 0;
 			
-			mb_set_param(cbi->param_buf, var, value, cbi);
+			mb_ಗಣ_param(cbi->param_buf, var, ಮೌಲ್ಯ, cbi);
 		}
 	}
 
 	/* let higher levels know what we are booting on */
-	mb_set_param(cbi->param_buf, ARCHVARNAME, (char *)get_board_arch_name(machine.board_id), cbi);
-	mb_set_param(cbi->param_buf, BOARDVARNAME,(char *)get_board_name(machine.board_id) , cbi);
+	mb_ಗಣ_param(cbi->param_buf, ARCHVARNAME, (ಅಕ್ಷರ *)get_board_arch_name(machine.board_id), cbi);
+	mb_ಗಣ_param(cbi->param_buf, BOARDVARNAME,(ಅಕ್ಷರ *)get_board_name(machine.board_id) , cbi);
 	
 
 	/* move user stack/data down to leave a gap to catch kernel
@@ -280,63 +280,63 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
 	 * at a glance (0xf.. vs 0xe..) 
 	 */
 	cbi->user_sp = USR_STACKTOP;
-	cbi->user_end = USR_DATATOP;
+	cbi->user_ಕೊನೆ = USR_DATATOP;
 
 	/* kernel bytes without bootstrap code/data that is currently
 	 * still needed but will be freed after bootstrapping.
 	 */
-	kinfo.kernel_allocated_bytes = (phys_bytes) &_kern_size;
-	kinfo.kernel_allocated_bytes -= cbi->bootstrap_len;
+	kinfo.kernel_allocated_ಬೈಟುಗಳು = (phys_ಬೈಟುಗಳು) &kern_ಗಾತ್ರ;
+	kinfo.kernel_allocated_ಬೈಟುಗಳು -= cbi->bootstrap_len;
 
-	assert(!(cbi->bootstrap_start % ARM_PAGE_SIZE));
-	cbi->bootstrap_len = rounddown(cbi->bootstrap_len, ARM_PAGE_SIZE);
-	assert(mbi->flags & MULTIBOOT_INFO_MODS);
-	assert(mbi->mi_mods_count < MULTIBOOT_MAX_MODS);
-	assert(mbi->mi_mods_count > 0);
-	memcpy(&cbi->module_list, (void *) mbi->mods_addr,
-		mbi->mi_mods_count * sizeof(multiboot_module_t));
+	ಪ್ರತಿಜ್ಞಾ(!(cbi->bootstrap_ಆರಂಭ % ARM_ಪುಟ_ಗಾತ್ರ));
+	cbi->bootstrap_len = rounddown(cbi->bootstrap_len, ARM_ಪುಟ_ಗಾತ್ರ);
+	ಪ್ರತಿಜ್ಞಾ(mbi->flags & MULTIBOOT_INFO_MODS);
+	ಪ್ರತಿಜ್ಞಾ(mbi->mi_mods_ಎಣಿಕೆ < MULTIBOOT_MAX_MODS);
+	ಪ್ರತಿಜ್ಞಾ(mbi->mi_mods_ಎಣಿಕೆ > 0);
+	ಸ್ಮರಣೆ_ನಕಲು(&cbi->module_list, (ಶೂನ್ಯ *) mbi->mods_addr,
+		mbi->mi_mods_ಎಣಿಕೆ * ಗಾತ್ರ(multiboot_module_t));
 	
-	memset(cbi->memmap, 0, sizeof(cbi->memmap));
+	memset(cbi->memmap, 0, ಗಾತ್ರ(cbi->memmap));
 	/* mem_map has a variable layout */
-	if(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
-		cbi->mmap_size = 0;
-	        for (mmap = (multiboot_memory_map_t *) mbi->mmap_addr;
-       	     (unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;
-       	       mmap = (multiboot_memory_map_t *) 
-		      	((unsigned long) mmap + mmap->size + sizeof(mmap->size))) {
-			if(mmap->type != MULTIBOOT_MEMORY_AVAILABLE) continue;
-			add_memmap(cbi, mmap->mm_base_addr, mmap->mm_length);
+	ಆದರೆ(mbi->flags & MULTIBOOT_INFO_MEM_MAP) {
+		cbi->mmap_ಗಾತ್ರ = 0;
+	        ಗಾಗಿ (mmap = (multiboot_ಸ್ಮರಣೆ_map_t *) mbi->mmap_addr;
+       	     (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ) mmap < mbi->mmap_addr + mbi->mmap_ಉದ್ದಳತೆ;
+       	       mmap = (multiboot_ಸ್ಮರಣೆ_map_t *) 
+		      	((ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ) mmap + mmap->ಗಾತ್ರ_2 + ಗಾತ್ರ(mmap->ಗಾತ್ರ_2))) {
+			ಆದರೆ(mmap->type != MULTIBOOT_ಸ್ಮರಣೆ_ಲಭ್ಯ) ಮುಂದುವರಿ;
+			ಕೂಡಿಸು_memmap(cbi, mmap->mm_ತಳ_addr, mmap->mm_ಉದ್ದಳತೆ);
 		}
-	} else {
-		assert(mbi->flags & MULTIBOOT_INFO_MEMORY);
-		add_memmap(cbi, 0, mbi->mem_lower_unused*1024);
-		add_memmap(cbi, 0x100000, mbi->mem_upper_unused*1024);
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		ಪ್ರತಿಜ್ಞಾ(mbi->flags & MULTIBOOT_INFO_ಸ್ಮರಣೆ);
+		ಕೂಡಿಸು_memmap(cbi, 0, mbi->mem_ಅಧೋ_ಬಳಸದ*1024);
+		ಕೂಡಿಸು_memmap(cbi, 0x100000, mbi->mem_ಊರ್ಧ್ವ_ಬಳಸದ*1024);
 	}
 
 	/* Sanity check: the kernel nor any of the modules may overlap
 	 * with each other. Pretend the kernel is an extra module for a
 	 * second.
 	 */
-	k = mbi->mi_mods_count;
-	assert(k < MULTIBOOT_MAX_MODS);
-	cbi->module_list[k].mod_start = kernbase;
-	cbi->module_list[k].mod_end = kernbase + kernsize;
-	cbi->mods_with_kernel = mbi->mi_mods_count+1;
+	k = mbi->mi_mods_ಎಣಿಕೆ;
+	ಪ್ರತಿಜ್ಞಾ(k < MULTIBOOT_MAX_MODS);
+	cbi->module_list[k].mod_ಆರಂಭ = kernbase;
+	cbi->module_list[k].mod_ಕೊನೆ = kernbase + kernsize;
+	cbi->mods_with_kernel = mbi->mi_mods_ಎಣಿಕೆ+1;
 	cbi->kern_mod = k;
 
-	for(m = 0; m < cbi->mods_with_kernel; m++) {
-#if 0
-		printf("checking overlap of module %08lx-%08lx\n",
-		  cbi->module_list[m].mod_start, cbi->module_list[m].mod_end);
-#endif
-		if(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
+	ಗಾಗಿ(m = 0; m < cbi->mods_with_kernel; m++) {
+#ಆದರೆ 0
+		ಬರೆ("checking overlap of module %08lx-%08lx\n",
+		  cbi->module_list[m].mod_ಆರಂಭ, cbi->module_list[m].mod_ಕೊನೆ);
+#ಆದರೆ_ಅಂತ್ಯ
+		ಆದರೆ(overlaps(cbi->module_list, cbi->mods_with_kernel, m))
 			panic("overlapping boot modules/kernel");
 		/* We cut out the bits of memory that we know are
 		 * occupied by the kernel and boot modules.
 		 */
 		cut_memmap(cbi,
-			cbi->module_list[m].mod_start,
-			cbi->module_list[m].mod_end);
+			cbi->module_list[m].mod_ಆರಂಭ,
+			cbi->module_list[m].mod_ಕೊನೆ);
 	}
 }
 
@@ -348,15 +348,15 @@ void get_parameters(kinfo_t *cbi, char *bootargs)
  * the bootloader's debugging methods that will hopefully show some
  * information like the currnet PC at on the serial.
  */
-#define POORMANS_FAILURE_NOTIFICATION  asm volatile("svc #00\n")
+#ವ್ಯಾಖ್ಯಾನಿಸು POORMANS_FAILURE_NOTIFICATION  asm ಅಸ್ಥಿರ("svc #00\n")
 
 /* use the passed cmdline argument to determine the machine id */
-void set_machine_id(char *cmdline)
+ಶೂನ್ಯ ಗಣ_machine_id(ಅಕ್ಷರ *cmdline)
 {
 
-	char boardname[20];
+	ಅಕ್ಷರ boardname[20];
 	memset(boardname,'\0',20);
-	if (find_value(cmdline,"board_name=",boardname,20)){
+	ಆದರೆ (ಕಂಡುಹಿಡಿ_ಮೌಲ್ಯ(cmdline,"board_name=",boardname,20)){
 		/* we expect the bootloader to pass a board_name as argument
 		 * this however did not happen and given we still are in early
 		 * boot we can't use the serial. We therefore generate an interrupt
@@ -365,32 +365,32 @@ void set_machine_id(char *cmdline)
 	}  
 	machine.board_id = get_board_id_by_short_name(boardname);
 
-	if (machine.board_id ==0){
+	ಆದರೆ (machine.board_id ==0){
 		/* same thing as above there is no safe escape */
 		POORMANS_FAILURE_NOTIFICATION;
 	}
 }
 
-kinfo_t *pre_init(int argc, char **argv)
+kinfo_t *pre_init(ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-	char *bootargs;
+	ಅಕ್ಷರ *bootargs;
 	/* This is the main "c" entry point into the kernel. It gets called
 	   from head.S */
 	   
 	/* Clear BSS */
-	memset(&_edata, 0, (u32_t)&_end - (u32_t)&_edata);
-        memset(&_kern_unpaged_edata, 0, (u32_t)&_kern_unpaged_end - (u32_t)&_kern_unpaged_edata);
+	memset(&_edata, 0, (u32_t)&ಕೊನೆ_2 - (u32_t)&_edata);
+        memset(&_kern_unpaged_edata, 0, (u32_t)&kern_unpaged_ಕೊನೆ - (u32_t)&_kern_unpaged_edata);
 
 	/* we get called in a c like fashion where the first arg
          * is the program name (load address) and the rest are
 	 * arguments. by convention the second argument is the
 	 *  command line */
-	if (argc != 2) {
+	ಆದರೆ (argc != 2) {
 		POORMANS_FAILURE_NOTIFICATION;
 	}
 
 	bootargs = argv[1];
-	set_machine_id(bootargs);
+	ಗಣ_machine_id(bootargs);
 	bsp_ser_init();
 	/* Get our own copy boot params pointed to by ebx.
 	 * Here we find out whether we should do serial output.
@@ -403,13 +403,13 @@ kinfo_t *pre_init(int argc, char **argv)
 	 */
 	dcache_clean(); /* clean the caches */
 	pg_clear();
-	pg_identity(&kinfo);
-	kinfo.freepde_start = pg_mapkernel();
-	pg_load();
+	pg_ತಟಸ್ಥ(&kinfo);
+	kinfo.freepde_ಆರಂಭ = pg_mapkernel();
+	pg_ತುಂಬು();
 	vm_enable_paging();
 
 	/* Done, return boot info so it can be passed to kmain(). */
-	return &kinfo;
+	ಹಿಂತಿರುಗಿ &kinfo;
 }
 
 /* pre_init gets executed at the memory location where the kernel was loaded by the boot loader.
@@ -417,10 +417,10 @@ kinfo_t *pre_init(int argc, char **argv)
  * ensure this). The following methods are used in that context. Once we jump to kmain they are no
  * longer used and the "real" implementations are visible
  */
-void send_diag_sig(void) { }
-void minix_shutdown(int how) { arch_shutdown(how); }
-void busy_delay_ms(int x) { }
-int raise(int n) { panic("raise(%d)\n", n); }
-int kern_phys_map_ptr( phys_bytes base_address, vir_bytes io_size, int vm_flags,
-struct kern_phys_map * priv, vir_bytes ptr) { return -1; };
-struct machine machine; /* pre init stage machine */
+ಶೂನ್ಯ send_diag_sig(ಶೂನ್ಯ) { }
+ಶೂನ್ಯ minix_shutdown(ಪೂರ್ಣಾಂಕ how) { arch_shutdown(how); }
+ಶೂನ್ಯ busy_delay_ms(ಪೂರ್ಣಾಂಕ x) { }
+ಪೂರ್ಣಾಂಕ ಎತ್ತು(ಪೂರ್ಣಾಂಕ n) { panic("raise(%d)\n", n); }
+ಪೂರ್ಣಾಂಕ kern_phys_map_ptr( phys_ಬೈಟುಗಳು ತಳ_ವಿಳಾಸ, vir_ಬೈಟುಗಳು io_ಗಾತ್ರ, ಪೂರ್ಣಾಂಕ vm_flags,
+ರಚನೆ kern_phys_map * priv, vir_ಬೈಟುಗಳು ptr) { ಹಿಂತಿರುಗಿ -1; };
+ರಚನೆ machine machine; /* pre init stage machine */

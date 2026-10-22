@@ -1,30 +1,30 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include "kernel/clock.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/clock.h"
 
 /*===========================================================================*
  *				do_schedule				     *
  *===========================================================================*/
-int do_schedule(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_ವೇಳಾಪಟ್ಟಿ(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-	struct proc *p;
-	int proc_nr;
-	int priority, quantum, cpu, niced;
+	ರಚನೆ proc *p;
+	ಪೂರ್ಣಾಂಕ proc_nr;
+	ಪೂರ್ಣಾಂಕ ಆದ್ಯತೆ, ಕಾಲಾಂಶ, cpu, niced;
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedule.endpoint, &proc_nr))
-		return EINVAL;
+	ಆದರೆ (!isokendpt(m_ptr->m_lsys_krn_ವೇಳಾಪಟ್ಟಿ.endpoint, &proc_nr))
+		ಹಿಂತಿರುಗಿ EINVAL;
 
 	p = proc_addr(proc_nr);
 
 	/* Only this process' scheduler can schedule it */
-	if (caller != p->p_scheduler)
-		return(EPERM);
+	ಆದರೆ (caller != p->p_scheduler)
+		ಹಿಂತಿರುಗಿ(EPERM);
 
 	/* Try to schedule the process. */
-	priority = m_ptr->m_lsys_krn_schedule.priority;
-	quantum = m_ptr->m_lsys_krn_schedule.quantum;
-	cpu = m_ptr->m_lsys_krn_schedule.cpu;
-	niced = !!(m_ptr->m_lsys_krn_schedule.niced);
+	ಆದ್ಯತೆ = m_ptr->m_lsys_krn_ವೇಳಾಪಟ್ಟಿ.ಆದ್ಯತೆ;
+	ಕಾಲಾಂಶ = m_ptr->m_lsys_krn_ವೇಳಾಪಟ್ಟಿ.ಕಾಲಾಂಶ;
+	cpu = m_ptr->m_lsys_krn_ವೇಳಾಪಟ್ಟಿ.cpu;
+	niced = !!(m_ptr->m_lsys_krn_ವೇಳಾಪಟ್ಟಿ.niced);
 
-	return sched_proc(p, priority, quantum, cpu, niced);
+	ಹಿಂತಿರುಗಿ sched_proc(p, ಆದ್ಯತೆ, ಕಾಲಾಂಶ, cpu, niced);
 }

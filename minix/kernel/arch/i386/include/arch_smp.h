@@ -1,31 +1,31 @@
-#ifndef __SMP_X86_H__
-#define __SMP_X86_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __SMP_X86_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __SMP_X86_H__
 
-#include "arch_proto.h" /* K_STACK_SIZE */
+#ಅನ್ತರ್ಭಾವ "arch_proto.h" /* K_STACK_SIZE */
 
-#define MAX_NR_INTERRUPT_ENTRIES	128
+#ವ್ಯಾಖ್ಯಾನಿಸು MAX_NR_ಅಡಚಣೆ_ENTRIES	128
 
-#ifndef __ASSEMBLY__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __ASSEMBLY__
 
 /* returns the current cpu id */
-#define cpuid	(((u32_t *)(((u32_t)get_stack_frame() + (K_STACK_SIZE - 1)) \
-						& ~(K_STACK_SIZE - 1)))[-1])
+#ವ್ಯಾಖ್ಯಾನಿಸು cpuid	(((u32_t *)(((u32_t)get_ರಾಶಿ_ಚೌಕಟ್ಟು() + (K_ರಾಶಿ_ಗಾತ್ರ - 1)) \
+						& ~(K_ರಾಶಿ_ಗಾತ್ರ - 1)))[-1])
 /* 
  * in case apic or smp is disabled in boot monitor, we need to finish single cpu
  * boot using the legacy PIC
  */
-#define smp_single_cpu_fallback() do {		\
-	  tss_init(0, get_k_stack_top(0));	\
+#ವ್ಯಾಖ್ಯಾನಿಸು smp_single_cpu_fallback() ಮಾಡು {		\
+	  tss_init(0, get_k_ರಾಶಿ_ತುದಿ(0));	\
 	  bsp_cpu_id = 0;			\
 	  ncpus = 1;				\
-	  bsp_finish_booting();			\
-} while(0)
+	  bsp_ಮುಕ್ತಾಯ_booting();			\
+} ಆಗ(0)
 
-extern unsigned char cpuid2apicid[CONFIG_MAX_CPUS];
+ಬಾಹ್ಯ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ cpuid2apicid[CONFIG_MAX_CPUS];
 
-#define barrier()	do { mfence(); } while(0)
+#ವ್ಯಾಖ್ಯಾನಿಸು barrier()	ಮಾಡು { mfence(); } ಆಗ(0)
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif /* __SMP_X86_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __SMP_X86_H__ */
 

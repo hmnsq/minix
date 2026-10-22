@@ -1,18 +1,18 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
-#if USE_PADCONF
+#ಆದರೆ USE_PADCONF
 
 /* get arch specific arch_padconf_set() */
-#include "bsp_padconf.h"
+#ಅನ್ತರ್ಭಾವ "bsp_padconf.h"
 
 /*===========================================================================*
  *                                do_padconf                                 *
  *===========================================================================*/
-int do_padconf(struct proc *caller_ptr, message *m_ptr)
+ಪೂರ್ಣಾಂಕ do_padconf(ರಚನೆ proc *caller_ptr, ಸಂದೇಶ *m_ptr)
 {
-	return bsp_padconf_set(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_MASK,
-	    m_ptr->PADCONF_VALUE);
+	ಹಿಂತಿರುಗಿ bsp_padconf_ಗಣ(m_ptr->PADCONF_PADCONF, m_ptr->PADCONF_ಮುಖವಾಡ,
+	    m_ptr->PADCONF_ಮೌಲ್ಯ);
 }
 
-#endif /* USE_PADCONF */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_PADCONF */

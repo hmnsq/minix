@@ -1,11 +1,11 @@
-#ifndef MB_UTILS_H
-#define MB_UTILS_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ MB_UTILS_H
+#ವ್ಯಾಖ್ಯಾನಿಸು MB_UTILS_H
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-void direct_cls(void);
-void direct_print(const char*);
-void direct_print_char(char);
-int direct_read_char(unsigned char*);
+ಶೂನ್ಯ ನೇರ_cls(ಶೂನ್ಯ);
+ಶೂನ್ಯ ನೇರ_print(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ*);
+ಶೂನ್ಯ ನೇರ_print_char(ಅಕ್ಷರ);
+ಪೂರ್ಣಾಂಕ ನೇರ_read_char(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ*);
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

@@ -8,30 +8,30 @@
  *   m_lsys_krn_sys_settime.nsec
  */
 
-#include "kernel/system.h"
-#include <minix/endpoint.h>
-#include <time.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ <time.h>
 
 /*===========================================================================*
  *				do_settime				     *
  *===========================================================================*/
-int do_settime(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_settime(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
   clock_t newclock;
   int32_t ticks;
   time_t boottime, timediff, timediff_ticks;
 
   /* only realtime can change */
-  if (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
-	return EINVAL;
+  ಆದರೆ (m_ptr->m_lsys_krn_sys_settime.clock_id != CLOCK_REALTIME)
+	ಹಿಂತಿರುಗಿ EINVAL;
 
   /* user just wants to adjtime() */
-  if (m_ptr->m_lsys_krn_sys_settime.now == 0) {
+  ಆದರೆ (m_ptr->m_lsys_krn_sys_settime.now == 0) {
 	/* convert delta value from seconds and nseconds to ticks */
 	ticks = (m_ptr->m_lsys_krn_sys_settime.sec * system_hz) +
 		(m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
-	set_adjtime_delta(ticks);
-	return(OK);
+	ಗಣ_adjtime_delta(ticks);
+	ಹಿಂತಿರುಗಿ(OK);
   } /* else user wants to set the time */
 
   boottime = get_boottime();
@@ -40,19 +40,19 @@ int do_settime(struct proc * caller, message * m_ptr)
   timediff_ticks = timediff * system_hz;
 
   /* prevent a negative value for realtime */
-  if (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
+  ಆದರೆ (m_ptr->m_lsys_krn_sys_settime.sec <= boottime ||
       timediff_ticks < LONG_MIN/2 || timediff_ticks > LONG_MAX/2) {
   	/* boottime was likely wrong, try to correct it. */
-	set_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
-	set_realtime(1);
-	return(OK);
+	ಗಣ_boottime(m_ptr->m_lsys_krn_sys_settime.sec);
+	ಗಣ_realtime(1);
+	ಹಿಂತಿರುಗಿ(OK);
   }
 
   /* calculate the new value of realtime in ticks */
   newclock = timediff_ticks +
       (m_ptr->m_lsys_krn_sys_settime.nsec/(1000000000/system_hz));
 
-  set_realtime(newclock);
+  ಗಣ_realtime(newclock);
 
-  return(OK);
+  ಹಿಂತಿರುಗಿ(OK);
 }

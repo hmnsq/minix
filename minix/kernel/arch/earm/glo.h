@@ -1,9 +1,9 @@
-#ifndef __GLO_ARM_H__
-#define __GLO_ARM_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __GLO_ARM_H__
+#ವ್ಯಾಖ್ಯಾನಿಸು __GLO_ARM_H__
 
-#include "kernel/kernel.h"
-#include "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
 
-EXTERN struct tss_s tss[CONFIG_MAX_CPUS];
+EXTERN ರಚನೆ tss_s tss[CONFIG_MAX_CPUS];
 
-#endif /* __GLO_ARM_H__ */
+#ಆದರೆ_ಅಂತ್ಯ /* __GLO_ARM_H__ */

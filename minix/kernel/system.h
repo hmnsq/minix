@@ -27,184 +27,184 @@
  *   Feb 02, 2004   created SYS_DEVIO to support drivers  (Jorrit N. Herder) 
  */ 
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SYSTEM_H
+#ವ್ಯಾಖ್ಯಾನಿಸು SYSTEM_H
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-int do_exec(struct proc * caller, message *m_ptr);
-#if ! USE_EXEC
-#define do_exec NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_exec(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_EXEC
+#ವ್ಯಾಖ್ಯಾನಿಸು do_exec ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_fork(struct proc * caller, message *m_ptr);
-#if ! USE_FORK
-#define do_fork NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_fork(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_FORK
+#ವ್ಯಾಖ್ಯಾನಿಸು do_fork ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_clear(struct proc * caller, message *m_ptr);
-#if ! USE_CLEAR
-#define do_clear NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_clear(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_CLEAR
+#ವ್ಯಾಖ್ಯಾನಿಸು do_clear ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_trace(struct proc * caller, message *m_ptr);
-#if ! USE_TRACE
-#define do_trace NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_trace(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_TRACE
+#ವ್ಯಾಖ್ಯಾನಿಸು do_trace ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_runctl(struct proc * caller, message *m_ptr);
-#if ! USE_RUNCTL
-#define do_runctl NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_runctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_RUNCTL
+#ವ್ಯಾಖ್ಯಾನಿಸು do_runctl ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_update(struct proc * caller, message *m_ptr);
-#if ! USE_UPDATE
-#define do_update NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_update(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_UPDATE
+#ವ್ಯಾಖ್ಯಾನಿಸು do_update ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_exit(struct proc * caller, message *m_ptr);
-#if ! USE_EXIT
-#define do_exit NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_exit(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_EXIT
+#ವ್ಯಾಖ್ಯಾನಿಸು do_exit ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_copy(struct proc * caller, message *m_ptr);
-#define do_vircopy 	do_copy
-#if ! (USE_VIRCOPY || USE_PHYSCOPY)
-#define do_copy NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_copy(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ವ್ಯಾಖ್ಯಾನಿಸು do_vircopy 	do_copy
+#ಆದರೆ ! (USE_VIRCOPY || USE_PHYSCOPY)
+#ವ್ಯಾಖ್ಯಾನಿಸು do_copy ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_umap(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP
-#define do_umap NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_umap(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_UMAP
+#ವ್ಯಾಖ್ಯಾನಿಸು do_umap ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_umap_remote(struct proc * caller, message *m_ptr);
-#if ! USE_UMAP_REMOTE
-#define do_umap_remote NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_umap_remote(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_UMAP_REMOTE
+#ವ್ಯಾಖ್ಯಾನಿಸು do_umap_remote ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_vumap(struct proc * caller, message *m_ptr);
-#if ! USE_VUMAP
-#define do_vumap NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_vumap(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_VUMAP
+#ವ್ಯಾಖ್ಯಾನಿಸು do_vumap ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_memset(struct proc * caller, message *m_ptr);
-#if ! USE_MEMSET
-#define do_memset NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_memset(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_MEMSET
+#ವ್ಯಾಖ್ಯಾನಿಸು do_memset ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_abort(struct proc * caller, message *m_ptr);
-#if ! USE_ABORT
-#define do_abort NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_abort(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_ABORT
+#ವ್ಯಾಖ್ಯಾನಿಸು do_abort ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_getinfo(struct proc * caller, message *m_ptr);
-#if ! USE_GETINFO
-#define do_getinfo NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_getinfo(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_GETINFO
+#ವ್ಯಾಖ್ಯಾನಿಸು do_getinfo ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_privctl(struct proc * caller, message *m_ptr);
-#if ! USE_PRIVCTL
-#define do_privctl NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_privctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_PRIVCTL
+#ವ್ಯಾಖ್ಯಾನಿಸು do_privctl ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_irqctl(struct proc * caller, message *m_ptr);
-#if ! USE_IRQCTL
-#define do_irqctl NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_irqctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_IRQCTL
+#ವ್ಯಾಖ್ಯಾನಿಸು do_irqctl ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_devio(struct proc * caller, message *m_ptr);
-#if ! USE_DEVIO
-#define do_devio NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_devio(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_DEVIO
+#ವ್ಯಾಖ್ಯಾನಿಸು do_devio ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_vdevio(struct proc * caller, message *m_ptr);
-#if ! USE_VDEVIO
-#define do_vdevio NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_vdevio(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_VDEVIO
+#ವ್ಯಾಖ್ಯಾನಿಸು do_vdevio ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_sdevio(struct proc * caller, message *m_ptr);
-#if ! USE_SDEVIO
-#define do_sdevio NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_sdevio(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_SDEVIO
+#ವ್ಯಾಖ್ಯಾನಿಸು do_sdevio ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_kill(struct proc * caller, message *m_ptr);
-#if ! USE_KILL
-#define do_kill NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_kill(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_KILL
+#ವ್ಯಾಖ್ಯಾನಿಸು do_kill ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_getksig(struct proc * caller, message *m_ptr);
-#if ! USE_GETKSIG
-#define do_getksig NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_getksig(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_GETKSIG
+#ವ್ಯಾಖ್ಯಾನಿಸು do_getksig ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_endksig(struct proc * caller, message *m_ptr);
-#if ! USE_ENDKSIG
-#define do_endksig NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_endksig(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_ENDKSIG
+#ವ್ಯಾಖ್ಯಾನಿಸು do_endksig ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_sigsend(struct proc * caller, message *m_ptr);
-#if ! USE_SIGSEND
-#define do_sigsend NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_sigsend(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_SIGSEND
+#ವ್ಯಾಖ್ಯಾನಿಸು do_sigsend ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_sigreturn(struct proc * caller, message *m_ptr);
-#if ! USE_SIGRETURN
-#define do_sigreturn NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_sigreturn(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_SIGRETURN
+#ವ್ಯಾಖ್ಯಾನಿಸು do_sigreturn ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_times(struct proc * caller, message *m_ptr);
-#if ! USE_TIMES
-#define do_times NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_times(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_TIMES
+#ವ್ಯಾಖ್ಯಾನಿಸು do_times ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_setalarm(struct proc * caller, message *m_ptr);
-#if ! USE_SETALARM
-#define do_setalarm NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_setalarm(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_SETALARM
+#ವ್ಯಾಖ್ಯಾನಿಸು do_setalarm ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_stime(struct proc * caller, message *m_ptr);
-int do_settime(struct proc * caller, message *m_ptr);
+ಪೂರ್ಣಾಂಕ do_stime(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_settime(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
 
-int do_vtimer(struct proc * caller, message *m_ptr);
-#if ! USE_VTIMER
-#define do_vtimer NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_vtimer(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_VTIMER
+#ವ್ಯಾಖ್ಯಾನಿಸು do_vtimer ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_safecopy_to(struct proc * caller, message *m_ptr);
-int do_safecopy_from(struct proc * caller, message *m_ptr);
-int do_vsafecopy(struct proc * caller, message *m_ptr);
-int do_iopenable(struct proc * caller, message *m_ptr);
-int do_vmctl(struct proc * caller, message *m_ptr);
-int do_setgrant(struct proc * caller, message *m_ptr);
-int do_readbios(struct proc * caller, message *m_ptr);
+ಪೂರ್ಣಾಂಕ do_safecopy_ಗಮ್ಯ(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_safecopy_from(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_vsafecopy(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_iopenable(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_vmctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_setgrant(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_readbios(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
 
-int do_safememset(struct proc * caller, message *m_ptr);
+ಪೂರ್ಣಾಂಕ do_safememset(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
 
-int do_sprofile(struct proc * caller, message *m_ptr);
-#if ! SPROFILE
-#define do_sprofile NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_sprofile(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! SPROFILE
+#ವ್ಯಾಖ್ಯಾನಿಸು do_sprofile ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_getmcontext(struct proc * caller, message *m_ptr);
-int do_setmcontext(struct proc * caller, message *m_ptr);
-#if ! USE_MCONTEXT
-#define do_getmcontext NULL
-#define do_setmcontext NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_getmcontext(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_setmcontext(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_MCONTEXT
+#ವ್ಯಾಖ್ಯಾನಿಸು do_getmcontext ಖಾಲಿ
+#ವ್ಯಾಖ್ಯಾನಿಸು do_setmcontext ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_schedule(struct proc * caller, message *m_ptr);
-int do_schedctl(struct proc * caller, message *m_ptr);
+ಪೂರ್ಣಾಂಕ do_ವೇಳಾಪಟ್ಟಿ(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+ಪೂರ್ಣಾಂಕ do_schedctl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
 
-int do_statectl(struct proc * caller, message *m_ptr);
-#if ! USE_STATECTL
-#define do_statectl NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_statectl(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_STATECTL
+#ವ್ಯಾಖ್ಯಾನಿಸು do_statectl ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-int do_padconf(struct proc * caller, message *m_ptr);
-#if ! USE_PADCONF
-#define do_padconf NULL
-#endif
+ಪೂರ್ಣಾಂಕ do_padconf(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr);
+#ಆದರೆ ! USE_PADCONF
+#ವ್ಯಾಖ್ಯಾನಿಸು do_padconf ಖಾಲಿ
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif	/* SYSTEM_H */
+#ಆದರೆ_ಅಂತ್ಯ	/* SYSTEM_H */
 

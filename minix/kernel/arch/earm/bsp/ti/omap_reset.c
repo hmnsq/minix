@@ -1,73 +1,73 @@
-#include <assert.h>
-#include <sys/types.h>
-#include <machine/cpu.h>
-#include <minix/type.h>
-#include <minix/board.h>
-#include <io.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <machine/cpu.h>
+#ಅನ್ತರ್ಭಾವ <minix/type.h>
+#ಅನ್ತರ್ಭಾವ <minix/board.h>
+#ಅನ್ತರ್ಭಾವ <io.h>
 
-#include "kernel/kernel.h"
-#include "kernel/proc.h"
-#include "kernel/vm.h"
-#include "kernel/proto.h"
-#include "arch_proto.h"
-#include "bsp_reset.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/proc.h"
+#ಅನ್ತರ್ಭಾವ "kernel/vm.h"
+#ಅನ್ತರ್ಭಾವ "kernel/proto.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "bsp_reset.h"
 
-#include "omap_timer_registers.h"
-#include "omap_rtc.h"
+#ಅನ್ತರ್ಭಾವ "omap_timer_registers.h"
+#ಅನ್ತರ್ಭಾವ "omap_rtc.h"
 
-#define AM335X_CM_BASE 0x44E00000
-#define AM335X_CM_SIZE 0x1000
+#ವ್ಯಾಖ್ಯಾನಿಸು AM335_X_CM_ತಳ 0x44E00000
+#ವ್ಯಾಖ್ಯಾನಿಸು AM335_X_CM_ಗಾತ್ರ 0x1000
 
-#define AM335X_PRM_DEVICE_OFFSET 0xf00
-#define AM335X_PRM_RSTCTRL_REG 0x00
-#define AM335X_RST_GLOBAL_WARM_SW_BIT 0
+#ವ್ಯಾಖ್ಯಾನಿಸು AM335_X_PRM_DEVICE_ಸ್ಥಾನಾಂತರ 0xf00
+#ವ್ಯಾಖ್ಯಾನಿಸು AM335X_PRM_RSTCTRL_REG 0x00
+#ವ್ಯಾಖ್ಯಾನಿಸು AM335_X_RST_GLOBAL_WARM_SW_ಬಿಟ್ 0
 
-#define DM37XX_CM_BASE 0x48307000
-#define DM37XX_CM_SIZE 0x1000
-#define DM37XX_PRM_RSTCTRL_REG 0x250
-#define DM37XX_RST_DPLL3_BIT 2
+#ವ್ಯಾಖ್ಯಾನಿಸು DM37_XX_CM_ತಳ 0x48307000
+#ವ್ಯಾಖ್ಯಾನಿಸು DM37_XX_CM_ಗಾತ್ರ 0x1000
+#ವ್ಯಾಖ್ಯಾನಿಸು DM37XX_PRM_RSTCTRL_REG 0x250
+#ವ್ಯಾಖ್ಯಾನಿಸು DM37_XX_RST_DPLL3_ಬಿಟ್ 2
 
-struct omap_reset
+ರಚನೆ omap_reset
 {
-	vir_bytes base;
-	vir_bytes size;
+	vir_ಬೈಟುಗಳು ತಳ;
+	vir_ಬೈಟುಗಳು ಗಾತ್ರ_2;
 };
 
-static struct omap_reset omap_reset;
+ಸ್ಥಿರ ರಚನೆ omap_reset omap_reset;
 
-static kern_phys_map reset_phys_map;
+ಸ್ಥಿರ kern_phys_map reset_phys_map;
 
-void
-bsp_reset_init(void)
+ಶೂನ್ಯ
+bsp_reset_init(ಶೂನ್ಯ)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		omap_reset.base = DM37XX_CM_BASE;
-		omap_reset.size = DM37XX_CM_SIZE;
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		omap_reset.base = AM335X_CM_BASE;
-		omap_reset.size = AM335X_CM_SIZE;
+	ಆದರೆ (BOARD_IS_BBXM(machine.board_id)) {
+		omap_reset.ತಳ = DM37_XX_CM_ತಳ;
+		omap_reset.ಗಾತ್ರ_2 = DM37_XX_CM_ಗಾತ್ರ;
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (BOARD_IS_BB(machine.board_id)) {
+		omap_reset.ತಳ = AM335_X_CM_ತಳ;
+		omap_reset.ಗಾತ್ರ_2 = AM335_X_CM_ಗಾತ್ರ;
 	}
 
-	kern_phys_map_ptr(omap_reset.base, omap_reset.size,
+	kern_phys_map_ptr(omap_reset.ತಳ, omap_reset.ಗಾತ್ರ_2,
 	    VMMF_UNCACHED | VMMF_WRITE,
-	    &reset_phys_map, (vir_bytes) & omap_reset.base);
+	    &reset_phys_map, (vir_ಬೈಟುಗಳು) & omap_reset.ತಳ);
 }
 
-void
-bsp_reset(void)
+ಶೂನ್ಯ
+bsp_reset(ಶೂನ್ಯ)
 {
-	if (BOARD_IS_BBXM(machine.board_id)) {
-		mmio_set((omap_reset.base + DM37XX_PRM_RSTCTRL_REG),
-		    (1 << DM37XX_RST_DPLL3_BIT));
-	} else if (BOARD_IS_BB(machine.board_id)) {
-		mmio_set((omap_reset.base + AM335X_PRM_DEVICE_OFFSET +
+	ಆದರೆ (BOARD_IS_BBXM(machine.board_id)) {
+		mmio_ಗಣ((omap_reset.ತಳ + DM37XX_PRM_RSTCTRL_REG),
+		    (1 << DM37_XX_RST_DPLL3_ಬಿಟ್));
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (BOARD_IS_BB(machine.board_id)) {
+		mmio_ಗಣ((omap_reset.ತಳ + AM335_X_PRM_DEVICE_ಸ್ಥಾನಾಂತರ +
 			AM335X_PRM_RSTCTRL_REG),
-		    (1 << AM335X_RST_GLOBAL_WARM_SW_BIT));
+		    (1 << AM335_X_RST_GLOBAL_WARM_SW_ಬಿಟ್));
 	}
 }
 
-void
-bsp_poweroff(void)
+ಶೂನ್ಯ
+bsp_poweroff(ಶೂನ್ಯ)
 {
 
 /*
@@ -77,24 +77,24 @@ bsp_poweroff(void)
  * The only way to pull the pin low is via ALARM2 (see TRM 20.3.3.8).
  * At this point PM should have already signaled readclock to set the alarm.
  */
-	if (BOARD_IS_BB(machine.board_id)) {
+	ಆದರೆ (BOARD_IS_BB(machine.board_id)) {
 		/* rtc was frozen to prevent premature power-off, unfreeze it
 		 * now */
-		omap3_rtc_run();
+		omap3_rtc_ಸತತ();
 
 		/* wait for the alarm to go off and PMIC to disable power to
 		 * SoC */
-		while (1);
+		ಆಗ (1);
 	}
 }
 
-void bsp_disable_watchdog(void)
+ಶೂನ್ಯ bsp_disable_watchdog(ಶೂನ್ಯ)
 {
-        if(BOARD_IS_BB(machine.board_id)) {
-		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0xAAAA);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
-		mmio_write(AM335X_WDT_BASE+AM335X_WDT_WSPR, 0x5555);
-		while(mmio_read(AM335X_WDT_BASE+AM335X_WDT_WWPS) != 0) ;
+        ಆದರೆ(BOARD_IS_BB(machine.board_id)) {
+		mmio_write(AM335_X_WDT_ತಳ+AM335X_WDT_WSPR, 0xAAAA);
+		ಆಗ(mmio_read(AM335_X_WDT_ತಳ+AM335X_WDT_WWPS) != 0) ;
+		mmio_write(AM335_X_WDT_ತಳ+AM335X_WDT_WSPR, 0x5555);
+		ಆಗ(mmio_read(AM335_X_WDT_ತಳ+AM335X_WDT_WWPS) != 0) ;
 	}
 }
 

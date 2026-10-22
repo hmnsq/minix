@@ -1,46 +1,46 @@
-#include "kernel/system.h"
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
 /*===========================================================================*
  *			          do_schedctl			     *
  *===========================================================================*/
-int do_schedctl(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_schedctl(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
-	struct proc *p;
+	ರಚನೆ proc *p;
 	uint32_t flags;
-	int priority, quantum, cpu;
-	int proc_nr;
-	int r;
+	ಪೂರ್ಣಾಂಕ ಆದ್ಯತೆ, ಕಾಲಾಂಶ, cpu;
+	ಪೂರ್ಣಾಂಕ proc_nr;
+	ಪೂರ್ಣಾಂಕ r;
 
 	/* check parameter validity */
 	flags = m_ptr->m_lsys_krn_schedctl.flags;
-	if (flags & ~SCHEDCTL_FLAG_KERNEL) {
-		printf("do_schedctl: flags 0x%x invalid, caller=%d\n", 
+	ಆದರೆ (flags & ~SCHEDCTL_FLAG_KERNEL) {
+		ಬರೆ("do_schedctl: flags 0x%x invalid, caller=%d\n", 
 			flags, caller - proc);
-		return EINVAL;
+		ಹಿಂತಿರುಗಿ EINVAL;
 	}
 
-	if (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
-		return EINVAL;
+	ಆದರೆ (!isokendpt(m_ptr->m_lsys_krn_schedctl.endpoint, &proc_nr))
+		ಹಿಂತಿರುಗಿ EINVAL;
 
 	p = proc_addr(proc_nr);
 
-	if ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
+	ಆದರೆ ((flags & SCHEDCTL_FLAG_KERNEL) == SCHEDCTL_FLAG_KERNEL) {
 		/* the kernel becomes the scheduler and starts 
 		 * scheduling the process.
 		 */
-		priority = m_ptr->m_lsys_krn_schedctl.priority;
-		quantum = m_ptr->m_lsys_krn_schedctl.quantum;
+		ಆದ್ಯತೆ = m_ptr->m_lsys_krn_schedctl.ಆದ್ಯತೆ;
+		ಕಾಲಾಂಶ = m_ptr->m_lsys_krn_schedctl.ಕಾಲಾಂಶ;
 		cpu = m_ptr->m_lsys_krn_schedctl.cpu;
 
 		/* Try to schedule the process. */
-		if((r = sched_proc(p, priority, quantum, cpu, FALSE)) != OK)
-			return r;
-		p->p_scheduler = NULL;
-	} else {
+		ಆದರೆ((r = sched_proc(p, ಆದ್ಯತೆ, ಕಾಲಾಂಶ, cpu, FALSE)) != OK)
+			ಹಿಂತಿರುಗಿ r;
+		p->p_scheduler = ಖಾಲಿ;
+	} ಇಲ್ಲದಿದ್ದರೆ {
 		/* the caller becomes the scheduler */
 		p->p_scheduler = caller;
 	}
 
-	return(OK);
+	ಹಿಂತಿರುಗಿ(OK);
 }

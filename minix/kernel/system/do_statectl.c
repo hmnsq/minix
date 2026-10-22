@@ -5,49 +5,49 @@
  *   m_lsys_krn_sys_statectl.request	(state control request)
  */
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
-#if USE_STATECTL
+#ಆದರೆ USE_STATECTL
 
 /*===========================================================================*
  *			          do_statectl				     *
  *===========================================================================*/
-int do_statectl(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_statectl(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
 /* Handle sys_statectl(). A process has issued a state control request. */
 
-  switch(m_ptr->m_lsys_krn_sys_statectl.request)
+  ಆಯ್ಕೆ(m_ptr->m_lsys_krn_sys_statectl.request)
   {
-  case SYS_STATE_CLEAR_IPC_REFS:
+  ಸ್ಥಿತಿ SYS_STATE_CLEAR_IPC_REFS:
 	/* Clear IPC references for all the processes communicating
 	 * with the caller.
 	 */
 	clear_ipc_refs(caller, EDEADSRCDST);
-	return(OK);
-  case SYS_STATE_SET_STATE_TABLE:
+	ಹಿಂತಿರುಗಿ(OK);
+  ಸ್ಥಿತಿ SYS_STATE_ಗಣ_STATE_ಕೋಷ್ಟಕ:
 	/* Set state table for the caller. */
-	priv(caller)->s_state_table = (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address;
-	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.length;
-	return(OK);
-  case SYS_STATE_ADD_IPC_BL_FILTER:
+	priv(caller)->s_state_ಕೋಷ್ಟಕ = (vir_ಬೈಟುಗಳು) m_ptr->m_lsys_krn_sys_statectl.ವಿಳಾಸ;
+	priv(caller)->s_state_entries = m_ptr->m_lsys_krn_sys_statectl.ಉದ್ದಳತೆ;
+	ಹಿಂತಿರುಗಿ(OK);
+  ಸ್ಥಿತಿ SYS_STATE_ಕೂಡಿಸು_IPC_BL_FILTER:
 	/* Add an IPC blacklist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_BLACKLIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_ADD_IPC_WL_FILTER:
+	ಹಿಂತಿರುಗಿ ಕೂಡಿಸು_ipc_filter(caller, IPCF_BLACKLIST,
+	    (vir_ಬೈಟುಗಳು) m_ptr->m_lsys_krn_sys_statectl.ವಿಳಾಸ,
+	    m_ptr->m_lsys_krn_sys_statectl.ಉದ್ದಳತೆ);
+  ಸ್ಥಿತಿ SYS_STATE_ಕೂಡಿಸು_IPC_WL_FILTER:
 	/* Add an IPC whitelist filter for the caller. */
-	return add_ipc_filter(caller, IPCF_WHITELIST,
-	    (vir_bytes) m_ptr->m_lsys_krn_sys_statectl.address,
-	    m_ptr->m_lsys_krn_sys_statectl.length);
-  case SYS_STATE_CLEAR_IPC_FILTERS:
+	ಹಿಂತಿರುಗಿ ಕೂಡಿಸು_ipc_filter(caller, IPCF_WHITELIST,
+	    (vir_ಬೈಟುಗಳು) m_ptr->m_lsys_krn_sys_statectl.ವಿಳಾಸ,
+	    m_ptr->m_lsys_krn_sys_statectl.ಉದ್ದಳತೆ);
+  ಸ್ಥಿತಿ SYS_STATE_CLEAR_IPC_FILTERS:
 	/* Clear any IPC filter for the caller. */
 	clear_ipc_filters(caller);
-	return OK;
-  default:
-	printf("do_statectl: bad request %d\n",
+	ಹಿಂತಿರುಗಿ OK;
+  ಪೂರ್ವನಿಯೋಜಿತ:
+	ಬರೆ("do_statectl: bad request %d\n",
 		m_ptr->m_lsys_krn_sys_statectl.request);
-	return EINVAL;
+	ಹಿಂತಿರುಗಿ EINVAL;
   }
 }
 
-#endif /* USE_STATECTL */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_STATECTL */

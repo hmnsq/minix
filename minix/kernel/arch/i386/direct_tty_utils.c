@@ -1,130 +1,130 @@
 
-#include <minix/minlib.h>
-#include <minix/cpufeature.h>
-#include <machine/partition.h>
-#include "string.h"
-#include "direct_utils.h"
-#include "serial.h"
-#include "glo.h"
+#ಅನ್ತರ್ಭಾವ <minix/minlib.h>
+#ಅನ್ತರ್ಭಾವ <minix/cpufeature.h>
+#ಅನ್ತರ್ಭಾವ <machine/partition.h>
+#ಅನ್ತರ್ಭಾವ "string.h"
+#ಅನ್ತರ್ಭಾವ "direct_utils.h"
+#ಅನ್ತರ್ಭಾವ "serial.h"
+#ಅನ್ತರ್ಭಾವ "glo.h"
 
 /* Give non-zero values to avoid them in BSS */
-static int print_line = 1, print_col = 1;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ print_ಸಾಲು = 1, print_ಲಂಬಸಾಲು = 1;
 
-#include <sys/video.h>
+#ಅನ್ತರ್ಭಾವ <sys/video.h>
 
-extern char *video_mem;
-#define VIDOFFSET(line, col) ((line) * MULTIBOOT_CONSOLE_COLS * 2 + (col) * 2)
-#define VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_LINES-1,MULTIBOOT_CONSOLE_COLS-1)
+ಬಾಹ್ಯ ಅಕ್ಷರ *video_mem;
+#ವ್ಯಾಖ್ಯಾನಿಸು VIDOFFSET(ಸಾಲು, ಲಂಬಸಾಲು) ((ಸಾಲು) * MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ * 2 + (ಲಂಬಸಾಲು) * 2)
+#ವ್ಯಾಖ್ಯಾನಿಸು VIDSIZE VIDOFFSET(MULTIBOOT_CONSOLE_ಸಾಲುಗಳು-1,MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ-1)
 
-void direct_put_char(char c, int line, int col) 
+ಶೂನ್ಯ ನೇರ_put_char(ಅಕ್ಷರ c, ಪೂರ್ಣಾಂಕ ಸಾಲು, ಪೂರ್ಣಾಂಕ ಲಂಬಸಾಲು) 
 {
-	int offset = VIDOFFSET(line, col);
-	video_mem[offset] = c;
-	video_mem[offset+1] = 0x07;	/* grey-on-black */
+	ಪೂರ್ಣಾಂಕ ಸ್ಥಾನಾಂತರ = VIDOFFSET(ಸಾಲು, ಲಂಬಸಾಲು);
+	video_mem[ಸ್ಥಾನಾಂತರ] = c;
+	video_mem[ಸ್ಥಾನಾಂತರ+1] = 0x07;	/* grey-on-black */
 }
 
-static char direct_get_char(int line, int col) 
+ಸ್ಥಿರ ಅಕ್ಷರ ನೇರ_get_char(ಪೂರ್ಣಾಂಕ ಸಾಲು, ಪೂರ್ಣಾಂಕ ಲಂಬಸಾಲು) 
 {
-	return video_mem[VIDOFFSET(line, col)];
+	ಹಿಂತಿರುಗಿ video_mem[VIDOFFSET(ಸಾಲು, ಲಂಬಸಾಲು)];
 }
 
-void direct_cls(void)
+ಶೂನ್ಯ ನೇರ_cls(ಶೂನ್ಯ)
 {
 	/* Clear screen */
-	int i,j;
+	ಪೂರ್ಣಾಂಕ i,j;
 
-	for(i = 0; i < MULTIBOOT_CONSOLE_COLS; i++)
-		for(j = 0; j < MULTIBOOT_CONSOLE_LINES; j++)
-			direct_put_char(' ', j, i);
+	ಗಾಗಿ(i = 0; i < MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ; i++)
+		ಗಾಗಿ(j = 0; j < MULTIBOOT_CONSOLE_ಸಾಲುಗಳು; j++)
+			ನೇರ_put_char(' ', j, i);
 
-	print_line = print_col = 0;
+	print_ಸಾಲು = print_ಲಂಬಸಾಲು = 0;
 
 	/* Tell video hardware origin is 0. */
-	outb(C_6845+INDEX, VID_ORG);
-	outb(C_6845+DATA, 0);
-	outb(C_6845+INDEX, VID_ORG+1);
-	outb(C_6845+DATA, 0);
+	outb(C_6845+ಸೂಚ್ಯಂಕ_2, VID_ORG);
+	outb(C_6845+ದತ್ತಾಂಶ_2, 0);
+	outb(C_6845+ಸೂಚ್ಯಂಕ_2, VID_ORG+1);
+	outb(C_6845+ದತ್ತಾಂಶ_2, 0);
 }
 
-static void direct_scroll_up(int lines) 
+ಸ್ಥಿರ ಶೂನ್ಯ ನೇರ_scroll_ಮೇಲೆ(ಪೂರ್ಣಾಂಕ ಸಾಲುಗಳು) 
 {
-	int i, j;
-	for (i = 0; i < MULTIBOOT_CONSOLE_LINES; i++ ) {
-		for (j = 0; j < MULTIBOOT_CONSOLE_COLS; j++ ) {
-			char c = 0;
-			if(i < MULTIBOOT_CONSOLE_LINES-lines)
-				c = direct_get_char(i + lines, j);
-			direct_put_char(c, i, j);
+	ಪೂರ್ಣಾಂಕ i, j;
+	ಗಾಗಿ (i = 0; i < MULTIBOOT_CONSOLE_ಸಾಲುಗಳು; i++ ) {
+		ಗಾಗಿ (j = 0; j < MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ; j++ ) {
+			ಅಕ್ಷರ c = 0;
+			ಆದರೆ(i < MULTIBOOT_CONSOLE_ಸಾಲುಗಳು-ಸಾಲುಗಳು)
+				c = ನೇರ_get_char(i + ಸಾಲುಗಳು, j);
+			ನೇರ_put_char(c, i, j);
 		}
 	}
-	print_line-= lines;
+	print_ಸಾಲು-= ಸಾಲುಗಳು;
 }
 
-void direct_print_char(char c)
+ಶೂನ್ಯ ನೇರ_print_char(ಅಕ್ಷರ c)
 {
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	ಆಗ (print_ಸಾಲು >= MULTIBOOT_CONSOLE_ಸಾಲುಗಳು)
+		ನೇರ_scroll_ಮೇಲೆ(1);
 
-#define TABWIDTH 8
-	if(c == '\t') {
-		if(print_col >= MULTIBOOT_CONSOLE_COLS - TABWIDTH) {
+#ವ್ಯಾಖ್ಯಾನಿಸು TABWIDTH 8
+	ಆದರೆ(c == '\t') {
+		ಆದರೆ(print_ಲಂಬಸಾಲು >= MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ - TABWIDTH) {
 			c = '\n';
-		} else {
-			do {
-				direct_put_char(' ', print_line, print_col++);
-			} while(print_col % TABWIDTH);
-			return;
+		} ಇಲ್ಲದಿದ್ದರೆ {
+			ಮಾಡು {
+				ನೇರ_put_char(' ', print_ಸಾಲು, print_ಲಂಬಸಾಲು++);
+			} ಆಗ(print_ಲಂಬಸಾಲು % TABWIDTH);
+			ಹಿಂತಿರುಗಿ;
 		}
 	}
 
-	if (c == '\n') {
-		while (print_col < MULTIBOOT_CONSOLE_COLS)
-			direct_put_char(' ', print_line, print_col++);
-		print_line++;
-		print_col = 0;
-		return;
+	ಆದರೆ (c == '\n') {
+		ಆಗ (print_ಲಂಬಸಾಲು < MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ)
+			ನೇರ_put_char(' ', print_ಸಾಲು, print_ಲಂಬಸಾಲು++);
+		print_ಸಾಲು++;
+		print_ಲಂಬಸಾಲು = 0;
+		ಹಿಂತಿರುಗಿ;
 	}
 
-	direct_put_char(c, print_line, print_col++);
+	ನೇರ_put_char(c, print_ಸಾಲು, print_ಲಂಬಸಾಲು++);
 
-	if (print_col >= MULTIBOOT_CONSOLE_COLS) {
-		print_line++;
-		print_col = 0;
+	ಆದರೆ (print_ಲಂಬಸಾಲು >= MULTIBOOT_CONSOLE_ಲಂಬಸಾಲು_ಸಂಖ್ಯೆ) {
+		print_ಸಾಲು++;
+		print_ಲಂಬಸಾಲು = 0;
 	}
 
-	while (print_line >= MULTIBOOT_CONSOLE_LINES)
-		direct_scroll_up(1);
+	ಆಗ (print_ಸಾಲು >= MULTIBOOT_CONSOLE_ಸಾಲುಗಳು)
+		ನೇರ_scroll_ಮೇಲೆ(1);
 }
 
-void direct_print(const char *str)
+ಶೂನ್ಯ ನೇರ_print(ಸ್ಥಿರಾಂಕ ಅಕ್ಷರ *str)
 {
-	while (*str) {
-		direct_print_char(*str);
+	ಆಗ (*str) {
+		ನೇರ_print_char(*str);
 		str++;
 	}
 }
 
 /* Standard and AT keyboard.  (PS/2 MCA implies AT throughout.) */
-#define KEYBD		0x60	/* I/O port for keyboard data */
-#define KB_STATUS	0x64	/* I/O port for status on AT */
-#define KB_OUT_FULL	0x01	/* status bit set when keypress char pending */
-#define KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
+#ವ್ಯಾಖ್ಯಾನಿಸು KEYBD		0x60	/* I/O port for keyboard data */
+#ವ್ಯಾಖ್ಯಾನಿಸು KB_ಸ್ಥಿತಿ	0x64	/* I/O port for status on AT */
+#ವ್ಯಾಖ್ಯಾನಿಸು KB_ಹೊರಹೋಗು_ತುಂಬಿದ	0x01	/* status bit set when keypress char pending */
+#ವ್ಯಾಖ್ಯಾನಿಸು KB_AUX_BYTE	0x20	/* Auxiliary Device Output Buffer Full */
 
-int direct_read_char(unsigned char *ch)
+ಪೂರ್ಣಾಂಕ ನೇರ_read_char(ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ *ch)
 {
-	unsigned long sb;
+	ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ sb;
 
-	sb = inb(KB_STATUS);
+	sb = inb(KB_ಸ್ಥಿತಿ);
 
-	if (!(sb & KB_OUT_FULL)) {
-		return 0;
+	ಆದರೆ (!(sb & KB_ಹೊರಹೋಗು_ತುಂಬಿದ)) {
+		ಹಿಂತಿರುಗಿ 0;
 	}
 
 	inb(KEYBD);
 
-	if (!(sb & KB_AUX_BYTE))
-		return 1;
+	ಆದರೆ (!(sb & KB_AUX_BYTE))
+		ಹಿಂತಿರುಗಿ 1;
 
-	return 0;
+	ಹಿಂತಿರುಗಿ 0;
 }
 

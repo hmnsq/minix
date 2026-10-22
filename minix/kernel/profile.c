@@ -6,29 +6,29 @@
  *   14 Aug, 2006   Created, (Rogier Meurs)
  */
 
-#include "kernel/kernel.h"
+#ಅನ್ತರ್ಭಾವ "kernel/kernel.h"
 
-#if SPROFILE
+#ಆದರೆ SPROFILE
 
-#include <string.h>
-#include "watchdog.h"
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ "watchdog.h"
 
-char sprof_sample_buffer[SAMPLE_BUFFER_SIZE];
+ಅಕ್ಷರ sprof_sample_ಬಫರ್[SAMPLE_ಬಫರ್_ಗಾತ್ರ];
 
 /* Function prototype for the profiling clock handler. */ 
-static int profile_clock_handler(irq_hook_t *hook);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ profile_clock_handler(irq_hook_t *hook);
 
 /* A hook for the profiling clock interrupt handler. */
-static irq_hook_t profile_clock_hook;
+ಸ್ಥಿರ irq_hook_t profile_clock_hook;
 
 /*===========================================================================*
  *			init_profile_clock				     *
  *===========================================================================*/
-void init_profile_clock(u32_t freq)
+ಶೂನ್ಯ init_profile_clock(u32_t freq)
 {
-  int irq;
+  ಪೂರ್ಣಾಂಕ irq;
 
-  if((irq = arch_init_profile_clock(freq)) >= 0) {
+  ಆದರೆ((irq = arch_init_profile_clock(freq)) >= 0) {
 	/* Register interrupt handler for statistical system profiling.  */
 	profile_clock_hook.proc_nr_e = CLOCK;
 	put_irq_handler(&profile_clock_hook, irq, profile_clock_handler);
@@ -39,7 +39,7 @@ void init_profile_clock(u32_t freq)
 /*===========================================================================*
  *			profile_clock_stop				     *
  *===========================================================================*/
-void stop_profile_clock(void)
+ಶೂನ್ಯ stop_profile_clock(ಶೂನ್ಯ)
 {
   arch_stop_profile_clock();
 
@@ -48,110 +48,110 @@ void stop_profile_clock(void)
   rm_irq_handler(&profile_clock_hook);
 }
 
-static void sprof_save_sample(struct proc * p, void * pc)
+ಸ್ಥಿರ ಶೂನ್ಯ sprof_save_sample(ರಚನೆ proc * p, ಶೂನ್ಯ * pc)
 {
-	struct sprof_sample *s;
+	ರಚನೆ sprof_sample *s;
 
-	s = (struct sprof_sample *) (sprof_sample_buffer + sprof_info.mem_used);
+	s = (ರಚನೆ sprof_sample *) (sprof_sample_ಬಫರ್ + sprof_info.mem_ಬಳಸಿದ);
 
 	s->proc = p->p_endpoint;
 	s->pc = pc;
 
-	sprof_info.mem_used += sizeof(struct sprof_sample);
+	sprof_info.mem_ಬಳಸಿದ += ಗಾತ್ರ(ರಚನೆ sprof_sample);
 }
 
-static void sprof_save_proc(struct proc * p)
+ಸ್ಥಿರ ಶೂನ್ಯ sprof_save_proc(ರಚನೆ proc * p)
 {
-	struct sprof_proc * s;
+	ರಚನೆ sprof_proc * s;
 
-	s = (struct sprof_proc *) (sprof_sample_buffer + sprof_info.mem_used);
+	s = (ರಚನೆ sprof_proc *) (sprof_sample_ಬಫರ್ + sprof_info.mem_ಬಳಸಿದ);
 
 	s->proc = p->p_endpoint;
 	strcpy(s->name, p->p_name);
 
-	sprof_info.mem_used += sizeof(struct sprof_proc);
+	sprof_info.mem_ಬಳಸಿದ += ಗಾತ್ರ(ರಚನೆ sprof_proc);
 }
 
-static void profile_sample(struct proc * p, void * pc)
+ಸ್ಥಿರ ಶೂನ್ಯ profile_sample(ರಚನೆ proc * p, ಶೂನ್ಯ * pc)
 {
 /* This executes on every tick of the CMOS timer. */
 
   /* Are we profiling, and profiling memory not full? */
-  if (!sprofiling || sprof_info.mem_used == -1)
-	  return;
+  ಆದರೆ (!sprofiling || sprof_info.mem_ಬಳಸಿದ == -1)
+	  ಹಿಂತಿರುಗಿ;
 
   /* Check if enough memory available before writing sample. */
-  if (sprof_info.mem_used + sizeof(sprof_info) +
-		  2*sizeof(struct sprof_sample) +
-		  2*sizeof(struct sprof_sample) > sprof_mem_size) {
-	sprof_info.mem_used = -1;
-	return;
+  ಆದರೆ (sprof_info.mem_ಬಳಸಿದ + ಗಾತ್ರ(sprof_info) +
+		  2*ಗಾತ್ರ(ರಚನೆ sprof_sample) +
+		  2*ಗಾತ್ರ(ರಚನೆ sprof_sample) > sprof_mem_ಗಾತ್ರ) {
+	sprof_info.mem_ಬಳಸಿದ = -1;
+	ಹಿಂತಿರುಗಿ;
   }
 
   /* Runnable system process? */
-  if (p->p_endpoint == IDLE)
+  ಆದರೆ (p->p_endpoint == IDLE)
 	sprof_info.idle_samples++;
-  else if (p->p_endpoint == KERNEL ||
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (p->p_endpoint == KERNEL ||
 		(priv(p)->s_flags & SYS_PROC && proc_is_runnable(p))) {
 
-	if (!(p->p_misc_flags & MF_SPROF_SEEN)) {
-		p->p_misc_flags |= MF_SPROF_SEEN;
+	ಆದರೆ (!(p->p_misc_flags & MF_SPROF_ನೋಡಿದ)) {
+		p->p_misc_flags |= MF_SPROF_ನೋಡಿದ;
 		sprof_save_proc(p);
 	}
 
 	sprof_save_sample(p, pc);
 	sprof_info.system_samples++;
-  } else {
+  } ಇಲ್ಲದಿದ್ದರೆ {
 	/* User process. */
 	sprof_info.user_samples++;
   }
   
-  sprof_info.total_samples++;
+  sprof_info.ಒಟ್ಟು_samples++;
 }
 
 /*===========================================================================*
  *			profile_clock_handler                           *
  *===========================================================================*/
-static int profile_clock_handler(irq_hook_t *hook)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ profile_clock_handler(irq_hook_t *hook)
 {
-  struct proc * p;
+  ರಚನೆ proc * p;
   p = get_cpulocal_var(proc_ptr);
 
-  profile_sample(p, (void *) p->p_reg.pc);
+  profile_sample(p, (ಶೂನ್ಯ *) p->p_reg.pc);
 
   /* Acknowledge interrupt if necessary. */
   arch_ack_profile_clock();
 
-  return(1);                                    /* reenable interrupts */
+  ಹಿಂತಿರುಗಿ(1);                                    /* reenable interrupts */
 }
 
-void nmi_sprofile_handler(struct nmi_frame * frame)
+ಶೂನ್ಯ nmi_sprofile_handler(ರಚನೆ nmi_ಚೌಕಟ್ಟು * ಚೌಕಟ್ಟು)
 {
-	struct proc * p = get_cpulocal_var(proc_ptr);
+	ರಚನೆ proc * p = get_cpulocal_var(proc_ptr);
 	/*
 	 * test if the kernel was interrupted. If so, save first a sample fo
 	 * kernel and than for the current process, otherwise save just the
 	 * process
 	 */
-	if (nmi_in_kernel(frame)) {
-		struct proc *kern;
+	ಆದರೆ (nmi_ಒಳ_kernel(ಚೌಕಟ್ಟು)) {
+		ರಚನೆ proc *kern;
 
 		/*
 		 * if we sample kernel, check if IDLE is scheduled. If so,
 		 * account for idle time rather than taking kernel sample
 		 */
-		if (p->p_endpoint == IDLE) {
+		ಆದರೆ (p->p_endpoint == IDLE) {
 			sprof_info.idle_samples++;
-			sprof_info.total_samples++;
-			return;
+			sprof_info.ಒಟ್ಟು_samples++;
+			ಹಿಂತಿರುಗಿ;
 		}
 
 		kern = proc_addr(KERNEL);
 
-		profile_sample(kern, (void *) frame->pc);
+		profile_sample(kern, (ಶೂನ್ಯ *) ಚೌಕಟ್ಟು->pc);
 	}
-	else
-		profile_sample(p, (void *) frame->pc);
+	ಇಲ್ಲದಿದ್ದರೆ
+		profile_sample(p, (ಶೂನ್ಯ *) ಚೌಕಟ್ಟು->pc);
 }
 
-#endif /* SPROFILE */
+#ಆದರೆ_ಅಂತ್ಯ /* SPROFILE */

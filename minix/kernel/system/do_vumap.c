@@ -12,77 +12,77 @@
  *   m_krn_lsys_sys_vumap.pcount	(upon return: number of elements filled)
  */
 
-#include "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
 
-#include <assert.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
 
 /*===========================================================================*
  *				do_vumap				     *
  *===========================================================================*/
-int do_vumap(struct proc *caller, message *m_ptr)
+ಪೂರ್ಣಾಂಕ do_vumap(ರಚನೆ proc *caller, ಸಂದೇಶ *m_ptr)
 {
 /* Map a vector of grants or local virtual addresses to physical addresses.
  * Designed to be used by drivers to perform an efficient lookup of physical
  * addresses for the purpose of direct DMA from/to a remote process.
  */
-  endpoint_t endpt, source, granter;
-  struct proc *procp;
-  struct vumap_vir vvec[MAPVEC_NR];
-  struct vumap_phys pvec[MAPVEC_NR];
-  vir_bytes vaddr, paddr, vir_addr;
-  phys_bytes phys_addr;
-  int i, r, proc_nr, vcount, pcount, pmax, access;
-  size_t size, chunk, offset;
+  endpoint_t endpt, ಮೂಲ, granter;
+  ರಚನೆ proc *procp;
+  ರಚನೆ vumap_vir vvec[MAPVEC_NR];
+  ರಚನೆ vumap_phys pvec[MAPVEC_NR];
+  vir_ಬೈಟುಗಳು vaddr, paddr, vir_addr;
+  phys_ಬೈಟುಗಳು phys_addr;
+  ಪೂರ್ಣಾಂಕ i, r, proc_nr, vcount, pcount, pmax, access;
+  size_t ಗಾತ್ರ_2, chunk, ಸ್ಥಾನಾಂತರ;
 
   endpt = caller->p_endpoint;
 
   /* Retrieve and check input parameters. */
-  source = m_ptr->m_lsys_krn_sys_vumap.endpt;
+  ಮೂಲ = m_ptr->m_lsys_krn_sys_vumap.endpt;
   vaddr = m_ptr->m_lsys_krn_sys_vumap.vaddr;
   vcount = m_ptr->m_lsys_krn_sys_vumap.vcount;
-  offset = m_ptr->m_lsys_krn_sys_vumap.offset;
+  ಸ್ಥಾನಾಂತರ = m_ptr->m_lsys_krn_sys_vumap.ಸ್ಥಾನಾಂತರ;
   access = m_ptr->m_lsys_krn_sys_vumap.access;
   paddr = m_ptr->m_lsys_krn_sys_vumap.paddr;
   pmax = m_ptr->m_lsys_krn_sys_vumap.pmax;
 
-  if (vcount <= 0 || pmax <= 0)
-	return EINVAL;
+  ಆದರೆ (vcount <= 0 || pmax <= 0)
+	ಹಿಂತಿರುಗಿ EINVAL;
 
-  if (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
-  if (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
+  ಆದರೆ (vcount > MAPVEC_NR) vcount = MAPVEC_NR;
+  ಆದರೆ (pmax > MAPVEC_NR) pmax = MAPVEC_NR;
 
   /* Convert access to safecopy access flags. */
-  switch (access) {
-  case VUA_READ:		access = CPF_READ; break;
-  case VUA_WRITE:		access = CPF_WRITE; break;
-  case VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; break;
-  default:			return EINVAL;
+  ಆಯ್ಕೆ (access) {
+  ಸ್ಥಿತಿ VUA_READ:		access = CPF_READ; ನಿಲ್ಲಿಸು;
+  ಸ್ಥಿತಿ VUA_WRITE:		access = CPF_WRITE; ನಿಲ್ಲಿಸು;
+  ಸ್ಥಿತಿ VUA_READ|VUA_WRITE:	access = CPF_READ|CPF_WRITE; ನಿಲ್ಲಿಸು;
+  ಪೂರ್ವನಿಯೋಜಿತ:			ಹಿಂತಿರುಗಿ EINVAL;
   }
 
   /* Copy in the vector of virtual addresses. */
-  size = vcount * sizeof(vvec[0]);
+  ಗಾತ್ರ_2 = vcount * ಗಾತ್ರ(vvec[0]);
 
-  if (data_copy(endpt, vaddr, KERNEL, (vir_bytes) vvec, size) != OK)
-	return EFAULT;
+  ಆದರೆ (ದತ್ತಾಂಶ_copy(endpt, vaddr, KERNEL, (vir_ಬೈಟುಗಳು) vvec, ಗಾತ್ರ_2) != OK)
+	ಹಿಂತಿರುಗಿ EFAULT;
 
   pcount = 0;
 
   /* Go through the input entries, one at a time. Stop early in case the output
    * vector has filled up.
    */
-  for (i = 0; i < vcount && pcount < pmax; i++) {
-	size = vvec[i].vv_size;
-	if (size <= offset)
-		return EINVAL;
-	size -= offset;
+  ಗಾಗಿ (i = 0; i < vcount && pcount < pmax; i++) {
+	ಗಾತ್ರ_2 = vvec[i].vv_ಗಾತ್ರ;
+	ಆದರೆ (ಗಾತ್ರ_2 <= ಸ್ಥಾನಾಂತರ)
+		ಹಿಂತಿರುಗಿ EINVAL;
+	ಗಾತ್ರ_2 -= ಸ್ಥಾನಾಂತರ;
 
-	if (source != SELF) {
-		r = verify_grant(source, endpt, vvec[i].vv_grant, size, access,
-			offset, &vir_addr, &granter, NULL);
-		if (r != OK)
-			return r;
-	} else {
-		vir_addr = vvec[i].vv_addr + offset;
+	ಆದರೆ (ಮೂಲ != SELF) {
+		r = verify_grant(ಮೂಲ, endpt, vvec[i].vv_grant, ಗಾತ್ರ_2, access,
+			ಸ್ಥಾನಾಂತರ, &vir_addr, &granter, ಖಾಲಿ);
+		ಆದರೆ (r != OK)
+			ಹಿಂತಿರುಗಿ r;
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		vir_addr = vvec[i].vv_addr + ಸ್ಥಾನಾಂತರ;
 		granter = endpt;
 	}
 
@@ -90,42 +90,42 @@ int do_vumap(struct proc *caller, message *m_ptr)
 	procp = proc_addr(proc_nr);
 
 	/* Each virtual range is made up of one or more physical ranges. */
-	while (size > 0 && pcount < pmax) {
-		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, size);
+	ಆಗ (ಗಾತ್ರ_2 > 0 && pcount < pmax) {
+		chunk = vm_lookup_range(procp, vir_addr, &phys_addr, ಗಾತ್ರ_2);
 
-		if (!chunk) {
+		ಆದರೆ (!chunk) {
 			/* Try to get the memory allocated, unless the memory
 			 * is supposed to be there to be read from.
 			 */
-			if (access & CPF_READ)
-				return EFAULT;
+			ಆದರೆ (access & CPF_READ)
+				ಹಿಂತಿರುಗಿ EFAULT;
 
 			/* This call may suspend the current call, or return an
 			 * error for a previous invocation.
 			 */
-			return vm_check_range(caller, procp, vir_addr, size, 1);
+			ಹಿಂತಿರುಗಿ vm_check_range(caller, procp, vir_addr, ಗಾತ್ರ_2, 1);
 		}
 
 		pvec[pcount].vp_addr = phys_addr;
-		pvec[pcount].vp_size = chunk;
+		pvec[pcount].vp_ಗಾತ್ರ = chunk;
 		pcount++;
 
 		vir_addr += chunk;
-		size -= chunk;
+		ಗಾತ್ರ_2 -= chunk;
 	}
 
-	offset = 0;
+	ಸ್ಥಾನಾಂತರ = 0;
   }
 
   /* Copy out the resulting vector of physical addresses. */
-  assert(pcount > 0);
+  ಪ್ರತಿಜ್ಞಾ(pcount > 0);
 
-  size = pcount * sizeof(pvec[0]);
+  ಗಾತ್ರ_2 = pcount * ಗಾತ್ರ(pvec[0]);
 
-  r = data_copy_vmcheck(caller, KERNEL, (vir_bytes) pvec, endpt, paddr, size);
+  r = ದತ್ತಾಂಶ_copy_vmcheck(caller, KERNEL, (vir_ಬೈಟುಗಳು) pvec, endpt, paddr, ಗಾತ್ರ_2);
 
-  if (r == OK)
+  ಆದರೆ (r == OK)
 	m_ptr->m_krn_lsys_sys_vumap.pcount = pcount;
 
-  return r;
+  ಹಿಂತಿರುಗಿ r;
 }

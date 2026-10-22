@@ -4,109 +4,109 @@
  * low level code that triggers periodic checks
  */
 
-#include "watchdog.h"
-#include "arch/i386/glo.h"
+#ಅನ್ತರ್ಭಾವ "watchdog.h"
+#ಅನ್ತರ್ಭಾವ "arch/i386/glo.h"
 
-unsigned watchdog_local_timer_ticks = 0U;
-struct arch_watchdog *watchdog;
-int watchdog_enabled;
+ಚಿಹ್ನೆರಹಿತ watchdog_local_timer_ticks = 0U;
+ರಚನೆ arch_watchdog *watchdog;
+ಪೂರ್ಣಾಂಕ watchdog_enabled;
 
-static void lockup_check(struct nmi_frame * frame)
+ಸ್ಥಿರ ಶೂನ್ಯ lockup_check(ರಚನೆ nmi_ಚೌಕಟ್ಟು * ಚೌಕಟ್ಟು)
 {
 	/* FIXME this should be CPU local */
-	static unsigned no_ticks;
-	static unsigned last_tick_count = (unsigned) -1;
+	ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ no_ticks;
+	ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ ಕೊನೆಯ_tick_ಎಣಿಕೆ = (ಚಿಹ್ನೆರಹಿತ) -1;
 
 	/*
 	 * when debugging on serial console, printing takes a lot of time some
 	 * times while the kernel is certainly not locked up. We don't want to
 	 * report a lockup in such situation
 	 */
-	if (serial_debug_active)
-		return;
+	ಆದರೆ (serial_debug_ಸಕ್ರಿಯ)
+		ಹಿಂತಿರುಗಿ;
 
-	if (last_tick_count != watchdog_local_timer_ticks) {
-		if (no_ticks == 1) {
-			printf("watchdog : kernel unlocked\n");
+	ಆದರೆ (ಕೊನೆಯ_tick_ಎಣಿಕೆ != watchdog_local_timer_ticks) {
+		ಆದರೆ (no_ticks == 1) {
+			ಬರೆ("watchdog : kernel unlocked\n");
 			no_ticks = 0;
 		}
 		/* we are still ticking, everything seems good */
-		last_tick_count = watchdog_local_timer_ticks;
-		return;
+		ಕೊನೆಯ_tick_ಎಣಿಕೆ = watchdog_local_timer_ticks;
+		ಹಿಂತಿರುಗಿ;
 	}
 
 	/*
 	 * if watchdog_local_timer_ticks didn't changed since last time, give it
 	 * some more time and only if it still dead, trigger the watchdog alarm
 	 */
-	if (++no_ticks < 10) {
-		if (no_ticks == 1)
-			printf("WARNING watchdog : possible kernel lockup\n");
-		return;
+	ಆದರೆ (++no_ticks < 10) {
+		ಆದರೆ (no_ticks == 1)
+			ಬರೆ("WARNING watchdog : possible kernel lockup\n");
+		ಹಿಂತಿರುಗಿ;
 	}
 
 	/* if we get this far, the kernel is locked up */
-	arch_watchdog_lockup(frame);
+	arch_watchdog_lockup(ಚೌಕಟ್ಟು);
 }
 
-void nmi_watchdog_handler(struct nmi_frame * frame)
+ಶೂನ್ಯ nmi_watchdog_handler(ರಚನೆ nmi_ಚೌಕಟ್ಟು * ಚೌಕಟ್ಟು)
 {
-#if SPROFILE
+#ಆದರೆ SPROFILE
 	/*
 	 * Do not check for lockups while profiling, it is extremely likely that
 	 * a false positive is detected if the frequency is high
 	 */
-	if (watchdog_enabled && !sprofiling)
-		lockup_check(frame);
-	if (sprofiling)
-		nmi_sprofile_handler(frame);
+	ಆದರೆ (watchdog_enabled && !sprofiling)
+		lockup_check(ಚೌಕಟ್ಟು);
+	ಆದರೆ (sprofiling)
+		nmi_sprofile_handler(ಚೌಕಟ್ಟು);
 	
-	if ((watchdog_enabled || sprofiling) && watchdog->reinit)
+	ಆದರೆ ((watchdog_enabled || sprofiling) && watchdog->reinit)
 		watchdog->reinit(cpuid);
-#else
-	if (watchdog_enabled) {
-		lockup_check(frame);
-		if (watchdog->reinit)
+#ಇಲ್ಲದಿದ್ದರೆ
+	ಆದರೆ (watchdog_enabled) {
+		lockup_check(ಚೌಕಟ್ಟು);
+		ಆದರೆ (watchdog->reinit)
 			watchdog->reinit(cpuid);
 	}
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
-int nmi_watchdog_start_profiling(const unsigned freq)
+ಪೂರ್ಣಾಂಕ nmi_watchdog_ಆರಂಭ_profiling(ಸ್ಥಿರಾಂಕ ಚಿಹ್ನೆರಹಿತ freq)
 {
-	int err;
+	ಪೂರ್ಣಾಂಕ err;
 	
 	/* if watchdog hasn't been enabled, we must enable it now */
-	if (!watchdog_enabled) {
-		if (arch_watchdog_init())
-			return ENODEV;
+	ಆದರೆ (!watchdog_enabled) {
+		ಆದರೆ (arch_watchdog_init())
+			ಹಿಂತಿರುಗಿ ENODEV;
 	}
 
-	if (!watchdog->profile_init) {
-		printf("WARNING NMI watchdog profiling not supported\n");
+	ಆದರೆ (!watchdog->profile_init) {
+		ಬರೆ("WARNING NMI watchdog profiling not supported\n");
 		nmi_watchdog_stop_profiling();
-		return ENODEV;
+		ಹಿಂತಿರುಗಿ ENODEV;
 	}
 
 	err = watchdog->profile_init(freq);
-	if (err != OK)
-		return err;
+	ಆದರೆ (err != OK)
+		ಹಿಂತಿರುಗಿ err;
 
 	watchdog->resetval = watchdog->profile_resetval;
 
-	return OK;
+	ಹಿಂತಿರುಗಿ OK;
 }
 
-void nmi_watchdog_stop_profiling(void)
+ಶೂನ್ಯ nmi_watchdog_stop_profiling(ಶೂನ್ಯ)
 {
 	/*
 	 * if we do not rearm the NMI source, we are done, if we want to keep
 	 * the watchdog running, we reset is to its normal value
 	 */
 
-	if (watchdog)
+	ಆದರೆ (watchdog)
 		watchdog->resetval = watchdog->watchdog_resetval;
 
-	if (!watchdog_enabled)
+	ಆದರೆ (!watchdog_enabled)
 		arch_watchdog_stop();
 }

@@ -1,138 +1,138 @@
 /* system dependent functions for use inside the whole kernel. */
 
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <machine/cmos.h>
-#include <machine/bios.h>
-#include <machine/cpu.h>
-#include <minix/portio.h>
-#include <minix/cpufeature.h>
-#include <assert.h>
-#include <signal.h>
-#include <machine/vm.h>
+#ಅನ್ತರ್ಭಾವ <unistd.h>
+#ಅನ್ತರ್ಭಾವ <ctype.h>
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <machine/cmos.h>
+#ಅನ್ತರ್ಭಾವ <machine/bios.h>
+#ಅನ್ತರ್ಭಾವ <machine/cpu.h>
+#ಅನ್ತರ್ಭಾವ <minix/portio.h>
+#ಅನ್ತರ್ಭಾವ <minix/cpufeature.h>
+#ಅನ್ತರ್ಭಾವ <assert.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
+#ಅನ್ತರ್ಭಾವ <machine/vm.h>
 
-#include <minix/u64.h>
+#ಅನ್ತರ್ಭಾವ <minix/u64.h>
 
-#include "archconst.h"
-#include "oxpcie.h"
+#ಅನ್ತರ್ಭಾವ "archconst.h"
+#ಅನ್ತರ್ಭಾವ "oxpcie.h"
 
-#include "glo.h"
+#ಅನ್ತರ್ಭಾವ "glo.h"
 
-#ifdef USE_APIC
-#include "apic.h"
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ USE_APIC
+#ಅನ್ತರ್ಭಾವ "apic.h"
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef USE_ACPI
-#include "acpi.h"
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ USE_ACPI
+#ಅನ್ತರ್ಭಾವ "acpi.h"
+#ಆದರೆ_ಅಂತ್ಯ
 
-static int osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ osfxsr_feature; /* FXSAVE/FXRSTOR instructions support (SSEx) */
 
 /* set MP and NE flags to handle FPU exceptions in native mode. */
-#define CR0_MP_NE	0x0022
+#ವ್ಯಾಖ್ಯಾನಿಸು CR0_MP_NE	0x0022
 /* set CR4.OSFXSR[bit 9] if FXSR is supported. */
-#define CR4_OSFXSR	(1L<<9)
+#ವ್ಯಾಖ್ಯಾನಿಸು CR4_OSFXSR	(1L<<9)
 /* set OSXMMEXCPT[bit 10] if we provide #XM handler. */
-#define CR4_OSXMMEXCPT	(1L<<10)
+#ವ್ಯಾಖ್ಯಾನಿಸು CR4_OSXMMEXCPT	(1L<<10)
 
-void * k_stacks;
+ಶೂನ್ಯ * k_stacks;
 
-static void ser_debug(int c);
-static void ser_dump_vfs(void);
+ಸ್ಥಿರ ಶೂನ್ಯ ser_debug(ಪೂರ್ಣಾಂಕ c);
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_vfs(ಶೂನ್ಯ);
 
-#ifdef CONFIG_SMP
-static void ser_dump_proc_cpu(void);
-#endif
-#if !CONFIG_OXPCIE
-static void ser_init(void);
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_proc_cpu(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ !CONFIG_OXPCIE
+ಸ್ಥಿರ ಶೂನ್ಯ ser_init(ಶೂನ್ಯ);
+#ಆದರೆ_ಅಂತ್ಯ
 
-void fpu_init(void)
+ಶೂನ್ಯ fpu_init(ಶೂನ್ಯ)
 {
-	unsigned short cw, sw;
+	ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ cw, sw;
 
 	fninit();
 	sw = fnstsw();
 	fnstcw(&cw);
 
-	if((sw & 0xff) == 0 &&
+	ಆದರೆ((sw & 0xff) == 0 &&
 	   (cw & 0x103f) == 0x3f) {
 		/* We have some sort of FPU, but don't check exact model.
 		 * Set CR0_NE and CR0_MP to handle fpu exceptions
 		 * in native mode. */
 		write_cr0(read_cr0() | CR0_MP_NE);
 		get_cpulocal_var(fpu_presence) = 1;
-		if(_cpufeature(_CPUF_I386_FXSR)) {
+		ಆದರೆ(_cpufeature(_CPUF_I386_FXSR)) {
 			u32_t cr4 = read_cr4() | CR4_OSFXSR; /* Enable FXSR. */
 
 			/* OSXMMEXCPT if supported
 			 * FXSR feature can be available without SSE
 			 */
-			if(_cpufeature(_CPUF_I386_SSE))
+			ಆದರೆ(_cpufeature(_CPUF_I386_SSE))
 				cr4 |= CR4_OSXMMEXCPT; 
 
 			write_cr4(cr4);
 			osfxsr_feature = 1;
-		} else {
+		} ಇಲ್ಲದಿದ್ದರೆ {
 			osfxsr_feature = 0;
 		}
-	} else {
+	} ಇಲ್ಲದಿದ್ದರೆ {
 		/* No FPU presents. */
 		get_cpulocal_var(fpu_presence) = 0;
                 osfxsr_feature = 0;
-                return;
+                ಹಿಂತಿರುಗಿ;
         }
 }
 
-void save_local_fpu(struct proc *pr, int retain)
+ಶೂನ್ಯ save_local_fpu(ರಚನೆ proc *pr, ಪೂರ್ಣಾಂಕ retain)
 {
-	char *state = pr->p_seg.fpu_state;
+	ಅಕ್ಷರ *state = pr->p_seg.fpu_state;
 
 	/* Save process FPU context. If the 'retain' flag is set, keep the FPU
 	 * state as is. If the flag is not set, the state is undefined upon
 	 * return, and the caller is responsible for reloading a proper state.
 	 */
 
-	if(!is_fpu())
-		return;
+	ಆದರೆ(!is_fpu())
+		ಹಿಂತಿರುಗಿ;
 
-	assert(state);
+	ಪ್ರತಿಜ್ಞಾ(state);
 
-	if(osfxsr_feature) {
+	ಆದರೆ(osfxsr_feature) {
 		fxsave(state);
-	} else {
+	} ಇಲ್ಲದಿದ್ದರೆ {
 		fnsave(state);
-		if (retain)
-			(void) frstor(state);
+		ಆದರೆ (retain)
+			(ಶೂನ್ಯ) frstor(state);
 	}
 }
 
-void save_fpu(struct proc *pr)
+ಶೂನ್ಯ save_fpu(ರಚನೆ proc *pr)
 {
-#ifdef CONFIG_SMP
-	if (cpuid != pr->p_cpu) {
-		int stopped;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+	ಆದರೆ (cpuid != pr->p_cpu) {
+		ಪೂರ್ಣಾಂಕ stopped;
 
 		/* remember if the process was already stopped */
 		stopped = RTS_ISSET(pr, RTS_PROC_STOP);
 
 		/* stop the remote process and force its context to be saved */
-		smp_schedule_stop_proc_save_ctx(pr);
+		smp_ವೇಳಾಪಟ್ಟಿ_stop_proc_save_ctx(pr);
 
 		/*
 		 * If the process wasn't stopped let the process run again. The
 		 * process is kept block by the fact that the kernel cannot run
 		 * on its cpu
 		 */
-		if (!stopped)
+		ಆದರೆ (!stopped)
 			RTS_UNSET(pr, RTS_PROC_STOP);
 
-		return;
+		ಹಿಂತಿರುಗಿ;
 	}
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-	if (get_cpulocal_var(fpu_owner) == pr) {
+	ಆದರೆ (get_cpulocal_var(fpu_owner) == pr) {
 		disable_fpu_exception();
 		save_local_fpu(pr, TRUE /*retain*/);
 	}
@@ -141,28 +141,28 @@ void save_fpu(struct proc *pr)
 /* reserve a chunk of memory for fpu state; every one has to
  * be FPUALIGN-aligned.
  */
-static char fpu_state[NR_PROCS][FPU_XFP_SIZE] __aligned(FPUALIGN);
+ಸ್ಥಿರ ಅಕ್ಷರ fpu_state[NR_PROCS][FPU_XFP_ಗಾತ್ರ] __aligned(FPUALIGN);
 
-void arch_proc_reset(struct proc *pr)
+ಶೂನ್ಯ arch_proc_reset(ರಚನೆ proc *pr)
 {
-	char *v = NULL;
-	struct stackframe_s reg;
+	ಅಕ್ಷರ *v = ಖಾಲಿ;
+	ರಚನೆ stackframe_s reg;
 
-	assert(pr->p_nr < NR_PROCS);
+	ಪ್ರತಿಜ್ಞಾ(pr->p_nr < NR_PROCS);
 
-	if(pr->p_nr >= 0) {
+	ಆದರೆ(pr->p_nr >= 0) {
 		v = fpu_state[pr->p_nr];
 		/* verify alignment */
-		assert(!((vir_bytes)v % FPUALIGN));
+		ಪ್ರತಿಜ್ಞಾ(!((vir_ಬೈಟುಗಳು)v % FPUALIGN));
 		/* initialize state */
-		memset(v, 0, FPU_XFP_SIZE);
+		memset(v, 0, FPU_XFP_ಗಾತ್ರ);
 	}
 
 	/* Clear process state. */
-        memset(&reg, 0, sizeof(pr->p_reg));
-        if(iskerneln(pr->p_nr))
+        memset(&reg, 0, ಗಾತ್ರ(pr->p_reg));
+        ಆದರೆ(iskerneln(pr->p_nr))
         	reg.psw = INIT_TASK_PSW;
-        else
+        ಇಲ್ಲದಿದ್ದರೆ
         	reg.psw = INIT_PSW;
 
 	pr->p_seg.fpu_state = v;
@@ -181,167 +181,167 @@ void arch_proc_reset(struct proc *pr)
 	arch_proc_setcontext(pr, &reg, 0, KTS_FULLCONTEXT);
 }
 
-void arch_set_secondary_ipc_return(struct proc *p, u32_t val)
+ಶೂನ್ಯ arch_ಗಣ_secondary_ipc_return(ರಚನೆ proc *p, u32_t val)
 {
 	p->p_reg.bx = val;
 }
 
-int restore_fpu(struct proc *pr)
+ಪೂರ್ಣಾಂಕ restore_fpu(ರಚನೆ proc *pr)
 {
-	int failed;
-	char *state = pr->p_seg.fpu_state;
+	ಪೂರ್ಣಾಂಕ failed;
+	ಅಕ್ಷರ *state = pr->p_seg.fpu_state;
 
-	assert(state);
+	ಪ್ರತಿಜ್ಞಾ(state);
 
-	if(!proc_used_fpu(pr)) {
+	ಆದರೆ(!proc_ಬಳಸಿದ_fpu(pr)) {
 		fninit();
 		pr->p_misc_flags |= MF_FPU_INITIALIZED;
-	} else {
-		if(osfxsr_feature) {
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		ಆದರೆ(osfxsr_feature) {
 			failed = fxrstor(state);
-		} else {
+		} ಇಲ್ಲದಿದ್ದರೆ {
 			failed = frstor(state);
 		}
 
-		if (failed) return EINVAL;
+		ಆದರೆ (failed) ಹಿಂತಿರುಗಿ EINVAL;
 	}
 
-	return OK;
+	ಹಿಂತಿರುಗಿ OK;
 }
 
-void cpu_identify(void)
+ಶೂನ್ಯ cpu_identify(ಶೂನ್ಯ)
 {
 	u32_t eax, ebx, ecx, edx;
-	unsigned cpu = cpuid;
+	ಚಿಹ್ನೆರಹಿತ cpu = cpuid;
 	
 	eax = 0;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
-	if (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
+	ಆದರೆ (ebx == INTEL_CPUID_GEN_EBX && ecx == INTEL_CPUID_GEN_ECX &&
 			edx == INTEL_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_INTEL;
-	} else if (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ebx == AMD_CPUID_GEN_EBX && ecx == AMD_CPUID_GEN_ECX &&
 			edx == AMD_CPUID_GEN_EDX) {
 		cpu_info[cpu].vendor = CPU_VENDOR_AMD;
-	} else
+	} ಇಲ್ಲದಿದ್ದರೆ
 		cpu_info[cpu].vendor = CPU_VENDOR_UNKNOWN;
 
-	if (eax == 0) 
-		return;
+	ಆದರೆ (eax == 0) 
+		ಹಿಂತಿರುಗಿ;
 
 	eax = 1;
 	_cpuid(&eax, &ebx, &ecx, &edx);
 
 	cpu_info[cpu].family = (eax >> 8) & 0xf;
-	if (cpu_info[cpu].family == 0xf)
+	ಆದರೆ (cpu_info[cpu].family == 0xf)
 		cpu_info[cpu].family += (eax >> 20) & 0xff;
 	cpu_info[cpu].model = (eax >> 4) & 0xf;
-	if (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
+	ಆದರೆ (cpu_info[cpu].model == 0xf || cpu_info[cpu].model == 0x6)
 		cpu_info[cpu].model += ((eax >> 16) & 0xf) << 4 ;
 	cpu_info[cpu].stepping = eax & 0xf;
 	cpu_info[cpu].flags[0] = ecx;
 	cpu_info[cpu].flags[1] = edx;
 }
 
-void arch_init(void)
+ಶೂನ್ಯ arch_init(ಶೂನ್ಯ)
 {
-	k_stacks = (void*) &k_stacks_start;
-	assert(!((vir_bytes) k_stacks % K_STACK_SIZE));
+	k_stacks = (ಶೂನ್ಯ*) &k_stacks_ಆರಂಭ;
+	ಪ್ರತಿಜ್ಞಾ(!((vir_ಬೈಟುಗಳು) k_stacks % K_ರಾಶಿ_ಗಾತ್ರ));
 
-#ifndef CONFIG_SMP
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ CONFIG_SMP
 	/*
 	 * use stack 0 and cpu id 0 on a single processor machine, SMP
 	 * configuration does this in smp_init() for all cpus at once
 	 */
-	tss_init(0, get_k_stack_top(0));
-#endif
+	tss_init(0, get_k_ರಾಶಿ_ತುದಿ(0));
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if !CONFIG_OXPCIE
+#ಆದರೆ !CONFIG_OXPCIE
 	ser_init();
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifdef USE_ACPI
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ USE_ACPI
 	acpi_init();
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if defined(USE_APIC) && !defined(CONFIG_SMP)
-	if (config_no_apic) {
+#ಆದರೆ defined(USE_APIC) && !defined(CONFIG_SMP)
+	ಆದರೆ (config_no_apic) {
 		DEBUGBASIC(("APIC disabled, using legacy PIC\n"));
 	}
-	else if (!apic_single_cpu_init()) {
+	ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (!apic_single_cpu_init()) {
 		DEBUGBASIC(("APIC not present, using legacy PIC\n"));
 	}
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 	/* Reserve some BIOS ranges */
-	cut_memmap(&kinfo, BIOS_MEM_BEGIN, BIOS_MEM_END);
-	cut_memmap(&kinfo, BASE_MEM_TOP, UPPER_MEM_END);
+	cut_memmap(&kinfo, BIOS_MEM_BEGIN, BIOS_MEM_ಕೊನೆ);
+	cut_memmap(&kinfo, ತಳ_MEM_ತುದಿ, ಊರ್ಧ್ವ_MEM_ಕೊನೆ);
 }
 
 /*===========================================================================*
  *				do_ser_debug				     * 
  *===========================================================================*/
-void do_ser_debug(void)
+ಶೂನ್ಯ do_ser_debug(ಶೂನ್ಯ)
 {
 	u8_t c, lsr;
 
-#if CONFIG_OXPCIE
+#ಆದರೆ CONFIG_OXPCIE
 	{
-		int oxin;
-		if((oxin = oxpcie_in()) >= 0)
+		ಪೂರ್ಣಾಂಕ oxin;
+		ಆದರೆ((oxin = oxpcie_ಒಳ()) >= 0)
 		ser_debug(oxin);
 	}
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 	lsr= inb(COM1_LSR);
-	if (!(lsr & LSR_DR))
-		return;
+	ಆದರೆ (!(lsr & LSR_DR))
+		ಹಿಂತಿರುಗಿ;
 	c = inb(COM1_RBR);
 	ser_debug(c);
 }
 
-static void ser_dump_queue_cpu(unsigned cpu)
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_ಸರತಿ_cpu(ಚಿಹ್ನೆರಹಿತ cpu)
 {
-	int q;
-	struct proc ** rdy_head;
+	ಪೂರ್ಣಾಂಕ q;
+	ರಚನೆ proc ** rdy_ತಲೆ;
 	
-	rdy_head = get_cpu_var(cpu, run_q_head);
+	rdy_ತಲೆ = get_cpu_var(cpu, ಸತತ_q_ತಲೆ);
 
-	for(q = 0; q < NR_SCHED_QUEUES; q++) {
-		struct proc *p;
-		if(rdy_head[q])	 {
-			printf("%2d: ", q);
-			for(p = rdy_head[q]; p; p = p->p_nextready) {
-				printf("%s / %d  ", p->p_name, p->p_endpoint);
+	ಗಾಗಿ(q = 0; q < NR_SCHED_QUEUES; q++) {
+		ರಚನೆ proc *p;
+		ಆದರೆ(rdy_ತಲೆ[q])	 {
+			ಬರೆ("%2d: ", q);
+			ಗಾಗಿ(p = rdy_ತಲೆ[q]; p; p = p->p_nextready) {
+				ಬರೆ("%s / %d  ", p->p_name, p->p_endpoint);
 			}
-			printf("\n");
+			ಬರೆ("\n");
 		}
 	}
 }
 
-static void ser_dump_queues(void)
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_queues(ಶೂನ್ಯ)
 {
-#ifdef CONFIG_SMP
-	unsigned cpu;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+	ಚಿಹ್ನೆರಹಿತ cpu;
 
-	printf("--- run queues ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
-		printf("CPU %d :\n", cpu);
-		ser_dump_queue_cpu(cpu);
+	ಬರೆ("--- run queues ---\n");
+	ಗಾಗಿ (cpu = 0; cpu < ncpus; cpu++) {
+		ಬರೆ("CPU %d :\n", cpu);
+		ser_dump_ಸರತಿ_cpu(cpu);
 	}
-#else
-	ser_dump_queue_cpu(0);
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+	ser_dump_ಸರತಿ_cpu(0);
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
-#ifdef CONFIG_SMP
-static void dump_bkl_usage(void)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+ಸ್ಥಿರ ಶೂನ್ಯ dump_bkl_usage(ಶೂನ್ಯ)
 {
-	unsigned cpu;
+	ಚಿಹ್ನೆರಹಿತ cpu;
 
-	printf("--- BKL usage ---\n");
-	for (cpu = 0; cpu < ncpus; cpu++) {
-		printf("cpu %3d kernel ticks 0x%x%08x bkl ticks 0x%x%08x succ %d tries %d\n", cpu,
+	ಬರೆ("--- BKL usage ---\n");
+	ಗಾಗಿ (cpu = 0; cpu < ncpus; cpu++) {
+		ಬರೆ("cpu %3d kernel ticks 0x%x%08x bkl ticks 0x%x%08x succ %d tries %d\n", cpu,
 				ex64hi(kernel_ticks[cpu]),
 				ex64lo(kernel_ticks[cpu]),
 				ex64hi(bkl_ticks[cpu]),
@@ -350,73 +350,73 @@ static void dump_bkl_usage(void)
 	}
 }
 
-static void reset_bkl_usage(void)
+ಸ್ಥಿರ ಶೂನ್ಯ reset_bkl_usage(ಶೂನ್ಯ)
 {
-	memset(kernel_ticks, 0, sizeof(kernel_ticks));
-	memset(bkl_ticks, 0, sizeof(bkl_ticks));
-	memset(bkl_tries, 0, sizeof(bkl_tries));
-	memset(bkl_succ, 0, sizeof(bkl_succ));
+	memset(kernel_ticks, 0, ಗಾತ್ರ(kernel_ticks));
+	memset(bkl_ticks, 0, ಗಾತ್ರ(bkl_ticks));
+	memset(bkl_tries, 0, ಗಾತ್ರ(bkl_tries));
+	memset(bkl_succ, 0, ಗಾತ್ರ(bkl_succ));
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-static void ser_debug(const int c)
+ಸ್ಥಿರ ಶೂನ್ಯ ser_debug(ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ c)
 {
-	serial_debug_active = 1;
+	serial_debug_ಸಕ್ರಿಯ = 1;
 
-	switch(c)
+	ಆಯ್ಕೆ(c)
 	{
-	case 'Q':
+	ಸ್ಥಿತಿ 'Q':
 		minix_shutdown(0);
 		NOT_REACHABLE;
-#ifdef CONFIG_SMP
-	case 'B':
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+	ಸ್ಥಿತಿ 'B':
 		dump_bkl_usage();
-		break;
-	case 'b':
+		ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ 'b':
 		reset_bkl_usage();
-		break;
-#endif
-	case '1':
+		ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
+	ಸ್ಥಿತಿ '1':
 		ser_dump_proc();
-		break;
-	case '2':
+		ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ '2':
 		ser_dump_queues();
-		break;
-#ifdef CONFIG_SMP
-	case '4':
+		ನಿಲ್ಲಿಸು;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+	ಸ್ಥಿತಿ '4':
 		ser_dump_proc_cpu();
-		break;
-#endif
-	case '5':
+		ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
+	ಸ್ಥಿತಿ '5':
 		ser_dump_vfs();
-		break;
-#if DEBUG_TRACE
-#define TOGGLECASE(ch, flag)				\
-	case ch: {					\
-		if(verboseflags & flag)	{		\
+		ನಿಲ್ಲಿಸು;
+#ಆದರೆ DEBUG_TRACE
+#ವ್ಯಾಖ್ಯಾನಿಸು TOGGLECASE(ch, flag)				\
+	ಸ್ಥಿತಿ ch: {					\
+		ಆದರೆ(verboseflags & flag)	{		\
 			verboseflags &= ~flag;		\
-			printf("%s disabled\n", #flag);	\
-		} else {				\
+			ಬರೆ("%s disabled\n", #flag);	\
+		} ಇಲ್ಲದಿದ್ದರೆ {				\
 			verboseflags |= flag;		\
-			printf("%s enabled\n", #flag);	\
+			ಬರೆ("%s enabled\n", #flag);	\
 		}					\
-		break;					\
+		ನಿಲ್ಲಿಸು;					\
 		}
 	TOGGLECASE('8', VF_SCHEDULING)
 	TOGGLECASE('9', VF_PICKPROC)
-#endif
-#ifdef USE_APIC
-	case 'I':
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ USE_APIC
+	ಸ್ಥಿತಿ 'I':
 		dump_apic_irq_state();
-		break;
-#endif
+		ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
 	}
-	serial_debug_active = 0;
+	serial_debug_ಸಕ್ರಿಯ = 0;
 }
 
-#if DEBUG_SERIAL
+#ಆದರೆ DEBUG_SERIAL
 
-static void ser_dump_vfs(void)
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_vfs(ಶೂನ್ಯ)
 {
 	/* Notify VFS it has to generate stack traces. Kernel can't do that as
 	 * it's not aware of user space threads.
@@ -424,84 +424,84 @@ static void ser_dump_vfs(void)
 	mini_notify(proc_addr(KERNEL), VFS_PROC_NR);
 }
 
-#ifdef CONFIG_SMP
-static void ser_dump_proc_cpu(void)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+ಸ್ಥಿರ ಶೂನ್ಯ ser_dump_proc_cpu(ಶೂನ್ಯ)
 {
-	struct proc *pp;
-	unsigned cpu;
+	ರಚನೆ proc *pp;
+	ಚಿಹ್ನೆರಹಿತ cpu;
 
-	for (cpu = 0; cpu < ncpus; cpu++) {
-		printf("CPU %d processes : \n", cpu);
-		for (pp= BEG_USER_ADDR; pp < END_PROC_ADDR; pp++) {
-			if (isemptyp(pp) || pp->p_cpu != cpu)
-				continue;
+	ಗಾಗಿ (cpu = 0; cpu < ncpus; cpu++) {
+		ಬರೆ("CPU %d processes : \n", cpu);
+		ಗಾಗಿ (pp= BEG_USER_ADDR; pp < ಕೊನೆ_PROC_ADDR; pp++) {
+			ಆದರೆ (isemptyp(pp) || pp->p_cpu != cpu)
+				ಮುಂದುವರಿ;
 			print_proc(pp);
 		}
 	}
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#endif /* DEBUG_SERIAL */
+#ಆದರೆ_ಅಂತ್ಯ /* DEBUG_SERIAL */
 
-#if SPROFILE
+#ಆದರೆ SPROFILE
 
-int arch_init_profile_clock(const u32_t freq)
+ಪೂರ್ಣಾಂಕ arch_init_profile_clock(ಸ್ಥಿರಾಂಕ u32_t freq)
 {
-  int r;
+  ಪೂರ್ಣಾಂಕ r;
   /* Set CMOS timer frequency. */
-  outb(RTC_INDEX, RTC_REG_A);
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_A);
   outb(RTC_IO, RTC_A_DV_OK | freq);
   /* Enable CMOS timer interrupts. */
-  outb(RTC_INDEX, RTC_REG_B);
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_B);
   r = inb(RTC_IO);
-  outb(RTC_INDEX, RTC_REG_B); 
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_B); 
   outb(RTC_IO, r | RTC_B_PIE);
   /* Mandatory read of CMOS register to enable timer interrupts. */
-  outb(RTC_INDEX, RTC_REG_C);
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_C);
   inb(RTC_IO);
 
-  return CMOS_CLOCK_IRQ;
+  ಹಿಂತಿರುಗಿ CMOS_CLOCK_IRQ;
 }
 
-void arch_stop_profile_clock(void)
+ಶೂನ್ಯ arch_stop_profile_clock(ಶೂನ್ಯ)
 {
-  int r;
+  ಪೂರ್ಣಾಂಕ r;
   /* Disable CMOS timer interrupts. */
-  outb(RTC_INDEX, RTC_REG_B);
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_B);
   r = inb(RTC_IO);
-  outb(RTC_INDEX, RTC_REG_B);  
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_B);  
   outb(RTC_IO, r & ~RTC_B_PIE);
 }
 
-void arch_ack_profile_clock(void)
+ಶೂನ್ಯ arch_ack_profile_clock(ಶೂನ್ಯ)
 {
   /* Mandatory read of CMOS register to re-enable timer interrupts. */
-  outb(RTC_INDEX, RTC_REG_C);
+  outb(RTC_ಸೂಚ್ಯಂಕ, RTC_REG_C);
   inb(RTC_IO);
 }
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-void arch_do_syscall(struct proc *proc)
+ಶೂನ್ಯ arch_do_syscall(ರಚನೆ proc *proc)
 {
   /* do_ipc assumes that it's running because of the current process */
-  assert(proc == get_cpulocal_var(proc_ptr));
+  ಪ್ರತಿಜ್ಞಾ(proc == get_cpulocal_var(proc_ptr));
   /* Make the system call, for real this time. */
-  assert(proc->p_misc_flags & MF_SC_DEFER);
+  ಪ್ರತಿಜ್ಞಾ(proc->p_misc_flags & MF_SC_DEFER);
   proc->p_reg.retreg =
 	  do_ipc(proc->p_defer.r1, proc->p_defer.r2, proc->p_defer.r3);
 }
 
-struct proc * arch_finish_switch_to_user(void)
+ರಚನೆ proc * arch_ಮುಕ್ತಾಯ_switch_ಗಮ್ಯ_user(ಶೂನ್ಯ)
 {
-	char * stk;
-	struct proc * p;
+	ಅಕ್ಷರ * stk;
+	ರಚನೆ proc * p;
 
-#ifdef CONFIG_SMP
-	stk = (char *)tss[cpuid].sp0;
-#else
-	stk = (char *)tss[0].sp0;
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ CONFIG_SMP
+	stk = (ಅಕ್ಷರ *)tss[cpuid].sp0;
+#ಇಲ್ಲದಿದ್ದರೆ
+	stk = (ಅಕ್ಷರ *)tss[0].sp0;
+#ಆದರೆ_ಅಂತ್ಯ
 	/* set pointer to the process to run on the stack */
 	p = get_cpulocal_var(proc_ptr);
 	*((reg_t *)stk) = (reg_t) p;
@@ -509,21 +509,21 @@ struct proc * arch_finish_switch_to_user(void)
 	/* make sure IF is on in FLAGS so that interrupts won't be disabled
 	 * once p's context is restored.
 	 */
-        p->p_reg.psw |= IF_MASK;
+        p->p_reg.psw |= IF_ಮುಖವಾಡ;
 
 	/* Set TRACEBIT state properly. */
-	if(p->p_misc_flags & MF_STEP)
+	ಆದರೆ(p->p_misc_flags & MF_ಹೆಜ್ಜೆ)
         	p->p_reg.psw |= TRACEBIT;
-	else
+	ಇಲ್ಲದಿದ್ದರೆ
         	p->p_reg.psw &= ~TRACEBIT;
 
-	return p;
+	ಹಿಂತಿರುಗಿ p;
 }
 
-void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
-	int isuser, int trap_style)
+ಶೂನ್ಯ arch_proc_setcontext(ರಚನೆ proc *p, ರಚನೆ stackframe_s *state,
+	ಪೂರ್ಣಾಂಕ isuser, ಪೂರ್ಣಾಂಕ trap_style)
 {
-	if(isuser) {
+	ಆದರೆ(isuser) {
 		/* Restore user bits of psw from sc, maintain system bits
 		 * from proc.
 		 */
@@ -532,15 +532,15 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	}
 
 	/* someone wants to totally re-initialize process state */
-	assert(sizeof(p->p_reg) == sizeof(*state));
-	if(state != &p->p_reg) {
-		memcpy(&p->p_reg, state, sizeof(*state));
+	ಪ್ರತಿಜ್ಞಾ(ಗಾತ್ರ(p->p_reg) == ಗಾತ್ರ(*state));
+	ಆದರೆ(state != &p->p_reg) {
+		ಸ್ಮರಣೆ_ನಕಲು(&p->p_reg, state, ಗಾತ್ರ(*state));
 	}
 
 	/* further code is instructed to not touch the context
 	 * any more
 	 */
-	p->p_misc_flags |= MF_CONTEXT_SET;
+	p->p_misc_flags |= MF_CONTEXT_ಗಣ;
 
 	/* on x86 this requires returning using iret (KTS_INT)
 	 * so that the full context is restored instead of relying on
@@ -553,57 +553,57 @@ void arch_proc_setcontext(struct proc *p, struct stackframe_s *state,
 	 * not go well for the process (restored context will be ignored)
 	 * and the situation should be debugged.
 	 */
-	if(!(p->p_rts_flags)) {
-		printf("WARNINIG: setting full context of runnable process\n");
+	ಆದರೆ(!(p->p_rts_flags)) {
+		ಬರೆ("WARNINIG: setting full context of runnable process\n");
 		print_proc(p);
 		util_stacktrace();
 	}
-	if(p->p_seg.p_kern_trap_style == KTS_NONE)
-		printf("WARNINIG: setting full context of out-of-kernel process\n");
+	ಆದರೆ(p->p_seg.p_kern_trap_style == KTS_NONE)
+		ಬರೆ("WARNINIG: setting full context of out-of-kernel process\n");
 	p->p_seg.p_kern_trap_style = trap_style;
 }
 
-void restore_user_context(struct proc *p)
+ಶೂನ್ಯ restore_user_context(ರಚನೆ proc *p)
 {
-	int trap_style = p->p_seg.p_kern_trap_style;
-#if 0
-#define TYPES 10
-	static int restores[TYPES], n = 0;
+	ಪೂರ್ಣಾಂಕ trap_style = p->p_seg.p_kern_trap_style;
+#ಆದರೆ 0
+#ವ್ಯಾಖ್ಯಾನಿಸು TYPES 10
+	ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ restores[TYPES], n = 0;
 
-	if(trap_style >= 0 && trap_style < TYPES)
+	ಆದರೆ(trap_style >= 0 && trap_style < TYPES)
 		restores[trap_style]++;
 
-	if(!(n++ % 500000)) {
-		int t;
-		for(t = 0; t < TYPES; t++)
-			if(restores[t])
-				printf("%d: %d   ", t, restores[t]);
-		printf("\n");
+	ಆದರೆ(!(n++ % 500000)) {
+		ಪೂರ್ಣಾಂಕ t;
+		ಗಾಗಿ(t = 0; t < TYPES; t++)
+			ಆದರೆ(restores[t])
+				ಬರೆ("%d: %d   ", t, restores[t]);
+		ಬರೆ("\n");
 	}
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 	p->p_seg.p_kern_trap_style = KTS_NONE;
 
-	if(trap_style == KTS_SYSENTER) {
+	ಆದರೆ(trap_style == KTS_SYSENTER) {
 		restore_user_context_sysenter(p);
 		NOT_REACHABLE;
         }
 
-	if(trap_style == KTS_SYSCALL) {
+	ಆದರೆ(trap_style == KTS_SYSCALL) {
 		restore_user_context_syscall(p);
 		NOT_REACHABLE;
 	}
 
-        switch(trap_style) {
-                case KTS_NONE:
+        ಆಯ್ಕೆ(trap_style) {
+                ಸ್ಥಿತಿ KTS_NONE:
                         panic("no entry trap style known");
-                case KTS_INT_HARD:
-                case KTS_INT_UM:
-                case KTS_FULLCONTEXT:
-                case KTS_INT_ORIG:
+                ಸ್ಥಿತಿ KTS_INT_HARD:
+                ಸ್ಥಿತಿ KTS_INT_UM:
+                ಸ್ಥಿತಿ KTS_FULLCONTEXT:
+                ಸ್ಥಿತಿ KTS_INT_ORIG:
 			restore_user_context_int(p);
 			NOT_REACHABLE;
-                default:
+                ಪೂರ್ವನಿಯೋಜಿತ:
                         panic("unknown trap style recorded");
                         NOT_REACHABLE;
         }
@@ -611,63 +611,63 @@ void restore_user_context(struct proc *p)
         NOT_REACHABLE;
 }
 
-void fpu_sigcontext(struct proc *pr, struct sigframe_sigcontext *fr, struct sigcontext *sc)
+ಶೂನ್ಯ fpu_sigcontext(ರಚನೆ proc *pr, ರಚನೆ sigframe_sigcontext *fr, ರಚನೆ sigcontext *sc)
 {
-	int fp_error;
+	ಪೂರ್ಣಾಂಕ fp_error;
 
-	if (osfxsr_feature) {
-		fp_error = sc->sc_fpu_state.xfp_regs.fp_status &
+	ಆದರೆ (osfxsr_feature) {
+		fp_error = sc->sc_fpu_state.xfp_regs.fp_ಸ್ಥಿತಿ &
 			~sc->sc_fpu_state.xfp_regs.fp_control;
-	} else {
-		fp_error = sc->sc_fpu_state.fpu_regs.fp_status &
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		fp_error = sc->sc_fpu_state.fpu_regs.fp_ಸ್ಥಿತಿ &
 			~sc->sc_fpu_state.fpu_regs.fp_control;
 	}
 
-	if (fp_error & 0x001) {      /* Invalid op */
+	ಆದರೆ (fp_error & 0x001) {      /* Invalid op */
 		/*
 		 * swd & 0x240 == 0x040: Stack Underflow
 		 * swd & 0x240 == 0x240: Stack Overflow
 		 * User must clear the SF bit (0x40) if set
 		 */
-		fr->sf_code = FPE_FLTINV;
-	} else if (fp_error & 0x004) {
-		fr->sf_code = FPE_FLTDIV; /* Divide by Zero */
-	} else if (fp_error & 0x008) {
-		fr->sf_code = FPE_FLTOVF; /* Overflow */
-	} else if (fp_error & 0x012) {
-		fr->sf_code = FPE_FLTUND; /* Denormal, Underflow */
-	} else if (fp_error & 0x020) {
-		fr->sf_code = FPE_FLTRES; /* Precision */
-	} else {
-		fr->sf_code = 0;  /* XXX - probably should be used for FPE_INTOVF or
+		fr->sf_ಸಂಕೇತ = FPE_FLTINV;
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fp_error & 0x004) {
+		fr->sf_ಸಂಕೇತ = FPE_FLTDIV; /* Divide by Zero */
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fp_error & 0x008) {
+		fr->sf_ಸಂಕೇತ = FPE_FLTOVF; /*ಅತಿಪ್ರವಾಹ*/
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fp_error & 0x012) {
+		fr->sf_ಸಂಕೇತ = FPE_FLTUND; /* Denormal, Underflow */
+	} ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fp_error & 0x020) {
+		fr->sf_ಸಂಕೇತ = FPE_FLTRES; /* Precision */
+	} ಇಲ್ಲದಿದ್ದರೆ {
+		fr->sf_ಸಂಕೇತ = 0;  /* XXX - probably should be used for FPE_INTOVF or
 				  * FPE_INTDIV */
 	}
 }
 
-reg_t arch_get_sp(struct proc *p) { return p->p_reg.sp; }
+reg_t arch_get_sp(ರಚನೆ proc *p) { ಹಿಂತಿರುಗಿ p->p_reg.sp; }
 
-#if !CONFIG_OXPCIE
-static void ser_init(void)
+#ಆದರೆ !CONFIG_OXPCIE
+ಸ್ಥಿರ ಶೂನ್ಯ ser_init(ಶೂನ್ಯ)
 {
-	unsigned char lcr;
-	unsigned divisor;
+	ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ lcr;
+	ಚಿಹ್ನೆರಹಿತ ಭಾಜಕ;
 
 	/* keep BIOS settings if cttybaud is not set */
-	if (kinfo.serial_debug_baud <= 0) return;
+	ಆದರೆ (kinfo.serial_debug_baud <= 0) ಹಿಂತಿರುಗಿ;
 
 	/* set DLAB to make baud accessible */
-	lcr = LCR_8BIT | LCR_1STOP | LCR_NPAR;
+	lcr = LCR_8_ಬಿಟ್ | LCR_1STOP | LCR_NPAR;
 	outb(COM1_LCR, lcr | LCR_DLAB);
 
 	/* set baud rate */
-	divisor = UART_BASE_FREQ / kinfo.serial_debug_baud;
-	if (divisor < 1) divisor = 1;
-	if (divisor > 65535) divisor = 65535;
+	ಭಾಜಕ = UART_ತಳ_FREQ / kinfo.serial_debug_baud;
+	ಆದರೆ (ಭಾಜಕ < 1) ಭಾಜಕ = 1;
+	ಆದರೆ (ಭಾಜಕ > 65535) ಭಾಜಕ = 65535;
 	
-	outb(COM1_DLL, divisor & 0xff);
-	outb(COM1_DLM, (divisor >> 8) & 0xff);
+	outb(COM1_DLL, ಭಾಜಕ & 0xff);
+	outb(COM1_DLM, (ಭಾಜಕ >> 8) & 0xff);
 
 	/* clear DLAB */
 	outb(COM1_LCR, lcr);
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

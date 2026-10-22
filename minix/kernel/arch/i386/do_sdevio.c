@@ -10,42 +10,42 @@
  *    m_lsys_krn_sys_sdevio.offset	(offset into the grant)
  */
 
-#include "kernel/system.h"
-#include <minix/devio.h>
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <minix/devio.h>
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
-#include "arch_proto.h"
+#ಅನ್ತರ್ಭಾವ "arch_proto.h"
 
-#if USE_SDEVIO
+#ಆದರೆ USE_SDEVIO
 
 /*===========================================================================*
  *			        do_sdevio                                    *
  *===========================================================================*/
-int do_sdevio(struct proc * caller, message *m_ptr)
+ಪೂರ್ಣಾಂಕ do_sdevio(ರಚನೆ proc * caller, ಸಂದೇಶ *m_ptr)
 {
-  vir_bytes newoffset;
+  vir_ಬೈಟುಗಳು newoffset;
   endpoint_t newep;
-  int proc_nr;
+  ಪೂರ್ಣಾಂಕ proc_nr;
   endpoint_t proc_nr_e = m_ptr->m_lsys_krn_sys_sdevio.vec_endpt;
-  vir_bytes count = m_ptr->m_lsys_krn_sys_sdevio.vec_size;
-  long port = m_ptr->m_lsys_krn_sys_sdevio.port;
-  phys_bytes vir_buf;
-  int i, r, req_type, req_dir, size, nr_io_range;
-  struct priv *privp;
-  struct io_range *iorp;
-  struct proc *destproc;
-  int retval;
+  vir_ಬೈಟುಗಳು ಎಣಿಕೆ_2 = m_ptr->m_lsys_krn_sys_sdevio.vec_ಗಾತ್ರ;
+  ದೀರ್ಘ ಪೋರ್ಟ್ = m_ptr->m_lsys_krn_sys_sdevio.ಪೋರ್ಟ್;
+  phys_ಬೈಟುಗಳು vir_buf;
+  ಪೂರ್ಣಾಂಕ i, r, req_type, req_dir, ಗಾತ್ರ_2, nr_io_range;
+  ರಚನೆ priv *privp;
+  ರಚನೆ io_range *iorp;
+  ರಚನೆ proc *destproc;
+  ಪೂರ್ಣಾಂಕ retval;
 
   /* Allow safe copies and accesses to SELF */
-  if ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != _DIO_SAFE &&
+  ಆದರೆ ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) != DIO_ಸುರಕ್ಷಿತ &&
 	proc_nr_e != SELF)
   {
-	static int first= 1;
-	if (first)
+	ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಮೊದಲ= 1;
+	ಆದರೆ (ಮೊದಲ)
 	{
-		first= 0;
-		printf("do_sdevio: for %d, req %d\n",
-			m_ptr->m_source, m_ptr->m_lsys_krn_sys_sdevio.request);
+		ಮೊದಲ= 0;
+		ಬರೆ("do_sdevio: for %d, req %d\n",
+			m_ptr->m_ಮೂಲ, m_ptr->m_lsys_krn_sys_sdevio.request);
 	}
   }
 
@@ -53,39 +53,39 @@ int do_sdevio(struct proc * caller, message *m_ptr)
    * A driver may directly provide a pointer to a buffer at the user-process
    * that initiated the device I/O. Kernel processes, of course, are denied.
    */
-  if (proc_nr_e == SELF)
+  ಆದರೆ (proc_nr_e == SELF)
 	okendpt(caller->p_endpoint, &proc_nr);
-  else
-	if(!isokendpt(proc_nr_e, &proc_nr))
-		return(EINVAL);
-  if (iskerneln(proc_nr)) return(EPERM);
+  ಇಲ್ಲದಿದ್ದರೆ
+	ಆದರೆ(!isokendpt(proc_nr_e, &proc_nr))
+		ಹಿಂತಿರುಗಿ(EINVAL);
+  ಆದರೆ (iskerneln(proc_nr)) ಹಿಂತಿರುಗಿ(EPERM);
 
   /* Extract direction (in or out) and type (size). */
   req_dir = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_DIRMASK;
   req_type = m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_TYPEMASK;
 
   /* Check for 'safe' variants. */
-  if((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == _DIO_SAFE) {
+  ಆದರೆ((m_ptr->m_lsys_krn_sys_sdevio.request & _DIO_SAFEMASK) == DIO_ಸುರಕ್ಷಿತ) {
      /* Map grant address to physical address. */
-     if((r=verify_grant(proc_nr_e, caller->p_endpoint,
-		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, count,
-		req_dir == _DIO_INPUT ? CPF_WRITE : CPF_READ,
-		m_ptr->m_lsys_krn_sys_sdevio.offset, &newoffset, &newep,
-		NULL)) != OK) {
-	if(r == ENOTREADY) return r;
-	printf("do_sdevio: verify_grant failed\n");
-	return EPERM;
+     ಆದರೆ((r=verify_grant(proc_nr_e, caller->p_endpoint,
+		m_ptr->m_lsys_krn_sys_sdevio.vec_addr, ಎಣಿಕೆ_2,
+		req_dir == DIO_ಒಳಹರಿವು ? CPF_WRITE : CPF_READ,
+		m_ptr->m_lsys_krn_sys_sdevio.ಸ್ಥಾನಾಂತರ, &newoffset, &newep,
+		ಖಾಲಿ)) != OK) {
+	ಆದರೆ(r == ENOTREADY) ಹಿಂತಿರುಗಿ r;
+	ಬರೆ("do_sdevio: verify_grant failed\n");
+	ಹಿಂತಿರುಗಿ EPERM;
     }
-	if(!isokendpt(newep, &proc_nr))
-		return(EINVAL);
+	ಆದರೆ(!isokendpt(newep, &proc_nr))
+		ಹಿಂತಿರುಗಿ(EINVAL);
      destproc = proc_addr(proc_nr);
      vir_buf = newoffset;
-  } else {
-     if(proc_nr != _ENDPOINT_P(caller->p_endpoint))
+  } ಇಲ್ಲದಿದ್ದರೆ {
+     ಆದರೆ(proc_nr != _ENDPOINT_P(caller->p_endpoint))
      {
-	printf("do_sdevio: unsafe sdevio by %d in %d denied\n",
+	ಬರೆ("do_sdevio: unsafe sdevio by %d in %d denied\n",
 		caller->p_endpoint, proc_nr_e);
-	return EPERM;
+	ಹಿಂತಿರುಗಿ EPERM;
      }
      /* Get and check physical address. */
      vir_buf = m_ptr->m_lsys_krn_sys_sdevio.vec_addr;
@@ -93,71 +93,71 @@ int do_sdevio(struct proc * caller, message *m_ptr)
   }
      /* current process must be target for phys_* to be OK */
 
-  switch_address_space(destproc);
+  switch_ವಿಳಾಸ_space(destproc);
 
-  switch (req_type)
+  ಆಯ್ಕೆ (req_type)
   {
-	case _DIO_BYTE: size= 1; break;
-	case _DIO_WORD: size= 2; break;
-	case _DIO_LONG: size= 4; break;
-	default: size= 4; break;	/* Be conservative */
+	ಸ್ಥಿತಿ _DIO_BYTE: ಗಾತ್ರ_2= 1; ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ DIO_ಶಬ್ದ: ಗಾತ್ರ_2= 2; ನಿಲ್ಲಿಸು;
+	ಸ್ಥಿತಿ _DIO_LONG: ಗಾತ್ರ_2= 4; ನಿಲ್ಲಿಸು;
+	ಪೂರ್ವನಿಯೋಜಿತ: ಗಾತ್ರ_2= 4; ನಿಲ್ಲಿಸು;	/* Be conservative */
   }
 
   privp= priv(caller);
-  if (privp && privp->s_flags & CHECK_IO_PORT)
+  ಆದರೆ (privp && privp->s_flags & CHECK_IO_ಪೋರ್ಟ್)
   {
-	port= m_ptr->m_lsys_krn_sys_sdevio.port;
+	ಪೋರ್ಟ್= m_ptr->m_lsys_krn_sys_sdevio.ಪೋರ್ಟ್;
 	nr_io_range= privp->s_nr_io_range;
-	for (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
+	ಗಾಗಿ (i= 0, iorp= privp->s_io_tab; i<nr_io_range; i++, iorp++)
 	{
-		if (port >= iorp->ior_base && port+size-1 <= iorp->ior_limit)
-			break;
+		ಆದರೆ (ಪೋರ್ಟ್ >= iorp->ior_ತಳ && ಪೋರ್ಟ್+ಗಾತ್ರ_2-1 <= iorp->ior_ಎಲ್ಲೆ)
+			ನಿಲ್ಲಿಸು;
 	}
-	if (i >= nr_io_range)
+	ಆದರೆ (i >= nr_io_range)
 	{
-		printf(
+		ಬರೆ(
 		"do_sdevio: I/O port check failed for proc %d, port 0x%x\n",
-			m_ptr->m_source, port);
+			m_ptr->m_ಮೂಲ, ಪೋರ್ಟ್);
 		retval = EPERM;
-		goto return_error;
+		ಹೋಗು return_error;
 	}
   }
 
-  if (port & (size-1))
+  ಆದರೆ (ಪೋರ್ಟ್ & (ಗಾತ್ರ_2-1))
   {
-	printf("do_devio: unaligned port 0x%x (size %d)\n", port, size);
+	ಬರೆ("do_devio: unaligned port 0x%x (size %d)\n", ಪೋರ್ಟ್, ಗಾತ್ರ_2);
 	retval = EPERM;
-	goto return_error;
+	ಹೋಗು return_error;
   }
 
   /* Perform device I/O for bytes and words. Longs are not supported. */
-  if (req_dir == _DIO_INPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_insb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_insw(port, vir_buf, count); break; 
-      default:
+  ಆದರೆ (req_dir == DIO_ಒಳಹರಿವು) { 
+      ಆಯ್ಕೆ (req_type) {
+      ಸ್ಥಿತಿ _DIO_BYTE: phys_insb(ಪೋರ್ಟ್, vir_buf, ಎಣಿಕೆ_2); ನಿಲ್ಲಿಸು; 
+      ಸ್ಥಿತಿ DIO_ಶಬ್ದ: phys_insw(ಪೋರ್ಟ್, vir_buf, ಎಣಿಕೆ_2); ನಿಲ್ಲಿಸು; 
+      ಪೂರ್ವನಿಯೋಜಿತ:
   		retval = EINVAL;
-		goto return_error;
+		ಹೋಗು return_error;
       } 
-  } else if (req_dir == _DIO_OUTPUT) { 
-      switch (req_type) {
-      case _DIO_BYTE: phys_outsb(port, vir_buf, count); break; 
-      case _DIO_WORD: phys_outsw(port, vir_buf, count); break; 
-      default:
+  } ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (req_dir == _DIO_OUTPUT) { 
+      ಆಯ್ಕೆ (req_type) {
+      ಸ್ಥಿತಿ _DIO_BYTE: phys_outsb(ಪೋರ್ಟ್, vir_buf, ಎಣಿಕೆ_2); ನಿಲ್ಲಿಸು; 
+      ಸ್ಥಿತಿ DIO_ಶಬ್ದ: phys_outsw(ಪೋರ್ಟ್, vir_buf, ಎಣಿಕೆ_2); ನಿಲ್ಲಿಸು; 
+      ಪೂರ್ವನಿಯೋಜಿತ:
   		retval = EINVAL;
-		goto return_error;
+		ಹೋಗು return_error;
       } 
   }
-  else {
+  ಇಲ್ಲದಿದ್ದರೆ {
 	  retval = EINVAL;
-	  goto return_error;
+	  ಹೋಗು return_error;
   }
   retval = OK;
 
 return_error:
   /* switch back to the address of the process which made the call */
-  switch_address_space(caller);
-  return retval;
+  switch_ವಿಳಾಸ_space(caller);
+  ಹಿಂತಿರುಗಿ retval;
 }
 
-#endif /* USE_SDEVIO */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_SDEVIO */

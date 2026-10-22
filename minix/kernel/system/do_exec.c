@@ -8,43 +8,43 @@
  *   m_lsys_krn_sys_exec.ip		(new instruction pointer)
  *   m_lsys_krn_sys_exec.ps_str		(struct ps_strings *)
  */
-#include "kernel/system.h"
-#include <string.h>
-#include <minix/endpoint.h>
+#ಅನ್ತರ್ಭಾವ "kernel/system.h"
+#ಅನ್ತರ್ಭಾವ <string.h>
+#ಅನ್ತರ್ಭಾವ <minix/endpoint.h>
 
-#if USE_EXEC
+#ಆದರೆ USE_EXEC
 
 /*===========================================================================*
  *				do_exec					     *
  *===========================================================================*/
-int do_exec(struct proc * caller, message * m_ptr)
+ಪೂರ್ಣಾಂಕ do_exec(ರಚನೆ proc * caller, ಸಂದೇಶ * m_ptr)
 {
 /* Handle sys_exec().  A process has done a successful EXEC. Patch it up. */
-  register struct proc *rp;
-  int proc_nr;
-  char name[PROC_NAME_LEN];
+  ನೋಂದಣಿ ರಚನೆ proc *rp;
+  ಪೂರ್ಣಾಂಕ proc_nr;
+  ಅಕ್ಷರ name[PROC_NAME_LEN];
 
-  if(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
-	return EINVAL;
+  ಆದರೆ(!isokendpt(m_ptr->m_lsys_krn_sys_exec.endpt, &proc_nr))
+	ಹಿಂತಿರುಗಿ EINVAL;
 
   rp = proc_addr(proc_nr);
 
-  if(rp->p_misc_flags & MF_DELIVERMSG) {
+  ಆದರೆ(rp->p_misc_flags & MF_DELIVERMSG) {
 	rp->p_misc_flags &= ~MF_DELIVERMSG;
   }
 
   /* Save command name for debugging, ps(1) output, etc. */
-  if(data_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
-	KERNEL, (vir_bytes) name,
-	(phys_bytes) sizeof(name) - 1) != OK)
+  ಆದರೆ(ದತ್ತಾಂಶ_copy(caller->p_endpoint, m_ptr->m_lsys_krn_sys_exec.name,
+	KERNEL, (vir_ಬೈಟುಗಳು) name,
+	(phys_ಬೈಟುಗಳು) ಗಾತ್ರ(name) - 1) != OK)
   	strncpy(name, "<unset>", PROC_NAME_LEN);
 
-  name[sizeof(name)-1] = '\0';
+  name[ಗಾತ್ರ(name)-1] = '\0';
 
   /* Set process state. */
   arch_proc_init(rp,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ip,
-	(u32_t) m_ptr->m_lsys_krn_sys_exec.stack,
+	(u32_t) m_ptr->m_lsys_krn_sys_exec.ರಾಶಿ,
 	(u32_t) m_ptr->m_lsys_krn_sys_exec.ps_str, name);
 
   /* No reply to EXEC call */
@@ -55,6 +55,6 @@ int do_exec(struct proc * caller, message * m_ptr)
   rp->p_misc_flags &= ~MF_FPU_INITIALIZED;
   /* force reloading FPU if the current process is the owner */
   release_fpu(rp);
-  return(OK);
+  ಹಿಂತಿರುಗಿ(OK);
 }
-#endif /* USE_EXEC */
+#ಆದರೆ_ಅಂತ್ಯ /* USE_EXEC */
